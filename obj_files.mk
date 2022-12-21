@@ -707,6 +707,10 @@ NISHIMURA:=\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/ElecBug.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/WtankMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/Wtank.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/GtankMgr.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/Gtank.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/QtankMgr.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/Qtank.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/ArmorMgr.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/Armor.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/Mar.o\
