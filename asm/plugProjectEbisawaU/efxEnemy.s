@@ -143,6 +143,24 @@ __vt__Q23efx8TTankWat:
 	.4byte fade__Q23efx8TTankWatFv
 	.4byte startDemoDrawOff__Q23efx8TTankWatFv
 	.4byte endDemoDrawOn__Q23efx8TTankWatFv
+.global __vt__Q23efx8TTankGas
+__vt__Q23efx8TTankGas:
+	.4byte 0
+	.4byte 0
+	.4byte create__Q23efx8TTankGasFPQ23efx3Arg
+	.4byte forceKill__Q23efx8TTankGasFv
+	.4byte fade__Q23efx8TTankGasFv
+	.4byte startDemoDrawOff__Q23efx8TTankGasFv
+	.4byte endDemoDrawOn__Q23efx8TTankGasFv
+.global __vt__Q23efx8TTankQue
+__vt__Q23efx8TTankQue:
+	.4byte 0
+	.4byte 0
+	.4byte create__Q23efx8TTankQueFPQ23efx3Arg
+	.4byte forceKill__Q23efx8TTankQueFv
+	.4byte fade__Q23efx8TTankQueFv
+	.4byte startDemoDrawOff__Q23efx8TTankQueFv
+	.4byte endDemoDrawOn__Q23efx8TTankQueFv
 .global __vt__Q23efx9TTankFire
 __vt__Q23efx9TTankFire:
 	.4byte 0
@@ -2274,6 +2292,90 @@ create__Q23efx9TTankFireFPQ23efx3Arg:
 /* 803B4640 003B1580  38 21 00 20 */	addi r1, r1, 0x20
 /* 803B4644 003B1584  4E 80 00 20 */	blr 
 
+.global create__Q23efx8TTankGasFPQ23efx3Arg
+create__Q23efx8TTankGasFPQ23efx3Arg:
+/* 803B4648 003B1588  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 803B464C 003B158C  7C 08 02 A6 */	mflr r0
+/* 803B4650 003B1590  90 01 00 14 */	stw r0, 0x14(r1)
+/* 803B4654 003B1594  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 803B4658 003B1598  7C 9F 23 78 */	mr r31, r4
+/* 803B465C 003B159C  38 80 00 00 */	li r4, 0
+/* 803B4660 003B15A0  93 C1 00 08 */	stw r30, 8(r1)
+/* 803B4664 003B15A4  7C 7E 1B 78 */	mr r30, r3
+/* 803B4668 003B15A8  38 1E 00 60 */	addi r0, r30, 0x60
+/* 803B466C 003B15AC  90 03 00 5C */	stw r0, 0x5c(r3)
+/* 803B4670 003B15B0  80 63 00 5C */	lwz r3, 0x5c(r3)
+/* 803B4674 003B15B4  81 83 00 00 */	lwz r12, 0(r3)
+/* 803B4678 003B15B8  81 8C 00 08 */	lwz r12, 8(r12)
+/* 803B467C 003B15BC  7D 89 03 A6 */	mtctr r12
+/* 803B4680 003B15C0  4E 80 04 21 */	bctrl 
+/* 803B4684 003B15C4  C0 02 12 E4 */	lfs f0, lbl_8051F644@sda21(r2)
+/* 803B4688 003B15C8  7F C3 F3 78 */	mr r3, r30
+/* 803B468C 003B15CC  7F E4 FB 78 */	mr r4, r31
+/* 803B4690 003B15D0  D0 1E 00 58 */	stfs f0, 0x58(r30)
+/* 803B4694 003B15D4  4B FF CC 35 */	bl "create__Q23efx29TSyncGroup4<Q23efx9TChaseMtx>FPQ23efx3Arg"
+/* 803B4698 003B15D8  54 60 06 3F */	clrlwi. r0, r3, 0x18
+/* 803B469C 003B15DC  41 82 00 28 */	beq .L_803B46C4gas
+/* 803B46A0 003B15E0  80 7E 00 0C */	lwz r3, 0xc(r30)
+/* 803B46A4 003B15E4  38 1E 00 54 */	addi r0, r30, 0x54
+/* 803B46A8 003B15E8  90 03 00 F0 */	stw r0, 0xf0(r3)
+/* 803B46AC 003B15EC  80 7E 00 20 */	lwz r3, 0x20(r30)
+/* 803B46B0 003B15F0  90 03 00 F0 */	stw r0, 0xf0(r3)
+/* 803B46B4 003B15F4  80 7E 00 34 */	lwz r3, 0x34(r30)
+/* 803B46B8 003B15F8  90 03 00 F0 */	stw r0, 0xf0(r3)
+/* 803B46BC 003B15FC  80 7E 00 48 */	lwz r3, 0x48(r30)
+/* 803B46C0 003B1600  90 03 00 F0 */	stw r0, 0xf0(r3)
+.L_803B46C4gas:
+/* 803B46C4 003B1604  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 803B46C8 003B1608  38 60 00 01 */	li r3, 1
+/* 803B46CC 003B160C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 803B46D0 003B1610  83 C1 00 08 */	lwz r30, 8(r1)
+/* 803B46D4 003B1614  7C 08 03 A6 */	mtlr r0
+/* 803B46D8 003B1618  38 21 00 10 */	addi r1, r1, 0x10
+/* 803B46DC 003B161C  4E 80 00 20 */	blr 
+
+.global create__Q23efx8TTankQueFPQ23efx3Arg
+create__Q23efx8TTankQueFPQ23efx3Arg:
+/* 803B4648 003B1588  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 803B464C 003B158C  7C 08 02 A6 */	mflr r0
+/* 803B4650 003B1590  90 01 00 14 */	stw r0, 0x14(r1)
+/* 803B4654 003B1594  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 803B4658 003B1598  7C 9F 23 78 */	mr r31, r4
+/* 803B465C 003B159C  38 80 00 00 */	li r4, 0
+/* 803B4660 003B15A0  93 C1 00 08 */	stw r30, 8(r1)
+/* 803B4664 003B15A4  7C 7E 1B 78 */	mr r30, r3
+/* 803B4668 003B15A8  38 1E 00 60 */	addi r0, r30, 0x60
+/* 803B466C 003B15AC  90 03 00 5C */	stw r0, 0x5c(r3)
+/* 803B4670 003B15B0  80 63 00 5C */	lwz r3, 0x5c(r3)
+/* 803B4674 003B15B4  81 83 00 00 */	lwz r12, 0(r3)
+/* 803B4678 003B15B8  81 8C 00 08 */	lwz r12, 8(r12)
+/* 803B467C 003B15BC  7D 89 03 A6 */	mtctr r12
+/* 803B4680 003B15C0  4E 80 04 21 */	bctrl 
+/* 803B4684 003B15C4  C0 02 12 E4 */	lfs f0, lbl_8051F644@sda21(r2)
+/* 803B4688 003B15C8  7F C3 F3 78 */	mr r3, r30
+/* 803B468C 003B15CC  7F E4 FB 78 */	mr r4, r31
+/* 803B4690 003B15D0  D0 1E 00 58 */	stfs f0, 0x58(r30)
+/* 803B4694 003B15D4  4B FF CC 35 */	bl "create__Q23efx29TSyncGroup4<Q23efx9TChaseMtx>FPQ23efx3Arg"
+/* 803B4698 003B15D8  54 60 06 3F */	clrlwi. r0, r3, 0x18
+/* 803B469C 003B15DC  41 82 00 28 */	beq .L_803B46C4que
+/* 803B46A0 003B15E0  80 7E 00 0C */	lwz r3, 0xc(r30)
+/* 803B46A4 003B15E4  38 1E 00 54 */	addi r0, r30, 0x54
+/* 803B46A8 003B15E8  90 03 00 F0 */	stw r0, 0xf0(r3)
+/* 803B46AC 003B15EC  80 7E 00 20 */	lwz r3, 0x20(r30)
+/* 803B46B0 003B15F0  90 03 00 F0 */	stw r0, 0xf0(r3)
+/* 803B46B4 003B15F4  80 7E 00 34 */	lwz r3, 0x34(r30)
+/* 803B46B8 003B15F8  90 03 00 F0 */	stw r0, 0xf0(r3)
+/* 803B46BC 003B15FC  80 7E 00 48 */	lwz r3, 0x48(r30)
+/* 803B46C0 003B1600  90 03 00 F0 */	stw r0, 0xf0(r3)
+.L_803B46C4que:
+/* 803B46C4 003B1604  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 803B46C8 003B1608  38 60 00 01 */	li r3, 1
+/* 803B46CC 003B160C  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 803B46D0 003B1610  83 C1 00 08 */	lwz r30, 8(r1)
+/* 803B46D4 003B1614  7C 08 03 A6 */	mtlr r0
+/* 803B46D8 003B1618  38 21 00 10 */	addi r1, r1, 0x10
+/* 803B46DC 003B161C  4E 80 00 20 */	blr 
+
 .global create__Q23efx8TTankWatFPQ23efx3Arg
 create__Q23efx8TTankWatFPQ23efx3Arg:
 /* 803B4648 003B1588  94 21 FF F0 */	stwu r1, -0x10(r1)
@@ -3124,6 +3226,50 @@ forceKill__Q23efx8TTankWatFv:
 /* 803B5274 003B21B4  7D 89 03 A6 */	mtctr r12
 /* 803B5278 003B21B8  4E 80 04 21 */	bctrl 
 .L_803B527C:
+/* 803B527C 003B21BC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 803B5280 003B21C0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 803B5284 003B21C4  7C 08 03 A6 */	mtlr r0
+/* 803B5288 003B21C8  38 21 00 10 */	addi r1, r1, 0x10
+/* 803B528C 003B21CC  4E 80 00 20 */	blr 
+
+.global forceKill__Q23efx8TTankGasFv
+forceKill__Q23efx8TTankGasFv:
+/* 803B5248 003B2188  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 803B524C 003B218C  7C 08 02 A6 */	mflr r0
+/* 803B5250 003B2190  90 01 00 14 */	stw r0, 0x14(r1)
+/* 803B5254 003B2194  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 803B5258 003B2198  7C 7F 1B 78 */	mr r31, r3
+/* 803B525C 003B219C  4B FF C1 41 */	bl "forceKill__Q23efx29TSyncGroup4<Q23efx9TChaseMtx>Fv"
+/* 803B5260 003B21A0  80 7F 00 5C */	lwz r3, 0x5c(r31)
+/* 803B5264 003B21A4  28 03 00 00 */	cmplwi r3, 0
+/* 803B5268 003B21A8  41 82 00 14 */	beq .L_803B527Cgas
+/* 803B526C 003B21AC  81 83 00 00 */	lwz r12, 0(r3)
+/* 803B5270 003B21B0  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 803B5274 003B21B4  7D 89 03 A6 */	mtctr r12
+/* 803B5278 003B21B8  4E 80 04 21 */	bctrl 
+.L_803B527Cgas:
+/* 803B527C 003B21BC  80 01 00 14 */	lwz r0, 0x14(r1)
+/* 803B5280 003B21C0  83 E1 00 0C */	lwz r31, 0xc(r1)
+/* 803B5284 003B21C4  7C 08 03 A6 */	mtlr r0
+/* 803B5288 003B21C8  38 21 00 10 */	addi r1, r1, 0x10
+/* 803B528C 003B21CC  4E 80 00 20 */	blr 
+
+.global forceKill__Q23efx8TTankQueFv
+forceKill__Q23efx8TTankQueFv:
+/* 803B5248 003B2188  94 21 FF F0 */	stwu r1, -0x10(r1)
+/* 803B524C 003B218C  7C 08 02 A6 */	mflr r0
+/* 803B5250 003B2190  90 01 00 14 */	stw r0, 0x14(r1)
+/* 803B5254 003B2194  93 E1 00 0C */	stw r31, 0xc(r1)
+/* 803B5258 003B2198  7C 7F 1B 78 */	mr r31, r3
+/* 803B525C 003B219C  4B FF C1 41 */	bl "forceKill__Q23efx29TSyncGroup4<Q23efx9TChaseMtx>Fv"
+/* 803B5260 003B21A0  80 7F 00 5C */	lwz r3, 0x5c(r31)
+/* 803B5264 003B21A4  28 03 00 00 */	cmplwi r3, 0
+/* 803B5268 003B21A8  41 82 00 14 */	beq .L_803B527Cque
+/* 803B526C 003B21AC  81 83 00 00 */	lwz r12, 0(r3)
+/* 803B5270 003B21B0  81 8C 00 0C */	lwz r12, 0xc(r12)
+/* 803B5274 003B21B4  7D 89 03 A6 */	mtctr r12
+/* 803B5278 003B21B8  4E 80 04 21 */	bctrl 
+.L_803B527Cque:
 /* 803B527C 003B21BC  80 01 00 14 */	lwz r0, 0x14(r1)
 /* 803B5280 003B21C0  83 E1 00 0C */	lwz r31, 0xc(r1)
 /* 803B5284 003B21C4  7C 08 03 A6 */	mtlr r0
