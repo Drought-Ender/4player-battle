@@ -268,6 +268,32 @@ createEnemyMgr__Q24Game15GeneralEnemyMgrFUcii:
 /* 8010BD8C 00108CCC  38 A0 00 00 */	li r5, 0
 /* 8010BD90 00108CD0  7F 64 DB 78 */	mr r4, r27
 /* 8010BD94 00108CD4  48 31 75 C9 */	bl heapStatusStart__6SystemFPcP7JKRHeap
+cmplwi r29, 0x66
+bne .gTankMiss
+/* 8010C178 001090B8  38 60 00 4C */	li r3, 0x4c
+/* 8010C17C 001090BC  4B F1 7D 29 */	bl __nw__FUl
+/* 8010C180 001090C0  7C 60 1B 79 */	or. r0, r3, r3
+/* 8010C184 001090C4  41 82 00 14 */	beq .gTankMiss
+/* 8010C188 001090C8  7F E4 FB 78 */	mr r4, r31
+/* 8010C18C 001090CC  7F C5 F3 78 */	mr r5, r30
+/* 8010C190 001090D0  48 17 02 7D */	bl __ct__Q34Game5Gtank3MgrFiUc
+/* 8010C194 001090D4  7C 60 1B 78 */	mr r0, r3
+mr r26, r0
+b .L_8010CC34
+.gTankMiss:
+cmplwi r29, 0x67
+bne .qTankMiss
+/* 8010C178 001090B8  38 60 00 4C */	li r3, 0x4c
+/* 8010C17C 001090BC  4B F1 7D 29 */	bl __nw__FUl
+/* 8010C180 001090C0  7C 60 1B 79 */	or. r0, r3, r3
+/* 8010C184 001090C4  41 82 00 14 */	beq . qTankMiss
+/* 8010C188 001090C8  7F E4 FB 78 */	mr r4, r31
+/* 8010C18C 001090CC  7F C5 F3 78 */	mr r5, r30
+/* 8010C190 001090D0  48 17 02 7D */	bl __ct__Q34Game5Qtank3MgrFiUc
+/* 8010C194 001090D4  7C 60 1B 78 */	mr r0, r3
+mr r26, r0
+b .L_8010CC34
+.qTankMiss:
 /* 8010BD98 00108CD8  28 1D 00 64 */	cmplwi r29, 0x64
 /* 8010BD9C 00108CDC  41 81 0E 98 */	bgt .L_8010CC34
 /* 8010BDA0 00108CE0  3C 60 80 4B */	lis r3, lbl_804AB390@ha
