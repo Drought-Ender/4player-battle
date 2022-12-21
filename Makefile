@@ -126,7 +126,6 @@ CC_EPI  = $(WINE) tools/mwcc_compiler/$(MWCC_EPI_VERSION)/$(MWCC_EPI_EXE)
 endif
 LD      := $(WINE) tools/mwcc_compiler/$(MWLD_VERSION)/mwldeppc.exe
 ELF2DOL := tools/elf2dol
-SHA1SUM := sha1sum
 
 TRANSFORM_DEP := tools/transform-dep.py
 FRANK := tools/franklite.py
@@ -231,7 +230,6 @@ $(LDSCRIPT): ldscript.lcf
 
 $(DOL): $(ELF) | tools
 	$(QUIET) $(ELF2DOL) $< $@
-	$(QUIET) $(SHA1SUM) -c sha1/$(NAME).$(VERSION).sha1
 ifneq ($(findstring -map,$(LDFLAGS)),)
 	$(QUIET) $(PYTHON) tools/calcprogress.py $(DOL) $(MAP)
 endif
