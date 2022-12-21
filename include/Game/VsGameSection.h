@@ -130,7 +130,7 @@ struct VsGameSection : public BaseGameSection {
 	f32 m_yellowScore[2];                           // _370
 	f32 m_redBlueScore[2];                          // _378
 	Pellet* m_marbleRedBlue[2];                     // _380
-	Pellet* m_marbleYellow[7];                      // _388
+	Pellet* m_marbleYellow[13];                      // _388
 	int m_dopeCounts[2][2];                         // _3A4
 	int m_player2Cherries;                          // _3B4
 	int m_player1Cherries;                          // _3B8

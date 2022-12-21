@@ -215,7 +215,7 @@ void VsGameSection::onInit()
 
 	Radar::mgr = new Radar::Mgr();
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 13; i++) {
 		m_marbleYellow[i] = nullptr;
 	}
 }
@@ -404,11 +404,11 @@ void VsGameSection::postSetupFloatMemory()
 		Vector3f position       = Vector3f(0.0f);
 		createRedBlueBedamas(position);
 
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 13; i++) {
 			m_marbleYellow[i] = nullptr;
 		}
 
-		createYellowBedamas(7);
+		createYellowBedamas(13);
 		initCardPellets();
 	}
 
@@ -894,12 +894,12 @@ bool GameMessageVsAddEnemy::actVs(VsGameSection* section)
 bool GameMessagePelletBorn::actVs(VsGameSection* section)
 {
 	if (m_pellet->m_pelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) { // is yellow bedama
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 13; i++) {
 			if (section->m_marbleYellow[i] == m_pellet) {
 				return false;
 			}
 		}
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 13; i++) {
 			if (!section->m_marbleYellow[i]) {
 				section->m_marbleYellow[i] = m_pellet;
 				return true;
@@ -918,7 +918,7 @@ bool GameMessagePelletBorn::actVs(VsGameSection* section)
 bool GameMessagePelletDead::actVs(VsGameSection* section)
 {
 	if (m_pellet->m_pelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) { // is yellow bedama
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 13; i++) {
 			if (section->m_marbleYellow[i] == m_pellet) {
 				section->m_marbleYellow[i] = nullptr;
 				return true;
@@ -1274,8 +1274,8 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		if (bedamas == 0) {
 			return;
 		}
-		if (bedamas >= 7) {
-			bedamas = 7;
+		if (bedamas >= 13) {
+			bedamas = 13;
 		}
 	}
 
@@ -1341,7 +1341,7 @@ void VsGameSection::calcVsScores()
 	onyons[0] = ItemOnyon::mgr->getOnyon(ONYON_TYPE_RED);
 	onyons[1] = ItemOnyon::mgr->getOnyon(ONYON_TYPE_BLUE);
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 13; i++) {
 		Pellet* marble = m_marbleYellow[i];
 
 		if (marble && marble->isAlive() && marble->getStateID() == 0) {
