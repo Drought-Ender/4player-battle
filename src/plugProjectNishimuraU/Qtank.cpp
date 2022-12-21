@@ -126,7 +126,7 @@ void Obj::effectDrawOff()
  */
 void Obj::interactCreature(Creature* creature)
 {
-	InteractDenki que(this, static_cast<EnemyParmsBase*>(m_parms)->m_general.m_attackDamage.m_value);
+	InteractFire que(this, static_cast<EnemyParmsBase*>(m_parms)->m_general.m_attackDamage.m_value);
 	creature->stimulate(que);
 }
 
@@ -138,7 +138,7 @@ void Obj::interactCreature(Creature* creature)
 void Obj::stopEffectRadius(f32 radius)
 {
 	efx::TQtankEffect* effect               = m_tankEffect;
-	effect->m_efxGas.m_particleCallBack._04 = radius;
+	effect->m_efxQue.m_particleCallBack._04 = radius;
 }
 
 /*
