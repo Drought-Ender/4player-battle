@@ -1,6 +1,7 @@
 #include "Game/Entities/Tank.h"
 #include "Game/generalEnemyMgr.h"
 #include "JSystem/JUT/JUTNameTab.h"
+#include "JSystem/JUT/JUTException.h"
 
 namespace Game {
 namespace Tank {
@@ -15,7 +16,7 @@ static const char tankMgrName[] = "246-TankMgr";
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
 {
-	m_name = "ブタドックリマネージャ"; // pig dog manager
+	m_name = "tankMgr"; // pig dog manager
 }
 
 /*
@@ -25,9 +26,9 @@ Mgr::Mgr(int objLimit, u8 modelType)
  */
 void Mgr::loadModelData()
 {
-	int ids[2] = { EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank };
+	int ids[4] = { EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Gtank, EnemyTypeID::EnemyID_Qtank };
 
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 4; i++) {
 		EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(ids[i]);
 		if (mgr) {
 			J3DModelData* storedModelData = mgr->getJ3DModelData();
@@ -49,9 +50,9 @@ void Mgr::loadModelData()
  */
 void Mgr::loadAnimData()
 {
-	int ids[2] = { EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank };
-
-	for (int i = 0; i < 2; i++) {
+	int ids[4] = { EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Gtank, EnemyTypeID::EnemyID_Qtank };
+	
+	for (int i = 0; i < 4; i++) {
 		EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(ids[i]);
 		if (mgr) {
 			SysShape::AnimMgr* storedAnimMgr = mgr->m_animMgr;
