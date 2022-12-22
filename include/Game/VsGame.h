@@ -239,7 +239,7 @@ struct GameState : public State {
 	virtual void onMovieStart(VsGameSection*, MovieConfig*, u32, u32); // _2C
 	virtual void onMovieDone(VsGameSection*, MovieConfig*, u32, u32);  // _30
 	virtual void onNextFloor(VsGameSection*, ItemHole::Item*);         // _34
-	virtual void on_section_fadeout(VsGameSection*);                   // _38 (weak)
+	virtual void on_section_fadeout(VsGameSection*) { m_flags.typeView |= 0x8000; } // _38 (weak)
 	virtual bool goingToCave(VsGameSection*);                          // _3C
 	virtual void onBattleFinished(VsGameSection*, int, bool);          // _40
 	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool);      // _44
