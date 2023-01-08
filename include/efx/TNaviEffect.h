@@ -22,13 +22,19 @@ struct TNaviEffect {
 
 	void setNaviType(enumNaviType);
 	void createLight_(Mtx);
+    void killHamonA_();
+    void killHamonB_();
+    void killLight_();
+    void killLightAct_();
+    void killCursor_();
+    void killFueact_();
 	void updateHamon_();
 
-	inline void setFlag(u32 flag) { m_flags |= flag; }
+	inline void setFlag(u32 flag) { m_flags.typeView |= flag; }
 
-	inline void resetFlag(u32 flag) { m_flags &= ~flag; }
+	inline void resetFlag(u32 flag) { m_flags.typeView &= ~flag; }
 
-	inline bool isFlag(u32 flag) { return m_flags & flag; }
+	inline bool isFlag(u32 flag) { return m_flags.typeView & flag; }
 
 	void createLight()
 	{
@@ -36,8 +42,8 @@ struct TNaviEffect {
 		createLight_(m_beaconMtx->m_matrix.mtxView);
 	}
 
-	u32 m_flags;               // _00
-	u32 _04;                   // _04
+	BitFlag<u32> m_flags;      // _00
+	BitFlag<u32> _04;           // _04
 	Vector3f* _08;             // _08
 	Vector3f* _0C;             // _0C
 	Matrixf* m_beaconMtx;      // _10

@@ -82,6 +82,23 @@ struct TekiMgr {
 };
 
 struct CardMgr {
+	enum CardID {
+		PIKMIN_5            = 0,
+		PIKMIN_10           = 1,
+		ALL_FLOWER          = 2,
+		PIKMIN_XLU          = 3,
+		DOPE_BLACK          = 4,
+		DOPE_RED            = 5,
+		RESET_BEDAMA        = 6,
+		TEKI_HANACHIRASHI   = 7,
+		TEKI_SARAI          = 8,
+		TEKI_ROCK           = 9,
+		TEKI_BOMBOTAKRA     = 10,
+		TEKI_TANK           = 11,
+        CARD_ID_COUNT,
+		UNRESOLVED          = 0xffff
+	};
+    
 	struct SlotMachine {
 		SlotMachine();
 
@@ -95,17 +112,20 @@ struct CardMgr {
 		void updateZoomIn();
 		void updateZoomUse();
 
-		f32 _00;           // _00
-		u8 _04[0x8];       // _04, unknown
-		f32 _0C;           // _0C
-		f32 _10;           // _10
-		f32 _14;           // _14
+		f32 m_spinAngle;   // _00
+		CardID m_projectedCardIndex;  // _04
+        CardID m_previousCardIndex;           // _08
+		f32 m_projectedProgress;   // _0C
+		f32 m_spinSpeed;   // _10
+		f32 m_spinAcceleration;    // _14
 		bool _18;          // _18
-		u32 _1C;           // _1C, unknown
-		int _20;           // _20
-		u8 _24[0x8];       // _24, unknown
+		int m_cherryStock; // _1C, cherry count
+		int m_spinningState; // _20
+		CardID m_predeterminedSlotID;           // _24, pre-determined slot
+        f32 _28;           // _28, unknown
 		f32 _2C;           // _2C
-		u8 _30[0xC];       // _30, unknown
+		u32 _30;           // _30, unknown
+        u8 _34[0x8];       // _34
 		f32 _3C;           // _3C, timer?
 		f32 _40;           // _40
 		f32 _44;           // _44
@@ -113,13 +133,31 @@ struct CardMgr {
 		int _4C;           // _4C, maybe currentSlotIndex?
 		u8 _50;            // _50, unknown
 		u8 _51;            // _51
-		f32 _54;           // _54
-		int _58;           // _58
+		f32 m_spinTimer;   // _54
+		CardID m_slotID;      // _58
 		int m_playerIndex; // _5C
-		CardMgr* _60;      // _60
-		u32 _64;           // _64
+		CardMgr* m_cardMgr;// _60
+		CardID _64;           // _64
 		f32 _68;           // _68
 		f32 _6C;           // _6C
+
+        inline bool canJumpToCard(int);
+        inline int getNextCard(int);
+        inline int getPreviousCard(int);
+
+        enum spinStates {
+            SPIN_UNSTARTED      = 0,
+            SPIN_WAIT_START     = 1,
+            SPIN_START          = 2,
+            SPIN_WAIT_MAX_SPEED = 3,
+            SPIN_DECELERATE     = 4,
+            SPIN_DECELERATE_END = 5,
+            SPIN_DOWN_TO_CARD   = 6,
+            SPIN_WAIT_CARD_STOP = 7,
+            SPIN_UP_TO_CARD     = 8,
+            SPIN_WAIT_CARD_ROLL = 9,
+            SPIN_END            = 10
+        };
 	};
 
 	CardMgr(VsGameSection*, TekiMgr*);
@@ -132,6 +170,14 @@ struct CardMgr {
 	void gotPlayerCard(int);
 	void initDraw();
 	void drawSlot(Graphics&, Vector3f&, SlotMachine&);
+
+
+	// void loadResource();
+	// void update();
+	// void draw(Graphics&);
+	// void stopSlot(int);
+	bool usePlayerCardNew(int, TekiMgr*);
+	void gotPlayerCardNew(int);
 
 	u32 _00;                       // _00, unknown
 	JUTTexture** _04;              // _04, slot textures?
@@ -256,11 +302,11 @@ struct GameState : public State {
 
 	inline void updateNavi(VsGameSection* section, int naviIndex)
 	{
-		if (section->_1F0[naviIndex] > 0.0f) {
-			section->_1F0[naviIndex] -= sys->m_deltaTime;
+		if (section->m_obakeTimer[naviIndex] > 0.0f) {
+			section->m_obakeTimer[naviIndex] -= sys->m_deltaTime;
 
 			Navi* navi = naviMgr->getAt(naviIndex);
-			if (navi && section->_1F0[naviIndex] <= 0.0f) {
+			if (navi && section->m_obakeTimer[naviIndex] <= 0.0f) {
 				efx::TNaviEffect* naviEffect = navi->m_effectsObj;
 
 				if (naviEffect->isFlag(efx::NAVIFX_Unk32)) {
