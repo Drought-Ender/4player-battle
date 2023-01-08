@@ -165,8 +165,6 @@ void VsGameSection::onInit()
 {
 	m_pikminRatio      = 0.0f;
 	m_pikminCountTimer = 0.5f;
-	_1F0[1]            = 0.0f;
-	_1F0[0]            = 0.0f;
 
 	clearGetDopeCount();
 	clearGetCherryCount();
@@ -200,18 +198,18 @@ void VsGameSection::onInit()
 	m_FSM->start(this, VsGame::VGS_Title, nullptr);
 
 	m_currentFloor          = 0;
-	m_redBlueYellowScore[1] = 0.0f;
-	m_redBlueYellowScore[0] = 0.0f;
-	m_yellowScore[1]        = 0.0f;
-	m_yellowScore[0]        = 0.0f;
-	m_cherryScore[1]        = 0.0f;
-	m_cherryScore[0]        = 0.0f;
-	m_maxCherryScore[1]     = 0.0f;
-	m_maxCherryScore[0]     = 0.0f;
-	m_redBlueScore[1]       = 0.0f;
-	m_redBlueScore[0]       = 0.0f;
-	m_marbleRedBlue[1]      = nullptr;
-	m_marbleRedBlue[0]      = nullptr;
+
+	sizeof(*this);
+
+	for (int i = 0; i < 2; i++) {
+		m_obakeTimer[i] = 0.0f;
+		m_redBlueYellowScore[i] = 0.0f;
+		m_yellowScore[i] = 0.0f;
+		m_cherryScore[i] = 0.0f;
+		m_maxCherryScore[i] = 0.0f;
+		m_redBlueScore[i] = 0.0f;
+		m_marbleRedBlue[i] = nullptr;
+	}
 
 	Radar::mgr = new Radar::Mgr();
 
@@ -1014,7 +1012,7 @@ bool GameMessageVsPikminDead::actVs(VsGameSection* section)
 bool GameMessageVsGotCard::actVs(VsGameSection* section)
 {
 	VsGame::CardMgr::SlotMachine* slot = &section->m_cardMgr->m_slotMachines[_04];
-	if (!slot->_18 && slot->_58 != 0xffff) {
+	if (!slot->_18 && slot->m_slotID != 0xffff) {
 		section->useCard();
 	}
 	section->m_cardMgr->gotPlayerCard(_04);

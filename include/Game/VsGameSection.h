@@ -32,6 +32,8 @@ struct StageList;
 struct State;
 } // namespace VsGame
 
+
+
 struct VsGameSection : public BaseGameSection {
 	struct DropCardArg {
 		f32 _00; // _00
@@ -98,7 +100,7 @@ struct VsGameSection : public BaseGameSection {
 	StateMachine<Game::VsGameSection>* m_FSM;       // _17C
 	VsGame::State* m_state;                         // _180
 	DvdThreadCommand m_dvdThreadCommand;            // _184
-	f32 _1F0[2];                                    // _1F0
+	f32 m_obakeTimer[4];                            // _1F0
 	u8 m_menuFlags;                                 // _1F8
 	struct ItemHole::Item* m_hole;                  // _1FC
 	struct ItemBigFountain::Item* m_fountain;       // _200
@@ -124,14 +126,14 @@ struct VsGameSection : public BaseGameSection {
 	int m_vsWinner;                                 // _34C
 	f32 m_pikminRatio;                              // _350
 	f32 m_pikminCountTimer;                         // _354
-	f32 m_redBlueYellowScore[2];                    // _358
-	f32 m_cherryScore[2];                           // _360
-	f32 m_maxCherryScore[2];                        // _368
-	f32 m_yellowScore[2];                           // _370
-	f32 m_redBlueScore[2];                          // _378
-	Pellet* m_marbleRedBlue[2];                     // _380
+	f32 m_redBlueYellowScore[4];                    // _358
+	f32 m_cherryScore[4];                           // _360
+	f32 m_maxCherryScore[4];                        // _368
+	f32 m_yellowScore[4];                           // _370
+	f32 m_redBlueScore[4];                          // _378
+	Pellet* m_marbleRedBlue[4];                     // _380
 	Pellet* m_marbleYellow[13];                      // _388
-	int m_dopeCounts[2][2];                         // _3A4
+	int m_dopeCounts[4][2];                         // _3A4
 	int m_player2Cherries;                          // _3B4
 	int m_player1Cherries;                          // _3B8
 	int m_pokoCount;                                // _3BC
@@ -142,8 +144,10 @@ struct VsGameSection : public BaseGameSection {
 	Pellet** m_cherryArray;                         // _3D0
 	int _3D4;                                       // _3D4
 	int _3D8;                                       // _3D8
-	int m_yellowMarbleCounts[2];                    // _3DC
+	int m_yellowMarbleCounts[4];                    // _3DC
 };
 } // namespace Game
+
+
 
 #endif

@@ -135,6 +135,8 @@ struct Vector3 {
 	static Vector3<T> zero;
 };
 
+
+
 // template <> struct Vector3<float> {
 // 	static Vector3<float> zero;
 // };
@@ -361,4 +363,14 @@ inline void addAccel(Vector3f& outputVec, const Vector3f& inputVec, f32 massRati
 	outputVec.z += inputVec.z * (groundFactor * fps * massRatio);
 	outputVec.y += inputVec.y * (airFactor * fps * massRatio);
 }
+
+inline f32 _distanceXZflag(Vector3f& vec1, Vector3f& vec2)
+{	
+    Vector2f vec;
+	vec.x = vec1.x - vec2.x;
+	vec.y = vec1.z - vec2.z;
+    vec.y *= vec.y;
+	return _sqrtf(vec.y + vec.x * vec.x);
+};
+
 #endif

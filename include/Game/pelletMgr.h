@@ -191,6 +191,20 @@ struct PelletKillArg : public CreatureKillArg {
 struct Pellet : public DynCreature, public SysShape::MotionListener, public CarryInfoOwner {
 	Pellet();
 
+	enum StateID {
+        PS_NORMAL       = 0,
+        PS_GOAL         = 1,
+        PS_BURY         = 2,
+        PS_UP           = 3,
+        PS_APPEAR       = 4,
+        PS_SCALE_APPEAR = 5,
+        PS_ZUKAN        = 6,
+        PS_GOALWAIT     = 7,
+        PS_RETURN       = 8,
+        PS_COUNT        = 9
+
+    };
+
 	enum PelletFlag {
 		FLAG_LOOZY            = 0,
 		FLAG_NAVI_NAPSACK     = 1,
@@ -551,6 +565,22 @@ struct PelletNormalState : public PelletState {
 	virtual void exec(Pellet*);            // _0C
 	virtual void cleanup(Pellet*);         // _10
 	virtual bool isPickable();             // _28 (weak)
+};
+
+struct PelletReturnArg : public StateArg {
+
+    inline PelletReturnArg(Vector3f& vec) {
+        m_endPos = vec;
+    }
+
+    inline PelletReturnArg(float x, float y, float z) {
+        m_endPos.x = x;
+        m_endPos.y = y;
+        m_endPos.z = z;
+    }
+    
+    Vector3f m_endPos;
+    
 };
 
 struct PelletReturnState : public PelletState {

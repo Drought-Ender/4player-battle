@@ -74,8 +74,8 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 	section->_3D4                    = 0;
 	section->m_yellowMarbleCounts[1] = 0;
 	section->m_yellowMarbleCounts[0] = 0;
-	section->_1F0[1]                 = 0.0f;
-	section->_1F0[0]                 = 0.0f;
+	section->m_obakeTimer[1]                 = 0.0f;
+	section->m_obakeTimer[0]                 = 0.0f;
 }
 
 /*
@@ -1334,11 +1334,11 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.m_redPikminCount  = GameStat::getMapPikmins(1);
 		disp.m_bluePikminCount = GameStat::getMapPikmins(0);
 
-		disp._6A = section->_1F0[0] > 0.0f;
-		disp._6B = section->_1F0[1] > 0.0f;
+		disp._6A = section->m_obakeTimer[0] > 0.0f;
+		disp._6B = section->m_obakeTimer[1] > 0.0f;
 
-		disp._6C = section->_1F0[0];
-		disp._70 = section->_1F0[1];
+		disp._6C = section->m_obakeTimer[0];
+		disp._70 = section->m_obakeTimer[1];
 
 		int yellowsVal0 = section->_3D4;
 		int yellowsVal1 = section->_3D8;

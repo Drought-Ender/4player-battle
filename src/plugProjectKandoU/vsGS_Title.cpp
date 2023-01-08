@@ -47,8 +47,8 @@ TitleState::TitleState()
 void TitleState::init(VsGameSection* section, StateArg* arg)
 {
 	naviMgr->clearDeadCount();
-	section->_1F0[1]     = 0.0f;
-	section->_1F0[0]     = 0.0f;
+	section->m_obakeTimer[1] = 0.0f;
+	section->m_obakeTimer[0] = 0.0f;
 	section->m_pokoCount = 0;
 	section->m_timeLimit = 0.0f;
 	section->clearGetDopeCount();
