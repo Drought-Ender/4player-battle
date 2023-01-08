@@ -1173,8 +1173,7 @@ GC:=\
 	$(BUILD_DIR)/src/sysGCU/sysDrawBuffer.o\
 	$(BUILD_DIR)/src/sysGCU/dvdErrorMessage.o\
 	$(BUILD_DIR)/asm/sysGCU/pikmin2AramMgr.o\
-	$(BUILD_DIR)/src/sysGCU/messageAnalyzer.o\
-
+	$(BUILD_DIR)/src/sysGCU/messageAnalyzer.o
 UTILITY:=\
 	$(BUILD_DIR)/asm/utilityU/menu.o\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_Director.o\
@@ -1188,4 +1187,9 @@ UTILITY:=\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_Sound.o\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_TrackMap.o\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_CreaturePrm.o\
-	$(BUILD_DIR)/asm/utilityU/PSMainSide_ObjCalc.o\
+	$(BUILD_DIR)/asm/utilityU/PSMainSide_ObjCalc.o
+EXTRA:=\
+	$(BUILD_DIR)/src/extraU/newCardMgr.o
+FOURPLAYER:=\
+	$(BUILD_DIR)/src/fourPlayerU/fourSplitter.o
+

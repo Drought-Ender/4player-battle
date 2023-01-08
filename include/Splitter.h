@@ -2,6 +2,7 @@
 #define _SPLITTER_H
 
 #include "types.h"
+#include "Rect.h"
 
 struct Graphics;
 
@@ -23,6 +24,15 @@ struct HorizontalSplitter : public Splitter {
 	f32 m_y1;             // _0C, name from PikDecomp
 	f32 m_y2;             // _10, name from PikDecomp
 	Graphics* m_graphics; // _14
+};
+
+struct FourSplitter : public Splitter {
+	FourSplitter(Graphics*);
+
+	virtual void split4(f32, f32);
+	Rectf m_screen;
+	Graphics* m_graphics;
+
 };
 
 #endif
