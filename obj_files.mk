@@ -1188,4 +1188,10 @@ UTILITY:=\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_Sound.o\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_TrackMap.o\
 	$(BUILD_DIR)/asm/utilityU/PSMainSide_CreaturePrm.o\
-	$(BUILD_DIR)/asm/utilityU/PSMainSide_ObjCalc.o\
+	$(BUILD_DIR)/asm/utilityU/PSMainSide_ObjCalc.o
+EXTRA:=\
+	$(BUILD_DIR)/src/extraU/newCardMgr.o
+FOURPLAYER:=\
+	$(BUILD_DIR)/src/fourPlayerU/fourSplitter.o\
+	$(BUILD_DIR)/src/fourPlayerU/baseGameEdits.o
+

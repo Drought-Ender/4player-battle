@@ -253,6 +253,11 @@ struct BaseGameSection : public BaseHIOSection {
 	JUTTexture* _168;                                     // _168
 	int m_texData1;                                       // _16C
 	int _170;                                             // _170
+
+	FourSplitter* m_newSplitter;
+	PlayCamera* m_newCameras[4];
+	Controller* m_newControllers[4];
+
 	                                                      // u8 _174[0xA0];                                        // _174
 // not sure where this goes, but it goes after m_texData1 and before m_container1 (VsGameSection).
 #if BUILDTARGET == USADEMO1
