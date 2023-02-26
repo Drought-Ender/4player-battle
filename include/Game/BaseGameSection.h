@@ -13,6 +13,7 @@
 struct BlackFader;
 struct Controller;
 struct HorizonalSplitter;
+struct FourSplitter;
 struct WipeInFader;
 struct WipeOutFader;
 struct WipeOutInFader;
@@ -199,7 +200,9 @@ struct BaseGameSection : public BaseHIOSection {
 	void setDraw2DCreature(Game::Creature*);
 	void startZoomWindow();
 	void startKantei2D();
-	void onKanteiDone(Rect<f32>&);
+	void onKanteiDone(Rectf&);
+
+	void initViewports4(Graphics&);
 
 	// _00 		= VTBL
 	// _00-_48 	= BaseHIOSection
@@ -230,7 +233,7 @@ struct BaseGameSection : public BaseHIOSection {
 	Controller* _10C;                                     // _10C
 	Controller* _110;                                     // _110
 	int m_playerMode;                                     // _114
-	HorizonalSplitter* m_splitter;                        // _118
+	FourSplitter* m_splitter;                             // _118
 	u8 _11C;                                              // _11C
 	int _120;                                             // _120
 	u32 _124;                                             // _124

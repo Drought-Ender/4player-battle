@@ -278,7 +278,7 @@ inline bool Game::VsGame::CardMgr::SlotMachine::canJumpToCard(int card) {
 
 
 
-void CardMgr::SlotMachine::update() {
+void CardMgr::SlotMachine::updateNew() {
     updateAppear();
     float deltaTime = sys->m_deltaTime;
     switch(m_spinningState) { // await spin stop
@@ -434,9 +434,7 @@ void CardMgr::SlotMachine::update() {
         else if (previousValue != m_projectedCardIndex) {
             PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
         }
-    }
-    
-        
+    }   
 }
 
 

@@ -634,9 +634,9 @@ update__Q34Game6VsGame7CardMgrFv:
 /* 80235980 002328C0  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 80235984 002328C4  40 82 00 14 */	bne .L_80235998
 /* 80235988 002328C8  38 7F 00 18 */	addi r3, r31, 0x18
-/* 8023598C 002328CC  48 00 16 D5 */	bl update__Q44Game6VsGame7CardMgr11SlotMachineFv
+/* 8023598C 002328CC  48 00 16 D5 */	bl updateNew__Q44Game6VsGame7CardMgr11SlotMachineFv
 /* 80235990 002328D0  38 7F 00 88 */	addi r3, r31, 0x88
-/* 80235994 002328D4  48 00 16 CD */	bl update__Q44Game6VsGame7CardMgr11SlotMachineFv
+/* 80235994 002328D4  48 00 16 CD */	bl updateNew__Q44Game6VsGame7CardMgr11SlotMachineFv
 .L_80235998:
 /* 80235998 002328D8  80 01 00 14 */	lwz r0, 0x14(r1)
 /* 8023599C 002328DC  83 E1 00 0C */	lwz r31, 0xc(r1)

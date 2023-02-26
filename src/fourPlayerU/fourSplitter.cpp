@@ -77,4 +77,7 @@ void FourSplitter::split4(f32 scaleX, f32 scaleY) {
     for (int i = 0; i < 4; i++) {
         viewports[i]->refresh();
     }
+
+    
+
 }

@@ -106,6 +106,7 @@ struct CardMgr {
 		void start();
 		void startStop();
 		void update();
+		void updateNew();
 		void updateAppear();
 		void startZoomIn();
 		void startZoomUse();
