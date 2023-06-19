@@ -10,9 +10,13 @@
 #include "utilityU.h"
 #include "Splitter.h"
 #include "Game/CameraMgr.h"
+#include "FourPlayer.h"
+#include "Game/GameLight.h"
 
 namespace Game
 {
+
+bool gSplit4 = false;
 
 Controller* gControllerP3;
 Controller* gControllerP4;
@@ -20,9 +24,10 @@ Controller* gControllerP4;
 PlayCamera* gCameraP3;
 PlayCamera* gCameraP4;
 
-int gNaviNum = 4;
+int gNaviNum = 2;
 
 void BaseGameSection::birthNavis() {
+	gNaviNum = CalcNaviNum();
     gControllerP3 = new Controller((JUTGamePad::EPadPort)2);
     gControllerP4 = new Controller((JUTGamePad::EPadPort)3);
 	PlayCamera* playCameraPtrArr[4] = {mOlimarCamera, mLouieCamera, gCameraP3, gCameraP4};
@@ -32,7 +37,7 @@ void BaseGameSection::birthNavis() {
         Vector3f startPosition = Vector3f(-40.0f, 0.0f, 2.0f);
         f32 mapRotation = mapMgr->getMapRotation();
         if (gameSystem->isVersusMode()) {
-            Onyon* onyon = ItemOnyon::mgr->getOnyon(Red);
+            Onyon* onyon = ItemOnyon::mgr->getOnyon(gVsNaviIndexArray[i]);
             P2ASSERT(onyon);
             startPosition = onyon->getPosition();
         }
@@ -208,6 +213,8 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 
 void BaseGameSection::setCamController()
 {
+	OSReport("BaseGameSection::setCamController()\n");
+	OSReport("mPrevNaviIdx = %i\n", mPrevNaviIdx);
 	Navi* navis[4];
 
 	navis[0] = naviMgr->getAt(0);
@@ -300,7 +307,6 @@ void BaseGameSection::setCamController()
 		if (gameSystem->mMode == GSM_STORY_MODE) {
 			PSSetCurCameraNo(0);
 		}
-		mSplitter->split4(0.5f, 0.5f);
 		break;
 	}
 	case 4: {
@@ -333,11 +339,103 @@ void BaseGameSection::setCamController()
 		if (gameSystem->mMode == GSM_STORY_MODE) {
 			PSSetCurCameraNo(0);
 		}
-		mSplitter->split4(0.5f, 0.5f);
 		break;
 	}
 	}
 	on_setCamController(mPrevNaviIdx);
+}
+
+static Delegate1<Game::BaseGameSection, Game::CameraArg*>* cameraMgrCallback;
+
+void BaseGameSection::setPlayerMode(int naviIdx)
+{
+	OSReport("BaseGameSection::setPlayerMode(int %i)\n", naviIdx);
+	Navi* fools[4];
+
+	fools[0] = naviMgr->getAt(0);
+	fools[1] = naviMgr->getAt(1);
+	fools[2] = naviMgr->getAt(2);
+	fools[3] = naviMgr->getAt(3);
+
+	fools[0]->disableController();
+	fools[1]->disableController();
+	fools[2]->disableController();
+	fools[3]->disableController();
+
+	switch (naviIdx) {
+	case 0: {
+		mSecondViewportHeight = 1.0f;
+		mSplit                = 0.0f;
+		mSplitter->split2(1.0f);
+		Matrixf* viewMtx = mLouieCamera->getViewMatrix(false);
+		PSMTXCopy((PSQuaternion*)viewMtx, (PSQuaternion*)&mOlimarCamera->mCurViewMatrix);
+		mOlimarCamera->update();
+		cameraMgr->changePlayerMode(0, cameraMgrCallback);
+		if (mPlayerMode == 1) {
+			PlayCamera* olimarCamera = mOlimarCamera;
+			Graphics* gfx            = sys->mGfx;
+			Viewport* olimarViewport = gfx->getViewport(0);
+			olimarViewport->mCamera  = olimarCamera;
+			olimarViewport->updateCameraAspect();
+			PlayCamera* louieCamera = mLouieCamera;
+			Viewport* louieViewport = gfx->getViewport(1);
+			louieViewport->mCamera  = louieCamera;
+			louieViewport->updateCameraAspect();
+		}
+		Viewport* olimarViewport    = sys->mGfx->getViewport(0);
+		sys->mGfx->mCurrentViewport = olimarViewport;
+		mLightMgr->updatePosition(sys->mGfx->mCurrentViewport);
+		break;
+	}
+	case 1: {
+		if (mPlayerMode == 1) {
+			Graphics* gfx            = sys->mGfx;
+			PlayCamera* olimarCamera = mLouieCamera;
+
+			Viewport* olimarViewport = gfx->getViewport(0);
+			olimarViewport->mCamera  = olimarCamera;
+			olimarViewport->updateCameraAspect();
+
+			PlayCamera* louieCamera = mOlimarCamera;
+			Viewport* louieViewport = gfx->getViewport(1);
+			louieViewport->mCamera  = louieCamera;
+			louieViewport->updateCameraAspect();
+
+			mSecondViewportHeight = 1.0f;
+			mSplitter->split2(1.0f);
+		} else {
+			mSecondViewportHeight = 0.0f;
+			mSplitter->split2(0.0f);
+		}
+		mSplit           = 0.0f;
+		Matrixf* viewMtx = mOlimarCamera->getViewMatrix(false);
+		PSMTXCopy((PSQuaternion*)viewMtx, (PSQuaternion*)&mLouieCamera->mCurViewMatrix);
+		mLouieCamera->update();
+		cameraMgr->changePlayerMode(1, cameraMgrCallback);
+		Viewport* louieViewport     = sys->mGfx->getViewport(1);
+		sys->mGfx->mCurrentViewport = louieViewport;
+		mLightMgr->updatePosition(sys->mGfx->mCurrentViewport);
+		break;
+	}
+	case 2: {
+		mSecondViewportHeight = 0.5f;
+		mSplit                = 0.0f;
+		mSplitter->split2(0.5f);
+		gSplit4 = false;
+		cameraMgr->changePlayerMode(2, cameraMgrCallback);
+		break;
+	}
+	case 3:
+	case 4: {
+		mSecondViewportHeight = 0.5f;
+		mSplit                = 0.0f;
+		gSplit4 = true;
+		mSplitter->split4(0.5f, 0.5f);
+		cameraMgr->changePlayerMode(2, cameraMgrCallback);
+		break;
+	}
+	}
+	mPrevNaviIdx = naviIdx;
 }
 
 Vector2f getRectSkew() { return Vector2f(0.0f, -80.0f); }
@@ -348,7 +446,7 @@ Vector2f getBottomLeft() { return Vector2f(0.0f, 0.0f); }
 void BaseGameSection::initViewports(Graphics& gfx)
 {
 	mSplitter = new FourSplitter(&gfx);
-	setSplitter(false);
+	//setSplitter(false);
 
 	gCameraP3 = new PlayCamera(naviMgr->getAt(2));
 	gCameraP4 = new PlayCamera(naviMgr->getAt(3));
@@ -467,6 +565,14 @@ void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback) {
     _18 = mode;
     _34 = callback;
 	OSReport("Done player mode\n");
+}
+
+// hacky as all ass solution
+void BaseGameSection::updateSplitter2() {
+	BaseGameSection::updateSplitter();
+	if (mSplitter && gSplit4) {
+		mSplitter->split4(mSecondViewportHeight, mSecondViewportHeight);
+	}
 }
 
 } // namespace Game

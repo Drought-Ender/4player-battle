@@ -40,6 +40,7 @@ FourSplitter::FourSplitter(Graphics* gfx) {
 }
 
 void FourSplitter::split4(f32 scaleX, f32 scaleY) {
+    //OSReport("FourSplitter::split4(f32 %f, f32 %f)\n", scaleX, scaleY);
     const Vector2f  cent = (mRect.p1 + mRect.p2) * 0.5f;
     const Vector2f& topL = mRect.p1;
     const Vector2f& botR = mRect.p2;
@@ -83,7 +84,7 @@ void FourSplitter::split4(f32 scaleX, f32 scaleY) {
 }
 
 void FourSplitter::split2(f32 scaleY) {
-
+    //OSReport("FourSplitter::split2(f32 %f)\n", scaleY);
     const Vector2f  cent = (mRect.p1 + mRect.p2) * 0.5f;
     const Vector2f& topL = mRect.p1;
     const Vector2f& botR = mRect.p2;

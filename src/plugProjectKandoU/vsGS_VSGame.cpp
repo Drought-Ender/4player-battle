@@ -2,6 +2,7 @@
 #include "Game/GameSystem.h"
 #include "PSSystem/PSGame.h"
 #include "Game/VsGame.h"
+#include "FourPlayer.h"
 #include "nans.h"
 
 static void _Print(char*, ...)
@@ -29,7 +30,8 @@ void VSState::do_init(VsGameSection* gameSection)
 {
 	gameSystem->mMode = GSM_VERSUS_MODE;
 
-	gameSection->setPlayerMode(2);
+	OSReport("VSState::do_init(VsGameSection* %p)\n", gameSection);
+	gameSection->setPlayerMode(gNaviNum);
 	gameSection->setCamController();
 
 	PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();

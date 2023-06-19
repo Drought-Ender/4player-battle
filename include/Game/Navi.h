@@ -213,6 +213,9 @@ struct Navi : public FakePiki, virtual public PelletView {
 	inline void resetControlFlag(u16 flag) { mNaviControlFlag.typeView &= ~flag; }
 	inline bool isControlFlag(u16 flag) { return mNaviControlFlag.typeView & flag; }
 
+
+	int getTeam();
+
 	// _000      = VTBL
 	// _000-_250 = FakePiki
 	// _250      = ptr to PelletView

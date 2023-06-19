@@ -1,6 +1,7 @@
 FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/Splitter.o\
 	$(BUILD_DIR)/src/FourPlayer/FourPlayerMain.o\
+	$(BUILD_DIR)/src/FourPlayer/VsSetup.o\
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)
 

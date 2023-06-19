@@ -22,6 +22,8 @@
 #include "Radar.h"
 #include "nans.h"
 
+#include "FourPlayer.h"
+
 namespace Game {
 namespace VsGame {
 
@@ -61,7 +63,9 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 	}
 
 	if (gameSystem->isVersusMode()) {
-		section->setPlayerMode(2);
+		OSReport("Set mode %i\n", gNaviNum);
+		section->setPlayerMode(gNaviNum);
+		section->setCamController();
 		clearLoseCauses();
 		Screen::gGame2DMgr->startFadeBG_Floor();
 	}
@@ -706,7 +710,7 @@ void GameState::onMovieStart(VsGameSection* section, MovieConfig* config, u32 p1
 void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1, u32 p2)
 {
 	if (gameSystem->isMultiplayerMode()) {
-		section->setPlayerMode(2);
+		section->setPlayerMode(gNaviNum);
 	}
 
 	RoomMapMgr* mgr   = static_cast<RoomMapMgr*>(mapMgr);

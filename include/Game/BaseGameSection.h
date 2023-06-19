@@ -185,6 +185,7 @@ struct BaseGameSection : public BaseHIOSection {
 	void updateBlendCamera();
 	void setSplitter(bool);
 	void updateSplitter();
+	void updateSplitter2();
 	void doDirectDrawPost(Graphics& gfx, Viewport*);
 	void doDirectDraw(Graphics& gfx, Viewport*);
 	void clearHeap();
