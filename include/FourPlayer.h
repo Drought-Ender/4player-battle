@@ -8,6 +8,7 @@ extern int gNaviNum;
 extern int gVsNaviIndexArray[4];
 
 int CalcNaviNum();
+int getVSTeamID(int);
 
 } // namespace Game
 

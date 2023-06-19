@@ -30,6 +30,8 @@
 #include "VsOtakaraName.h"
 #include "nans.h"
 
+#include "FourPlayer.h"
+
 namespace Game {
 namespace VsGame {
 
@@ -827,7 +829,7 @@ bool VsGameSection::sendMessage(GameMessage& message)
  */
 bool GameMessageVsGetDoping::actVs(VsGameSection* section)
 {
-	section->getGetDopeCount(mNaviIndex, mSprayType)++;
+	section->getGetDopeCount(getVSTeamID(mNaviIndex), mSprayType)++;
 	return true;
 }
 
@@ -1034,11 +1036,11 @@ bool GameMessageVsUseCard::actVs(VsGameSection* section)
 		}
 	}
 	if (gGameConfig.mParms.mVsY.mData == 0) {
-		if (section->mCardMgr->usePlayerCard(_04, section->mTekiMgr)) {
+		if (section->mCardMgr->usePlayerCard(getVSTeamID(mNaviIdx), section->mTekiMgr)) {
 			section->useCard();
 		}
 	} else {
-		section->mCardMgr->stopSlot(_04);
+		section->mCardMgr->stopSlot(getVSTeamID(mNaviIdx));
 	}
 	return true;
 }

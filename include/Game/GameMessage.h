@@ -124,7 +124,7 @@ struct GameMessageVsUseCard : public GameMessage {
 	virtual bool actVs(VsGameSection*); // _10
 
 	// _00 = VTBL
-	int _04; // _04
+	int mNaviIdx; // _04
 };
 
 } // namespace Game
