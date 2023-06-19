@@ -2753,7 +2753,7 @@ exec__Q24Game13NaviWalkStateFPQ24Game4Navi:
 /* 8017ED7C 0017BCBC  80 6D 92 E0 */	lwz r3, naviMgr__4Game@sda21(r13)
 /* 8017ED80 0017BCC0  A0 1E 02 DC */	lhz r0, 0x2dc(r30)
 /* 8017ED84 0017BCC4  81 83 00 00 */	lwz r12, 0(r3)
-/* 8017ED88 0017BCC8  20 80 00 01 */	subfic r4, r0, 1
+mr r4, r0
 /* 8017ED8C 0017BCCC  81 8C 00 24 */	lwz r12, 0x24(r12)
 /* 8017ED90 0017BCD0  7D 89 03 A6 */	mtctr r12
 /* 8017ED94 0017BCD4  4E 80 04 21 */	bctrl 

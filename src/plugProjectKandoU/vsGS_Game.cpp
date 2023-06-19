@@ -885,9 +885,11 @@ void GameState::onNextFloor(VsGameSection* section, ItemHole::Item* hole)
  * Address:	8022BA64
  * Size:	00019C
  */
-void GameState::onOrimaDown(VsGameSection* section, int naviIdx)
+void GameState::onOrimaDown(VsGameSection* section, int idx)
 {
-	P2ASSERTBOUNDSLINE(1341, 0, naviIdx, 2);
+	int naviIdx = getVSTeamID(idx);
+
+	P2ASSERTBOUNDSLINE(1341, 0, naviIdx, 4);
 
 	if (gameSystem->isVersusMode()) {
 		if (!_16) {

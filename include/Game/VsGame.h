@@ -401,7 +401,7 @@ struct GameState : public State {
 	f32 mFloorExtendTimer;      // _1C
 	f32 mDisplayTime;           // _20
 	bool mHasKeyDemoPlayed;     // _24
-	BitFlag<u8> mLoseCauses[2]; // _25
+	BitFlag<u8> mLoseCauses[4]; // _25
 };
 
 struct VSState : public GameState {
