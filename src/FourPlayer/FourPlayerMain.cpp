@@ -20,6 +20,8 @@ Controller* gControllerP4;
 PlayCamera* gCameraP3;
 PlayCamera* gCameraP4;
 
+int gNaviNum = 4;
+
 void BaseGameSection::birthNavis() {
     gControllerP3 = new Controller((JUTGamePad::EPadPort)2);
     gControllerP4 = new Controller((JUTGamePad::EPadPort)3);
@@ -60,6 +62,13 @@ void BaseGameSection::birthNavis() {
         navi->setVelocity(startVelocity);
         navi->mHealth = playData->mNaviLifeMax[0];
     }
+
+	for (int i = gNaviNum; i < 4; i++) {
+		// hacky solution to remove the navis without the game crashing
+		naviMgr->getAt(i)->mIsAlive = true;
+		naviMgr->getAt(i)->setAlive(false);
+		naviMgr->informOrimaDead(i);
+	}
 }
 
 void NaviMgr::informOrimaDead(int idx) {
@@ -206,6 +215,10 @@ void BaseGameSection::setCamController()
     navis[2] = naviMgr->getAt(2);
     navis[3] = naviMgr->getAt(3);
 
+	if (mPrevNaviIdx > gNaviNum) {
+		mPrevNaviIdx = gNaviNum;
+	}
+
 	switch (mPrevNaviIdx) {
 	case 0: {
 		PlayCamera* olimarCam        = mOlimarCamera;
@@ -257,19 +270,70 @@ void BaseGameSection::setCamController()
 
 		moviePlayer->mTargetNavi   = navis[0];
 		moviePlayer->mActingCamera = mOlimarCamera;
-
-		navis[2]->mCamera = gCameraP3;
-		navis[2]->mCamera = gCameraP3;
-		navis[2]->mController1 = gControllerP3;
-        navis[2]->mController2 = gControllerP3;
-
-		navis[2]->mCamera = gCameraP4;
-		navis[2]->mCamera = gCameraP4;
-        navis[3]->mController1 = gControllerP4;
-        navis[3]->mController2 = gControllerP4;
 		if (gameSystem->mMode == GSM_STORY_MODE) {
 			PSSetCurCameraNo(0);
 		}
+		break;
+	}
+	case 3: {
+		PlayCamera* olimarCam        = mOlimarCamera;
+		navis[0]->mCamera            = olimarCam;
+		navis[0]->mCamera2           = olimarCam;
+		Controller* olimarController = mControllerP1;
+		navis[0]->mController1       = olimarController;
+		navis[0]->mController2       = olimarController;
+		PlayCamera* louieCam         = mLouieCamera;
+		navis[1]->mCamera            = louieCam;
+		navis[1]->mCamera2           = louieCam;
+		Controller* louieController  = mControllerP2;
+		navis[1]->mController1       = louieController;
+		navis[1]->mController2       = louieController;
+
+		navis[2]->mController1       = gControllerP3;
+		navis[2]->mController2       = gControllerP3;
+		navis[2]->mCamera            = gCameraP3;
+		navis[2]->mCamera2           = gCameraP3;
+
+
+		moviePlayer->mTargetNavi   = navis[0];
+		moviePlayer->mActingCamera = mOlimarCamera;
+		if (gameSystem->mMode == GSM_STORY_MODE) {
+			PSSetCurCameraNo(0);
+		}
+		mSplitter->split4(0.5f, 0.5f);
+		break;
+	}
+	case 4: {
+		PlayCamera* olimarCam        = mOlimarCamera;
+		navis[0]->mCamera            = olimarCam;
+		navis[0]->mCamera2           = olimarCam;
+		Controller* olimarController = mControllerP1;
+		navis[0]->mController1       = olimarController;
+		navis[0]->mController2       = olimarController;
+		PlayCamera* louieCam         = mLouieCamera;
+		navis[1]->mCamera            = louieCam;
+		navis[1]->mCamera2           = louieCam;
+		Controller* louieController  = mControllerP2;
+		navis[1]->mController1       = louieController;
+		navis[1]->mController2       = louieController;
+
+		navis[2]->mController1       = gControllerP3;
+		navis[2]->mController2       = gControllerP3;
+		navis[2]->mCamera            = gCameraP3;
+		navis[2]->mCamera2           = gCameraP3;
+
+		navis[3]->mController1       = gControllerP4;
+		navis[3]->mController2       = gControllerP4;
+		navis[3]->mCamera            = gCameraP4;
+		navis[3]->mCamera2           = gCameraP4;
+
+
+		moviePlayer->mTargetNavi   = navis[0];
+		moviePlayer->mActingCamera = mOlimarCamera;
+		if (gameSystem->mMode == GSM_STORY_MODE) {
+			PSSetCurCameraNo(0);
+		}
+		mSplitter->split4(0.5f, 0.5f);
 		break;
 	}
 	}

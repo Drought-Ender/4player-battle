@@ -252,11 +252,6 @@ bool VsGameSection::doUpdate()
 
 	mFsm->exec(this);
 
-	if (naviMgr && naviMgr->getAt(0) && naviMgr->getAt(0)->mPellet) {
-		OSReport("Split4\n");
-		mSplitter->split4(0.5f, 0.5f);
-	}
-
 	if (gameSystem->isVersusMode()) {
 		int redPikmins  = GameStat::getMapPikmins(1) - (mOlimarHandicap - 3);
 		int bluePikmins = GameStat::getMapPikmins(0) - (mLouieHandicap - 3);
