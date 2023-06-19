@@ -214,7 +214,8 @@ struct Navi : public FakePiki, virtual public PelletView {
 	inline bool isControlFlag(u16 flag) { return mNaviControlFlag.typeView & flag; }
 
 
-	int getTeam();
+	int getVsTeam();
+	bool onTeam(int color);
 
 	// _000      = VTBL
 	// _000-_250 = FakePiki

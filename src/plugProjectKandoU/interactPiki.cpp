@@ -59,7 +59,7 @@ inline bool vsFlute(Piki* p, Navi* n)
 	if (gameSystem->isVersusMode()) {
 		int pikiKind = p->mPikiKind;
 		// piki->mPikiKind == navi->mNaviIndex; ????????????
-		val = ((pikiKind == Red && n->mNaviIndex == 1) || (pikiKind == Blue && n->mNaviIndex == 0));
+		val = !n->onTeam(pikiKind);
 	}
 	return val;
 }
@@ -193,11 +193,8 @@ bool InteractFue::actPiki(Game::Piki* piki)
 		if (actionID != PikiAI::ACT_Formation || (actionID == PikiAI::ACT_Formation && currState->mId == PIKISTATE_Emotion)
 		    || (_08 && piki->mNavi != mCreature && actionID == 0)) {
 			Navi* vsNavi = (Navi*)mCreature;
-			if (gameSystem->isVersusMode()) {
-				int pikiColor = piki->mPikiKind;
-				if ((pikiColor == Red && vsNavi->mNaviIndex == 1) || (pikiColor == Blue && vsNavi->mNaviIndex == 0)) {
-					return false;
-				}
+			if (vsFlute(piki, navi)) {
+				return false;
 			}
 			if (piki->getCurrAction()) {
 				piki->getCurrAction()->cleanup();
@@ -235,7 +232,7 @@ bool InteractDope::actPiki(Game::Piki* piki)
 	if (gameSystem->isVersusMode() && mSprayType == SPRAY_TYPE_BITTER) {
 		if (mCreature->isNavi()) {
 			Navi* navi = static_cast<Navi*>(mCreature);
-			if (piki->mPikiKind == navi->mNaviIndex && !currState->dead()) {
+			if (!navi->onTeam(piki->mPikiKind) && !currState->dead()) {
 				FallMeckStateArg bitterArg;
 				bitterArg._00 = true;
 				piki->mFsm->transit(piki, PIKISTATE_FallMeck, &bitterArg);

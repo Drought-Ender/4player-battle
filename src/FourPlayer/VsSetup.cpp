@@ -2,14 +2,23 @@
 #include "Game/Piki.h"
 #include "Game/Navi.h"
 #include "JSystem/JUtility/JUTGamePad.h"
+#include "Game/NaviParms.h"
+#include "Game/NaviState.h"
+#include "Game/Entities/ItemPikihead.h"
+
 
 namespace Game
 {
     
 int gVsNaviIndexArray[4] = { Red, Blue, Red, Blue };
 
-int Navi::getTeam() {
+int Navi::getVsTeam() {
     return gVsNaviIndexArray[mNaviIndex];
+}
+
+// onTeam__Q24Game4NaviFi
+bool Navi::onTeam(int color) {
+    return getVsTeam() == color;
 }
 
 int CalcNaviNum() {
