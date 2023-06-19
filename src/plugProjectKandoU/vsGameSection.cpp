@@ -795,12 +795,13 @@ void VsGameSection::createVsPikmins()
 			pelletIter.next();
 		}
 	}
-	Navi* orima            = naviMgr->getAt(0);
-	orima->mSprayCounts[0] = mVsStageData->mStartNumSpicy;
-	orima->mSprayCounts[1] = mVsStageData->mStartNumBitter;
-	Navi* luji             = naviMgr->getAt(1);
-	luji->mSprayCounts[0]  = mVsStageData->mStartNumSpicy;
-	luji->mSprayCounts[1]  = mVsStageData->mStartNumBitter;
+
+	for (int i = 0; i < 4; i++) {
+		gDopeCountArray[i][0] = mVsStageData->mStartNumSpicy;
+		gDopeCountArray[i][1] = mVsStageData->mStartNumBitter;
+	}
+
+
 }
 
 /*

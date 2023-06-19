@@ -11,6 +11,7 @@ namespace Game
 {
     
 int gVsNaviIndexArray[4] = { Red, Blue, Red, Blue };
+int gDopeCountArray[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} };
 
 int Navi::getVsTeam() {
     return gVsNaviIndexArray[mNaviIndex];
@@ -45,7 +46,7 @@ int CalcNaviNum() {
 
 int Navi::getDopeCount(int dope) {
     if (gameSystem->isVersusMode()) {
-        return naviMgr->getAt(getVSTeamID(getVsTeam()))->mSprayCounts[dope]; // what a mouthfull
+        return gDopeCountArray[getVSTeamID(getVsTeam())][dope]; // what a mouthfull
     }
     else {
         return playData->getDopeCount(dope);
@@ -54,7 +55,7 @@ int Navi::getDopeCount(int dope) {
 
 bool Navi::hasDope(int dope) {
     if (gameSystem->isVersusMode()) {
-        return naviMgr->getAt(getVSTeamID(getVsTeam()))->mSprayCounts[dope] > 0; 
+        return gDopeCountArray[getVSTeamID(getVsTeam())][dope] > 0; 
     }
     else {
         return playData->hasDope(dope);
@@ -63,7 +64,7 @@ bool Navi::hasDope(int dope) {
 
 void Navi::useDope(int dope) {
     if (gameSystem->isVersusMode()) {
-        naviMgr->getAt(getVSTeamID(getVsTeam()))->mSprayCounts[dope]--; 
+        gDopeCountArray[getVSTeamID(getVsTeam())][dope]--; 
     }
     else {
         playData->useDope(dope);
@@ -74,7 +75,7 @@ void Navi::incDopeCount(int dope) {
     if (gameSystem->isVersusMode()) {
         GameMessageVsGetDoping dopeMsg (mNaviIndex, dope);
         gameSystem->mSection->sendMessage(dopeMsg);
-        naviMgr->getAt(getVSTeamID(getVsTeam()))->mSprayCounts[dope]++; 
+        gDopeCountArray[getVSTeamID(getVsTeam())][dope]++; 
     }
     else {
         playData->incDopeCount(dope);
