@@ -157,6 +157,49 @@ struct ObjVs : public ::Screen::ObjBase {
 		f32 _30;
 	} msVal;
 };
+
+struct FourObjVs : public ObjVs {
+
+	FourObjVs(const char*);
+	virtual void doCreate(JKRArchive*);                   // _4C
+	virtual bool doUpdateFadein();                        // _50
+	virtual void doUpdateFadeinFinish();                  // _54
+	virtual bool doUpdate();                              // _58
+	virtual void doUpdateFinish();                        // _5C
+	virtual bool doUpdateFadeout();                       // _60
+	virtual void doUpdateFadeoutFinish();                 // _64
+	virtual void doDraw(Graphics& gfx);                   // _68
+
+	ScreenSet* mScreenP3;
+	ScreenSet* mScreenP4;
+
+	bool mBedamaGotFlagsP3[4];
+	bool mBedamaGotFlagsP4[4];
+
+	bool mHasAllBedamaP3;
+	bool mHasAllBedamaP4;
+
+	bool mFirstBedamaGetP3;
+	bool mFirstBedamaGetP4;
+
+	f32 mBedamaGetTimers[4];
+
+	J2DPictureEx* mPane_bedama3P[4];        // _54
+	J2DPictureEx* mPane_nodama3P[4];        // _64
+	J2DPictureEx* mPane_windama3P[4];       // _74
+	J2DPictureEx* mPane_bedama4P[4];        // _84
+	J2DPictureEx* mPane_nodama4P[4];        // _94
+	J2DPictureEx* mPane_windama4P[4];       // _A4
+	og::Screen::ScaleMgr* mScaleMgrP3_1[4]; // _B4
+	og::Screen::ScaleMgr* mScaleMgrP4_1[4]; // _C4
+	og::Screen::ScaleMgr* mScaleMgrP3_2[4]; // _D4
+	og::Screen::ScaleMgr* mScaleMgrP4_2[4]; // _E4
+
+	void doUpdateCommon();
+	void setOnOffBdama4P(bool doEfx);
+};
+
+
 } // namespace newScreen
 } // namespace og
 

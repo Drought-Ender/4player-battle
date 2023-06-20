@@ -2,6 +2,8 @@
 #include "Game/GameSystem.h"
 #include "Game/GameLight.h"
 
+#include "FourPlayer.h"
+
 #include "Sys/DrawBuffers.h"
 
 #include "JSystem/JUtility/JUTTexture.h"
@@ -56,8 +58,8 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	}
 
 	mLightMgr->set(gfx);
-	for (int i = 1; i < 4; i++) {
-	vp = gfx.getViewport(i);
+	for (int i = 1; i < gNaviNum; i++) {
+		vp = gfx.getViewport(i);
 		if (vp && vp->viewable()) {
 			gfx.mCurrentViewport = vp;
 			directDrawPost(gfx, vp);

@@ -24,7 +24,7 @@ void Vs::doUserCallBackFunc(Resource::MgrCommand*) { }
  */
 void Vs::doCreateObj(JKRArchive* archive)
 {
-	::Screen::ObjBase* obj = new ObjVs("Vs screen");
+	::Screen::ObjBase* obj = new FourObjVs("Vs screen");
 	registObj(obj, archive);
 	setColorBG(0, 0, 0, 0);
 }

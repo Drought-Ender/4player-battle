@@ -670,10 +670,14 @@ struct DispMemberVs : public DispMemberBase {
 
 	inline DispMemberVs()
 	{
-		mRedPikminCount   = 111;
-		mBluePikminCount  = 222;
+		mP1PikminCount    = 111;
+		mP2PikminCount    = 222;
+		mP3PikminCount    = 333;
+		mP4PikminCount    = 444;
 		mMarbleCountP1    = 0;
 		mMarbleCountP2    = 0;
+		mMarbleCountP3    = 0;
+		mMarbleCountP4    = 0;
 		mDoneState        = 0;
 		mFlags[0]         = 0;
 		mFlags[1]         = 0;
@@ -699,13 +703,21 @@ struct DispMemberVs : public DispMemberBase {
 	DataGame mDataGame;    // _0C
 	DataNavi mOlimarData;  // _28
 	DataNavi mLouieData;   // _40
-	u32 mRedPikminCount;   // _58
-	u32 mBluePikminCount;  // _5C
+	u32 mP1PikminCount;   // _58
+	u32 mP2PikminCount;  // _5C
 	int mMarbleCountP1;    // _60
 	int mMarbleCountP2;    // _64
 	u8 mFlags[4];          // _68
 	f32 mGhostIconTimerP1; // _6C
 	f32 mGhostIconTimerP2; // _70
+	DataNavi mP3Data;
+	DataNavi mP4Data;
+	bool mTwoPlayer;
+	bool mHideP4;
+	u32 mP3PikminCount;
+	u32 mP4PikminCount;
+	int mMarbleCountP3;    // _60
+	int mMarbleCountP4;    // _64
 };
 
 // size 0x28

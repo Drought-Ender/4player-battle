@@ -92,10 +92,12 @@ VsGameSection::VsGameSection(JKRHeap* heap, bool gameMode)
 	mVsWinner              = -1;
 	mLouieHandicap         = 2;
 	mOlimarHandicap        = 2;
-	mMarbleCountP2         = 0;
-	mMarbleCountP1         = 0;
-	mYellowMarbleCounts[1] = 0;
-	mYellowMarbleCounts[0] = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		mRealMarbleCounts[i] = 0;
+		mDispMarbleCounts[i] = 0;
+	}
+	
 	mEditNumber            = -2;
 	mVsFifo                = nullptr;
 
@@ -870,9 +872,9 @@ bool GameMessageVsRedOrSuckStart::actVs(VsGameSection* section)
 bool GameMessageVsGetOtakara::actVs(VsGameSection* section)
 {
 	if (section->mState) {
-		section->mYellowMarbleCounts[_04 - 2]++;
-		PSSetLastBeedamaDirection(_04 == 0, section->mYellowMarbleCounts[_04 - 2] == 3);
-		if (section->mYellowMarbleCounts[_04 - 2] >= 4) {
+		section->mDispMarbleCounts[_04]++;
+		PSSetLastBeedamaDirection(_04 == 0, section->mDispMarbleCounts[_04] == 3);
+		if (section->mDispMarbleCounts[_04] >= 4) {
 			section->mState->onBattleFinished(section, _04, true);
 		}
 	}
@@ -1398,7 +1400,7 @@ void VsGameSection::calcVsScores()
 
 	f32 yellowScore[2];
 	for (int i = 0; i < 2; i++) {
-		f32 count = mYellowMarbleCounts[i];
+		f32 count = mRealMarbleCounts[i];
 		for (int j = 0; j < 7; j++) {
 			if (i == 0 && yellowMarbleRedDist[j] >= 0.0f) {
 				count += yellowMarbleRedDist[j];

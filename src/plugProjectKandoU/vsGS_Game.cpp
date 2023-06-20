@@ -79,10 +79,10 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		section->mTimeLimit += mFloorExtendTimer;
 	}
 
-	section->mMarbleCountP2         = 0;
-	section->mMarbleCountP1         = 0;
-	section->mYellowMarbleCounts[1] = 0;
-	section->mYellowMarbleCounts[0] = 0;
+	for (int i = 0; i < 4; i++) {
+		section->mDispMarbleCounts[i] = 0;
+		section->mRealMarbleCounts[i] = 0;
+	}
 	section->mGhostIconTimers[1]    = 0.0f;
 	section->mGhostIconTimers[0]    = 0.0f;
 }
@@ -580,8 +580,8 @@ bool GameState::isCardUsable(VsGameSection* section) { return (u32) !(_16); }
 void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool isYellow)
 {
 	if (isYellow) {
-		section->mYellowMarbleCounts[player]++;
-		if (isYellow && section->mYellowMarbleCounts[player] < 4) {
+		section->mRealMarbleCounts[player]++;
+		if (isYellow && section->mRealMarbleCounts[player] < 4) {
 			return;
 		}
 	}
@@ -1023,8 +1023,31 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mLouieData.mDope0Count    = louie->getDopeCount(0);
 		disp.mLouieData.mNaviLifeRatio = louie->getLifeRatio();
 
-		disp.mRedPikminCount  = GameStat::getMapPikmins(1);
-		disp.mBluePikminCount = GameStat::getMapPikmins(0);
+		Navi* navi3 = naviMgr->getAt(2);
+		if (navi3 && navi3->isAlive()) {
+			disp.mP3Data.mFollowPikis = GameStat::formationPikis.mCounter[2];
+			disp.mP3Data.mNextThrowPiki = navi3->ogGetNextThrowPiki();
+			disp.mP3Data.mDope1Count    = navi3->getDopeCount(1);
+			disp.mP3Data.mDope0Count    = navi3->getDopeCount(0);
+			disp.mP3Data.mNaviLifeRatio = navi3->getLifeRatio();
+		}
+
+		Navi* navi4 = naviMgr->getAt(3);
+		if (navi4 && navi4->isAlive()) {
+			disp.mP4Data.mFollowPikis = GameStat::formationPikis.mCounter[3];
+			disp.mP4Data.mNextThrowPiki = navi4->ogGetNextThrowPiki();
+			disp.mP4Data.mDope1Count    = navi4->getDopeCount(1);
+			disp.mP4Data.mDope0Count    = navi4->getDopeCount(0);
+			disp.mP4Data.mNaviLifeRatio = navi4->getLifeRatio();
+		}
+
+		disp.mHideP4 = gFancyCamera;
+		disp.mTwoPlayer = gNaviNum <= 2;
+
+		disp.mP1PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[0]);
+		disp.mP2PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[1]);
+		disp.mP3PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[2]);
+		disp.mP4PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[3]);
 
 		disp.mFlags[2] = section->mGhostIconTimers[0] > 0.0f;
 		disp.mFlags[3] = section->mGhostIconTimers[1] > 0.0f;
@@ -1032,19 +1055,31 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mGhostIconTimerP1 = section->mGhostIconTimers[0];
 		disp.mGhostIconTimerP2 = section->mGhostIconTimers[1];
 
-		int marbleCountP1 = section->mMarbleCountP1;
-		int marbleCountP2 = section->mMarbleCountP2;
+		int marbleCountP1 = section->mDispMarbleCounts[getVSTeamID(0)];
+		int marbleCountP2 = section->mDispMarbleCounts[getVSTeamID(1)];
+		int marbleCountP3 = section->mDispMarbleCounts[getVSTeamID(2)];
+		int marbleCountP4 = section->mDispMarbleCounts[getVSTeamID(3)];
 
-		if (section->mMarbleCountP1 == 4 && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
-			marbleCountP1 = section->mMarbleCountP1 - 1;
+		if (marbleCountP1 == 4 && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
+			marbleCountP1--;
 		}
 
-		if (section->mMarbleCountP2 == 4 && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
-			marbleCountP2 = section->mMarbleCountP2 - 1;
+		if (marbleCountP2 == 4 && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
+			marbleCountP2--;
+		}
+
+		if (marbleCountP3 == 4 && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
+			marbleCountP3--;
+		}
+
+		if (marbleCountP4 == 4 && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
+			marbleCountP4--;
 		}
 
 		disp.mMarbleCountP1 = marbleCountP1;
 		disp.mMarbleCountP2 = marbleCountP2;
+		disp.mMarbleCountP3 = marbleCountP3;
+		disp.mMarbleCountP4 = marbleCountP4;
 
 		bool moviePlayerActive = moviePlayer->mFlags & MoviePlayer::IS_ACTIVE;
 

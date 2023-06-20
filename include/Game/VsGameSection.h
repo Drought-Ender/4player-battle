@@ -144,9 +144,8 @@ struct VsGameSection : public BaseGameSection {
 	f32 mSpawnTimer;                               // _3C8
 	int mMaxCherries;                              // _3CC
 	Pellet** mCherryArray;                         // _3D0
-	int mMarbleCountP1;                            // _3D4
-	int mMarbleCountP2;                            // _3D8
-	int mYellowMarbleCounts[2];                    // _3DC
+	int mDispMarbleCounts[4];                      // _3D4
+	int mRealMarbleCounts[4];                      // _3DC
 };
 } // namespace Game
 

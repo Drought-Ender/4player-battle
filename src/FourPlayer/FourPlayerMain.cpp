@@ -522,10 +522,10 @@ void CameraMgr::loadResource() {
 	}
 
 	if (gameSystem && gameSystem->mIsInCave) {
-		readCameraParms("/user/Nishimura/Camera/groundCameraParms.txt");
+		readCameraParms("/user/Nishimura/Camera/caveCameraParms.txt");
 	}
 	else {
-		readCameraParms("/user/Nishimura/Camera/caveCameraParms.txt");
+		readCameraParms("/user/Nishimura/Camera/groundCameraParms.txt");
 	}
 	
 }

@@ -175,7 +175,7 @@ void PikiNaviCounter::inc(Piki* piki)
 {
 	int id;
 	if (!piki->mNavi) {
-		id = 2;
+		id = 4;
 	} else {
 		id = piki->mNavi->mNaviIndex;
 	}
@@ -195,7 +195,7 @@ void PikiNaviCounter::dec(Game::Piki* piki)
 {
 	int id;
 	if (!piki->mNavi) {
-		id = 2;
+		id = 4;
 	} else {
 		id = piki->mNavi->mNaviIndex;
 	}

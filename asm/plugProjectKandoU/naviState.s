@@ -5263,7 +5263,7 @@ hitCallback__Q24Game14NaviPunchStateFP8CollPart:
 /* 80181130 0017E070  81 83 00 00 */	lwz r12, 0(r3)
 /* 80181134 0017E074  A0 04 02 DC */	lhz r0, 0x2dc(r4)
 /* 80181138 0017E078  81 8C 00 24 */	lwz r12, 0x24(r12)
-/* 8018113C 0017E07C  20 80 00 01 */	subfic r4, r0, 1
+mr r4, r0
 /* 80181140 0017E080  7D 89 03 A6 */	mtctr r12
 /* 80181144 0017E084  4E 80 04 21 */	bctrl 
 /* 80181148 0017E088  7C 7F 1B 79 */	or. r31, r3, r3
