@@ -6,6 +6,7 @@
 #include "IDelegate.h"
 #include "id32.h"
 #include "Rect.h"
+#include "FourPlayer.h"
 
 struct Controller;
 
@@ -693,8 +694,16 @@ struct DispMemberVs : public DispMemberBase {
 
 	inline void setMarbleConditions(bool red, bool blue)
 	{
-		mFlags[0] = red;
-		mFlags[1] = blue;
+		bool conditions[4] = { red, blue, false, false };
+		bool* flagArr[4] = { &mFlags[0], &mFlags[1], &mFlag2[0], &mFlag2[1] };
+		for (int i = 0; i < 4; i++) {
+			if (conditions[Game::getVSTeamID(i)]) {
+				*flagArr[i] = true;
+			}
+			else {
+				*flagArr[i] = false;
+			}
+		}
 	}
 
 	// _00     = VTBL
@@ -707,7 +716,7 @@ struct DispMemberVs : public DispMemberBase {
 	u32 mP2PikminCount;  // _5C
 	int mMarbleCountP1;    // _60
 	int mMarbleCountP2;    // _64
-	u8 mFlags[4];          // _68
+	bool mFlags[4];          // _68
 	f32 mGhostIconTimerP1; // _6C
 	f32 mGhostIconTimerP2; // _70
 	DataNavi mP3Data;
@@ -718,6 +727,10 @@ struct DispMemberVs : public DispMemberBase {
 	u32 mP4PikminCount;
 	int mMarbleCountP3;    // _60
 	int mMarbleCountP4;    // _64
+	int mWinMarbleColors[4];
+	f32 mGhostIconTimerP3;
+	f32 mGhostIconTimerP4;
+	bool mFlag2[4];
 };
 
 // size 0x28

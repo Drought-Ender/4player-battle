@@ -102,7 +102,7 @@ struct VsGameSection : public BaseGameSection {
 	StateMachine<Game::VsGameSection>* mFsm;       // _17C
 	VsGame::State* mState;                         // _180
 	DvdThreadCommand mDvdThreadCommand;            // _184
-	f32 mGhostIconTimers[2];                       // _1F0
+	f32 mGhostIconTimers[4];                       // _1F0
 	u8 mMenuFlags;                                 // _1F8
 	struct ItemHole::Item* mHole;                  // _1FC
 	struct ItemBigFountain::Item* mFountain;       // _200

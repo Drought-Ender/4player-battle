@@ -319,13 +319,15 @@ struct NaviMgr : public MonoObjectMgr<Navi>, public JKRDisposer {
 	u8 _5C;                         // _5C
 	Sys::MatTevRegAnimation _60[2]; // _60
 	Sys::MatTevRegAnimation _88[2]; // _88
-	J3DModelData* _B0;              // _B0
-	J3DModelData* _B4;              // _B4
-	J3DModelData* _B8;              // _B8
+	J3DModelData* mOlimarModel;     // _B0
+	J3DModelData* mLouieModel;      // _B4
+	J3DModelData* _B8;              // _B8   
 	u8 _BC[8];                      // _BC
 	J3DModelData* _C4;              // _C4
 	NaviParms* mNaviParms;          // _C8
 	CollPartFactory* _CC;           // _CC
+	J3DModelData* mPresidentModel;
+	J3DModelData* mWifeModel;
 };
 
 extern NaviMgr* naviMgr;

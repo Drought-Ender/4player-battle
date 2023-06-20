@@ -391,6 +391,8 @@ struct GameState : public State {
 		}
 	}
 
+	void setWinMarbleColor(int teamId, int color);
+
 	// _00     = VTBL
 	// _00-_0C = State
 	u32 _0C;                    // _0C
@@ -402,6 +404,7 @@ struct GameState : public State {
 	f32 mDisplayTime;           // _20
 	bool mHasKeyDemoPlayed;     // _24
 	BitFlag<u8> mLoseCauses[4]; // _25
+	bool mWinColors[4];
 };
 
 struct VSState : public GameState {

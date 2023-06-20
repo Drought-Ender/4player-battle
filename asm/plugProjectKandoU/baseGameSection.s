@@ -9720,7 +9720,7 @@ setupFixMemory_dvdload__Q24Game15BaseGameSectionFv:
 /* 80150570 0014D4B0  38 9F 03 58 */	addi r4, r31, 0x358
 /* 80150574 0014D4B4  38 A0 00 00 */	li r5, 0
 /* 80150578 0014D4B8  48 2D 2D E5 */	bl heapStatusStart__6SystemFPcP7JKRHeap
-/* 8015057C 0014D4BC  38 60 00 D0 */	li r3, 0xd0
+/* 8015057C 0014D4BC  38 60 00 D0 */	li r3, 0xd8
 /* 80150580 0014D4C0  4B ED 39 25 */	bl __nw__FUl
 /* 80150584 0014D4C4  7C 64 1B 79 */	or. r4, r3, r3
 /* 80150588 0014D4C8  41 82 00 0C */	beq .L_80150594

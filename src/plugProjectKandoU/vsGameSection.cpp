@@ -173,6 +173,8 @@ void VsGameSection::onInit()
 	mPikminCountTimer   = 0.5f;
 	mGhostIconTimers[1] = 0.0f;
 	mGhostIconTimers[0] = 0.0f;
+	mGhostIconTimers[2] = 0.0f;
+	mGhostIconTimers[3] = 0.0f;
 
 	clearGetDopeCount();
 	clearGetCherryCount();

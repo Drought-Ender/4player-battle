@@ -82,9 +82,12 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 	for (int i = 0; i < 4; i++) {
 		section->mDispMarbleCounts[i] = 0;
 		section->mRealMarbleCounts[i] = 0;
+		mWinColors[i] = 0;
 	}
 	section->mGhostIconTimers[1]    = 0.0f;
 	section->mGhostIconTimers[0]    = 0.0f;
+	section->mGhostIconTimers[3]    = 0.0f;
+	section->mGhostIconTimers[4]    = 0.0f;
 }
 
 /*
@@ -572,6 +575,10 @@ void GameState::onBattleFinished(VsGameSection* section, int winnerMaybe, bool c
  */
 bool GameState::isCardUsable(VsGameSection* section) { return (u32) !(_16); }
 
+void GameState::setWinMarbleColor(int teamID, int color) {
+
+}
+
 /*
  * --INFO--
  * Address:	8022A868
@@ -600,6 +607,9 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 	BitFlag<u8>& loseCauses = mLoseCauses[1 - player];
 	setLoseCause(loseCauses, loseReason);
 
+	mWinColors[player] = 1 - player;
+
+
 	Onyon* onyon                 = ItemOnyon::mgr->getOnyon(1 - player);
 	BaseGameSection* baseSection = gameSystem->mSection;
 
@@ -610,6 +620,8 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 
 	moviePlayer->play(movieArgs);
 }
+
+
 
 /*
  * --INFO--
@@ -1052,8 +1064,13 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mFlags[2] = section->mGhostIconTimers[0] > 0.0f;
 		disp.mFlags[3] = section->mGhostIconTimers[1] > 0.0f;
 
+		disp.mFlag2[2] = section->mGhostIconTimers[2] > 0.0f;
+		disp.mFlag2[3] = section->mGhostIconTimers[3] > 0.0f;
+
 		disp.mGhostIconTimerP1 = section->mGhostIconTimers[0];
 		disp.mGhostIconTimerP2 = section->mGhostIconTimers[1];
+		disp.mGhostIconTimerP3 = section->mGhostIconTimers[2];
+		disp.mGhostIconTimerP4 = section->mGhostIconTimers[3];
 
 		int marbleCountP1 = section->mDispMarbleCounts[getVSTeamID(0)];
 		int marbleCountP2 = section->mDispMarbleCounts[getVSTeamID(1)];
@@ -1081,7 +1098,10 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mMarbleCountP3 = marbleCountP3;
 		disp.mMarbleCountP4 = marbleCountP4;
 
-		bool moviePlayerActive = moviePlayer->mFlags & MoviePlayer::IS_ACTIVE;
+		for (int i = 0; i < 4; i++) {
+			disp.mWinMarbleColors[i] = mWinColors[getVSTeamID(i)];
+		}
+
 
 		bool blueMarble, redMarble;
 		getMarbleLoss(redMarble, blueMarble);

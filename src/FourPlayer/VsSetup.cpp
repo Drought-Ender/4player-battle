@@ -29,6 +29,10 @@ int getVSTeamID(int idx) {
     return pikiColor;
 }
 
+int getVsPikiColor(int idx) {
+    return gVsNaviIndexArray[idx];
+}
+
 // onTeam__Q24Game4NaviFi
 bool Navi::onTeam(int color) {
     return getVsTeam() == color;

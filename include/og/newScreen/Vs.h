@@ -161,6 +161,10 @@ struct ObjVs : public ::Screen::ObjBase {
 struct FourObjVs : public ObjVs {
 
 	FourObjVs(const char*);
+
+	void setWinBedamaColor(int color, int player);
+	bool checkUpdateWinColor();
+
 	virtual void doCreate(JKRArchive*);                   // _4C
 	virtual bool doUpdateFadein();                        // _50
 	virtual void doUpdateFadeinFinish();                  // _54
@@ -194,6 +198,10 @@ struct FourObjVs : public ObjVs {
 	og::Screen::ScaleMgr* mScaleMgrP4_1[4]; // _C4
 	og::Screen::ScaleMgr* mScaleMgrP3_2[4]; // _D4
 	og::Screen::ScaleMgr* mScaleMgrP4_2[4]; // _E4
+
+	J2DPictureEx* mColoredBedamaPanes[4];
+
+	int mWinDamaColor[4];
 
 	void doUpdateCommon();
 	void setOnOffBdama4P(bool doEfx);

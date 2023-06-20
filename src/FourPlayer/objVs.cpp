@@ -4,6 +4,7 @@
 #include "efx2d/T2DSprayset.h"
 #include "efx2d/T2DSensor.h"
 #include "FourPlayer.h"
+#include "JSystem/JUtility/JUTTexture.h"
 
 namespace og
 {
@@ -16,6 +17,8 @@ FourObjVs::FourObjVs(const char* name) : ObjVs(name) {
     mScreenP4 = nullptr;
 
     for (int i = 0; i < 4; i++) {
+        mWinDamaColor[i] = 0;
+
         mBedamaGotFlagsP3[i] = false;
         mBedamaGotFlagsP4[i] = false;
 
@@ -34,6 +37,8 @@ FourObjVs::FourObjVs(const char* name) : ObjVs(name) {
         mScaleMgrP4_2[i] = nullptr;
 
         mBedamaGetTimers[i] = 0.05f;
+
+        mColoredBedamaPanes[i] = nullptr;
     }
 
     mHasAllBedamaP3 = false;
@@ -84,6 +89,9 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	J2DPictureEx* paneBdamaB = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_blue'));
 	J2DPictureEx* panePcup   = static_cast<J2DPictureEx*>(bdamaScreen->search('Pcup'));
 
+    mColoredBedamaPanes[0] = paneBdamaR;
+    mColoredBedamaPanes[1] = paneBdamaB;
+
 	J2DPane* root = scrn1->search('ROOT');
 
     bool use4PSetup = Game::gNaviNum > 2;
@@ -101,7 +109,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		mPane_nodama1P[i]
 		    = og::Screen::CopyPictureToPane(panePcup, root, baseOffs + xoffs, baseYOffs + yoffs, 'nd1P_000' + i);
 		mPane_windama1P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaB, root, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
+		    = og::Screen::CopyPictureToPane(paneBdamaR, root, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
 		mScaleMgrP1_1[i] = new og::Screen::ScaleMgr;
 		mScaleMgrP1_2[i] = new og::Screen::ScaleMgr;
 		xoffs += 40;
@@ -119,11 +127,11 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     yoffs          = 0;
 	for (int i = 0; i < 4; i++) {
 		mPane_bedama2P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaY, root2, baseOffs + xoffs, baseYOffs + yoffs, 'bd2P_000' + i);
+		    = og::Screen::CopyPictureToPane(paneBdamaY, root2, baseOffs + xoffs, baseYOffs + yoffs, 'bd1P_000' + i);
 		mPane_nodama2P[i]
-		    = og::Screen::CopyPictureToPane(panePcup, root2, baseOffs + xoffs, baseYOffs + yoffs, 'nd2P_000' + i);
+		    = og::Screen::CopyPictureToPane(panePcup, root2, baseOffs + xoffs, baseYOffs + yoffs, 'nd1P_000' + i);
 		mPane_windama2P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaB, root2, baseOffs + xoffs, baseYOffs + yoffs, 'wd2P_000' + i);
+		    = og::Screen::CopyPictureToPane(paneBdamaR, root2, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
 		mScaleMgrP2_1[i] = new og::Screen::ScaleMgr;
 		mScaleMgrP2_2[i] = new og::Screen::ScaleMgr;
 		xoffs += 40;
@@ -144,7 +152,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		mPane_nodama3P[i]
 		    = og::Screen::CopyPictureToPane(panePcup, root3, baseOffs + xoffs, baseYOffs + yoffs, 'nd1P_000' + i);
 		mPane_windama3P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaB, root3, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
+		    = og::Screen::CopyPictureToPane(paneBdamaR, root3, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
 		mScaleMgrP3_1[i] = new og::Screen::ScaleMgr;
 		mScaleMgrP3_2[i] = new og::Screen::ScaleMgr;
 		xoffs += 40;
@@ -164,7 +172,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		mPane_nodama4P[i]
 		    = og::Screen::CopyPictureToPane(panePcup, root4, baseOffs + xoffs, baseYOffs + yoffs, 'nd1P_000' + i);
 		mPane_windama4P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaB, root4, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
+		    = og::Screen::CopyPictureToPane(paneBdamaR, root4, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
 		mScaleMgrP4_1[i] = new og::Screen::ScaleMgr;
 		mScaleMgrP4_2[i] = new og::Screen::ScaleMgr;
 		xoffs += 40;
@@ -183,6 +191,9 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake2P');
 	mPaneObake1P->setAlpha(mAlphaObakeP1 * 255.0f);
 	mPaneObake2P->setAlpha(mAlphaObakeP2 * 255.0f);
+    // for (int i = 0; i < 4; i++) {
+    //     setWinBedamaColor(i, mDisp->mWinMarbleColors[i]);
+    // }
     setOnOffBdama4P(false);
 }
 
@@ -206,7 +217,19 @@ void ObjVs::ScreenSet::update(og::Screen::DataNavi& data)
 	dope->update();
 }
 
+bool FourObjVs::checkUpdateWinColor() {
+    bool updated = false;
+    for (int i = 0; i < 4; i++) {
+        if (mDisp->mWinMarbleColors[i] != mWinDamaColor[i]) {
+            setWinBedamaColor(mDisp->mWinMarbleColors[i], i);
+            updated = true;
+        }
+    }
+    return updated;
+}
+
 void FourObjVs::doUpdateCommon() {
+    checkUpdateWinColor();
     setOnOffBdama4P(!mSetBedamaFlag);
     checkObake();
     f32 scale = (pikmin2_cosf(mScale * PI) + 1.0f) * 0.5f;
@@ -306,7 +329,7 @@ void FourObjVs::doDraw(Graphics& gfx) {
 
 void FourObjVs::setOnOffBdama4P(bool doEfx)
 {
-    OSReport("FourObjVs::setOnOffBdama4P(bool %i)\n", doEfx);
+    //OSReport("FourObjVs::setOnOffBdama4P(bool %i)\n", doEfx);
     bool P1win = false;
     bool P2win = false;
 	bool P3win = false;
@@ -349,7 +372,7 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 			}
 		}
 
-        if (mDisp->mFlags[0] && mDisp->mMarbleCountP2 == i && mBedamaGetTimers[1] > 0.0f) {
+        if (mDisp->mFlags[1] && mDisp->mMarbleCountP2 == i && mBedamaGetTimers[1] > 0.0f) {
 			mBedamaGetTimers[1] -= sys->mDeltaTime;
 			if (mBedamaGetTimers[1] <= 0.0f) {
 				mPane_windama2P[i]->show();
@@ -371,7 +394,7 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 			}
 		}
 
-		if (mDisp->mFlags[0] && mDisp->mMarbleCountP3 == i && mBedamaGetTimers[2] > 0.0f) {
+		if (mDisp->mFlag2[0] && mDisp->mMarbleCountP3 == i && mBedamaGetTimers[2] > 0.0f) {
 			mBedamaGetTimers[2] -= sys->mDeltaTime;
 			if (mBedamaGetTimers[2] <= 0.0f) {
 				mPane_windama3P[i]->show();
@@ -393,7 +416,7 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 			}
 		}
 
-		if (mDisp->mFlags[1] && mDisp->mMarbleCountP4 == i && mBedamaGetTimers[3] > 0.0f) {
+		if (mDisp->mFlag2[1] && mDisp->mMarbleCountP4 == i && mBedamaGetTimers[3] > 0.0f) {
 			mBedamaGetTimers[3] -= sys->mDeltaTime;
 			if (mBedamaGetTimers[3] <= 0.0f) {
 				mPane_windama4P[i]->show();
@@ -623,6 +646,43 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 			ogSound->setVsWin2P();
 		}
 	}
+}
+
+union U32Name
+{
+    U32Name(u32 val) {
+        mU32View = val;
+    }
+
+    u32 mU32View;
+    u8 mU8View[4];
+};
+
+typedef J2DPictureEx* BedamaPaneType[4];
+
+void FourObjVs::setWinBedamaColor(int color, int player) {
+    OSReport("FourObjVs::setWinBedamaColor(int %i, int %i)\n", color, player);
+    ScreenSet* screens[4] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 }; 
+
+    J2DPictureEx** winDamaPanes[] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P};
+
+    f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : 260.0f;
+    f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs - 40.0f;
+
+    
+
+    u32 xoffs = 0;
+    u32 yoffs = 0;
+    J2DPane* root = screens[player]->mScreen->search('ROOT');
+    J2DPictureEx** winDamas = winDamaPanes[player];
+
+    mWinDamaColor[player] = color;
+
+
+    for (int bedamaIdx = 0; bedamaIdx < 4; bedamaIdx++) {
+        winDamas[bedamaIdx]->changeTexture(mColoredBedamaPanes[color]->getTIMG(0), 0);
+    }
+    
 }
 
 } // namespace newScreen

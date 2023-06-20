@@ -13,6 +13,8 @@
 #include "FourPlayer.h"
 #include "Game/GameLight.h"
 
+#include "JSystem/J3D/J3DModelLoader.h"
+
 namespace Game
 {
 
@@ -33,7 +35,6 @@ void BaseGameSection::birthNavis() {
     gControllerP3 = new Controller((JUTGamePad::EPadPort)2);
     gControllerP4 = new Controller((JUTGamePad::EPadPort)3);
 	PlayCamera* playCameraPtrArr[4] = {mOlimarCamera, mLouieCamera, gCameraP3, gCameraP4};
-    OSReport("Creating Navis\n");
     for (int i = 0; i < 4; i++) {
         Vector3f startVelocity = 0.0f;
         Vector3f startPosition = Vector3f(-40.0f, 0.0f, 2.0f);
@@ -57,9 +58,7 @@ void BaseGameSection::birthNavis() {
         }
         Navi* navi = naviMgr->birth();
         P2ASSERT(navi);
-        OSReport("Birth successful!\n");
         navi->init(nullptr);
-        OSReport("Init success\n");
         navi->mFaceDir = roundAng(mapRotation);
         navi->mCamera  = playCameraPtrArr[i];
         navi->mCamera2 = playCameraPtrArr[i];
@@ -79,7 +78,6 @@ void BaseGameSection::birthNavis() {
 }
 
 void NaviMgr::informOrimaDead(int idx) {
-    OSReport("NaviMgr::informOrimaDead(int)\n");
     for (int i = 0; i < mNaviCount; i++) {
         if (mNaviIndexArray[idx] == i) {
             return;     
@@ -91,7 +89,6 @@ void NaviMgr::informOrimaDead(int idx) {
 }
 
 Navi* NaviMgr::getDeadOrima(int idx) {
-    OSReport("NaviMgr::getDeadOrima(int)\n");
     if (idx <= mNaviCount) {
         return getAt(mNaviIndexArray[idx]);
     }
@@ -99,8 +96,6 @@ Navi* NaviMgr::getDeadOrima(int idx) {
 }
 
 Navi* NaviMgr::getAliveOrima(int idx) {
-    OSReport("NaviMgr::getAliveOrima(int %i)\n", idx);
-    OSReport("Navi Count %i\n", mNaviCount);
     for (int i = 0; i < 4; i++) {
         Navi* navi = getAt(i);
         if (navi->isAlive()) {
@@ -111,9 +106,30 @@ Navi* NaviMgr::getAliveOrima(int idx) {
     return nullptr;
 }
 
+void NaviMgr::loadResources_float() {
+	JKRArchive* pikiArc = JKRArchive::mount("user/Kando/piki/pikis.szs", JKRArchive::EMM_Mem, sys->mSysHeap, JKRArchive::EMD_Head);
+	void* models[3];
+	models[0] = pikiArc->getResource("orima_model/orima3.bmd");
+	models[1] = pikiArc->getResource("orima_model/syatyou.bmd");
+	models[2] = pikiArc->getResource("orima_model/wife.bmd");
+	J3DModelData* modelData[3];
+	for (int i = 0; i < 3; i++) {
+		modelData[i] = J3DModelLoaderDataBase::load(models[i], 0x20000030);
+		for (int j = 0; j < modelData[i]->mShapeTable.mCount; j++) {
+			u32& bitfield = modelData[i]->mShapeTable.mItems[j]->mFlags;
+			bitfield &= ~0xF000;
+			bitfield |=  0x2000;
+		}
+	}
+	mLouieModel = modelData[0];
+	mPresidentModel = modelData[1];
+	mWifeModel = modelData[2];
+	
+}
+
 SysShape::Model* NaviMgr::createModel(int idx) {
-    OSReport("NaviMgr::createModel(int)\n");
-    return new SysShape::Model(_B0, 0, 2);
+	J3DModelData* models[] = { mOlimarModel, mLouieModel, mPresidentModel, mWifeModel };
+    return new SysShape::Model(models[idx], 0, 2);
 }
 
 // Navi* NaviMgr::birth() {
@@ -131,7 +147,6 @@ SysShape::Model* NaviMgr::createModel(int idx) {
 // }
 
 void NaviMgr::clearDeadCount() {
-    OSReport("NaviMgr::clearDeadCount()\n");
     mNaviCount = 0;
     mNaviIndexArray = new int[4];
     for (int i = 0; i < 4; i++) {
@@ -141,7 +156,6 @@ void NaviMgr::clearDeadCount() {
 
 void Navi::onInit(Game::CreatureInitArg* arg)
 {
-    OSReport("Init! %i\n", mNaviIndex);
 	mStick = 0;
 	_258   = 0;
 	u16 uVar2;
@@ -192,7 +206,7 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 
 	SysShape::Joint* headJnt = mModel->getJoint("headjnt");
 	mEffectsObj->mHeadMtx    = headJnt->getWorldMatrix();
-	mEffectsObj->setNaviType((efx::TNaviEffect::enumNaviType)0);
+	mEffectsObj->setNaviType((efx::TNaviEffect::enumNaviType)getVSTeamID(mNaviIndex));
 
 	mEffectsObj->createLight();
 
@@ -203,7 +217,7 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 	Vector3f navi_scale; // navi model scale
 	navi_scale = Vector3f(1.3f);
 
-	if (mNaviIndex == 1) { // case for Louie/President scale
+	if (getVSTeamID(mNaviIndex) == Blue) { // case for Louie/President scale
 		navi_scale = Vector3f(1.5f);
 	}
 
@@ -215,8 +229,6 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 
 void BaseGameSection::setCamController()
 {
-	OSReport("BaseGameSection::setCamController()\n");
-	OSReport("mPrevNaviIdx = %i\n", mPrevNaviIdx);
 	Navi* navis[4];
 
 	navis[0] = naviMgr->getAt(0);
@@ -351,7 +363,6 @@ static Delegate1<Game::BaseGameSection, Game::CameraArg*>* cameraMgrCallback;
 
 void BaseGameSection::setPlayerMode(int naviIdx)
 {
-	OSReport("BaseGameSection::setPlayerMode(int %i)\n", naviIdx);
 	Navi* fools[4];
 
 	fools[0] = naviMgr->getAt(0);
@@ -531,7 +542,6 @@ void CameraMgr::loadResource() {
 }
 
 void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback) {
-	OSReport("Change Player Mode\n");
     switch (mode)
     {
     case 0: {
@@ -572,7 +582,6 @@ void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback) {
     }
     _18 = mode;
     _34 = callback;
-	OSReport("Done player mode\n");
 }
 
 // hacky as all ass solution
