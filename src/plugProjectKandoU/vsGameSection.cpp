@@ -31,6 +31,8 @@
 #include "nans.h"
 
 #include "FourPlayer.h"
+#include "Game/generalEnemyMgr.h"
+#include "Game/gamePlayData.h"
 
 namespace Game {
 namespace VsGame {
@@ -1662,4 +1664,84 @@ void StateMachine<VsGameSection>::exec(VsGameSection* section)
 	}
 }
 
+} // namespace Game
+
+namespace Game
+{
+	const float cTimerInterval = 10.0f;
+	float gFancyTimer = 0.0f;
+	const float cMinInterval = PI / 6;
+	const float cIntervalTheta = PI / 2;
+	Creature* gFancyTarget = nullptr;
+	void VsGameSection::updateFancyCam() {
+		gFancyTimer -= sys->mDeltaTime;
+		if (gFancyTimer <= 0.0f) {
+			OSReport("Update but fancy\n");
+			gFancyTimer = cTimerInterval;
+			gFancyTarget = fancyCamLookForTarget();
+		}
+		if (gFancyTarget) {
+			Vector3f realPos = gCameraP4->mNavi->mPosition3;
+			gCameraP4->mNavi->mPosition3 = gFancyTarget->getPosition();
+			gCameraP4->_1B0 = gFancyTarget->getFaceDir();
+			// gCameraP4->_1B4 = gFancyTimer * cIntervalTheta / cTimerInterval + cMinInterval;
+			// gCameraP4->_1BC = gFancyTimer * cIntervalTheta / cTimerInterval + cMinInterval;
+			
+			//gCameraP4->mNavi->mPosition3 = realPos;
+		}
+		
+	}
+
+	Creature* VsGameSection::fancyCamLookForTarget() {
+		Creature* targets[300];
+		int currTarget = 0;
+		f32 maxScore = 0.0f;
+		
+		// Find all the potentional targets
+
+		// Every Navi
+		for (int i = 0; i < 4; i++) {
+			Navi* navi = naviMgr->getAt(i);
+			if (navi->isAlive()) {
+				targets[currTarget++] = navi;
+			}
+		}
+
+		// Every Treasure
+		PelletIterator iPellet;
+		CI_LOOP(iPellet) {
+			Pellet* pellet = *iPellet;
+			if (pellet->isAlive()) {
+				targets[currTarget++] = pellet;
+			}
+		}
+
+		// Every Enemy
+		GeneralMgrIterator<EnemyBase> iEnemyBase = generalEnemyMgr;
+		CI_LOOP(iEnemyBase) {
+			EnemyBase* enemy = *iEnemyBase;
+			if (enemy->isAlive()) {
+				targets[currTarget++] = enemy;
+			}
+		}
+
+		// Calculate the most intresting target
+		Creature* fanciestTarget = nullptr;
+		for (int i = 0; i < currTarget; i++) {
+			f32 score = fancyCamCalcIntrest(targets[i]);
+			if (score > maxScore) {
+				maxScore = score;
+				fanciestTarget = targets[i];
+			}
+		}
+		return fanciestTarget;
+	}
+
+	f32 VsGameSection::fancyCamCalcIntrest(Creature* target) {
+		if (target->isPellet()) {
+			Pellet* pellet = static_cast<Pellet*>(target);
+			
+		}
+		return 0.0f;
+	}
 } // namespace Game

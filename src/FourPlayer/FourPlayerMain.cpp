@@ -24,6 +24,8 @@ Controller* gControllerP4;
 PlayCamera* gCameraP3;
 PlayCamera* gCameraP4;
 
+bool gFancyCamera;
+
 int gNaviNum = 2;
 
 void BaseGameSection::birthNavis() {
@@ -71,7 +73,7 @@ void BaseGameSection::birthNavis() {
 	for (int i = gNaviNum; i < 4; i++) {
 		// hacky solution to remove the navis without the game crashing
 		naviMgr->getAt(i)->mIsAlive = true;
-		naviMgr->getAt(i)->setAlive(false);
+		naviMgr->getAt(i)->kill(nullptr);
 		naviMgr->informOrimaDead(i);
 	}
 }
@@ -449,7 +451,7 @@ void BaseGameSection::initViewports(Graphics& gfx)
 	//setSplitter(false);
 
 	gCameraP3 = new PlayCamera(naviMgr->getAt(2));
-	gCameraP4 = new PlayCamera(naviMgr->getAt(3));
+	gCameraP4 = new PlayCamera(naviMgr->getAt(3));	
 
 	Viewport* olimarViewport = gfx.getViewport(0);
 	olimarViewport->mCamera  = mOlimarCamera;
@@ -472,11 +474,17 @@ void BaseGameSection::initViewports(Graphics& gfx)
 	shadowMgr->setViewport(gfx.getViewport(2), 2);
 	shadowMgr->setViewport(gfx.getViewport(3), 3);
 	
-
 	cameraMgr->setViewport(gfx.getViewport(0), 0);
 	cameraMgr->setViewport(gfx.getViewport(1), 1);
     cameraMgr->setViewport(gfx.getViewport(2), 2);
 	cameraMgr->setViewport(gfx.getViewport(3), 3);
+
+	if (gNaviNum == 3) {
+		gFancyCamera = true;
+	}
+	else {
+		gFancyCamera = false;
+	}
 
 	cameraMgr->init(0);
 	mTreasureZoomCamera         = new ZoomCamera;

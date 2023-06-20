@@ -87,6 +87,10 @@ struct VsGameSection : public BaseGameSection {
 	bool updateCaveMenus();
 	void useCard();
 
+	void updateFancyCam();
+	Creature* fancyCamLookForTarget();
+	f32 fancyCamCalcIntrest(Creature*);
+
 	Pellet* createCardPellet();
 
 	static int mRedWinCount;

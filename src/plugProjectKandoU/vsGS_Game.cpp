@@ -170,6 +170,10 @@ void GameState::exec(VsGameSection* section)
 
 	section->BaseGameSection::doUpdate();
 
+	if (gFancyCamera) {
+		section->updateFancyCam();
+	}
+
 	if (section->mState->mId != VGS_Game) {
 		return;
 	}
