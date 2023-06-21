@@ -55,6 +55,15 @@ FourObjVs::FourObjVs(const char* name) : ObjVs(name) {
     mFirstBedamaGetP4 = false; 
 }
 
+typedef JUtility::TColor TColorPair[2];
+
+const TColorPair gGetMarbleColors[4] = { 
+	{ 0xff0000ff, 0xff8787ff },  
+	{ 0x2020ffff, 0x5787ffff },
+	{ 0x00000000, 0x00000000 },
+	{ 0x00000000, 0x00000000 }
+};
+
 void FourObjVs::doCreate(JKRArchive* arc) {
     mScreenP1 = new ScreenSet;
 	mScreenP2 = new ScreenSet;
@@ -390,8 +399,8 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 					if (doEfx) {
 						Vector2f pos;
 						og::Screen::calcGlbCenter(mPane_windama1P[i], &pos);
-
-						efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0x2020ffff, 0x5787ffff);
+						const TColorPair& colors = gGetMarbleColors[mWinDamaColor[0]];
+						efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
 						efx2d::T2DSprayset_forVS efx;
 						efx.create(&arg);
 						ogSound->setBdamaGet();
@@ -411,9 +420,9 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 					mFirstBedamaGetP2 = true;
 					if (doEfx) {
 						Vector2f pos;
-						og::Screen::calcGlbCenter(mPane_windama3P[i], &pos);
-
-						efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0x2020ffff, 0x5787ffff);
+						og::Screen::calcGlbCenter(mPane_windama2P[i], &pos);
+						const TColorPair& colors = gGetMarbleColors[mWinDamaColor[1]];
+						efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
 						efx2d::T2DSprayset_forVS efx;
 						efx.create(&arg);
 						ogSound->setBdamaGet();
@@ -434,8 +443,8 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 					if (doEfx) {
 						Vector2f pos;
 						og::Screen::calcGlbCenter(mPane_windama3P[i], &pos);
-
-						efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0x2020ffff, 0x5787ffff);
+						const TColorPair& colors = gGetMarbleColors[mWinDamaColor[2]];
+						efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
 						efx2d::T2DSprayset_forVS efx;
 						efx.create(&arg);
 						ogSound->setBdamaGet();
@@ -456,8 +465,8 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 					if (doEfx) {
 						Vector2f pos;
 						og::Screen::calcGlbCenter(mPane_windama4P[i], &pos);
-
-						efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0xff0000ff, 0xff8787ff);
+						const TColorPair& colors = gGetMarbleColors[mWinDamaColor[3]];
+						efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
 						efx2d::T2DSprayset_forVS efx;
 						efx.create(&arg);
 						ogSound->setBdamaGet();
