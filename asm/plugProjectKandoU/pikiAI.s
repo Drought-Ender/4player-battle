@@ -811,9 +811,10 @@ lbl_constructor:
 /* 801B1184 001AE0C4  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 801B1188 001AE0C8  41 82 01 94 */	beq .L_801B131C
 /* 801B118C 001AE0CC  A0 79 02 DC */	lhz r3, 0x2dc(r25)
+bl getVsPikiColor__4GameFi
 /* 801B1190 001AE0D0  88 17 02 B8 */	lbz r0, 0x2b8(r23)
 /* 801B1194 001AE0D4  7C 03 00 00 */	cmpw r3, r0
-/* 801B1198 001AE0D8  40 82 01 84 */	bne .L_801B131C
+/* 801B1198 001AE0D8  40 82 01 84 */	beq .L_801B131C
 /* 801B119C 001AE0DC  7F 23 CB 78 */	mr r3, r25
 /* 801B11A0 001AE0E0  7E E4 BB 78 */	mr r4, r23
 /* 801B11A4 001AE0E4  4B F8 A5 45 */	bl calcSphereDistance__Q24Game8CreatureFPQ24Game8Creature
@@ -2869,9 +2870,10 @@ lbl_constructor:
 /* 801B2F64 001AFEA4  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 801B2F68 001AFEA8  41 82 06 04 */	beq .L_801B356C
 /* 801B2F6C 001AFEAC  A0 7F 02 DC */	lhz r3, 0x2dc(r31)
+bl getVsPikiColor__4GameFi
 /* 801B2F70 001AFEB0  88 1E 02 B8 */	lbz r0, 0x2b8(r30)
 /* 801B2F74 001AFEB4  7C 03 00 00 */	cmpw r3, r0
-/* 801B2F78 001AFEB8  40 82 05 F4 */	bne .L_801B356C
+/* 801B2F78 001AFEB8  40 82 05 F4 */	beq .L_801B356C
 /* 801B2F7C 001AFEBC  3C 80 80 4B */	lis r4, __vt__Q26PikiAI9ActionArg@ha
 /* 801B2F80 001AFEC0  3C 60 80 4B */	lis r3, __vt__Q26PikiAI12ActAttackArg@ha
 /* 801B2F84 001AFEC4  38 84 05 30 */	addi r4, r4, __vt__Q26PikiAI9ActionArg@l

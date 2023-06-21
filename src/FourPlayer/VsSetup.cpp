@@ -6,6 +6,8 @@
 #include "Game/NaviState.h"
 #include "Game/Entities/ItemPikihead.h"
 #include "Game/PikiMgr.h"
+#include "PikiAI.h"
+#include "Game/cellPyramid.h"
 
 namespace Game
 {
@@ -178,4 +180,29 @@ void NaviMgr::doEntry() {
 }
 
 } // namespace Game
+
+// Game::Navi* PikiAI::Brain::searchOrima() {
+//     Vector3f pikiPos = mPiki->getPosition();
+//     Sys::Sphere targetSphere (pikiPos, 300.0f);
+
+//     Game::CellIteratorArg iCellArg = targetSphere;
+//     Game::CellIterator iCell = iCellArg;
+//     CI_LOOP(iCell) {
+//         Game::CellObject* cell = *iCell;
+//         if (cell->isNavi()) {
+//             Game::Navi* navi = static_cast<Game::Navi*>(cell);
+//             if (navi->isAlive()) {
+//                 Vector3f naviPos = navi->getPosition();
+//                 f32 distance = _distanceBetween(pikiPos, naviPos);
+//                 if (distance < 300.0f && Game::gameSystem->isVersusMode()) {
+//                     if (mPiki->mPikiKind != navi->getVsPikiColor()) {
+//                         return navi;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
 

@@ -3,6 +3,8 @@
 
 #include "Game/CameraMgr.h"
 
+struct Controller;
+
 namespace Game
 {
     
@@ -13,6 +15,8 @@ extern int gDopeCountArray[4][2];
 extern bool gFancyCamera;
 extern PlayCamera* gCameraP3;
 extern PlayCamera* gCameraP4;
+extern Controller* gControllerP3;
+extern Controller* gControllerP4;
 
 int CalcNaviNum();
 int getVsTeam(int);
