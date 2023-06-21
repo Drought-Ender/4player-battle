@@ -354,10 +354,10 @@ struct GameState : public State {
 				}
 			}
 
-			pikiMgr->setVsXlu(1 - naviIndex, false);
+			pikiMgr->setVsXlu(getVsPikiColor(naviIndex), false);
 
 		} else {
-			pikiMgr->setVsXlu(1 - naviIndex, true);
+			pikiMgr->setVsXlu(getVsPikiColor(naviIndex), true);
 		}
 	}
 

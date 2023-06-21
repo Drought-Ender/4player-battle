@@ -1211,17 +1211,9 @@ lbl_8015F5C8:
 void PikiMgr::setVsXlu(int p1, bool p2)
 {
 	if (p2) {
-		if (p1 == 0) {
-			mFlags[0] &= ~1;
-		} else {
-			mFlags[0] &= ~2;
-		}
+		mFlags[0] &= ~(1 << p1);
 	} else {
-		if (p1 == 0) {
-			mFlags[0] |= 1;
-		} else {
-			mFlags[0] |= 2;
-		}
+		mFlags[0] |= 1 << p1;
 	}
 }
 

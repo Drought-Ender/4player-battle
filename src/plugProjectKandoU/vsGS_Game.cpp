@@ -201,6 +201,8 @@ void GameState::exec(VsGameSection* section)
 	} else if (!gameSystem->paused_soft() && gameSystem->isVersusMode()) {
 		updateNavi(section, VSPLAYER_Red);
 		updateNavi(section, VSPLAYER_Blue);
+		updateNavi(section, 2);
+		updateNavi(section, 3);
 	}
 
 	checkPikminZero(section);
@@ -903,7 +905,7 @@ void GameState::onNextFloor(VsGameSection* section, ItemHole::Item* hole)
  */
 void GameState::onOrimaDown(VsGameSection* section, int idx)
 {
-	int naviIdx = getVSTeamID(idx);
+	int naviIdx = getVsTeam(idx);
 
 	P2ASSERTBOUNDSLINE(1341, 0, naviIdx, 4);
 
@@ -1072,10 +1074,10 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mGhostIconTimerP3 = section->mGhostIconTimers[2];
 		disp.mGhostIconTimerP4 = section->mGhostIconTimers[3];
 
-		int marbleCountP1 = section->mDispMarbleCounts[getVSTeamID(0)];
-		int marbleCountP2 = section->mDispMarbleCounts[getVSTeamID(1)];
-		int marbleCountP3 = section->mDispMarbleCounts[getVSTeamID(2)];
-		int marbleCountP4 = section->mDispMarbleCounts[getVSTeamID(3)];
+		int marbleCountP1 = section->mDispMarbleCounts[getVsTeam(0)];
+		int marbleCountP2 = section->mDispMarbleCounts[getVsTeam(1)];
+		int marbleCountP3 = section->mDispMarbleCounts[getVsTeam(2)];
+		int marbleCountP4 = section->mDispMarbleCounts[getVsTeam(3)];
 
 		if (marbleCountP1 == 4 && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
 			marbleCountP1--;
@@ -1099,7 +1101,7 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mMarbleCountP4 = marbleCountP4;
 
 		for (int i = 0; i < 4; i++) {
-			disp.mWinMarbleColors[i] = mWinColors[getVSTeamID(i)];
+			disp.mWinMarbleColors[i] = mWinColors[getVsTeam(i)];
 		}
 
 

@@ -836,7 +836,7 @@ bool VsGameSection::sendMessage(GameMessage& message)
  */
 bool GameMessageVsGetDoping::actVs(VsGameSection* section)
 {
-	section->getGetDopeCount(getVSTeamID(mNaviIndex), mSprayType)++;
+	section->getGetDopeCount(getVsTeam(mNaviIndex), mSprayType)++;
 	return true;
 }
 
@@ -1043,11 +1043,11 @@ bool GameMessageVsUseCard::actVs(VsGameSection* section)
 		}
 	}
 	if (gGameConfig.mParms.mVsY.mData == 0) {
-		if (section->mCardMgr->usePlayerCard(getVSTeamID(mNaviIdx), section->mTekiMgr)) {
+		if (section->mCardMgr->usePlayerCard(getVsTeam(mNaviIdx), section->mTekiMgr)) {
 			section->useCard();
 		}
 	} else {
-		section->mCardMgr->stopSlot(getVSTeamID(mNaviIdx));
+		section->mCardMgr->stopSlot(getVsTeam(mNaviIdx));
 	}
 	return true;
 }

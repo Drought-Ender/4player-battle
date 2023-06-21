@@ -15,7 +15,7 @@ extern PlayCamera* gCameraP3;
 extern PlayCamera* gCameraP4;
 
 int CalcNaviNum();
-int getVSTeamID(int); // Gets the team idx of an index
+int getVsTeam(int);
 int getVsPikiColor(int); // Gets the piki color of an index
 
 } // namespace Game

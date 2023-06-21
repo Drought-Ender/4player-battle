@@ -16,6 +16,13 @@ FourObjVs::FourObjVs(const char* name) : ObjVs(name) {
     mScreenP3 = nullptr;
     mScreenP4 = nullptr;
 
+    mObakeEnabledP3 = false;
+    mObakeEnabledP4 = false;
+    mPaneObake3P = nullptr;
+    mPaneObake4P = nullptr;
+    mAlphaObakeP3 = 0.0f;
+    mAlphaObakeP4 = 0.0f;
+
     for (int i = 0; i < 4; i++) {
         mWinDamaColor[i] = 0;
 
@@ -188,9 +195,13 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 
 	J2DPictureEx* paneObake = static_cast<J2DPictureEx*>(mScreenIcons->search('obake'));
 	mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
-	mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake2P');
+	mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP1YOffs, 'obake1P');
+    mPaneObake3P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake2P');
+	mPaneObake4P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP2YOffs, 'obake2P');
 	mPaneObake1P->setAlpha(mAlphaObakeP1 * 255.0f);
 	mPaneObake2P->setAlpha(mAlphaObakeP2 * 255.0f);
+    mPaneObake3P->setAlpha(mAlphaObakeP1 * 255.0f);
+	mPaneObake4P->setAlpha(mAlphaObakeP2 * 255.0f);
     // for (int i = 0; i < 4; i++) {
     //     setWinBedamaColor(i, mDisp->mWinMarbleColors[i]);
     // }
@@ -684,6 +695,186 @@ void FourObjVs::setWinBedamaColor(int color, int player) {
     }
     
 }
+
+void FourObjVs::checkObake()
+{
+	if (mObakeEnabledP1) {
+		mAlphaObakeP1 += sys->mDeltaTime;
+		if (mAlphaObakeP1 > 1.0f)
+			mAlphaObakeP1 = 1.0f;
+
+		if (mDisp->mGhostIconTimerP1 <= 0.0f) {
+			mObakeEnabledP1 = false;
+		}
+	} else {
+		mAlphaObakeP1 -= sys->mDeltaTime;
+		if (mAlphaObakeP1 < 0.0f)
+			mAlphaObakeP1 = 0.0f;
+
+		if (mDisp->mFlags[2]) {
+			mObakeEnabledP1 = true;
+		}
+	}
+
+	if (mObakeEnabledP2) {
+		mAlphaObakeP2 += sys->mDeltaTime;
+		if (mAlphaObakeP2 > 1.0f)
+			mAlphaObakeP2 = 1.0f;
+
+		if (mDisp->mGhostIconTimerP2 <= 0.0f) {
+			mObakeEnabledP2 = false;
+		}
+	} else {
+		mAlphaObakeP2 -= sys->mDeltaTime;
+		if (mAlphaObakeP2 < 0.0f)
+			mAlphaObakeP2 = 0.0f;
+
+		if (mDisp->mFlags[3]) {
+			mObakeEnabledP2 = true;
+		}
+	}
+
+    if (mObakeEnabledP2) {
+		mAlphaObakeP2 += sys->mDeltaTime;
+		if (mAlphaObakeP2 > 1.0f)
+			mAlphaObakeP2 = 1.0f;
+
+		if (mDisp->mGhostIconTimerP2 <= 0.0f) {
+			mObakeEnabledP2 = false;
+		}
+	} else {
+		mAlphaObakeP2 -= sys->mDeltaTime;
+		if (mAlphaObakeP2 < 0.0f)
+			mAlphaObakeP2 = 0.0f;
+
+		if (mDisp->mFlags[3]) {
+			mObakeEnabledP2 = true;
+		}
+	}
+
+    if (mObakeEnabledP3) {
+		mAlphaObakeP3 += sys->mDeltaTime;
+		if (mAlphaObakeP3 > 1.0f)
+			mAlphaObakeP3 = 1.0f;
+
+		if (mDisp->mGhostIconTimerP3 <= 0.0f) {
+			mObakeEnabledP3 = false;
+		}
+	} else {
+		mAlphaObakeP3 -= sys->mDeltaTime;
+		if (mAlphaObakeP3 < 0.0f)
+			mAlphaObakeP3 = 0.0f;
+
+		if (mDisp->mFlag2[2]) {
+			mObakeEnabledP3 = true;
+		}
+	}
+
+    if (mObakeEnabledP4) {
+		mAlphaObakeP4 += sys->mDeltaTime;
+		if (mAlphaObakeP4 > 1.0f)
+			mAlphaObakeP4 = 1.0f;
+
+		if (mDisp->mGhostIconTimerP4 <= 0.0f) {
+			mObakeEnabledP4 = false;
+		}
+	} else {
+		mAlphaObakeP4 -= sys->mDeltaTime;
+		if (mAlphaObakeP4 < 0.0f)
+			mAlphaObakeP4 = 0.0f;
+
+		if (mDisp->mFlag2[3]) {
+			mObakeEnabledP4 = true;
+		}
+	}
+
+	f32 calc = mObakeMovePos * 2.0f;
+	calc     = (pikmin2_sinf(calc) + 1.0f) * 0.5f;
+
+	f32 mod1 = 1.0f;
+	f32 mod2 = 1.0f;
+    f32 mod3 = 1.0f;
+    f32 mod4 = 1.0f;
+	f32 angle1, angle2, angle3, angle4;
+
+	if (!mObakeEnabledP1) {
+		angle1 = 0.0f;
+	} else {
+		f32 temp = mDisp->mGhostIconTimerP1;
+		angle1   = 1.0f;
+		if (temp < 10.0f) {
+			angle1 = temp / 10.0f;
+			mod1   = calc * 0.6f + 0.4f;
+		}
+	}
+
+	if (!mObakeEnabledP2) {
+		angle2 = 0.0f;
+	} else {
+		f32 temp = mDisp->mGhostIconTimerP2;
+		angle2   = 1.0f;
+		if (temp < 10.0f) {
+			angle2 = temp / 10.0f;
+			mod2   = calc * 0.6f + 0.4f;
+		}
+	}
+
+    if (!mObakeEnabledP3) {
+		angle3 = 0.0f;
+	} else {
+		f32 temp = mDisp->mGhostIconTimerP3;
+		angle3   = 1.0f;
+		if (temp < 10.0f) {
+			angle3 = temp / 10.0f;
+			mod3   = calc * 0.6f + 0.4f;
+		}
+	}
+
+    if (!mObakeEnabledP4) {
+		angle4 = 0.0f;
+	} else {
+		f32 temp = mDisp->mGhostIconTimerP4;
+		angle4   = 1.0f;
+		if (temp < 10.0f) {
+			angle4 = temp / 10.0f;
+			mod4   = calc * 0.6f + 0.4f;
+		}
+	}
+
+	mPaneObake1P->setAlpha(mAlphaObakeP1 * 255.0f * mod1);
+	mPaneObake2P->setAlpha(mAlphaObakeP2 * 255.0f * mod2);
+    mPaneObake3P->setAlpha(mAlphaObakeP3 * 255.0f * mod3);
+	mPaneObake4P->setAlpha(mAlphaObakeP4 * 255.0f * mod4);
+
+	mObakeMovePos += sys->mDeltaTime * TAU;
+	if (mObakeMovePos > TAU) {
+		mObakeMovePos -= TAU;
+	}
+	f32 sin = pikmin2_sinf(mObakeMovePos);
+	f32 cos = pikmin2_cosf(mObakeMovePos);
+    f32 sin2 = pikmin2_sinf(mObakeMovePos + PI);
+    f32 cos2 = pikmin2_cosf(mObakeMovePos + PI);
+ 	mPaneObake1P->rotate(angle1 * sin * 20.0f);
+	mPaneObake2P->rotate(angle2 * sin2 * 20.0f);
+    mPaneObake3P->rotate(angle3 * cos * 20.0f);
+	mPaneObake4P->rotate(angle4 * cos2 * 20.0f);
+
+	mPaneObake1P->setOffset(msVal.mRouletteXOffs + (sin * angle1) * msVal._2C,
+	                        msVal.mRouletteP1YOffs + (cos * angle1) * msVal._30);
+	mPaneObake2P->setOffset(300.0f + msVal.mRouletteXOffs + (sin2 * angle2) * msVal._2C,
+	                        msVal.mRouletteP1YOffs + (cos2 * angle2) * msVal._30);
+	mPaneObake3P->setOffset(msVal.mRouletteXOffs + (cos * angle3) * msVal._2C,
+	                        msVal.mRouletteP2YOffs + (sin * angle3) * msVal._30);
+	mPaneObake4P->setOffset(300.0f + msVal.mRouletteXOffs + (cos2 * angle4) * msVal._2C,
+	                        msVal.mRouletteP2YOffs + (sin2 * angle4) * msVal._30);
+
+	mPaneObake1P->updateScale(msVal.mRouletteScale);
+	mPaneObake2P->updateScale(msVal.mRouletteScale);
+    mPaneObake3P->updateScale(msVal.mRouletteScale);
+    mPaneObake4P->updateScale(msVal.mRouletteScale);
+}
+
+
 
 } // namespace newScreen
 

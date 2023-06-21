@@ -206,7 +206,7 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 
 	SysShape::Joint* headJnt = mModel->getJoint("headjnt");
 	mEffectsObj->mHeadMtx    = headJnt->getWorldMatrix();
-	mEffectsObj->setNaviType((efx::TNaviEffect::enumNaviType)getVSTeamID(mNaviIndex));
+	mEffectsObj->setNaviType((efx::TNaviEffect::enumNaviType)getVsTeam());
 
 	mEffectsObj->createLight();
 
@@ -217,7 +217,7 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 	Vector3f navi_scale; // navi model scale
 	navi_scale = Vector3f(1.3f);
 
-	if (getVSTeamID(mNaviIndex) == Blue) { // case for Louie/President scale
+	if (mNaviIndex == 1 || mNaviIndex == 2) { // case for Louie/President scale
 		navi_scale = Vector3f(1.5f);
 	}
 

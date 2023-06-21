@@ -201,10 +201,18 @@ struct FourObjVs : public ObjVs {
 
 	J2DPictureEx* mColoredBedamaPanes[4];
 
+	J2DPictureEx* mPaneObake3P;
+	J2DPictureEx* mPaneObake4P;
+	f32 mAlphaObakeP3;
+	f32 mAlphaObakeP4;
+	bool mObakeEnabledP3;
+	bool mObakeEnabledP4;
+
 	int mWinDamaColor[4];
 
 	void doUpdateCommon();
 	void setOnOffBdama4P(bool doEfx);
+	void checkObake();
 };
 
 

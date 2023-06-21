@@ -697,7 +697,7 @@ struct DispMemberVs : public DispMemberBase {
 		bool conditions[4] = { red, blue, false, false };
 		bool* flagArr[4] = { &mFlags[0], &mFlags[1], &mFlag2[0], &mFlag2[1] };
 		for (int i = 0; i < 4; i++) {
-			if (conditions[Game::getVSTeamID(i)]) {
+			if (conditions[Game::getVsTeam(i)]) {
 				*flagArr[i] = true;
 			}
 			else {

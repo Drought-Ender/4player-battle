@@ -3,6 +3,8 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/FourPlayerMain.o\
 	$(BUILD_DIR)/src/FourPlayer/VsSetup.o\
 	$(BUILD_DIR)/src/FourPlayer/objVs.o\
+	$(BUILD_DIR)/src/FourPlayer/CardMgr.o\
+
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)
 
