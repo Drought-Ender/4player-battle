@@ -12,7 +12,7 @@
 namespace Game
 {
     
-int gVsNaviIndexArray[4] = { Red, Blue, Red, Blue };
+int gVsNaviIndexArray[4] = { Red, Blue, Blue, Red };
 int gDopeCountArray[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} };
 
 int Navi::getVsPikiColor() {

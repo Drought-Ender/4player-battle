@@ -91,6 +91,26 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     P2DScreen::Mgr_tuning* scrn3 = mScreenP3->mScreen;
     P2DScreen::Mgr_tuning* scrn4 = mScreenP4->mScreen;
 
+	J2DPictureEx* louiePicture = static_cast<J2DPictureEx*>(mScreenP2->mScreen->search('navi'));
+	J2DPictureEx* presidentPicture = static_cast<J2DPictureEx*>(mScreenP3->mScreen->search('navi'));
+	J2DPictureEx* wifePicture = static_cast<J2DPictureEx*>(mScreenP4->mScreen->search('navi'));
+	
+	louiePicture->changeTexture("loozy_pk2.bti", 0);
+	presidentPicture->changeTexture("president.bti", 0);
+	wifePicture->changeTexture("wife.bti", 0);
+
+	JUtility::TColor teamColors[4] = {
+		JUtility::TColor(0xff, 0x00, 0x00, 0xff),
+		JUtility::TColor(0x00, 0x00, 0xff, 0xff),
+		JUtility::TColor(0x00, 0x00, 0x00, 0xff),
+		JUtility::TColor(0x00, 0x00, 0x00, 0xff)
+	};
+	
+	recolorPane(scrn1, teamColors[Game::getVsTeam(0)]);
+	recolorPane(scrn2, teamColors[Game::getVsTeam(1)]);
+	recolorPane(scrn3, teamColors[Game::getVsTeam(2)]);
+	recolorPane(scrn4, teamColors[Game::getVsTeam(3)]);
+
 	J2DPictureEx* paneBdamaR = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_red'));
 	J2DPictureEx* paneBdamaY = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_yello'));
 	J2DPictureEx* paneBdamaB = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_blue'));
@@ -874,7 +894,54 @@ void FourObjVs::checkObake()
     mPaneObake4P->updateScale(msVal.mRouletteScale);
 }
 
+void FourObjVs::recolorPane(P2DScreen::Mgr_tuning* pane, JUtility::TColor& color) {
+	J2DGXColorS10 s10Color (color.r, color.g, color.b, 0x00);
+	J2DGXColorS10 s10ColorWeak (color.r / 255.0f * 70, color.g / 255.0f * 70, color.b / 255.0f * 70, 0);
+	
+	JUtility::TColor tColorWeak(color.r / 255.0f * 191, color.g / 255.0f * 191, color.b / 255.0f * 191, 33);
+	// P2ASSERT(pane);
 
+	// color.a = 40;
+	
+    pane->getMaterial(pane->mNameTab->getIndex("mat_PICT_003_v_x"))->getTevBlock()->setTevColor(0, s10ColorWeak);
+	pane->getMaterial(pane->mNameTab->getIndex("mat_PICT_004_v_x"))->getTevBlock()->setTevColor(0, s10ColorWeak);
+	pane->getMaterial(pane->mNameTab->getIndex("mat_w_00_v"))->mTevBlock->setTevColor(0, s10Color);
+	pane->getMaterial(pane->mNameTab->getIndex("mat_w_01_v"))->mTevBlock->setTevColor(0, s10Color);
+	// pane->getMaterial(pane->mNameTab->getIndex("mat_x_00_v"))->mTevBlock->setTevColor(0, s10Color);
+	// pane->getMaterial(pane->mNameTab->getIndex("mat_PICT_002_v_x"))->mTevBlock->setTevColor(0, s10Color);
+
+	J2DMaterial* matX = pane->getMaterial(pane->mNameTab->getIndex("mat_x_00_v"));
+	P2ASSERT(matX);
+	matX->getTevBlock()->setTevColor(0, s10Color);
+
+	J2DMaterial* matSlash = pane->getMaterial(pane->mNameTab->getIndex("mat_PICT_002_v"));
+	P2ASSERT(matSlash);
+	matSlash->getTevBlock()->setTevColor(0, s10Color);
+
+	// color.a = 40;
+
+	// J2DPictureEx* box1 = (J2DPictureEx*)pane->search('PICT_003');
+	// box1->mCornerColors.mColor0 = color;
+	// box1->mCornerColors.mColor1 = tColorWeak;
+	// box1->mCornerColors.mColor2 = tColorWeak;
+	// box1->mCornerColors.mColor3 = tColorWeak;
+
+	// J2DPictureEx* box2 = (J2DPictureEx*)pane->search('PICT_004');
+	// box2->mCornerColors.mColor0 = color;
+	// box2->mCornerColors.mColor1 = color;
+	// box2->mCornerColors.mColor2 = color;
+	// box2->mCornerColors.mColor3 = color;
+
+	// color.a = 0xff;
+
+	static_cast<J2DPictureEx*>(pane->search('PICT_003'))->setWhite(color);
+	static_cast<J2DPictureEx*>(pane->search('PICT_004'))->setWhite(color);
+	//static_cast<J2DPictureEx*>(pane->search('PICT_002'))->setWhite(color);
+	//static_cast<J2DPictureEx*>(pane->search('w_00'))->setWhite(color);
+	//static_cast<J2DPictureEx*>(pane->search('w_01'))->setWhite(color);
+	//static_cast<J2DPictureEx*>(pane->search('x_00'))->setWhite(color);
+
+}
 
 } // namespace newScreen
 
