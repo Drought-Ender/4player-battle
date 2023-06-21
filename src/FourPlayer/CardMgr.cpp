@@ -267,6 +267,10 @@ Vector3f CardMgr::getSlotOrigin(int playerIdx)
 
 void CardMgr::draw(Graphics& gfx) {
     if (!moviePlayer->isActive()) {
+		for (int i = 0; i < 4; i++) {
+			mSlotsUpdated[i] = false;
+		}
+
 		Vector3f olimarSlotPos = getSlotOrigin(0);
 		Vector3f louieSlotPos  = getSlotOrigin(1);
         Vector3f p3SlotPos     = getSlotOrigin(2);
@@ -325,6 +329,55 @@ void CardMgr::gotPlayerCard(int user)
 	}
 }
 
+void CardMgr::SlotMachine::updateZoomIn()
+{
+	if (mCardMgr->mSlotsUpdated[mPlayerIndex]) {
+		return;
+	}
+	else {
+		mCardMgr->mSlotsUpdated[mPlayerIndex] = true;
+	}
+	if (_50 == 0) {
+		_3C += sys->mDeltaTime * 4.0f;
+		_44 = _3C * 10.0f + 20.0f;
+		_48 = 0.0f;
+		if (_3C > 1.0f) {
+			_3C = 0.0f;
+			_50 = 1;
+		}
+	} else {
+		_3C += sys->mDeltaTime;
+		if (_3C > 1.0f) {
+			_3C -= 1.0f;
+		}
+
+		_44 = pikmin2_sinf(_3C * TAU) * 5.0f + 30.0f;
+		_48 = pikmin2_sinf(_3C * TAU * 2.0f) * 5.0f + 30.0f;
+		_40 = pikmin2_cosf(_3C * TAU) * 10.0f * DEG2RAD * PI;
+	}
+}
+/*
+ * --INFO--
+ * Address:	80238D44
+ * Size:	000128
+ */
+void CardMgr::SlotMachine::updateZoomUse()
+{
+	if (mCardMgr->mSlotsUpdated[mPlayerIndex]) {
+		return;
+	}
+	else {
+		mCardMgr->mSlotsUpdated[mPlayerIndex] = true;
+	}
+	_3C += sys->mDeltaTime * 3.0f;
+	if (_3C > 1.0f) {
+		_3C -= 1.0f;
+	}
+
+	_44 = pikmin2_sinf(_3C * TAU) * 5.0f + 30.0f;
+	_48 = -(_3C * 30.0f - 30.0f);
+	_40 = (pikmin2_cosf(_3C * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
+}
 
 } // namespace VsGame
 

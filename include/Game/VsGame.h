@@ -108,7 +108,7 @@ struct CardSelector {
 };
 
 struct CardMgr {
-	struct SlotMachine {
+	struct SlotMachine { // DO NOT EDIT THIS STRUCT, THERE ARE NOT POINTERS
 		SlotMachine();
 
 		void clear();
@@ -209,6 +209,7 @@ struct CardMgr {
 	LightObj* mLightObj;           // _108
 	VsGameSection* mSection;       // _10C
 	TekiMgr* mTekiMgr;             // _110
+	bool mSlotsUpdated[4];
 };
 
 struct StageData : public CNode {
