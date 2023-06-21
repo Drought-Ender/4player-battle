@@ -238,29 +238,13 @@ Game::Navi* Brain::searchOrima()
 
 				// if we're in versus mode, make sure it's the correct captain
 				if (Game::gameSystem->mMode == Game::GSM_VERSUS_MODE) {
-					if (curNavi->mNaviIndex == 0) { // olimar needs red
-						if ((int)mPiki->getKind() != Game::Red) {
-							continue;
-						}
-					} else if ((int)mPiki->getKind() != Game::Blue) { // louie needs blue
+					if (!curNavi->onTeam(mPiki->getKind())) {
 						continue;
 					}
 				}
-
-				if (curNavi->mController1) {
-					rad  = dist;
-					navi = curNavi;
-
-				} else if (Game::gameSystem->mSection->mPrevNaviIdx == 0) {
-					if (curNavi->mNaviIndex == 0) {
-						rad  = dist;
-						navi = curNavi;
-					}
-
-				} else if (curNavi->mNaviIndex == 1) {
-					rad  = dist;
-					navi = curNavi;
-				}
+				rad  = dist;
+				navi = curNavi;
+				
 			}
 		}
 	}

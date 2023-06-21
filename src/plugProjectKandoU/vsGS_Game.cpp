@@ -729,6 +729,7 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 {
 	if (gameSystem->isMultiplayerMode()) {
 		section->setPlayerMode(gNaviNum);
+		section->setCamController();
 	}
 
 	RoomMapMgr* mgr   = static_cast<RoomMapMgr*>(mapMgr);
