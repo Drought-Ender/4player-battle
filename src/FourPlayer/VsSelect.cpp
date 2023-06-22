@@ -25,15 +25,16 @@ char* NaviNameArray[4] = {
 };
 
 
-const f32 baseXOffs[2] = {341.0f, 466.0f};
+const f32 baseXOffs[2] = {341.0f, 475.0f};
 const f32 baseYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f}; // increments of 20
 
-const f32 boxXOffs[2] = {381.0f, 506.0f};
+const f32 boxXOffs[2] = {381.0f, 515.0f};
 const f32 boxYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f};
 
 const JUtility::TColor vsTeamColors[2] = { 0xff5050ff, 0x5050ffff };
 
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
+
     TVsSelect::doCreate(rarc);
 
     for (int i = 0; i < 4; i++) {
@@ -70,8 +71,8 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     // f32 addY = 43.0f;
 
     const char* iconPaths[4] = {
-        "orima001.bti",
-        "lui001.bti",
+        "orima003.bti",
+        "lui003.bti",
         "president_large.bti",
         "wife_large.bti"
     };
@@ -113,8 +114,8 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
 
 
-    mWinCounts[0]->hide();
-    mWinCounts[1]->hide();
+    // mWinCounts[0]->hide();
+    // mWinCounts[1]->hide();
 
     
     for (int i = 0; i < 4; i++) {        
@@ -135,6 +136,9 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
         mNaviNames[i]->mOffset = JGeometry::TVec2f(baseX + 35.0f, baseY);
         mNaviNames[i]->updateScale(0.6f, 0.7f);
+        if (i == 2) {
+            mNaviNames[i]->updateScale(0.4f, 0.7f);
+        }
 
         mNewWinCallbacks[i]->mPane->mOffset = JGeometry::TVec2f(baseX + 77.5f, baseY - 5.0f);
         mNewWinCallbacks[i]->update();
@@ -181,8 +185,13 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
 }
 
 bool TFourVsSelect::doUpdate() {
-    bool check = TVsSelect::doUpdate();
     Controller* controllerArray[4] = { mController, mController2, Game::gControllerP3, Game::gControllerP4};
+
+
+
+
+    bool check = TVsSelect::doUpdate();
+    
 
     for (int i = 0; i < 4; i++) {
         P2ASSERT(controllerArray[i]);
