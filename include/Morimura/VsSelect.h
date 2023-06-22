@@ -283,6 +283,9 @@ struct TFourVsSelect : public TVsSelect
 
 	int mTeamIDs[4];
 	bool mAnimActive[4];
+	bool mErrAnimActive[4];
+	f32 mErrAnimProgress[4]; // 0 to 1
+	f32 mErrAnimSpeed[4];
 	f32 mAnimProgress[4]; // 0 to 1
 	f32 mAnimSpeed[4];
 	JUtility::TColor mLerpColors[4];

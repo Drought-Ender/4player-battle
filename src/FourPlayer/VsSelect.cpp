@@ -2,6 +2,7 @@
 #include "Morimura/Bases.h"
 #include "FourPlayer.h"
 #include "Game/VsGameSection.h"
+#include "PSSystem/PSSystemIF.h"
 #include "Controller.h"
 
 int mRealWinCounts[4];
@@ -185,15 +186,33 @@ bool TFourVsSelect::doUpdate() {
 
     for (int i = 0; i < 4; i++) {
         P2ASSERT(controllerArray[i]);
-        if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_RIGHT) && mTeamIDs[i] != 1) {
-            mTeamIDs[i]++;
-            mAnimActive[i] = true;
-            mAnimSpeed[i] = 3.0f;
+        if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_RIGHT)) {
+            if (mTeamIDs[i] == 1) {
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
+                mErrAnimActive[i] = true;
+                mErrAnimProgress[i] = 0.0f;
+                mErrAnimSpeed[i] = 5.0f;
+            }
+            else {
+                mTeamIDs[i]++;
+                mAnimActive[i] = true;
+                mAnimSpeed[i] = 3.0f;
+                PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_THROW, 0);
+            }
         }
-        else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_LEFT) && mTeamIDs[i] != 0) {
-            mTeamIDs[i]--;
-            mAnimActive[i] = true;
-            mAnimSpeed[i] = -3.0f;
+        else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_LEFT)) {
+            if (mTeamIDs[i] == 0) {
+                mErrAnimActive[i] = true;
+                mErrAnimProgress[i] = 1.0f;
+                mErrAnimSpeed[i] = -5.0f;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
+            }
+            else {
+                mTeamIDs[i]--;
+                mAnimActive[i] = true;
+                mAnimSpeed[i] = -3.0f;
+                PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_THROW, 0);
+            }
         }
     }
 
@@ -217,20 +236,41 @@ bool TFourVsSelect::doUpdate() {
             if (mAnimProgress[i] < 0.0f) {
                 mAnimActive[i] = false;
                 mAnimProgress[i] = 0.0f;
+
+                mErrAnimActive[i] = false;
+                mErrAnimProgress[i] = 0.5f;
+                mErrAnimSpeed[i] = 5.0f;
+                
+                PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_GROUND, 0);
             }
             else if (mAnimProgress[i] > 1.0f) {
                 mAnimActive[i] = false;
                 mAnimProgress[i] = 1.0f;
+
+                mErrAnimActive[i] = false;
+                mErrAnimProgress[i] = 0.5f;
+                mErrAnimSpeed[i] = -5.0f;
+                
+                PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_GROUND, 0);
             }
             mNaviBasePos[i].x = (baseXOffs[1] - baseXOffs[0]) * smoothedProgress + baseXOffs[0];
             mLerpColors[i].r = vsTeamColors[0].r * (1.0f - smoothedProgress) + vsTeamColors[1].r * smoothedProgress;
             mLerpColors[i].g = vsTeamColors[0].g * (1.0f - smoothedProgress) + vsTeamColors[1].g * smoothedProgress;
             mLerpColors[i].b = vsTeamColors[0].b * (1.0f - smoothedProgress) + vsTeamColors[1].b * smoothedProgress;
         }
-
-
-        f32 baseX = baseXOffs[mTeamIDs[i]];
-        f32 baseY = baseYOffs[i];
+        else if (mErrAnimActive[i]) {
+            mErrAnimProgress[i] += sys->mDeltaTime * mErrAnimSpeed[i];
+            f32 smoothedProgess = pikmin2_sinf(2 * mErrAnimProgress[i] * PI);
+            mNaviBasePos[i].x = baseXOffs[mTeamIDs[i]] + smoothedProgess * 5.0f;
+            if (mErrAnimProgress[i] > 1.0f) {
+                mNaviBasePos[i].x = baseXOffs[mTeamIDs[i]];
+                mErrAnimActive[i] = false;
+            }
+            if (mErrAnimProgress[i] < 0.0f) {
+                mNaviBasePos[i].x = baseXOffs[mTeamIDs[i]];
+                mErrAnimActive[i] = false;
+            }
+        }
 
         
 
