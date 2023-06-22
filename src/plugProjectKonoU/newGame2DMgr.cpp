@@ -1273,6 +1273,7 @@ bool Game2DMgr::open_WinLose(kh::Screen::DispWinLose& disp)
 	return false;
 }
 
+
 /*
  * --INFO--
  * Address:	803FEBC0
@@ -1297,7 +1298,8 @@ int Game2DMgr::check_WinLose() const
  */
 bool Game2DMgr::open_TimeUp1P()
 {
-	kh::Screen::DispWinLose disp(Timeup1P, 1);
+	int arr[4] =  {0, 0, 0, 0};
+	kh::Screen::DispWinLose disp(Timeup1P, 1, arr, false);
 	SetSceneArg arg(SCENE_WIN_LOSE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;
@@ -1312,7 +1314,8 @@ bool Game2DMgr::open_TimeUp1P()
  */
 bool Game2DMgr::open_TimeUp2P()
 {
-	kh::Screen::DispWinLose disp(Timeup2P, 1);
+	int arr[4] =  {0, 0, 0, 0};
+	kh::Screen::DispWinLose disp(Timeup2P, 1, arr, false);
 	SetSceneArg arg(SCENE_WIN_LOSE, reinterpret_cast<og::Screen::DispMemberBase*>(&disp), 0, true);
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		return true;

@@ -19,6 +19,8 @@ struct DispFinalResult;
 struct DispPayDept;
 struct DispWinLose;
 struct DispWinLoseReason;
+struct DispWinLoseFour;
+struct DispWenLoseReasonFour;
 } // namespace Screen
 } // namespace kh
 
@@ -138,6 +140,7 @@ struct Game2DMgr : public JKRDisposer {
 	bool open_WinLoseReason(kh::Screen::DispWinLoseReason&);
 	int check_WinLoseReason() const;
 	bool open_WinLose(kh::Screen::DispWinLose&);
+	bool open_WinLoseFour(kh::Screen::DispWinLoseFour&);
 	int check_WinLose() const;
 	bool open_TimeUp1P();
 	bool open_TimeUp2P();

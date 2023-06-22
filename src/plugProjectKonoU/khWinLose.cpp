@@ -51,25 +51,27 @@ void ObjWinLose::doCreate(JKRArchive* arc)
 	char* drawList[4][3] = { "win_wait.blo",     "win_wait.bck",     "win_wait.bpk",     "lose_wait.blo", "lose_wait.bck", "lose_wait.bpk",
 		                     "time_up_wait.blo", "time_up_wait.bck", "time_up_wait.bpk", "draw.blo",      "draw.bck",      "draw.bpk" };
 
-	int arg[2] = { 0, 0 };
+	int arg[4] = { 0, 0, 0, 0 };
 
 	if (!getDispMember()->isID(OWNER_KH, MEMBER_WIN_LOSE)) {
 		JUT_PANICLINE(79, "disp member err");
 	}
 
 	DispWinLose* disp = static_cast<DispWinLose*>(getDispMember());
+	mScreenNum = Game::gNaviNum;
 	switch (disp->mOutcome) {
 	case WinPlayer1:
-		arg[0] = 0;
-		arg[1] = 1;
-		break;
 	case WinPlayer2:
-		arg[0] = 1;
-		arg[1] = 0;
+		arg[0] = 1 - disp->mNewOutcomes[0];
+		arg[1] = 1 - disp->mNewOutcomes[1];
+		arg[2] = 1 - disp->mNewOutcomes[2];
+		arg[3] = 1 - disp->mNewOutcomes[3];
 		break;
 	case Draw: // draw
 		arg[0] = 3;
 		arg[1] = 3;
+		arg[2] = 3;
+		arg[3] = 3;
 		break;
 	case Timeup1P: // time out 1p
 		arg[0]     = 2;
@@ -117,6 +119,17 @@ void ObjWinLose::doCreate(JKRArchive* arc)
 	if (mScreenNum == 2) {
 		mYOffset[0] = msVal.mYOffsetP1;
 		mYOffset[1] = msVal.mYOffsetP2;
+	}
+	else {
+		mYOffset[0] = msVal.mYOffsetP1;
+		mYOffset[1] = msVal.mYOffsetP1;
+		mYOffset[2] = msVal.mYOffsetP2;
+		mYOffset[3] = msVal.mYOffsetP2;
+
+		mXOffset[0] = -160.0f;
+		mXOffset[1] = 160.0f;
+		mXOffset[2] = -160.0f;
+		mXOffset[3] = 160.0f;
 	}
 
 	getOwner()->setColorBG(0, 0, 0, 160);
@@ -176,7 +189,7 @@ bool ObjWinLose::updateAnimation()
 				mAnimTime1[i] = 0.0f;
 				mScreenA[i]->hide();
 			}
-			mScreenA[i]->search('ROOT')->add(0.0f, mYOffset[i]);
+			mScreenA[i]->search('ROOT')->add(mXOffset[i], mYOffset[i]);
 		}
 
 		if (mDoUpdateAnim) {
@@ -192,7 +205,7 @@ bool ObjWinLose::updateAnimation()
 			if (mAnimTime4[i] >= mAnim4[i]->mMaxFrame) {
 				mAnimTime4[i] = 0.0f;
 			}
-			mScreenB[i]->search('ROOT')->setOffset(0.0f, mYOffset[i]);
+			mScreenB[i]->search('ROOT')->setOffset(mXOffset[i], mYOffset[i]);
 			mScreenB[i]->search('ROOT')->setAlpha(mAlpha);
 			if (mAlpha < 255 - msVal.mAlphaInc) {
 				mAlpha += msVal.mAlphaInc;

@@ -45,9 +45,9 @@ enum VsCaveInfoType {
 };
 
 enum LoseReasonFlags {
-	VSLOSE_Unk1       = 0x1,
+	VSLOSE_OrimaDown       = 0x1,
 	VSLOSE_Extinction = 0x2,
-	VSLOSE_Unk3       = 0x4,
+	VSLOSE_ColoredMarble       = 0x4,
 	VSLOSE_Marble     = 0x80,
 };
 
@@ -406,6 +406,7 @@ struct GameState : public State {
 	bool mHasKeyDemoPlayed;     // _24
 	BitFlag<u8> mLoseCauses[4]; // _25
 	bool mWinColors[4];
+	int mNaviStatus[4];
 };
 
 struct VSState : public GameState {

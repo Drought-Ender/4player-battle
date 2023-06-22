@@ -12,10 +12,14 @@ enum WinLoseCondition { WinPlayer1 = 1, WinPlayer2 = 2, Draw = 3, Timeup1P = 4, 
 namespace kh {
 namespace Screen {
 struct DispWinLose : public og::Screen::DispMemberBase {
-	DispWinLose(int type, int state)
+	DispWinLose(int type, int state, int real[4], bool twoPlayer)
 	{
 		mOutcome = type;
 		_0C      = state;
+		for (int i = 0; i < 4; i++) {
+			mNewOutcomes[i] = real[i];
+		}
+		mIsTwoPlayer = twoPlayer;
 	}
 
 	virtual u32 getSize() { return sizeof(DispWinLose); } // _08 (weak)
@@ -26,6 +30,28 @@ struct DispWinLose : public og::Screen::DispMemberBase {
 	// _00-_08 = DispMemberBase
 	int mOutcome; // _08
 	int _0C;      // _0C
+
+	int mNewOutcomes[4];
+	bool mIsTwoPlayer;
+};
+
+struct DispWinLoseFour : public og::Screen::DispMemberBase {
+	DispWinLoseFour(int type[4], int state)
+	{
+		for (int i = 0; i < 4; i++) {
+			mOutcomes[i] = type[i];
+		}
+		_0C      = state;
+	}
+
+	virtual u32 getSize() { return sizeof(DispWinLose); } // _08 (weak)
+	virtual u32 getOwnerID() { return OWNER_KH; }         // _0C (weak)
+	virtual u64 getMemberID() { return MEMBER_WIN_FOUR; } // _10 (weak)
+
+	// _00     = VTBL
+	// _00-_08 = DispMemberBase
+	int mOutcomes[4]; // _08
+	int _0C;          // _0C
 };
 
 struct DispWinLoseReason : public og::Screen::DispMemberBase {
@@ -36,20 +62,9 @@ struct DispWinLoseReason : public og::Screen::DispMemberBase {
 
 	// _00     = VTBL
 	// _00-_08 = DispMemberBase
-	int mOutcomeP1; // _08
-	int mOutcomeP2; // _0C
-};
-
-struct DispWinLoseReasonFour : public DispWinLoseReason {
-
-	virtual u32 getSize() { return sizeof(DispWinLoseReason); }  // _08 (weak)
-	virtual u32 getOwnerID() { return OWNER_KH; }                // _0C (weak)
-	virtual u64 getMemberID() { return MEMBER_WIN_LOSE_REASON; } // _10 (weak)
-
-	// _00     = VTBL
-	// _00-_08 = DispMemberBase
-	int mOutcomeP3; // _10
-	int mOutcomeP4; // _14
+	int mOutcomeRed; // _08
+	int mOutcomeBlue; // _0C
+	int mOutcomeNavis[4];
 };
 
 struct ObjWinLose : public ::Screen::ObjBase {
@@ -65,17 +80,18 @@ struct ObjWinLose : public ::Screen::ObjBase {
 	// _00     = VTBL1
 	// _18     = VTBL2
 	// _00-_38 = Screen::ObjBase
-	P2DScreen::Mgr_tuning* mScreenA[2]; // _38
-	P2DScreen::Mgr_tuning* mScreenB[2]; // _40
-	J2DAnmTransform* mAnim1[2];         // _48
-	J2DAnmTransform* mAnim2[2];         // _50
-	J2DAnmColor* mAnim3[2];             // _58
-	J2DAnmColor* mAnim4[2];             // _60
-	f32 mAnimTime1[2];                  // _68
-	f32 mAnimTime2[2];                  // _70
-	f32 mAnimTime3[2];                  // _78
-	f32 mAnimTime4[2];                  // _80
-	f32 mYOffset[2];                    // _88
+	P2DScreen::Mgr_tuning* mScreenA[4]; // _38
+	P2DScreen::Mgr_tuning* mScreenB[4]; // _40
+	J2DAnmTransform* mAnim1[4];         // _48
+	J2DAnmTransform* mAnim2[4];         // _50
+	J2DAnmColor* mAnim3[4];             // _58
+	J2DAnmColor* mAnim4[4];             // _60
+	f32 mAnimTime1[4];                  // _68
+	f32 mAnimTime2[4];                  // _70
+	f32 mAnimTime3[4];                  // _78
+	f32 mAnimTime4[4];                  // _80
+	f32 mYOffset[4];                    // _88
+	f32 mXOffset[4];
 	bool mDoUpdateAnim;                 // _90
 	int mFrameTimer;                    // _94
 	int mScreenNum;                     // _98
@@ -178,9 +194,9 @@ struct SceneWinLoseReason : public ::Screen::SceneBase {
 
 	// _00      = VTBL
 	// _00-_220 = Screen::SceneBase
-	::Screen::ObjBase* mScreenObj[2]; // _220
-	int mOutcome[2];                  // _228
-	bool mDone[2];
+	::Screen::ObjBase* mScreenObj[4]; // _220
+	int mOutcome[4];                  // _228
+	bool mDone[4];
 	int mCounter; // _234
 };
 } // namespace Screen

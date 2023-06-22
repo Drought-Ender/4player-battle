@@ -71,8 +71,8 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 	}
 
 	DispWinLoseReason* disp = static_cast<DispWinLoseReason*>(mDispMember);
-	mOutcome[0]             = disp->mOutcomeP1;
-	switch (disp->mOutcomeP1) {
+	mOutcome[0]             = disp->mOutcomeRed;
+	switch (disp->mOutcomeRed) {
 	case 1: // captain down
 	{
 		mScreenObj[0] = new Morimura::TOrimaDown2D;
@@ -106,8 +106,8 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 		break;
 	}
 
-	mOutcome[1] = disp->mOutcomeP2;
-	switch (disp->mOutcomeP2) {
+	mOutcome[1] = disp->mOutcomeBlue;
+	switch (disp->mOutcomeBlue) {
 	case 1: // captain down
 	{
 		mScreenObj[1] = new Morimura::TLujiDown2D;

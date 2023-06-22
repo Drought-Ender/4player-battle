@@ -83,6 +83,7 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		section->mDispMarbleCounts[i] = 0;
 		section->mRealMarbleCounts[i] = 0;
 		mWinColors[i] = 0;
+		mNaviStatus[i] = -1;
 	}
 	section->mGhostIconTimers[1]    = 0.0f;
 	section->mGhostIconTimers[0]    = 0.0f;
@@ -219,6 +220,7 @@ void GameState::exec(VsGameSection* section)
 				resetFlag(VSGS_Unk9);
 				setFlag(VSGS_Unk10);
 				int outcome;
+				int outcomes[4] = {0, 0, 0, 0};
 				u8 redLost  = getLoseCauses(VSPLAYER_Red);
 				u8 blueLost = getLoseCauses(VSPLAYER_Blue);
 
@@ -238,6 +240,7 @@ void GameState::exec(VsGameSection* section)
 						if (getVsPikiColor(i) == Red) {
 							OSReport("Red Team Member %i\n", i);
 							mRealWinCounts[i]++;
+							outcomes[i] = 1;
 						}
 					}
 
@@ -250,6 +253,7 @@ void GameState::exec(VsGameSection* section)
 						if (getVsPikiColor(i) == Blue) {
 							OSReport("Blue Team Member %i\n", i);
 							mRealWinCounts[i]++;
+							outcomes[i] = 1;
 						}
 					}
 
@@ -259,8 +263,15 @@ void GameState::exec(VsGameSection* section)
 					section->mVsWinner = -1;
 				}
 
-				kh::Screen::DispWinLose winLose(outcome, 1);
-				Screen::gGame2DMgr->open_WinLose(winLose);
+				if (Game::gNaviNum == 2) {
+
+					kh::Screen::DispWinLose winLose(outcome, 1, outcomes, true);
+					Screen::gGame2DMgr->open_WinLose(winLose);
+				}
+				else {
+					kh::Screen::DispWinLose winLose(outcome, 1, outcomes, false);
+					Screen::gGame2DMgr->open_WinLose(winLose);
+				}
 				return;
 
 			} else {
@@ -285,9 +296,19 @@ void GameState::exec(VsGameSection* section)
 		if (!_16) {
 			if (!GameStat::getAllPikmins(Red)) {
 				setLoseCause(VSPLAYER_Red, VSLOSE_Extinction);
+				for (int i = 0; i < 4; i++) {
+					if (getVsPikiColor(i) == Red) {
+						mNaviStatus[i] = VSLOSE_Extinction;
+					}
+				}
 			}
 			if (!GameStat::getAllPikmins(Blue)) {
 				setLoseCause(VSPLAYER_Blue, VSLOSE_Extinction);
+				for (int i = 0; i < 4; i++) {
+					if (getVsPikiColor(i) == Blue) {
+						mNaviStatus[i] = VSLOSE_Extinction;
+					}
+				}
 			}
 		}
 
@@ -379,10 +400,10 @@ void GameState::exec(VsGameSection* section)
 
 			int redReason  = -1;
 			int blueReason = -1;
-			if (isLoseCause(VSPLAYER_Red, VSLOSE_Unk3)) {
+			if (isLoseCause(VSPLAYER_Red, VSLOSE_ColoredMarble)) {
 				blueReason = 3;
 
-			} else if (isLoseCause(VSPLAYER_Red, VSLOSE_Unk1)) {
+			} else if (isLoseCause(VSPLAYER_Red, VSLOSE_OrimaDown)) {
 				redReason = 1;
 
 			} else if (isLoseCause(VSPLAYER_Red, VSLOSE_Extinction)) {
@@ -391,10 +412,10 @@ void GameState::exec(VsGameSection* section)
 
 			if (blueReason == 3) {
 
-			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_Unk3)) {
+			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_ColoredMarble)) {
 				redReason = 3;
 
-			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_Unk1)) {
+			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_OrimaDown)) {
 				blueReason = 1;
 
 			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_Extinction)) {
@@ -402,8 +423,13 @@ void GameState::exec(VsGameSection* section)
 			}
 
 			kh::Screen::DispWinLoseReason winLoseReason;
-			winLoseReason.mOutcomeP1 = redReason;
-			winLoseReason.mOutcomeP2 = blueReason;
+			winLoseReason.mOutcomeRed = redReason;
+			winLoseReason.mOutcomeBlue = blueReason;
+
+			for (int i = 0; i < 4; i++) {
+				winLoseReason.mOutcomeNavis[i] = mNaviStatus[i];
+
+			}
 
 			P2ASSERTLINE(513, Screen::gGame2DMgr->open_WinLoseReason(winLoseReason));
 		}
@@ -580,7 +606,7 @@ void GameState::onBattleFinished(VsGameSection* section, int winnerMaybe, bool c
 		return;
 	}
 
-	setLoseCause(1 - winnerMaybe, VSLOSE_Unk3);
+	setLoseCause(1 - winnerMaybe, VSLOSE_ColoredMarble);
 
 	if (check) {
 		_16 = 1;
@@ -618,7 +644,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 
 	_16 = 1;
 
-	u8 loseReason = VSLOSE_Unk3;
+	u8 loseReason = VSLOSE_ColoredMarble;
 	if (!isYellow) {
 		loseReason |= VSLOSE_Marble;
 	}
@@ -923,24 +949,25 @@ void GameState::onNextFloor(VsGameSection* section, ItemHole::Item* hole)
  */
 void GameState::onOrimaDown(VsGameSection* section, int idx)
 {
-	int naviIdx = getVsTeam(idx);
+	int teamIdx = getVsTeam(idx);
 
-	P2ASSERTBOUNDSLINE(1341, 0, naviIdx, 4);
+	P2ASSERTBOUNDSLINE(1341, 0, teamIdx, 4);
 
 	if (gameSystem->isVersusMode()) {
 		if (!_16) {
-			setLoseCause(naviIdx, VSLOSE_Unk1);
+			setLoseCause(teamIdx, VSLOSE_OrimaDown);
+			mNaviStatus[idx] = VSLOSE_OrimaDown;
 		}
 		return;
 	}
 
-	MoviePlayArg movieArg("s03_orimadown", nullptr, section->mMovieFinishCallback, naviIdx);
+	MoviePlayArg movieArg("s03_orimadown", nullptr, section->mMovieFinishCallback, teamIdx);
 	movieArg.mDelegateStart = section->mMovieStartCallback;
 
-	Navi* deadNavi = naviMgr->getAt(naviIdx);
+	Navi* deadNavi = naviMgr->getAt(teamIdx);
 	movieArg.setTarget(deadNavi);
 	moviePlayer->mTargetNavi = deadNavi;
-	if (naviIdx == 0) {
+	if (teamIdx == 0) {
 		moviePlayer->mActingCamera = section->mOlimarCamera;
 	} else {
 		moviePlayer->mActingCamera = section->mLouieCamera;
