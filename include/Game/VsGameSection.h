@@ -95,11 +95,9 @@ struct VsGameSection : public BaseGameSection {
 
 	static int mRedWinCount;
 	static int mBlueWinCount;
-	static int mP1WinCount;
-	static int mP2WinCount;
-	static int mP3WinCount;
-	static int mP4WinCount;
 	static int mDrawCount;
+	static int mNaviWinCounts[4];
+
 
 	bool mIsVersusMode;                            // _174
 	VSFifo* mVsFifo;                               // _178
@@ -151,6 +149,9 @@ struct VsGameSection : public BaseGameSection {
 	int mDispMarbleCounts[4];                      // _3D4
 	int mRealMarbleCounts[4];                      // _3DC
 };
+
+
+
 } // namespace Game
 
 #endif

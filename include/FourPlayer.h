@@ -5,6 +5,8 @@
 
 struct Controller;
 
+extern int mRealWinCounts[4];
+
 namespace Game
 {
 
@@ -31,6 +33,16 @@ void SetVsTeam(int idx, TeamID team);
 
 } // namespace Game
 
+// a sqrt function suited to all domains
+f32 domainSqrt(f32 x) { 
+    if (x > 0.0f) {
+        return sqrtf(x);
+    }
+    else {
+        x = -x;
+        return -sqrtf(x);
+    }
+}
 
 
 #endif

@@ -4,6 +4,8 @@
 #include "Game/VsGameSection.h"
 #include "Controller.h"
 
+int mRealWinCounts[4];
+
 namespace Morimura
 {
     
@@ -38,10 +40,10 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     }
 
     Game::gNaviNum = Game::CalcNaviNum();
-    mNewWinValues[0] = Game::VsGameSection::mP1WinCount;
-    mNewWinValues[1] = Game::VsGameSection::mP2WinCount;
-    mNewWinValues[2] = Game::VsGameSection::mP3WinCount;
-    mNewWinValues[3] = Game::VsGameSection::mP4WinCount;
+    for (int i = 0; i < 4; i++) {
+        mNewWinValues[i] = mRealWinCounts[i];
+        OSReport("Win Values %i\n", mNewWinValues[i]);
+    }
 
     // f32 baseXOffs[2] = {335.0f, 359.0f};
     // f32 baseYOffs[2] = {282.0f, 300.0f};
@@ -67,8 +69,8 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     // f32 addY = 43.0f;
 
     const char* iconPaths[4] = {
-        "orima_icon.bti",
-        "loozy_icon.bti",
+        "orima001.bti",
+        "lui001.bti",
         "president_large.bti",
         "wife_large.bti"
     };
@@ -81,32 +83,32 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     mNaviNames[2] = static_cast<J2DTextBoxEx*>(mMainScreen->mScreenObj->search('PresName'));
     mNaviNames[3] = static_cast<J2DTextBoxEx*>(mMainScreen->mScreenObj->search('WifeName'));
 
-    mNewWinCounts[0] = new TVsSelectCBWinNum(mArchive);
-    mNewWinCounts[0]->init(mMainScreen->mScreenObj, 'Pori2_r', 'Pori2_l', 'Pori2_c', &mNewWinValues[0], true);
+    mNewWinCallbacks[0] = new og::Screen::CallBack_CounterRV(const_cast<char**>(og::Screen::SujiTex32), 2, 4,  mArchive);
+    mNewWinCallbacks[0]->init(mMainScreen->mScreenObj, 'Pori2_r', 'Pori2_l', 'Pori2_c', &mNewWinValues[0], true);
 
-    mNewWinCounts[0]->setPuyoAnim(true);
-    mMainScreen->mScreenObj->addCallBack('Pori2_r', mNewWinCounts[0]);
-
-
-    mNewWinCounts[1] = new TVsSelectCBWinNum(mArchive);
-    mNewWinCounts[1]->init(mMainScreen->mScreenObj, 'Plui2_r', 'Plui2_l', 'Plui2_c', &mNewWinValues[1], true);
-
-    mNewWinCounts[1]->setPuyoAnim(true);
-    mMainScreen->mScreenObj->addCallBack('Plui2_r', mNewWinCounts[1]);
+    mNewWinCallbacks[0]->setPuyoAnim(true);
+    mMainScreen->mScreenObj->addCallBack('Pori2_r', mNewWinCallbacks[0]);
 
 
-    mNewWinCounts[2] = new TVsSelectCBWinNum(mArchive);
-    mNewWinCounts[2]->init(mMainScreen->mScreenObj, 'Ppres_r', 'Ppres_l', 'Ppres_c', &mNewWinValues[2], true);
+    mNewWinCallbacks[1] = new og::Screen::CallBack_CounterRV(const_cast<char**>(og::Screen::SujiTex32), 2, 4,  mArchive);;
+    mNewWinCallbacks[1]->init(mMainScreen->mScreenObj, 'Plui2_r', 'Plui2_l', 'Plui2_c', &mNewWinValues[1], true);
 
-    mNewWinCounts[2]->setPuyoAnim(true);
-    mMainScreen->mScreenObj->addCallBack('Ppres_r', mNewWinCounts[2]);
+    mNewWinCallbacks[1]->setPuyoAnim(true);
+    mMainScreen->mScreenObj->addCallBack('Plui2_r', mNewWinCallbacks[1]);
 
 
-    mNewWinCounts[3] = new TVsSelectCBWinNum(mArchive);
-    mNewWinCounts[3]->init(mMainScreen->mScreenObj, 'Pwife_r', 'Pwife_l', 'Pwife_c', &mNewWinValues[3], true);
+    mNewWinCallbacks[2] = new og::Screen::CallBack_CounterRV(const_cast<char**>(og::Screen::SujiTex32), 2, 4,  mArchive);;
+    mNewWinCallbacks[2]->init(mMainScreen->mScreenObj, 'Ppres_r', 'Ppres_l', 'Ppres_c', &mNewWinValues[2], true);
 
-    mNewWinCounts[3]->setPuyoAnim(true);
-    mMainScreen->mScreenObj->addCallBack('Pwife_r', mNewWinCounts[3]);
+    mNewWinCallbacks[2]->setPuyoAnim(true);
+    mMainScreen->mScreenObj->addCallBack('Ppres_r', mNewWinCallbacks[2]);
+
+
+    mNewWinCallbacks[3] = new og::Screen::CallBack_CounterRV(const_cast<char**>(og::Screen::SujiTex32), 2, 4,  mArchive);
+    mNewWinCallbacks[3]->init(mMainScreen->mScreenObj, 'Pwife_r', 'Pwife_l', 'Pwife_c', &mNewWinValues[3], true);
+
+    mNewWinCallbacks[3]->setPuyoAnim(true);
+    mMainScreen->mScreenObj->addCallBack('Pwife_r', mNewWinCallbacks[3]);
 
 
 
@@ -117,6 +119,10 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     for (int i = 0; i < 4; i++) {        
         f32 baseX = baseXOffs[mTeamIDs[i]];
         f32 baseY = baseYOffs[i];
+
+        mAnimActive[i] = false;
+
+        mAnimProgress[i] = mTeamIDs[i];
 
         mNaviBasePos[i] = Vector2f(baseX, baseY);
 
@@ -129,13 +135,13 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         mNaviNames[i]->mOffset = JGeometry::TVec2f(baseX + 35.0f, baseY);
         mNaviNames[i]->updateScale(0.6f, 0.7f);
 
-        mNewWinCounts[i]->mPane->mOffset = JGeometry::TVec2f(baseX + 77.5f, baseY - 5.0f);
-        mNewWinCounts[i]->_A8->mOffset = JGeometry::TVec2f(baseX + 74.0f, baseY - 5.0f);
-        mNewWinCounts[i]->update();
+        mNewWinCallbacks[i]->mPane->mOffset = JGeometry::TVec2f(baseX + 77.5f, baseY - 5.0f);
+        mNewWinCallbacks[i]->update();
 
         
 
         const JUtility::TColor& color = vsTeamColors[mTeamIDs[i]];
+        mLerpColors[i] = color;
         f32 boxX = boxXOffs[mTeamIDs[i]];
         f32 boxY = boxYOffs[i];
 
@@ -151,7 +157,7 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         mNaviImages[i]->hide();
         mNaviBoxes[i]->hide();
         mWinBoxes[i]->hide();
-        mNewWinCounts[i]->hide();
+        mNewWinCallbacks[i]->hide();
         mNaviNames[i]->hide();
     }
 
@@ -181,9 +187,13 @@ bool TFourVsSelect::doUpdate() {
         P2ASSERT(controllerArray[i]);
         if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_RIGHT) && mTeamIDs[i] != 1) {
             mTeamIDs[i]++;
+            mAnimActive[i] = true;
+            mAnimSpeed[i] = 3.0f;
         }
         else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_LEFT) && mTeamIDs[i] != 0) {
             mTeamIDs[i]--;
+            mAnimActive[i] = true;
+            mAnimSpeed[i] = -3.0f;
         }
     }
 
@@ -200,27 +210,46 @@ bool TFourVsSelect::doUpdate() {
 
 
     for (int i = 0; i < 4; i++) {
+
+        if (mAnimActive[i]) {
+            mAnimProgress[i] += sys->mDeltaTime * mAnimSpeed[i];
+            f32 smoothedProgress = (1.0f - domainSqrt(pikmin2_cosf(mAnimProgress[i] * PI))) * 0.5f;
+            if (mAnimProgress[i] < 0.0f) {
+                mAnimActive[i] = false;
+                mAnimProgress[i] = 0.0f;
+            }
+            else if (mAnimProgress[i] > 1.0f) {
+                mAnimActive[i] = false;
+                mAnimProgress[i] = 1.0f;
+            }
+            mNaviBasePos[i].x = (baseXOffs[1] - baseXOffs[0]) * smoothedProgress + baseXOffs[0];
+            mLerpColors[i].r = vsTeamColors[0].r * (1.0f - smoothedProgress) + vsTeamColors[1].r * smoothedProgress;
+            mLerpColors[i].g = vsTeamColors[0].g * (1.0f - smoothedProgress) + vsTeamColors[1].g * smoothedProgress;
+            mLerpColors[i].b = vsTeamColors[0].b * (1.0f - smoothedProgress) + vsTeamColors[1].b * smoothedProgress;
+        }
+
+
         f32 baseX = baseXOffs[mTeamIDs[i]];
         f32 baseY = baseYOffs[i];
 
-        mNaviBasePos[i] = Vector2f(baseX, baseY);
+        
 
         mNaviImages[i]->setOffset(mNaviBasePos[i].x - 20.0f, mNaviBasePos[i].y - 20.0f);
 
         mNaviNames[i]->setOffset(mNaviBasePos[i].x + 35.0f, mNaviBasePos[i].y);
 
-        mNewWinCounts[i]->mPane->mOffset = JGeometry::TVec2f(mNaviBasePos[i].x + 77.5f, mNaviBasePos[i].y - 5.0f);
-        mNewWinCounts[i]->_A8->mOffset = JGeometry::TVec2f(mNaviBasePos[i].x + 74.0f, mNaviBasePos[i].y - 5.0f);
-        mNewWinCounts[i]->update();
-
-        
-
-        const JUtility::TColor& color = vsTeamColors[mTeamIDs[i]];
-        f32 boxX = boxXOffs[mTeamIDs[i]];
-        f32 boxY = boxYOffs[i];
+        mNewWinCallbacks[i]->mPane->mOffset = JGeometry::TVec2f(mNaviBasePos[i].x + 77.5f, mNaviBasePos[i].y - 5.0f);
+        if (*mNewWinCallbacks[i]->mCountPtr < 10) {
+            mNewWinCallbacks[i]->mPane->mOffset.x -= 6.0f;
+            mNewWinCallbacks[i]->mCounters[0]->mSize.x = 1.2f;
+        }
+        else {
+            mNewWinCallbacks[i]->mCounters[0]->mSize.x = 0.5f;
+        }
+        mNewWinCallbacks[i]->update();
 
         mNaviBoxes[i]->setOffset(mNaviBasePos[i].x + 20.0f, mNaviBasePos[i].y - 20.0f);
-        mNaviBoxes[i]->setWhite(color);
+        mNaviBoxes[i]->setWhite(mLerpColors[i]);
         
         mWinBoxes[i]->setOffset(mNaviBasePos[i].x + 57.5f, mNaviBasePos[i].y - 20.0f);
         mWinBoxes[i]->calcMtx();

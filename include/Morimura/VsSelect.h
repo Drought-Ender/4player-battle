@@ -51,6 +51,7 @@ struct DispMemberVsSelect : public og::Screen::DispMemberBase {
 	int mVsWinner;                                                 // _2C
 	int mStageCount;                                               // _30
 	int _34;                                                       // _34
+	int mNaviWinCounts[4];
 };
 
 struct TVsSelectCBWinNum : public og::Screen::CallBack_CounterDay {
@@ -272,14 +273,19 @@ struct TFourVsSelect : public TVsSelect
 	J2DPictureEx* mNaviBoxes[4];
 
 	J2DTextBoxEx* mNaviNames[4];
-	TVsSelectCBWinNum* mNewWinCounts[4];
+	og::Screen::CallBack_CounterRV* mNewWinCallbacks[4];
 	J2DPictureEx* mWinBoxes[4];
 
 	u32 mNewWinValues[4];
 
 	Vector2f mNaviBasePos[4];
+	
 
 	int mTeamIDs[4];
+	bool mAnimActive[4];
+	f32 mAnimProgress[4]; // 0 to 1
+	f32 mAnimSpeed[4];
+	JUtility::TColor mLerpColors[4];
 };
 
 

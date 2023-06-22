@@ -222,6 +222,8 @@ void GameState::exec(VsGameSection* section)
 				u8 redLost  = getLoseCauses(VSPLAYER_Red);
 				u8 blueLost = getLoseCauses(VSPLAYER_Blue);
 
+				OSReport("Set Outcome\n");
+
 				if (!redLost && !blueLost) { // neither player lost
 					outcome = 3;             // draw
 					VsGameSection::mDrawCount += 1;
@@ -230,11 +232,26 @@ void GameState::exec(VsGameSection* section)
 					outcome = 1;       // red win
 					VsGameSection::mRedWinCount += 1;
 					section->mVsWinner = 0;
+					OSReport("Red Won\n");
+					for (int i = 0; i < 4; i++) {
+						OSReport("Checking %i\n", i);
+						if (getVsPikiColor(i) == Red) {
+							OSReport("Red Team Member %i\n", i);
+							mRealWinCounts[i]++;
+						}
+					}
 
 				} else if (!blueLost) { // blue didn't lose
 					outcome = 2;        // blue win
 					VsGameSection::mBlueWinCount += 1;
 					section->mVsWinner = 1;
+					OSReport("Blue Won\n");
+					for (int i = 0; i < 4; i++) {
+						if (getVsPikiColor(i) == Blue) {
+							OSReport("Blue Team Member %i\n", i);
+							mRealWinCounts[i]++;
+						}
+					}
 
 				} else {         // both lost/something wacky happened
 					outcome = 3; // draw
@@ -352,14 +369,10 @@ void GameState::exec(VsGameSection* section)
 			checkSMenu(section);
 		}
 
-		OSReport("Varibles: UNK9 %i, UNK10 %i, _16 %i, LOSERED %i, LOSEBLUE %i\n", isFlag(VSGS_Unk9), isFlag(VSGS_Unk10), _16, getLoseCauses(VSPLAYER_Red), getLoseCauses(VSPLAYER_Blue));
 
 		// check we're in VS Mode and that someone needs to lose
 		if (gameSystem->isVersusMode() && !isFlag(VSGS_Unk9) && !isFlag(VSGS_Unk10) && _16 != 1
 		    && (getLoseCauses(VSPLAYER_Red) || getLoseCauses(VSPLAYER_Blue))) {
-
-				OSReport("End game plz\n");
-
 			gameSystem->resetFlag(GAMESYS_Unk6);
 			setFlag(VSGS_Unk9);
 			gameSystem->setPause(true, nullptr, 3);

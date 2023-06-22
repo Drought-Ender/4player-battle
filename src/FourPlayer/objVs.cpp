@@ -282,7 +282,10 @@ void FourObjVs::doUpdateCommon() {
     f32 scale = (pikmin2_cosf(mScale * PI) + 1.0f) * 0.5f;
     if (mDisp->mTwoPlayer) {
         mScreenP3->mScreen->hide();
+		
         mScreenP4->mScreen->hide();
+		mScreenP3->mScreen->setXY(-300.0f, 0.0f);
+		mScreenP4->mScreen->setXY(-300.0f, 0.0f); // hacky way to fix life gaudges
         mScreenP1->mScreen->setXY(0.0f, scale * -300.0f);
         mScreenP2->mScreen->setXY(0.0f, scale * 300.0f + 205.0f);
     }

@@ -296,6 +296,11 @@ void TitleState::execVs(VsGameSection* section)
 			select.mVsWinner       = section->mVsWinner;
 			select.mStageCount     = section->mVsStageList->mStageData.getChildCount();
 
+			for (int i = 0; i < 4; i++) {
+				select.mNaviWinCounts[i] = mRealWinCounts[i];
+			}
+
+
 			Screen::gGame2DMgr->setGamePad(mPlayer1Controller);
 			Screen::gGame2DMgr->open_VsSelect(select);
 		}
