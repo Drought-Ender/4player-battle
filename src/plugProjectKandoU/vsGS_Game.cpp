@@ -356,6 +356,8 @@ void GameState::exec(VsGameSection* section)
 		if (gameSystem->isVersusMode() && !isFlag(VSGS_Unk9) && !isFlag(VSGS_Unk10) && _16 != 1
 		    && (getLoseCauses(VSPLAYER_Red) || getLoseCauses(VSPLAYER_Blue))) {
 
+				OSReport("End game plz\n");
+
 			gameSystem->resetFlag(GAMESYS_Unk6);
 			setFlag(VSGS_Unk9);
 			gameSystem->setPause(true, nullptr, 3);

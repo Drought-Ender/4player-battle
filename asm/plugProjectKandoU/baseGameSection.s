@@ -2039,6 +2039,7 @@ init__Q24Game15BaseGameSectionFv:
 /* 8014B7BC 001486FC  48 2D 6B 25 */	bl assert_fragmentation__6SystemFPc
 /* 8014B7C0 00148700  48 1C 3E A9 */	bl create__Q22og5Lib2DFv
 /* 8014B7C4 00148704  48 2B 07 29 */	bl create__Q26Screen9Game2DMgrFv
+bl initControllers__Q24Game15BaseGameSectionFv
 /* 8014B7C8 00148708  80 8D 9A A0 */	lwz r4, gGame2DMgr__6Screen@sda21(r13)
 /* 8014B7CC 0014870C  38 00 00 01 */	li r0, 1
 /* 8014B7D0 00148710  38 7F 01 30 */	addi r3, r31, 0x130

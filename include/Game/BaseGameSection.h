@@ -87,6 +87,7 @@ struct BaseGameSection : public BaseHIOSection {
 	BaseGameSection(struct JKRHeap*);
 
 	void birthNavis();
+	static void initControllers();
 
 	/////////////////// VTABLE
 	virtual ~BaseGameSection();                                        // _08

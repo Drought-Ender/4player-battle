@@ -7,7 +7,9 @@
 #include "Morimura/Window.h"
 #include "Morimura/mrUtil.h"
 #include "Morimura/ScrollList.h"
-#include "trig.h"
+#include "efx2d/T2DCountKira.h"
+#include "og/Screen/callbackNodes.h"
+#include "og/Screen/StickAnimMgr.h"
 
 namespace Game {
 struct Vs2D_TitleInfo;
@@ -52,6 +54,12 @@ struct DispMemberVsSelect : public og::Screen::DispMemberBase {
 };
 
 struct TVsSelectCBWinNum : public og::Screen::CallBack_CounterDay {
+	inline TVsSelectCBWinNum(JKRArchive* rarc) : og::Screen::CallBack_CounterDay(const_cast<char**>(og::Screen::SujiTex32), 4, rarc)
+	, _AC(0)
+	, mScaleMgr(nullptr)
+	{
+		mScaleMgr = new og::Screen::ScaleMgr;
+	}
 	virtual ~TVsSelectCBWinNum();      // _08 (weak)
 	virtual void update();             // _10
 	virtual void setValue(bool, bool); // _28
@@ -116,6 +124,8 @@ struct TVsSelectScene : public THIOScene {
 	TConfirmEndWindow* mConfirmEndWindow; // _224
 };
 
+struct TVsPiki;
+
 struct TVsSelect : public TScrollList {
 	TVsSelect();
 
@@ -128,8 +138,8 @@ struct TVsSelect : public TScrollList {
 	virtual og::Screen::DispMemberBase* getDispMemberBase(); // _78 (weak)
 	virtual void paneInit();                                 // _80
 	virtual void changePaneInfo();                           // _84
-	virtual void getIdMax();                                 // _88 (weak)
-	virtual void getNameID(int);                             // _8C
+	virtual int getIdMax();                                  // _88 (weak)
+	virtual u64 getNameID(int);                              // _8C
 	virtual void setShortenIndex(int, int, bool);            // _94
 
 	void getCourseID(int);
@@ -149,8 +159,129 @@ struct TVsSelect : public TScrollList {
 	// _00     = VTBL1
 	// _18     = VTBL2
 	// _00-_B4 = TScrollList
-	u8 _B4[0x278]; // _B4, TODO: fill in from ghidra
+	JKRArchive* _B4;
+	Controller* mController2;
+	TVsSelectScreen* _BC;
+	TScreenBase* _C0;
+	TScreenBase* _C4;
+	TScreenBase* _C8;
+	TScreenBase* _CC;
+	TScreenBase* _D0;
+	TVsSelectExplanationWindow* _D4;
+	TVsSelectIndPane* _d8;
+	J2DPane* _DC;
+
+	J2DPane* _E0;
+	J2DPane* _E4;
+	J2DPane* _E8;
+	J2DPane* _EC;
+	J2DPane* _F0;
+	J2DPane* _F4[3];
+	J2DPane* _100;
+	J2DPane* _104;
+	J2DPane* _108[2];
+	J2DPane* _110;
+	J2DPane* _114[6];
+	J2DPane* _12C[5];
+	J2DPane* _140[5];
+	J2DPane* _154;
+	J2DPane* _158;
+	J2DPane* _15C;
+
+	J2DPane* mOrimaPikiIcon;
+	J2DPane* mPbor0;
+	J2DPane* mPbor1;
+	J2DPane* _16C;
+	J2DPane* _170;
+	J2DPane* _174;
+	J2DPane* mLoozyPikiIcon;
+	J2DPane* mPblo0;
+	J2DPane* mPblo1;
+	u8 _184[0x30];
+	J2DPane* _1B4[6];
+	J2DPane* _1CC[6];
+	J2DPictureEx* _1E4;
+	unknown* _1E8[2];
+	TVsPiki* _1F0[2];
+	DispMemberVsSelect* _1F8;
+	TOffsetMsgSet* _1FC;
+	efx2d::T2DCountKira* _200;
+	og::Screen::CallBack_Picture* _204;
+	og::Screen::StickAnimMgr* _208;
+	og::Screen::ArrowAlphaBlink* _20C;
+	TVsSelectCBWinNum* mWinCounts[2];
+	u8 _214[0x10];
+	u8 _228;
+	u8 _229;
+	u8 _22A;
+	u8 _22B;
+	u8 _22C;
+	u8 _22D;
+	u8 _22E;
+	u8 _22F;
+	f32 _230;
+	f32 _234;
+	f32 _238;
+	u8 _23C;
+	u8 _23D;
+	u8 _23E[2];
+	int _240;
+	int _244;
+	int mStageCount;
+	int _24C;
+	f32 _250;
+	f32 _254;
+	f32 _258;
+	f32 _25C;
+	f32 _260;
+	f32 _264;
+	f32 _268;
+	f32 _26C;
+	f32 _270;
+	int _274;
+	int _278;
+	u32 _27C;
+	u32 _280;
+	u32 _284;
+	u32 _288;
+	u8 _28C;
+	u8 _28D;
+	u8 _28E[2];
+	f32 _290;
+	f32 _294;
+	f32 _298;
+	f32 _29C;
+	f32 _2A0;
+	f32 _2A4;
+	Vector2f _2A8[5];
+	Vector2f _2D0[5];
+	Vector2f _2F8[2];
+	Vector2f _308[2];
+	f32 _318;
+	f32 _31C;
+	u8 _320[8];
+	ResTIMG** mLevelTextures;
 };
+
+struct TFourVsSelect : public TVsSelect
+{
+	virtual void doCreate(JKRArchive*);
+	virtual bool doUpdate();
+
+	J2DPictureEx* mNaviImages[4];
+	J2DPictureEx* mNaviBoxes[4];
+
+	J2DTextBoxEx* mNaviNames[4];
+	TVsSelectCBWinNum* mNewWinCounts[4];
+	J2DPictureEx* mWinBoxes[4];
+
+	u32 mNewWinValues[4];
+
+	Vector2f mNaviBasePos[4];
+
+	int mTeamIDs[4];
+};
+
 
 } // namespace Morimura
 

@@ -26,14 +26,17 @@ Controller* gControllerP4;
 PlayCamera* gCameraP3;
 PlayCamera* gCameraP4;
 
+void BaseGameSection::initControllers() {
+	gControllerP3 = new Controller((JUTGamePad::EPadPort)2);
+    gControllerP4 = new Controller((JUTGamePad::EPadPort)3);
+}
+
 bool gFancyCamera;
 
 int gNaviNum = 2;
 
 void BaseGameSection::birthNavis() {
 	gNaviNum = CalcNaviNum();
-    gControllerP3 = new Controller((JUTGamePad::EPadPort)2);
-    gControllerP4 = new Controller((JUTGamePad::EPadPort)3);
 	PlayCamera* playCameraPtrArr[4] = {mOlimarCamera, mLouieCamera, gCameraP3, gCameraP4};
     for (int i = 0; i < 4; i++) {
         Vector3f startVelocity = 0.0f;

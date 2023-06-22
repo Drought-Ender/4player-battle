@@ -75,6 +75,12 @@ int VsGameSection::mRedWinCount;
 int VsGameSection::mBlueWinCount;
 int VsGameSection::mDrawCount;
 
+int VsGameSection::mP1WinCount = 0;
+int VsGameSection::mP2WinCount = 0;
+int VsGameSection::mP3WinCount = 0;
+int VsGameSection::mP4WinCount = 0;
+
+
 /*
  * --INFO--
  * Address:	801C0EEC
