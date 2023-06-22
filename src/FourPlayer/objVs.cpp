@@ -272,6 +272,13 @@ void FourObjVs::doUpdateCommon() {
     checkUpdateWinColor();
     setOnOffBdama4P(!mSetBedamaFlag);
     checkObake();
+	if (mDoneState == 1) {
+		if (mFinishTimer <= 0.0f)
+			mDoneState = 2;
+		else
+			mFinishTimer -= sys->mDeltaTime;
+	}
+	mDisp->mDoneState = mDoneState;
     f32 scale = (pikmin2_cosf(mScale * PI) + 1.0f) * 0.5f;
     if (mDisp->mTwoPlayer) {
         mScreenP3->mScreen->hide();
@@ -280,17 +287,8 @@ void FourObjVs::doUpdateCommon() {
         mScreenP2->mScreen->setXY(0.0f, scale * 300.0f + 205.0f);
     }
     else {
-        if (mDoneState == 1) {
-            if (mFinishTimer <= 0.0f)
-                mDoneState = 2;
-            else
-                mFinishTimer -= sys->mDeltaTime;
-        }
         mScreenP3->update(mDisp->mP3Data);
         mScreenP4->update(mDisp->mP4Data);
-
-        mDisp->mDoneState = mDoneState;
-
         mScreenP1->mScreen->setXY(-10.0f, scale * -300.0f);
         mScreenP2->mScreen->setXY(300.0f, scale * -300.0f);
         mScreenP3->mScreen->setXY(-10.0f, scale * 300.0f + 205.0f);
@@ -369,7 +367,6 @@ void FourObjVs::doDraw(Graphics& gfx) {
 
 void FourObjVs::setOnOffBdama4P(bool doEfx)
 {
-    //OSReport("FourObjVs::setOnOffBdama4P(bool %i)\n", doEfx);
     bool P1win = false;
     bool P2win = false;
 	bool P3win = false;

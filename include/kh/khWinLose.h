@@ -40,6 +40,18 @@ struct DispWinLoseReason : public og::Screen::DispMemberBase {
 	int mOutcomeP2; // _0C
 };
 
+struct DispWinLoseReasonFour : public DispWinLoseReason {
+
+	virtual u32 getSize() { return sizeof(DispWinLoseReason); }  // _08 (weak)
+	virtual u32 getOwnerID() { return OWNER_KH; }                // _0C (weak)
+	virtual u64 getMemberID() { return MEMBER_WIN_LOSE_REASON; } // _10 (weak)
+
+	// _00     = VTBL
+	// _00-_08 = DispMemberBase
+	int mOutcomeP3; // _10
+	int mOutcomeP4; // _14
+};
+
 struct ObjWinLose : public ::Screen::ObjBase {
 	ObjWinLose();
 

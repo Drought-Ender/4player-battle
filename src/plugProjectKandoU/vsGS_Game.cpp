@@ -352,6 +352,8 @@ void GameState::exec(VsGameSection* section)
 			checkSMenu(section);
 		}
 
+		OSReport("Varibles: UNK9 %i, UNK10 %i, _16 %i, LOSERED %i, LOSEBLUE %i\n", isFlag(VSGS_Unk9), isFlag(VSGS_Unk10), _16, getLoseCauses(VSPLAYER_Red), getLoseCauses(VSPLAYER_Blue));
+
 		// check we're in VS Mode and that someone needs to lose
 		if (gameSystem->isVersusMode() && !isFlag(VSGS_Unk9) && !isFlag(VSGS_Unk10) && _16 != 1
 		    && (getLoseCauses(VSPLAYER_Red) || getLoseCauses(VSPLAYER_Blue))) {
