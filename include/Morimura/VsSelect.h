@@ -239,8 +239,8 @@ struct TVsSelect : public TScrollList {
 	f32 _268;
 	f32 _26C;
 	f32 _270;
-	int _274;
-	int _278;
+	int mRedPikiNum;
+	int mBluePikiNum;
 	u32 _27C;
 	u32 _280;
 	u32 _284;
@@ -268,6 +268,8 @@ struct TFourVsSelect : public TVsSelect
 {
 	virtual void doCreate(JKRArchive*);
 	virtual bool doUpdate();
+	virtual void doDraw(Graphics& gfx);
+	virtual bool doUpdateFadein();
 
 	J2DPictureEx* mNaviImages[4];
 	J2DPictureEx* mNaviBoxes[4];

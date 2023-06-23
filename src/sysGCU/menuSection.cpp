@@ -1,6 +1,8 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "RootMenuSection.h"
 #include "System.h"
+#include "GameFlow.h"
+#include "FourPlayer.h"
 
 /*
  * --INFO--
@@ -24,6 +26,10 @@ void MenuSection::run()
 	_3C = false;
 	do {
 		mIsMainActive = true;
+		GameFlow::mActiveSectionFlag = 30;
+		gDrawVsMenu = false;
+		
+		
 		MenuSection::runChildSection();
 	} while (!_3C);
 }

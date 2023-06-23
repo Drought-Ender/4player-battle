@@ -6,6 +6,7 @@
 #include "Controller.h"
 
 int mRealWinCounts[4];
+bool gDrawVsMenu = false;
 
 namespace Morimura
 {
@@ -34,6 +35,9 @@ const f32 boxYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f};
 const JUtility::TColor vsTeamColors[2] = { 0xff5050ff, 0x5050ffff };
 
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
+
+    gOptionMenu = new VsOptionsMenu;
+    gOptionMenu->init();
 
     TVsSelect::doCreate(rarc);
 
@@ -184,15 +188,49 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     
 }
 
+bool TFourVsSelect::doUpdateFadein() {
+    if (!gDrawVsMenu) {
+        gDrawVsMenu = gOptionMenu->update();
+        return false;
+    }
+    return TVsSelect::doUpdateFadein();
+}
+
 bool TFourVsSelect::doUpdate() {
     Controller* controllerArray[4] = { mController, mController2, Game::gControllerP3, Game::gControllerP4};
 
+    int* pikiNumArray = &mRedPikiNum;
 
+    if (_D4->mState == 0)
+    for (int i = 0; i < 4; i++) {
+        for (int c = 0; c < 2; c++) {
+            if (mTeamIDs[i] == c) {
+                if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_R)) {
+                    pikiNumArray[c]++;
+                    if (pikiNumArray[c] > 10) {
+                        pikiNumArray[c] = 10;
+                    }
+                    else {
+                        PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_INCREMENT, 0);
+                    }
+                }
+                else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_L)) {
+                    pikiNumArray[c]--;
+                    if (pikiNumArray[c] < 1) {
+                        pikiNumArray[c] = 1;
+                    }
+                    else {
+                        PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_DECREMENT, 0);
+                    }
+                }
+            }
+        }
+    }
 
 
     bool check = TVsSelect::doUpdate();
     
-
+    if (_D4->mState == 0)
     for (int i = 0; i < 4; i++) {
         P2ASSERT(controllerArray[i]);
         if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_RIGHT)) {
@@ -312,6 +350,14 @@ bool TFourVsSelect::doUpdate() {
 
 
     return check;
+}
+
+void TFourVsSelect::doDraw(Graphics& gfx) {
+    if (!gDrawVsMenu) {
+        gOptionMenu->draw(gfx);
+        return;
+    }
+    TVsSelect::doDraw(gfx);
 }
 
 } // namespace name
