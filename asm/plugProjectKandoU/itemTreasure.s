@@ -1129,6 +1129,10 @@ releasePellet__Q34Game12ItemTreasure4ItemFv:
 /* 801F3738 001F0678  80 03 00 44 */	lwz r0, 0x44(r3)
 /* 801F373C 001F067C  2C 00 00 01 */	cmpwi r0, 1
 /* 801F3740 001F0680  40 82 00 9C */	bne .L_801F37DC
+lwz r3, 0x1fc(r31)
+lbz r3, 0x32C(r3)
+cmplwi r3, 0x6
+bne .L_801F37DC
 /* 801F3744 001F0684  4B ED 5E 5D */	bl rand
 /* 801F3748 001F0688  6C 63 80 00 */	xoris r3, r3, 0x8000
 /* 801F374C 001F068C  3C 00 43 30 */	lis r0, 0x4330

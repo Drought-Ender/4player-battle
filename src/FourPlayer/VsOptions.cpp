@@ -55,11 +55,11 @@ Option gOptions[] = {
     },
     {
         "Bitter Spray",
-        { "Bury", "Despicy", "Electric", "Element", "Deflower" },
+        { "Bury", "Despicy", "Kill", "Element", "Deflower" },
         { 
             "Bitter sprays will bury afflicted pikmin for 10 seconds", 
-            "Bitter sprays will remove the spicy effect from afflicted pikmin",
-            "Bitter sprays will electricute afflicted pikmin",
+            "Bitter sprays will remove the spicy effect from afflicted pikmin or bury them if they are not spicy",
+            "Bitter sprays will kill afflicted pikmin (they will be rebirthed at base)",
             "Bitter sprays will apply a fire/water effect to the afflicted pikmin",
             "Bitter sprays will deflower afflicted pikmin"
         },
@@ -95,9 +95,30 @@ Option gOptions[] = {
     },
     {
         "Marble Return",
-        { "Vanilla", "Bury", "Disabled"},
+        { "Vanilla", "Bury", "Disabled" },
         { "Marble return will work like vanilla", "Marble return will instead bury your marble", "You will not be able to roll marble return" },
         3,
+        0
+    },
+    {
+        "Card Use",
+        { "Manual", "Automatic" },
+        { "Slot machine cards will be used with Y", "Slot machine cards will be automatically used" },
+        2,
+        0
+    },
+    {
+        "Versus Hiba",
+        { "Off", "On" },
+        { "Versus Hiba will not spawn", "Versus Hiba will be spawned" },
+        2,
+        0
+    },
+    {
+        "Pikmin Rebirthing",
+        { "On", "Off" },
+        { "Pikmin will be rebirthed after fighting another pikmin", "Pikmin will not be rebirthed" },
+        2,
         0
     }
 };
@@ -110,27 +131,36 @@ JUTFont* getPikminFont() {
     return gP2JMEMgr->mFont;
 }
 
+#define OPTIONS_PER_PAGE (10)
+
+
+#define PAGE_COUNT (ARRAY_SIZE(gOptions) / OPTIONS_PER_PAGE)
+
 void VsOptionsMenu::init() {
     mController = new Controller(JUTGamePad::PORT_0);
     mPageNumber = 0;
-    mTooltipMessage = "";
-    
+    mTooltipMessage = "";    
 }
 
-bool VsOptionsMenu::update() {
 
-    if (mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == ARRAY_SIZE(gOptions)) {
+
+bool VsOptionsMenu::update() {
+    int startIdx = OPTIONS_PER_PAGE * mPageNumber;
+    int endIdx = OPTIONS_PER_PAGE * (mPageNumber + 1);
+    endIdx = MIN(endIdx, ARRAY_SIZE(gOptions));
+
+    if (mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == endIdx) {
         for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
             gConfig[i] = gOptions[i].getValue();        
         }
         PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
         return true;
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_DOWN | JUTGamePad::PRESS_A) && mCursorOptionIndex < ARRAY_SIZE(gOptions)) {
+    else if (mController->isButtonDown(JUTGamePad::PRESS_DOWN | JUTGamePad::PRESS_A) && mCursorOptionIndex < endIdx) {
         mCursorOptionIndex++;
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_UP) && mCursorOptionIndex > 0) {
+    else if (mController->isButtonDown(JUTGamePad::PRESS_UP) && mCursorOptionIndex > startIdx) {
         mCursorOptionIndex--;
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
     }
@@ -141,6 +171,19 @@ bool VsOptionsMenu::update() {
     else if (mController->isButtonDown(JUTGamePad::PRESS_LEFT)) {
         gOptions[mCursorOptionIndex].decOption();
         PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
+    }
+    else if (mController->isButtonDown(JUTGamePad::PRESS_R) && mPageNumber < (PAGE_COUNT)) {
+        mPageNumber++;
+        mCursorOptionIndex += OPTIONS_PER_PAGE;
+        if (mCursorOptionIndex > ARRAY_SIZE(gOptions)) {
+            mCursorOptionIndex = ARRAY_SIZE(gOptions);
+        }
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_SCROLL, 0);
+    }
+    else if (mController->isButtonDown(JUTGamePad::PRESS_L) && mPageNumber > 0) {
+        mPageNumber--;
+        mCursorOptionIndex -= OPTIONS_PER_PAGE;
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_SCROLL, 0);
     }
 
     return false;
@@ -155,6 +198,7 @@ const JUtility::TColor gRedPrintGrad = 0xff2020ff;
 const JUtility::TColor gRedPrintBase = 0xffffffff;
 
 
+
 // NOTE: Screen size is 640x480
 
 void VsOptionsMenu::draw(Graphics& gfx) {
@@ -166,22 +210,26 @@ void VsOptionsMenu::draw(Graphics& gfx) {
     J2DPrint printRed (getPikminFont(), gRedPrintGrad, gRedPrintBase);
     Game::gNaviNum = Game::CalcNaviNum();
     print.print(10.0f, 30.0f, "4P-Battle Option Menu | Players: %i\n", Game::gNaviNum);
-    //print.print(500.0f, 440.0f, "Page %i", mPageNumber + 1);
+    print.print(500.0f, 440.0f, "Page %i", mPageNumber + 1);
 
-    for (int i = 0; i < ARRAY_SIZE(gOptions); i++) {
+    int startIdx = OPTIONS_PER_PAGE * mPageNumber;
+    int endIdx = OPTIONS_PER_PAGE * (mPageNumber + 1);
+    endIdx = MIN(endIdx, ARRAY_SIZE(gOptions));
+
+    for (int i = startIdx; i < endIdx; i++) {
         J2DPrint& specialPrint = (i == mCursorOptionIndex) ? printRed : printBlue;
-        gOptions[i].print(print, specialPrint, i);
+        gOptions[i].print(print, specialPrint, i - startIdx);
     }
 
-    J2DPrint& donePrint = (ARRAY_SIZE(gOptions) == mCursorOptionIndex) ?  printRed : print;
+    J2DPrint& donePrint = (endIdx == mCursorOptionIndex) ? printRed : print;
     
-    donePrint.print(50.0f, 70.0f + 30.0f * ARRAY_SIZE(gOptions), "Done");
+    donePrint.print(50.0f, 70.0f + 30.0f * (endIdx - startIdx), "Done");
 
-    if (mCursorOptionIndex < ARRAY_SIZE(gOptions)) {
+    if (mCursorOptionIndex < endIdx) {
         mTooltipMessage = gOptions[mCursorOptionIndex].getTooltipString();
     }
 
-    print.print(20.0f, 70.0f + mCursorOptionIndex * 30.0f, ">");
+    print.print(20.0f, 70.0f + (mCursorOptionIndex - startIdx) * 30.0f, ">");
 
     printInfo.print(20.0f, 440.0f, "%s", mTooltipMessage);
 }

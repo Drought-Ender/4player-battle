@@ -240,10 +240,39 @@ bool InteractDope::actPiki(Game::Piki* piki)
 		if (mCreature->isNavi()) {
 			Navi* navi = static_cast<Navi*>(mCreature);
 			if (!navi->onTeam(piki->mPikiKind) && !currState->dead()) {
-				FallMeckStateArg bitterArg;
-				bitterArg._00 = true;
-				piki->mFsm->transit(piki, PIKISTATE_FallMeck, &bitterArg);
-				return true;
+				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_BURY || (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_DEPSPICY && !piki->doped())) {
+					FallMeckStateArg bitterArg;
+					bitterArg._00 = true;
+					piki->mFsm->transit(piki, PIKISTATE_FallMeck, &bitterArg);
+					return true;
+				}
+				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_DEPSPICY) {
+					piki->clearDope();
+					return true;
+				}
+				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_KILL) {
+					DyingStateArg dargs;
+					dargs.mAnimIdx = -1;
+					dargs._04 = true;
+					piki->mNavi = nullptr;
+					piki->mFsm->transit(piki, PIKISTATE_Dying, &dargs);
+					return true;
+				}
+				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_ELEMENT) {
+					PanicStateArg pargs;
+					pargs.mPanicType = navi->getVsTeam();
+					piki->mFsm->transit(piki, PIKISTATE_Panic, &pargs);
+					return true;
+				}
+				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_DEFLOWER) {
+					if (piki->mHappaKind >= Bud) {
+						efx::createSimpleChiru(*piki->mEffectsObj->_0C, piki->mEffectsObj->mPikiColor);
+						piki->startSound(PSSE_PK_FLOWER_FALL_VOICE, true);
+						piki->mHappaKind = Leaf;
+						return true;
+					}
+					return true;
+				}
 			}
 		}
 	} else if (piki->doped()) {

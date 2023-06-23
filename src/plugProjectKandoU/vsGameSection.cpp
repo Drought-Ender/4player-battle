@@ -959,6 +959,10 @@ bool GameMessagePelletDead::actVs(VsGameSection* section)
  */
 bool GameMessageVsBirthTekiTreasure::actVs(VsGameSection* section)
 {
+	if (gConfig[SPAWN_SHEARWIG] == ConfigEnums::SHEARWIG_DONTSPAWN) {
+		return false;
+	}
+
 	// This function spawns the shearwigs (suprise maggots)
 	Sys::Sphere sphere(mPosition, 20.0f);
 	int target            = 0;

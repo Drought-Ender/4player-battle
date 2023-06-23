@@ -11,9 +11,6 @@ extern int mRealWinCounts[4];
 
 extern bool gDrawVsMenu;
 
-
-
-
 struct VsOptionsMenu {
     void init();
     bool update();
@@ -61,6 +58,8 @@ struct Option {
 extern Option gOptions[];
 extern int gConfig[];
 
+
+
 enum OptionsEnum {
     MAP_TYPE,
     MARBLE_BURY,
@@ -71,9 +70,23 @@ enum OptionsEnum {
     SPAWN_SHEARWIG,
     EGG_DROPS,
     AUTOPLUCK,
-    MARBLE_RETURN
+    MARBLE_RETURN,
+    VS_Y,
+    VS_HIBA,
+    PIKI_DIE
 };
 
+namespace ConfigEnums {
+    bool EggCanSpray() {
+        return gConfig[EGG_DROPS] == EGG_ALL || gConfig[EGG_DROPS] == EGG_NOMITE;
+    }
+    bool EggCanMites() {
+        return gConfig[EGG_DROPS] == EGG_ALL || gConfig[EGG_DROPS] == EGG_NOSPRAY;
+    }
+    bool EggCanDoubleNectar() {
+        return gConfig[EGG_DROPS] != EGG_SINGLE;
+    }
+};
 
 extern VsOptionsMenu* gOptionMenu;
 

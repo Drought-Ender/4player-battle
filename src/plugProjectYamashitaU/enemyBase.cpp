@@ -1214,13 +1214,16 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 				for (int i = 0; i < dropRolls; i++) {
 					f32 randRoll = randFloat();
 
-					u8 honeyKind;
-					if (randRoll < dropChance) {
-						honeyKind = HONEY_Y;
-					} else if (randRoll < scaledChance) {
-						honeyKind = HONEY_R;
-					} else {
-						honeyKind = HONEY_B;
+					u8 honeyKind = HONEY_Y;
+
+					if (ConfigEnums::EggCanSpray()) {
+						if (randRoll < dropChance) {
+							honeyKind = HONEY_Y;
+						} else if (randRoll < scaledChance) {
+							honeyKind = HONEY_R;
+						} else {
+							honeyKind = HONEY_B;
+						}
 					}
 
 					Sys::Sphere ball;

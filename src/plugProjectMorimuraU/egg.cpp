@@ -256,19 +256,19 @@ void Obj::genItem()
 		dropType = EGGDROP_SingleNectar;
 	} else {
 		test += C_PARMS->mProperParms.mDoubleNectarChance.mValue;
-		if (randVal < test) {
+		if (randVal < test && ConfigEnums::EggCanDoubleNectar()) {
 			dropType = EGGDROP_DoubleNectar;
 		} else {
 			test += C_PARMS->mProperParms.mMititesChance.mValue;
-			if (randVal < test) {
+			if (randVal < test && ConfigEnums::EggCanMites()) {
 				dropType = EGGDROP_Mitites;
 			} else {
 				test += C_PARMS->mProperParms.mSpicyChance.mValue;
-				if (randVal < test) {
+				if (randVal < test && ConfigEnums::EggCanSpray()) {
 					dropType = EGGDROP_Spicy;
 				} else {
 					test += C_PARMS->mProperParms.mBitterChance.mValue;
-					if (randVal < test) {
+					if (randVal < test && ConfigEnums::EggCanSpray()) {
 						dropType = EGGDROP_Bitter;
 					}
 				}

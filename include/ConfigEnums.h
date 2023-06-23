@@ -29,4 +29,25 @@ enum ESpicyType {
     SPICY_FLOWER
 };
 
+enum EBitterType {
+    BITTER_BURY,
+    BITTER_DEPSPICY,
+    BITTER_KILL,
+    BITTER_ELEMENT,
+    BITTER_DEFLOWER
+};
+
+enum ESpawnShearwig {
+    SHEARWIG_SPAWN,
+    SHEARWIG_DONTSPAWN
+};
+
+enum EEggDrops {
+    EGG_ALL,
+    EGG_NOSPRAY,
+    EGG_NOMITE,
+    EGG_NECTAR,
+    EGG_SINGLE
+};
+
 } // namespace ConfigEnums
