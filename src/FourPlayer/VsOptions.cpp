@@ -6,6 +6,7 @@
 #include "Game/GameSystem.h"
 #include "PSSystem/PSSystemIF.h"
 #include "Game/VsGameSection.h"
+#include "Game/GameConfig.h"
 
 VsOptionsMenu* gOptionMenu;
 
@@ -115,10 +116,17 @@ Option gOptions[] = {
         0
     },
     {
-        "Pikmin Rebirthing",
+        "Pikmin Revive",
         { "On", "Off" },
         { "Pikmin will be rebirthed after fighting another pikmin", "Pikmin will not be rebirthed" },
         2,
+        0
+    },
+    {
+        "Card Sprays",
+        { "Gain Spray", "Use Spray", "Disabled" },
+        { "Using a spray card will give your team a spray", "Using a spray card will use a spray to no cost", "Card sprays will not be rolled" },
+        3,
         0
     }
 };
@@ -139,7 +147,8 @@ JUTFont* getPikminFont() {
 void VsOptionsMenu::init() {
     mController = new Controller(JUTGamePad::PORT_0);
     mPageNumber = 0;
-    mTooltipMessage = "";    
+    mTooltipMessage = "";
+    mSelectedOption = 0;
 }
 
 
@@ -153,6 +162,9 @@ bool VsOptionsMenu::update() {
         for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
             gConfig[i] = gOptions[i].getValue();        
         }
+        Game::gGameConfig.mParms.mVsHiba.mData = gConfig[VS_HIBA];
+        Game::gGameConfig.mParms.mVsY.mData    = gConfig[VS_Y];
+
         PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
         return true;
     }

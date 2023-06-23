@@ -497,6 +497,7 @@ enum StateID {
 	PELSTATE_Zukan,
 	PELSTATE_GoalWait,
 	PELSTATE_Return,
+	PELSTATE_BounceBury,
 	PELLET_STATE_COUNT
 };
 
@@ -692,6 +693,34 @@ struct PelletZukanState : public PelletState {
 	virtual void cleanup(Pellet*);         // _10
 
 	f32 mTimer; // _10
+};
+
+
+struct BounceBuryStateArg : StateArg {
+	bool mIsBuried;
+	Container<Creature>* mHeldPikis;
+};
+
+struct PelletBounceBuryState : public PelletState {
+
+	PelletBounceBuryState();
+
+	static float mBounceHeight;
+	static float mBurryRadius;
+
+
+	virtual void init(Pellet*, StateArg*); // _08
+	virtual void exec(Pellet*);            // _0C
+	virtual void cleanup(Pellet*);         // _10
+	virtual bool isBuried();               // _20 (weak)
+	virtual bool appeared();
+	virtual bool isPickable();
+	void bury(Pellet*);
+	void flickNearby(Pellet*);
+	void doEfx(Pellet*);
+
+	float m_airTime;
+	bool m_isFalling;
 };
 
 extern PelletMgr* pelletMgr;

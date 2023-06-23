@@ -120,11 +120,15 @@ struct GameMessageVsRedOrSuckStart : public GameMessage {
 	bool mIsYellow; // _08 - unknown
 };
 
+extern int gUseCardNavi;
+
+
+
 struct GameMessageVsUseCard : public GameMessage {
 	virtual bool actVs(VsGameSection*); // _10
 
 	// _00 = VTBL
-	int mNaviIdx; // _04
+	int mTeamIdx; // _04
 };
 
 } // namespace Game

@@ -264,6 +264,8 @@ struct NaviDopeArg : public StateArg {
 	{
 	}
 
+	static bool wasteable;
+
 	int mType; // _00, spray type to consume
 };
 

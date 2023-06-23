@@ -73,7 +73,8 @@ enum OptionsEnum {
     MARBLE_RETURN,
     VS_Y,
     VS_HIBA,
-    PIKI_DIE
+    PIKI_DIE,
+    SPRAY_CARD
 };
 
 namespace ConfigEnums {

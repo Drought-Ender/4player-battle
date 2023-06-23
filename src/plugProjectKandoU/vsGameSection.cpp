@@ -1047,6 +1047,8 @@ bool GameMessageVsGotCard::actVs(VsGameSection* section)
 	return true;
 }
 
+int gUseCardNavi;
+
 /*
  * --INFO--
  * Address:	801C346C
@@ -1060,11 +1062,22 @@ bool GameMessageVsUseCard::actVs(VsGameSection* section)
 		}
 	}
 	if (gGameConfig.mParms.mVsY.mData == 0) {
-		if (section->mCardMgr->usePlayerCard(getVsTeam(mNaviIdx), section->mTekiMgr)) {
+		gUseCardNavi = mTeamIdx;
+		if (section->mCardMgr->usePlayerCard(getVsTeam(mTeamIdx), section->mTekiMgr)) {
 			section->useCard();
 		}
 	} else {
-		section->mCardMgr->stopSlot(getVsTeam(mNaviIdx));
+		int teamIdx = getVsTeam(mTeamIdx);
+		int canidates[4];
+		int canidateNum = 0;
+		for (int i = 0; i < 4; i++) {
+			if (getVsTeam(i) == teamIdx) {
+				canidates[canidateNum] = i;
+				canidateNum++;
+			}
+		}
+		gUseCardNavi = canidates[(int)(randFloat() * canidateNum)];
+		section->mCardMgr->stopSlot(teamIdx);
 	}
 	return true;
 }

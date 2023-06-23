@@ -26,6 +26,7 @@ enum OnyonObjects {
 	ONYON_OBJECT_SHIP  = 2,
 };
 
+
 struct ModelEffect;
 
 namespace efx {
@@ -181,6 +182,9 @@ struct Onyon : public BaseItem {
 };
 
 namespace ItemOnyon {
+
+extern bool gVsChargeOkay;
+
 // TODO: cull reinterpret_cast
 struct Mgr : public BaseItemMgr, public Container<Onyon> {
 	Mgr();

@@ -11238,7 +11238,7 @@ setupFloatMemory__Q24Game15BaseGameSectionFv:
 /* 80150EA8 0014DDE8  38 A0 00 13 */	li r5, 0x13
 /* 80150EAC 0014DDEC  90 01 00 70 */	stw r0, 0x70(r1)
 /* 80150EB0 0014DDF0  38 83 61 6C */	addi r4, r3, __vt__Q24Game21GameMessageVsAddEnemy@l
-/* 80150EB4 0014DDF4  38 00 00 0C */	li r0, 0xc
+/* 80150EB4 0014DDF4  38 00 00 0C */	li r0, 0x1c
 /* 80150EB8 0014DDF8  7F E3 FB 78 */	mr r3, r31
 /* 80150EBC 0014DDFC  90 81 00 70 */	stw r4, 0x70(r1)
 /* 80150EC0 0014DE00  38 81 00 70 */	addi r4, r1, 0x70
@@ -11254,7 +11254,7 @@ setupFloatMemory__Q24Game15BaseGameSectionFv:
 /* 80150EE8 0014DE28  38 A0 00 5D */	li r5, 0x5d
 /* 80150EEC 0014DE2C  90 01 00 64 */	stw r0, 0x64(r1)
 /* 80150EF0 0014DE30  38 83 61 6C */	addi r4, r3, __vt__Q24Game21GameMessageVsAddEnemy@l
-/* 80150EF4 0014DE34  38 00 00 02 */	li r0, 2
+/* 80150EF4 0014DE34  38 00 00 02 */	li r0, 4
 /* 80150EF8 0014DE38  7F E3 FB 78 */	mr r3, r31
 /* 80150EFC 0014DE3C  90 81 00 64 */	stw r4, 0x64(r1)
 /* 80150F00 0014DE40  38 81 00 64 */	addi r4, r1, 0x64

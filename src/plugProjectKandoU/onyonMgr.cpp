@@ -1179,8 +1179,12 @@ void Onyon::onKeyEvent(const SysShape::KeyEvent& event)
  * Address:	8017818C
  * Size:	0000AC
  */
+bool ItemOnyon::gVsChargeOkay = false;
+
 void Onyon::vsChargePikmin()
 {
+	if (!ItemOnyon::gVsChargeOkay && gConfig[PIKI_DIE] == ConfigEnums::REVIVE_OFF) return;
+
 	P2ASSERTLINE(1791, gameSystem->isVersusMode());
 	mPikminType = mOnyonType;
 	mToBirth++;

@@ -53,7 +53,33 @@ enum EEggDrops {
 enum EAutopluck {
     AUTOPLUCK_ON,
     AUTOPLUCK_OFF
-    
+};
+
+enum EMarbleReturn {
+    RETURN_NORMAL,
+    RETURN_BURY,
+    RETURN_REMOVED
+};
+
+enum EVsY {
+    VSY_OFF,
+    VSY_ON
+};
+
+enum EVsHiba {
+    VSHIBA_OFF,
+    VSHIBA_ON
+};
+
+enum EPikiRevive {
+    REVIVE_ON,
+    REVIVE_OFF
+};
+
+enum ESprayCard {
+    SPRAYCARD_NORMAL,
+    SPRAYCARD_USE,
+    SPRAYCARD_OFF
 };
 
 } // namespace ConfigEnums

@@ -373,6 +373,8 @@ lbl_80519234:
 .section .text, "ax"  # 0x800056C0 - 0x80472F00
 .global init__Q24Game9PelletFSMFPQ24Game6Pellet
 init__Q24Game9PelletFSMFPQ24Game6Pellet:
+b Pelletinit__4GameFPQ24Game9PelletFSMPQ24Game6Pellet
+
 /* 801A4310 001A1250  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 801A4314 001A1254  7C 08 02 A6 */	mflr r0
 /* 801A4318 001A1258  38 80 00 09 */	li r4, 9

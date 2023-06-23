@@ -5,9 +5,14 @@
 #include "Dolphin/rand.h"
 #include "efx2d/T2DSprayset.h"
 #include "FourPlayer.h"
+#include "Game/NaviState.h"
+#include "Game/gameStat.h"
 
 namespace Game
 {
+
+// wasteable__Q24Game11NaviDopeArg
+bool NaviDopeArg::wasteable = false;
 
 namespace VsGame
 {
@@ -32,39 +37,56 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 	case PIKMIN_5: {
 		Onyon* onyon = ItemOnyon::mgr->getOnyon(1 - user);
 		if (onyon) {
+			ItemOnyon::gVsChargeOkay = true;
 			for (int i = 0; i < 5; i++) {
 				onyon->vsChargePikmin();
 			}
+			ItemOnyon::gVsChargeOkay = false;
 		}
 		break;
 	}
 	case PIKMIN_10: {
 		Onyon* onyon = ItemOnyon::mgr->getOnyon(1 - user);
 		if (onyon) {
+			ItemOnyon::gVsChargeOkay = true;
 			for (int i = 0; i < 10; i++) {
 				onyon->vsChargePikmin();
 			}
+			ItemOnyon::gVsChargeOkay = false;
 		}
 		break;
 	}
 	case DOPE_BLACK: {
-        for (int i = 0; i < 4; i++) {
-            Navi* navi = naviMgr->getAt(i);
-            if (navi && navi->isAlive() && navi->onVsTeam(user)) {
-                navi->incDopeCount(SPRAY_TYPE_BITTER);
-                break;
-            }
-        }
+		Navi* navi = naviMgr->getAt(gUseCardNavi);
+		if (navi && navi->isAlive() && navi->onVsTeam(user)) {
+			if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_NORMAL) {
+				navi->incDopeCount(SPRAY_TYPE_BITTER);
+			}
+			else if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_USE) {
+				NaviDopeArg dopearg (SPRAY_TYPE_BITTER);
+				gDopeCountArray[getVsTeam(gUseCardNavi)][SPRAY_TYPE_BITTER]++;
+				navi->transit(NSID_Dope, &dopearg);
+				
+			}
+		}
 		break;
 	}
 	case DOPE_RED: {
-        for (int i = 0; i < 4; i++) {
-            Navi* navi = naviMgr->getAt(i);
-            if (navi && navi->isAlive() && navi->onVsTeam(user)) {
-                navi->incDopeCount(SPRAY_TYPE_SPICY);
-                break;
-            }
-        }
+		Navi* navi = naviMgr->getAt(gUseCardNavi);
+		if (navi && navi->isAlive() && navi->onVsTeam(user)) {
+			if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_NORMAL) {
+				navi->incDopeCount(SPRAY_TYPE_SPICY);
+			}
+			else if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_USE) {
+				NaviDopeArg dopearg (SPRAY_TYPE_SPICY);
+				NaviDopeArg::wasteable = true;
+				
+				gDopeCountArray[getVsTeam(gUseCardNavi)][SPRAY_TYPE_SPICY]++;
+				navi->transit(NSID_Dope, &dopearg);
+				NaviDopeArg::wasteable = false;
+			}
+		}
+
 		break;
 	}
 	case PIKMIN_XLU: {
@@ -117,25 +139,34 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 		CI_LOOP(IPellet)
 		{
 			Pellet* pellet = *IPellet;
-			if (color == pellet->getBedamaColor()) {
+			if (color == pellet->getBedamaPikiColor()) {
 				bedama = pellet;
 				break;
 			}
 		}
 		if (bedama && bedama->isAlive()) {
-			{ // needed for stickers to call dtor
-				Stickers stickers            = bedama;
-				Iterator<Creature> ICreature = &stickers;
-				CI_LOOP(ICreature) { (*ICreature)->endStick(); }
+			{
+			Stickers stickers            = bedama;
+			Iterator<Creature> ICreature = &stickers;
+			CI_LOOP(ICreature) { (*ICreature)->endStick(); }
 			}
 			Vector3f onyonPos  = onyon->getFlagSetPos();
 			Vector3f bedamaPos = bedama->getPosition();
-			if (_distanceXZflag(bedamaPos, onyonPos) > 30.0f) {
+			if (_distanceXZflag(bedamaPos, onyonPos) > 30.0f && gConfig[MARBLE_RETURN] == ConfigEnums::RETURN_NORMAL) {
 				onyonPos.y += bedama->getCylinderHeight() * 0.5f;
 				PelletReturnArg end = onyonPos;
 
 				bedama->mPelletSM->transit(bedama, PELSTATE_Return, &end);
 			}
+			else if (gConfig[MARBLE_RETURN] == ConfigEnums::RETURN_BURY) {
+				BounceBuryStateArg arg;
+				Stickers stickers = bedama;
+				arg.mIsBuried = bedama->isBuried();
+				arg.mHeldPikis = &stickers;
+
+				bedama->mPelletSM->transit(bedama, PELSTATE_BounceBury, &arg);
+			}
+			
 		}
 		break;
 	}
@@ -163,7 +194,7 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 	case TEKI_ROCK:
 	case TEKI_BOMBOTAKRA: {
 
-		float radiusVariance = 90.0f;
+		float radiusVariance = 150.0f;
 		float enemyHeight    = 0.0f;
 		int num;
 		if (slotID == TEKI_ROCK) {
@@ -175,23 +206,27 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 		}
 
 		int tekiID = slotID - 7;
-		Navi* navi = naviMgr->getAt(1 - user);
-		for (int i = 0; i < num; i++) {
-			Vector3f spawnNaviPos;
-			if (navi) {
-				spawnNaviPos = navi->getPosition();
+		for (int i = 0; i < 4; i++) {
+			if (getVsTeam(i) == user) continue;
 
-				float faceDir = navi->getFaceDir();
-				float radius  = randFloat() * 150.0f * radiusVariance;
+			Navi* navi = naviMgr->getAt(i);
+			for (int i = 0; i < num; i++) {
+				Vector3f spawnNaviPos;
+				if (navi) {
+					spawnNaviPos = navi->getPosition();
 
-				float angle  = randFloat() * TAU;
-				float height = enemyHeight;
+					float faceDir = navi->getFaceDir();
+					float radius  = randFloat() * radiusVariance;
 
-				Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
+					float angle  = randFloat() * TAU;
+					float height = enemyHeight;
 
-				spawnNaviPos += spawnOffset;
+					Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
+
+					spawnNaviPos += spawnOffset;
+				}
+				tekiMgr->birth(tekiID, spawnNaviPos, true);
 			}
-			tekiMgr->birth(tekiID, spawnNaviPos, true);
 		}
 		break;
 	}
@@ -378,6 +413,154 @@ void CardMgr::SlotMachine::updateZoomUse()
 	_48 = -(_3C * 30.0f - 30.0f);
 	_40 = (pikmin2_cosf(_3C * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
 }
+
+CardSelector::CardSelector()
+{
+	for (int i = 0; i < CARD_ID_COUNT; i++) {
+		mValues[i] = 100;
+	}
+	mValues[RESET_BEDAMA] = 30;
+}
+
+/*
+ * --INFO--
+ * Address:	........
+ * Size:	000064
+ */
+int CardSelector::getTotalWeight()
+{
+	int sum = 0;
+	for (int i = 0; i < CARD_ID_COUNT; i++) {
+		sum += mValues[i];
+	}
+	return sum;
+}
+
+/*
+ * --INFO--
+ * Address:	........
+ * Size:	000274
+ */
+int CardSelector::selectCard()
+{
+	f32 fullCumulative = 0.0f;
+	int arraySum       = getTotalWeight();
+	for (int i = 0; i < CARD_ID_COUNT; i++) {
+		fullCumulative += (f32)mValues[i] / arraySum;
+		if (mValues[i] == 0) {
+			mCumulative[i] = -100.0f;
+		} else {
+			mCumulative[i] = fullCumulative;
+		}
+	}
+	f32 value = randFloat();
+	for (int i = 0; i < CARD_ID_COUNT; i++) {
+		if (value < mCumulative[i])
+			return i;
+	}
+	return (int)(randFloat() * CARD_ID_COUNT);
+}
+
+
+void CardMgr::SlotMachine::start()
+{
+	_51 = false;
+
+	CardSelector selector;
+
+	int pikminCounts[2];
+	f32 redBlueScoreCount = mCardMgr->mSection->mRedBlueScore[mPlayerIndex];
+
+	int dopeCount0;
+	int dopeCount1;
+
+	f32 scoreCount0 = mCardMgr->mSection->mYellowScore[mPlayerIndex];
+	f32 scoreCount1 = mCardMgr->mSection->mYellowScore[1 - mPlayerIndex];
+
+	pikminCounts[0] = GameStat::getMapPikmins(1);
+	pikminCounts[1] = GameStat::getMapPikmins(0);
+
+	if (pikminCounts[mPlayerIndex] < 4) {
+		selector.mValues[PIKMIN_5]  = 200;
+		selector.mValues[PIKMIN_10] = 150;
+	}
+
+	dopeCount0 = mCardMgr->mSection->getGetDopeCount(mPlayerIndex, 0);
+	dopeCount1 = mCardMgr->mSection->getGetDopeCount(1 - mPlayerIndex, 0);
+
+	if (dopeCount0 > dopeCount1 + 2) {
+		selector.mValues[DOPE_RED] /= 2;
+	}
+
+	dopeCount0 = mCardMgr->mSection->getGetDopeCount(mPlayerIndex, 1);
+	dopeCount1 = mCardMgr->mSection->getGetDopeCount(1 - mPlayerIndex, 1);
+
+	if (dopeCount0 > dopeCount1 + 2) {
+		selector.mValues[DOPE_BLACK] /= 2;
+	}
+
+	if (mPrevSelected != UNRESOLVED) {
+		selector.mValues[mPrevSelected] = 10;
+	}
+
+	if (mCardMgr->mSection->mGhostIconTimers[mPlayerIndex] > 5.0f) {
+		selector.mValues[PIKMIN_XLU] = 0;
+	}
+
+	int total = selector.getTotalWeight();
+
+	f32 resetBedamaProb = 0.0f;
+
+	if (redBlueScoreCount < 0.2f) {
+
+	} else if (redBlueScoreCount < 0.4f) {
+		resetBedamaProb = 0.2f;
+	} else if (redBlueScoreCount < 0.7f) {
+		resetBedamaProb = 0.5f;
+	} else {
+		resetBedamaProb = 0.8f;
+	}
+
+	if (scoreCount0 - scoreCount1 >= 0.4f) {
+		resetBedamaProb *= 0.7f;
+	}
+
+	if (resetBedamaProb > 0.0f) {
+		selector.mValues[RESET_BEDAMA] = total * resetBedamaProb;
+	}
+
+	if (gConfig[MARBLE_RETURN] == ConfigEnums::RETURN_REMOVED) {
+		selector.mValues[RESET_BEDAMA] = 0;
+	}
+	if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_OFF) {
+		selector.mValues[DOPE_RED] = 0;
+		selector.mValues[DOPE_BLACK] = 0;
+	}
+	
+	mSelectedSlot = selector.selectCard();
+
+	mPrevSelected = mSelectedSlot;
+	_28           = randFloat();
+	mSlotID       = UNRESOLVED;
+	mAppearState  = 0;
+
+	PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_APPEAR, 0);
+	switch (mSpinState) {
+	case SPIN_END:
+	case SPIN_UNSTARTED:
+		mSpinSpeed = 72.0f * (PI / 180.0f);
+		mSpinState = SPIN_WAIT_START;
+		mSpinAccel = -TAU;
+		return;
+	case SPIN_WAIT_START:
+	case SPIN_START:
+		break;
+	default:
+		mSpinState = SPIN_START;
+		return;
+	}
+}
+
 
 } // namespace VsGame
 

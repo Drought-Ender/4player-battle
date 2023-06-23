@@ -7345,6 +7345,9 @@ init__Q24Game13NaviDopeStateFPQ24Game4NaviPQ24Game8StateArg:
 /* 80182EB0 0017FDF0  80 9D 00 10 */	lwz r4, 0x10(r29)
 /* 80182EB4 0017FDF4  2C 04 00 01 */	cmpwi r4, 1
 /* 80182EB8 0017FDF8  41 82 00 0C */	beq .L_80182EC4
+lbz r3, wasteable__Q24Game11NaviDopeArg@sda21(r13)
+cmplwi r3, 0
+bne .L_80182EC4
 /* 80182EBC 0017FDFC  2C 1F 00 00 */	cmpwi r31, 0
 /* 80182EC0 0017FE00  40 81 02 C8 */	ble .L_80183188
 .L_80182EC4:

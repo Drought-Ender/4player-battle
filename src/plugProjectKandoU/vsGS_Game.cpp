@@ -294,7 +294,7 @@ void GameState::exec(VsGameSection* section)
 		}
 
 		if (!_16) {
-			if (!GameStat::getAllPikmins(Red)) {
+			if (!GameStat::getAllPikmins(Red) && ItemOnyon::mgr->getOnyon(Red)->mToBirth == 0) {
 				setLoseCause(VSPLAYER_Red, VSLOSE_Extinction);
 				for (int i = 0; i < 4; i++) {
 					if (getVsPikiColor(i) == Red) {
@@ -302,7 +302,7 @@ void GameState::exec(VsGameSection* section)
 					}
 				}
 			}
-			if (!GameStat::getAllPikmins(Blue)) {
+			if (!GameStat::getAllPikmins(Blue) && ItemOnyon::mgr->getOnyon(Red)->mToBirth == 0) {
 				setLoseCause(VSPLAYER_Blue, VSLOSE_Extinction);
 				for (int i = 0; i < 4; i++) {
 					if (getVsPikiColor(i) == Blue) {
