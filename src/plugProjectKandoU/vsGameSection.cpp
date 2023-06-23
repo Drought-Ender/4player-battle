@@ -1189,20 +1189,23 @@ void VsGameSection::updateCardGeneration()
 	}
 
 	mCardCount = 0;
-	for (int i = 0; i < (int)mMaxCherries; i++) {
+	for (int i = 0; i < mMaxCherries; i++) {
 		if (mCherryArray[i]->isAlive()) {
 			mCardCount++;
 		}
 	}
 
-	if (mCardCount < 4 || (isHigh && mCardCount < maxSpawnCherries)) {
+	const f32 cardTimerConst[] = {0.5f,  3.0f, 6.0f, 10.0f, 14.0f, 20.0f, 0};
+	const f32 cardTimerRand[]  = {0.75f, 1.0f, 2.0f, 3.0f,  4.0f,  6.0f,  0};
+
+	if (mCardCount < 4 || (isHigh && mCardCount < maxSpawnCherries) && gConfig[CHERRY_RATE] != ConfigEnums::RATE_NEVER) { // config is never spawn
 		f32 ticking = sys->mDeltaTime;
 		if (isHigh) {
 			ticking *= 2.0f;
 		}
 		mSpawnTimer -= ticking;
 		if (mSpawnTimer <= 0.0f) {
-			mSpawnTimer = 3.0f * randFloat() + 10.0f;
+			mSpawnTimer = cardTimerRand[gConfig[CHERRY_RATE]] * randFloat() + cardTimerConst[gConfig[CHERRY_RATE]];
 			DropCardArg arg;
 			arg._00 = factor1;
 			arg._04 = factor2;

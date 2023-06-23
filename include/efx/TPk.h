@@ -345,6 +345,9 @@ struct TPkEffectMgr {
 	void createS_Walkwater(Vector3f&);
 };
 
+void createSimpleGlow2(Vector3f&);
+
+
 struct TParticleCallBack_Yodare {
 	~TParticleCallBack_Yodare();
 	void init(JPABaseEmitter*, JPABaseParticle*);

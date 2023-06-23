@@ -6,6 +6,8 @@
 #include "Game/Entities/ItemTreasure.h"
 #include "Game/Stickers.h"
 #include "Iterator.h"
+#include "Game/Piki.h"
+#include "Game/PikiState.h"
 #include "PikiAI.h"
 
 namespace Game {
@@ -52,5 +54,26 @@ namespace Game {
         }
         return piki->mPikiKind != pellet->getBedamaPikiColor();
         
+    }
+
+    void pikiFight(Game::Piki* attacker, Game::Piki* defender) {
+        Game::DyingStateArg dargs;
+        dargs.mAnimIdx = -1;
+        dargs._04 = true;
+
+        if (attacker->doped() && gConfig[SPICY_TYPE] == ConfigEnums::SPICY_NERF) {
+            attacker->clearDope();
+        }
+
+
+        defender->mFsm->transit(defender, Game::PIKISTATE_Dying, &dargs);
+        
+    }
+
+    // pikiFightEndDope__4GameFPQ24Game4Piki
+    void pikiFightEndDope(Piki* attacker) {
+        if (attacker->doped() && gConfig[SPICY_TYPE] == ConfigEnums::SPICY_NERF) {
+            attacker->clearDope();
+        }
     }
 }

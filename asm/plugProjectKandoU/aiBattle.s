@@ -689,12 +689,16 @@
 /* 8022F518 0022C458  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 8022F51C 0022C45C  41 82 00 08 */	beq .L_8022F524
 /* 8022F520 0022C460  C3 E2 BF FC */	lfs f31, lbl_8051A35C@sda21(r2)
+lwz r3, 0x10(r31)
+bl pikiFightEndDope__4GameFPQ24Game4Piki
 .L_8022F524:
 /* 8022F524 0022C464  80 7F 00 04 */	lwz r3, 4(r31)
 /* 8022F528 0022C468  4B F1 AA B9 */	bl doped__Q24Game4PikiFv
 /* 8022F52C 0022C46C  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 8022F530 0022C470  41 82 00 08 */	beq .L_8022F538
 /* 8022F534 0022C474  C3 C2 BF FC */	lfs f30, lbl_8051A35C@sda21(r2)
+lwz r3, 4(r31)
+bl pikiFightEndDope__4GameFPQ24Game4Piki
 .L_8022F538:
 /* 8022F538 0022C478  4B E9 A0 69 */	bl rand
 /* 8022F53C 0022C47C  6C 63 80 00 */	xoris r3, r3, 0x8000

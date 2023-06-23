@@ -224,9 +224,16 @@ bool InteractDope::actPiki(Game::Piki* piki)
 {
 	PikiState* currState = piki->mCurrentState;
 	if (mSprayType != SPRAY_TYPE_BITTER && currState->dopable() && !piki->doped()) {
-		DopeStateArg spicyArg;
-		spicyArg._00 = mSprayType;
-		piki->mFsm->transit(piki, PIKISTATE_Dope, &spicyArg);
+		if (gConfig[SPICY_TYPE] != ConfigEnums::SPICY_FLOWER) {
+			DopeStateArg spicyArg;
+			spicyArg._00 = mSprayType;
+			piki->mFsm->transit(piki, PIKISTATE_Dope, &spicyArg);
+		}
+		else if (piki->mHappaKind != Flower) {
+			piki->changeHappa(Flower);
+			efx::createSimpleGlow2(piki->_25C);
+			piki->startSound(PSSE_PK_FLOWER_VOICE, true);
+		}
 		return true;
 	}
 	if (gameSystem->isVersusMode() && mSprayType == SPRAY_TYPE_BITTER) {
