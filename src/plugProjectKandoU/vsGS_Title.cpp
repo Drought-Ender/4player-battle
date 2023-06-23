@@ -352,8 +352,16 @@ void TitleState::execVs(VsGameSection* section)
 			section->mVsStageData = data;
 			section->mVsStageNum  = stageNumber;
 
-			strcpy(section->mCaveInfoFilename, data->mCaveInfoFilename);
-			strcpy(section->mEditFilename, data->mStageLayoutFilePath);
+			if (gConfig[MAP_TYPE]) {
+				sprintf(section->mCaveInfoFilename, "old/%s", data->mCaveInfoFilename);
+				sprintf(section->mEditFilename, "old/%s", data->mStageLayoutFilePath);
+			}
+			else {
+				strcpy(section->mCaveInfoFilename, data->mCaveInfoFilename);
+				strcpy(section->mEditFilename, data->mStageLayoutFilePath);
+			}
+
+			
 
 			load._04             = 0; // why...
 			section->mContainer1 = data->mPikiContainer;

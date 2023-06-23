@@ -3,12 +3,14 @@
 
 #include "Game/CameraMgr.h"
 #include "JSystem/J2D/J2DPrint.h"
+#include "ConfigEnums.h"
 
 struct Controller;
 
 extern int mRealWinCounts[4];
 
 extern bool gDrawVsMenu;
+
 
 
 
@@ -31,7 +33,11 @@ struct Option {
     const int valueNum;
     int value; // doubles as default value
 
-    void print(J2DPrint& printer, J2DPrint& printer2, int idx, bool active);
+    void print(J2DPrint& printer, J2DPrint& printer2, int idx);
+
+    int getValue() {
+        return value;
+    }
 
     void incOption() {
         value++;
@@ -53,6 +59,7 @@ struct Option {
 };
 
 extern Option gOptions[];
+extern int gConfig[];
 
 enum OptionsEnum {
     MAP_TYPE,

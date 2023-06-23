@@ -203,6 +203,8 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 		FLAG_VS_BEDAMA_YELLOW = 6
 	};
 
+	int getBedamaPikiColor();
+
 	////////////// VTABLE 1 (DYNCREATURE)
 	virtual Vector3f getPosition() // _08 (weak)
 	{
@@ -306,6 +308,8 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	virtual void sound_otakaraEventRestart() { } // _210 (weak)
 	virtual void sound_otakaraEventStop() { }    // _214 (weak)
 	virtual void sound_otakaraEventFinish() { }  // _218 (weak)
+
+	float buryBedamaVs();
 
 	u8 getWallTimer();
 	void clearClaim();

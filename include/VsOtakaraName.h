@@ -9,6 +9,7 @@ struct VsOtakaraName {
 	static const char* cBedamaRed;
 	static const char* cBedamaYellow;
 	static f32 cBedamaYellowDepth;
+	static f32 cBedamaRedBlueDepth;
 };
 
 #endif

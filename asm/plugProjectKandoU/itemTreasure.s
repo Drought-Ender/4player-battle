@@ -1597,11 +1597,8 @@ setTreasure__Q34Game12ItemTreasure4ItemFPQ24Game6Pellet:
 /* 801F3DCC 001F0D0C  2C 00 00 01 */	cmpwi r0, 1
 /* 801F3DD0 001F0D10  40 82 00 1C */	bne .L_801F3DEC
 /* 801F3DD4 001F0D14  80 7E 01 FC */	lwz r3, 0x1fc(r30)
-/* 801F3DD8 001F0D18  88 03 03 2C */	lbz r0, 0x32c(r3)
-/* 801F3DDC 001F0D1C  28 00 00 06 */	cmplwi r0, 6
-/* 801F3DE0 001F0D20  40 82 00 0C */	bne .L_801F3DEC
-/* 801F3DE4 001F0D24  C0 0D 84 88 */	lfs f0, cBedamaYellowDepth__13VsOtakaraName@sda21(r13)
-/* 801F3DE8 001F0D28  D0 1E 01 F8 */	stfs f0, 0x1f8(r30)
+bl buryBedamaVs__Q24Game6PelletFv
+/* 801F3DC0 001F0D00  D0 3E 01 F8 */	stfs f1, 0x1f8(r30)
 .L_801F3DEC:
 /* 801F3DEC 001F0D2C  C0 1E 01 F8 */	lfs f0, 0x1f8(r30)
 /* 801F3DF0 001F0D30  7F C3 F3 78 */	mr r3, r30

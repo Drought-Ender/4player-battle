@@ -386,18 +386,11 @@ lbl_constructor:
 /* 801B0B38 001ADA78  4E 80 04 21 */	bctrl 
 /* 801B0B3C 001ADA7C  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 801B0B40 001ADA80  40 82 07 DC */	bne .L_801B131C
-/* 801B0B44 001ADA84  80 6D 93 E8 */	lwz r3, gameSystem__4Game@sda21(r13)
-/* 801B0B48 001ADA88  80 03 00 44 */	lwz r0, 0x44(r3)
-/* 801B0B4C 001ADA8C  2C 00 00 01 */	cmpwi r0, 1
-/* 801B0B50 001ADA90  40 82 00 24 */	bne .L_801B0B74
-/* 801B0B54 001ADA94  7F 63 DB 78 */	mr r3, r27
-/* 801B0B58 001ADA98  8B 37 02 B8 */	lbz r25, 0x2b8(r23)
-/* 801B0B5C 001ADA9C  81 9B 00 00 */	lwz r12, 0(r27)
-/* 801B0B60 001ADAA0  81 8C 01 E8 */	lwz r12, 0x1e8(r12)
-/* 801B0B64 001ADAA4  7D 89 03 A6 */	mtctr r12
-/* 801B0B68 001ADAA8  4E 80 04 21 */	bctrl 
-/* 801B0B6C 001ADAAC  7C 03 C8 00 */	cmpw r3, r25
-/* 801B0B70 001ADAB0  41 82 07 AC */	beq .L_801B131C
+mr r3, r23
+mr r4, r27
+bl canCarryBedama__4GameFPQ24Game4PikiPQ24Game6Pellet
+clrlwi. r0, r3, 0x18
+beq .L_801B131C
 .L_801B0B74:
 /* 801B0B74 001ADAB4  7F 63 DB 78 */	mr r3, r27
 /* 801B0B78 001ADAB8  7E E4 BB 78 */	mr r4, r23
@@ -650,6 +643,11 @@ lbl_constructor:
 /* 801B0F28 001ADE68  4E 80 04 21 */	bctrl 
 /* 801B0F2C 001ADE6C  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 801B0F30 001ADE70  41 82 03 EC */	beq .L_801B131C
+mr r3, r23
+mr r4, r25
+bl canAttackBedamaIdle__4GameFPQ24Game4PikiPQ34Game12ItemTreasure4Item
+clrlwi. r0, r3, 0x18
+beq .L_801B131C
 /* 801B0F34 001ADE74  7F 23 CB 78 */	mr r3, r25
 /* 801B0F38 001ADE78  48 04 31 21 */	bl isVisible__Q34Game12ItemTreasure4ItemFv
 /* 801B0F3C 001ADE7C  54 60 06 3F */	clrlwi. r0, r3, 0x18
@@ -1333,18 +1331,12 @@ bl getVsPikiColor__4GameFi
 /* 801B1930 001AE870  40 82 00 08 */	bne .L_801B1938
 /* 801B1934 001AE874  3B 00 00 00 */	li r24, 0
 .L_801B1938:
-/* 801B1938 001AE878  80 6D 93 E8 */	lwz r3, gameSystem__4Game@sda21(r13)
-/* 801B193C 001AE87C  80 03 00 44 */	lwz r0, 0x44(r3)
-/* 801B1940 001AE880  2C 00 00 01 */	cmpwi r0, 1
-/* 801B1944 001AE884  40 82 00 24 */	bne .L_801B1968
-/* 801B1948 001AE888  7F 43 D3 78 */	mr r3, r26
-/* 801B194C 001AE88C  8B 3F 02 B8 */	lbz r25, 0x2b8(r31)
-/* 801B1950 001AE890  81 9A 00 00 */	lwz r12, 0(r26)
-/* 801B1954 001AE894  81 8C 01 E8 */	lwz r12, 0x1e8(r12)
-/* 801B1958 001AE898  7D 89 03 A6 */	mtctr r12
-/* 801B195C 001AE89C  4E 80 04 21 */	bctrl 
-/* 801B1960 001AE8A0  7C 03 C8 00 */	cmpw r3, r25
-/* 801B1964 001AE8A4  41 82 00 38 */	beq .L_801B199C
+mr r3, r31
+mr r4, r26
+bl canCarryBedama__4GameFPQ24Game4PikiPQ24Game6Pellet
+clrlwi. r0, r3, 0x18
+beq .L_801B199C
+
 .L_801B1968:
 /* 801B1968 001AE8A8  7F 43 D3 78 */	mr r3, r26
 /* 801B196C 001AE8AC  4B FB 9B 85 */	bl discoverDisabled__Q24Game6PelletFv
@@ -2383,6 +2375,11 @@ bl getVsPikiColor__4GameFi
 /* 801B286C 001AF7AC  4E 80 04 21 */	bctrl 
 /* 801B2870 001AF7B0  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 801B2874 001AF7B4  41 82 00 48 */	beq .L_801B28BC
+mr r3, r31
+mr r4, r24
+bl canAttackBedamaIdle__4GameFPQ24Game4PikiPQ34Game12ItemTreasure4Item
+clrlwi. r0, r3, 0x18
+beq .L_801B28BC
 /* 801B2878 001AF7B8  88 1F 02 B8 */	lbz r0, 0x2b8(r31)
 /* 801B287C 001AF7BC  2C 00 00 04 */	cmpwi r0, 4
 /* 801B2880 001AF7C0  41 82 00 14 */	beq .L_801B2894
@@ -2966,18 +2963,11 @@ bl getVsPikiColor__4GameFi
 /* 801B30D4 001B0014  4E 80 04 21 */	bctrl 
 /* 801B30D8 001B0018  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 801B30DC 001B001C  40 82 04 90 */	bne .L_801B356C
-/* 801B30E0 001B0020  80 6D 93 E8 */	lwz r3, gameSystem__4Game@sda21(r13)
-/* 801B30E4 001B0024  80 03 00 44 */	lwz r0, 0x44(r3)
-/* 801B30E8 001B0028  2C 00 00 01 */	cmpwi r0, 1
-/* 801B30EC 001B002C  40 82 00 24 */	bne .L_801B3110
-/* 801B30F0 001B0030  7F E3 FB 78 */	mr r3, r31
-/* 801B30F4 001B0034  8B BE 02 B8 */	lbz r29, 0x2b8(r30)
-/* 801B30F8 001B0038  81 9F 00 00 */	lwz r12, 0(r31)
-/* 801B30FC 001B003C  81 8C 01 E8 */	lwz r12, 0x1e8(r12)
-/* 801B3100 001B0040  7D 89 03 A6 */	mtctr r12
-/* 801B3104 001B0044  4E 80 04 21 */	bctrl 
-/* 801B3108 001B0048  7C 03 E8 00 */	cmpw r3, r29
-/* 801B310C 001B004C  41 82 04 60 */	beq .L_801B356C
+mr r3, r30
+mr r4, r31
+bl canCarryBedama__4GameFPQ24Game4PikiPQ24Game6Pellet
+clrlwi. r0, r3, 0x18
+beq .L_801B356C
 .L_801B3110:
 /* 801B3110 001B0050  7F E3 FB 78 */	mr r3, r31
 /* 801B3114 001B0054  4B FB 44 9D */	bl getPelletConfigMax__Q24Game6PelletFv
@@ -3168,6 +3158,11 @@ bl getVsPikiColor__4GameFi
 /* 801B33D4 001B0314  41 82 00 60 */	beq .L_801B3434
 /* 801B33D8 001B0318  28 03 04 0E */	cmplwi r3, 0x40e
 /* 801B33DC 001B031C  40 82 00 28 */	bne .L_801B3404
+mr r3, r30
+mr r4, r31
+bl canAttackBedama__4GameFPQ24Game4PikiPQ34Game12ItemTreasure4Item
+clrlwi. r0, r3, 0x18
+beq .L_801B3570
 /* 801B33E0 001B0320  88 1E 02 B8 */	lbz r0, 0x2b8(r30)
 /* 801B33E4 001B0324  2C 00 00 04 */	cmpwi r0, 4
 /* 801B33E8 001B0328  41 82 00 1C */	beq .L_801B3404

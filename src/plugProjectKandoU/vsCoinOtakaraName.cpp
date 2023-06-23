@@ -6,3 +6,5 @@ const char* VsOtakaraName::cBedamaBlue   = "be_dama_blue_l";   // blue marble
 const char* VsOtakaraName::cBedamaRed    = "be_dama_red_l";    // red marble
 const char* VsOtakaraName::cBedamaYellow = "be_dama_yellow_l"; // yellow marble
 float VsOtakaraName::cBedamaYellowDepth  = 20.0f;              // bury depth of yellow marble
+float VsOtakaraName::cBedamaRedBlueDepth = 20.0f;              // bury depth of red/blue marbles
+

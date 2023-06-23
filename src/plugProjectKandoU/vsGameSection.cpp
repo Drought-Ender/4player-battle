@@ -31,6 +31,7 @@
 #include "nans.h"
 
 #include "FourPlayer.h"
+#include "Game/Entities/ItemTreasure.h"
 #include "Game/generalEnemyMgr.h"
 #include "Game/gamePlayData.h"
 
@@ -788,6 +789,7 @@ void VsGameSection::createVsPikmins()
 			}
 		}
 	}
+	
 	const char* marbles[2] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue };
 	for (int onyonType = 0; onyonType < 2; onyonType++) {
 		Onyon* currentOnyon = ItemOnyon::mgr->getOnyon(1 - onyonType);
@@ -800,6 +802,14 @@ void VsGameSection::createVsPikmins()
 				Vector3f flagPos = currentOnyon->getFlagSetPos();
 				flagPos.y += pellet->getCylinderHeight() * 0.5f;
 				pellet->setPosition(flagPos, false);
+
+				if (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_BURY) {
+					pellet->mPelletPosition.y = mapMgr->getMinY(pellet->mPelletPosition);
+					ItemTreasure::Item* pelletTreasure = (ItemTreasure::Item*)ItemTreasure::mgr->birth();
+					pelletTreasure->init(nullptr);
+					pelletTreasure->setPosition(pellet->mPelletPosition, false);
+					pelletTreasure->setTreasure(pellet);
+				}
 			}
 			pelletIter.next();
 		}
@@ -1318,6 +1328,9 @@ void VsGameSection::createYellowBedamas(int bedamas)
 
 void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 {
+	if (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_NOTHING) {
+		return;
+	}
 	const char* marbles[2] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue };
 	for (int i = 0; i < 2; i++) {
 		PelletList::cKind kind;

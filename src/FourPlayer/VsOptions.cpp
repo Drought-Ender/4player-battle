@@ -5,22 +5,9 @@
 #include "P2JME/P2JME.h"
 #include "Game/GameSystem.h"
 #include "PSSystem/PSSystemIF.h"
+#include "Game/VsGameSection.h"
 
 VsOptionsMenu* gOptionMenu;
-
-enum ToolTipIDs {
-    TIP_EMPTY,
-    TIP_MODERN,
-    TIP_LEGACY
-};
-
-void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx, bool active) {
-    printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
-    printer.print(300.0f, 70.0f + 30.0f * idx, "-");
-    printer2.print(300.0f, 70.0f + 30.0f * idx, "  %s",  valueStrings[value]);
-    
-    //printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
-}
 
 Option gOptions[] = {
     {
@@ -40,7 +27,7 @@ Option gOptions[] = {
     {
         "Marble Carrying",
         { "Disallowed", "Allowed" },
-        { "Pikmin will not be able to pick up their marble", "Pikmin will allowed to pick up their marble "},
+        { "Pikmin will not be able to pick up their marble", "Pikmin will be allowed to pick up their marble "},
         2,
         0
     },
@@ -115,6 +102,9 @@ Option gOptions[] = {
     }
 };
 
+// gConfig@sda12
+int gConfig[ARRAY_SIZE(gOptions)];
+
 
 JUTFont* getPikminFont() {
     return gP2JMEMgr->mFont;
@@ -128,7 +118,15 @@ void VsOptionsMenu::init() {
 }
 
 bool VsOptionsMenu::update() {
-    if (mController->isButtonDown(JUTGamePad::PRESS_DOWN) && mCursorOptionIndex < ARRAY_SIZE(gOptions)) {
+
+    if (mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == ARRAY_SIZE(gOptions)) {
+        for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
+            gConfig[i] = gOptions[i].getValue();        
+        }
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
+        return true;
+    }
+    else if (mController->isButtonDown(JUTGamePad::PRESS_DOWN | JUTGamePad::PRESS_A) && mCursorOptionIndex < ARRAY_SIZE(gOptions)) {
         mCursorOptionIndex++;
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
     }
@@ -136,10 +134,7 @@ bool VsOptionsMenu::update() {
         mCursorOptionIndex--;
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == ARRAY_SIZE(gOptions)) {
-        return true;
-    }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_A | JUTGamePad::PRESS_RIGHT)) {
+    else if (mController->isButtonDown(JUTGamePad::PRESS_RIGHT)) {
         gOptions[mCursorOptionIndex].incOption();
         PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
     }
@@ -175,7 +170,7 @@ void VsOptionsMenu::draw(Graphics& gfx) {
 
     for (int i = 0; i < ARRAY_SIZE(gOptions); i++) {
         J2DPrint& specialPrint = (i == mCursorOptionIndex) ? printRed : printBlue;
-        gOptions[i].print(print, specialPrint, i, i == mCursorOptionIndex);
+        gOptions[i].print(print, specialPrint, i);
     }
 
     J2DPrint& donePrint = (ARRAY_SIZE(gOptions) == mCursorOptionIndex) ?  printRed : print;
@@ -189,6 +184,12 @@ void VsOptionsMenu::draw(Graphics& gfx) {
     print.print(20.0f, 70.0f + mCursorOptionIndex * 30.0f, ">");
 
     printInfo.print(20.0f, 440.0f, "%s", mTooltipMessage);
+}
 
-
+void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx) {
+    printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
+    printer.print(300.0f, 70.0f + 30.0f * idx, "-");
+    printer2.print(300.0f, 70.0f + 30.0f * idx, "  %s",  valueStrings[value]);
+    
+    //printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
 }

@@ -1790,13 +1790,15 @@ actPellet__Q24Game11InteractEatFPQ24Game6Pellet:
 
 .global actPellet__Q24Game12InteractSuckFPQ24Game6Pellet
 actPellet__Q24Game12InteractSuckFPQ24Game6Pellet:
-/* 801665FC 0016353C  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 801665FC 0016353C  94 21 FF E0 */	stwu r1, -0x24(r1)
 /* 80166600 00163540  7C 08 02 A6 */	mflr r0
 /* 80166604 00163544  3C A0 80 4B */	lis r5, __vt__Q24Game18PelletGoalStateArg@ha
-/* 80166608 00163548  90 01 00 24 */	stw r0, 0x24(r1)
+/* 80166608 00163548  90 01 00 24 */	stw r0, 0x28(r1)
 /* 8016660C 0016354C  38 05 22 44 */	addi r0, r5, __vt__Q24Game18PelletGoalStateArg@l
 /* 80166610 00163550  93 E1 00 1C */	stw r31, 0x1c(r1)
+stw r30, 0x20(r1)
 /* 80166614 00163554  7C 9F 23 78 */	mr r31, r4
+mr r30, r3
 /* 80166618 00163558  80 63 00 04 */	lwz r3, 4(r3)
 /* 8016661C 0016355C  28 03 00 00 */	cmplwi r3, 0
 /* 80166620 00163560  90 01 00 0C */	stw r0, 0xc(r1)
@@ -1807,6 +1809,11 @@ actPellet__Q24Game12InteractSuckFPQ24Game6Pellet:
 /* 80166634 00163574  7D 89 03 A6 */	mtctr r12
 /* 80166638 00163578  4E 80 04 21 */	bctrl 
 .L_8016663C:
+lwz r3, 4(r30)
+mr r4, r31
+bl canSuckBedama__4GameFPQ24Game8CreaturePQ24Game6Pellet
+cmplwi r3, 0
+beq .L_Exit
 /* 8016663C 0016357C  80 7F 03 C8 */	lwz r3, 0x3c8(r31)
 /* 80166640 00163580  7F E4 FB 78 */	mr r4, r31
 /* 80166644 00163584  38 C1 00 08 */	addi r6, r1, 8
@@ -1815,13 +1822,15 @@ actPellet__Q24Game12InteractSuckFPQ24Game6Pellet:
 /* 80166650 00163590  81 8C 00 14 */	lwz r12, 0x14(r12)
 /* 80166654 00163594  7D 89 03 A6 */	mtctr r12
 /* 80166658 00163598  4E 80 04 21 */	bctrl 
+.L_Exit:
 /* 8016665C 0016359C  7F E3 FB 78 */	mr r3, r31
 /* 80166660 001635A0  48 00 17 85 */	bl finishDisplayCarryInfo__Q24Game6PelletFv
-/* 80166664 001635A4  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80166664 001635A4  80 01 00 24 */	lwz r0, 0x28(r1)
 /* 80166668 001635A8  38 60 00 01 */	li r3, 1
 /* 8016666C 001635AC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+lwz r30, 0x20(r1)
 /* 80166670 001635B0  7C 08 03 A6 */	mtlr r0
-/* 80166674 001635B4  38 21 00 20 */	addi r1, r1, 0x20
+/* 80166674 001635B4  38 21 00 20 */	addi r1, r1, 0x24
 /* 80166678 001635B8  4E 80 00 20 */	blr 
 
 .global doDirectDraw__Q24Game6PelletFR8Graphics
