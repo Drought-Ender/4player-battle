@@ -50,4 +50,10 @@ enum EEggDrops {
     EGG_SINGLE
 };
 
+enum EAutopluck {
+    AUTOPLUCK_ON,
+    AUTOPLUCK_OFF
+    
+};
+
 } // namespace ConfigEnums

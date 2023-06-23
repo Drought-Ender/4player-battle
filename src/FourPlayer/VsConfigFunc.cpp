@@ -9,6 +9,7 @@
 #include "Game/Piki.h"
 #include "Game/PikiState.h"
 #include "PikiAI.h"
+#include "Game/NaviState.h"
 
 namespace Game {
     float Pellet::buryBedamaVs() {
@@ -76,4 +77,24 @@ namespace Game {
             attacker->clearDope();
         }
     }
+
+    
+    
+
+    void autopluck(NaviWalkState* walkstate, Navi* captain)
+    // performs Pikmin 3-style autopluck of pikmin seeds
+    {
+        if (gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_ON) {
+            captain->procActionButton();
+        }
+        
+        walkstate->execAI(captain);
+    }
 }
+
+
+// canAutopluck__Fv
+bool canAutopluck() {
+    return gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_ON;
+}
+
