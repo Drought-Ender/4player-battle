@@ -36,13 +36,23 @@ const JUtility::TColor vsTeamColors[2] = { 0xff5050ff, 0x5050ffff };
 
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
+    
+
     gOptionMenu = new VsOptionsMenu;
     gOptionMenu->init();
+
+    for (int i = 0; i < GetConfigSize(); i++) {
+        gConfig[i] = gOptions[i].getValue();        
+    }
 
     TVsSelect::doCreate(rarc);
 
     for (int i = 0; i < 4; i++) {
         mTeamIDs[i] = Game::getVsTeam(i);
+    }
+
+    for (int i = Game::gNaviNum; i < 4; i++) {
+        mTeamIDs[i] = 1 - (i % 2);
     }
 
     Game::gNaviNum = Game::CalcNaviNum();
@@ -202,6 +212,12 @@ bool TFourVsSelect::doUpdate() {
         return false;
     }
     Game::gNaviNum = Game::CalcNaviNum();
+    if (Game::gNaviNum == 3) {
+		Game::gFancyCamera = true;
+	}
+	else {
+		Game::gFancyCamera = false;
+	}
     Controller* controllerArray[4] = { mController, mController2, Game::gControllerP3, Game::gControllerP4};
 
     int* pikiNumArray = &mRedPikiNum;
@@ -354,8 +370,11 @@ bool TFourVsSelect::doUpdate() {
     
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < Game::gNaviNum; i++) {
         Game::SetVsTeam(i, (Game::TeamID)mTeamIDs[i]);
+    }
+    for (int i = Game::gNaviNum; i < 4; i++) {
+        Game::SetVsTeam(i, (Game::TeamID)-1);
     }
 
     for (int i = 0; i < Game::gNaviNum; i++) {

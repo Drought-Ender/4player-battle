@@ -55,6 +55,8 @@ struct Option {
     }
 };
 
+int GetConfigSize();
+
 extern Option gOptions[];
 extern int gConfig[];
 

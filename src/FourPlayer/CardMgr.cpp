@@ -321,7 +321,7 @@ void CardMgr::draw(Graphics& gfx) {
             if (mSlotMachines[getVsTeam(2)].mSpinState) {
                 drawSlot(gfx, p3SlotPos, mSlotMachines[getVsTeam(2)]);
             }
-            if (mSlotMachines[getVsTeam(3)].mSpinState) {
+            if (mSlotMachines[getVsTeam(3)].mSpinState && gNaviNum == 4) {
                 drawSlot(gfx, p4SlotPos, mSlotMachines[getVsTeam(3)]);
             }
         }

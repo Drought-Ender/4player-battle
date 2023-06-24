@@ -131,8 +131,12 @@ Option gOptions[] = {
     }
 };
 
-// gConfig@sda12
+// gConfig
 int gConfig[ARRAY_SIZE(gOptions)];
+
+int GetConfigSize() {
+    return ARRAY_SIZE(gConfig);
+}
 
 
 JUTFont* getPikminFont() {

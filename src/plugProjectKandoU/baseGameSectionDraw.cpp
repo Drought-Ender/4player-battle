@@ -41,10 +41,9 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 
 	// Draw particles for both viewports
 	sys->mTimers->_start("part-draw", true);
-	drawParticle(gfx, 0);
-	drawParticle(gfx, 1);
-	drawParticle(gfx, 2);
-	drawParticle(gfx, 3);
+	for (int i = 0; i < gNaviNum; i++) {
+		drawParticle(gfx, i);
+	}
 	sys->mTimers->_stop("part-draw");
 
 	// Draw counters for both viewports
@@ -75,6 +74,9 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
  */
 void BaseGameSection::newdraw_drawAll(Viewport* vp)
 {
+	if (vp->mVpId >= gNaviNum) {
+		return;
+	}
 	sys->mTimers->_start("draw_calc", true);
 	Graphics& gfx = *sys->mGfx;
 

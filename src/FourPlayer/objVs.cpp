@@ -300,6 +300,10 @@ void FourObjVs::doUpdateCommon() {
             mScreenP4->mScreen->hide();
         }
     }
+	ScreenSet* screens[] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 };
+	for (int i = Game::gNaviNum; i < ARRAY_SIZE(screens); i++) {
+		screens[i]->mScreen->setXY(0.0f, -600.0f);
+	}
     mBloGroup->update();
 }
 

@@ -42,7 +42,7 @@ void BaseGameSection::birthNavis() {
         Vector3f startVelocity = 0.0f;
         Vector3f startPosition = Vector3f(-40.0f, 0.0f, 2.0f);
         f32 mapRotation = mapMgr->getMapRotation();
-        if (gameSystem->isVersusMode()) {
+        if (gameSystem->isVersusMode() && i < gNaviNum) {
             Onyon* onyon = ItemOnyon::mgr->getOnyon(gVsNaviIndexArray[i]);
             P2ASSERT(onyon);
             startPosition = onyon->getPosition();
