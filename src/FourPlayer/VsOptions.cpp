@@ -158,14 +158,15 @@ bool VsOptionsMenu::update() {
     int endIdx = OPTIONS_PER_PAGE * (mPageNumber + 1);
     endIdx = MIN(endIdx, ARRAY_SIZE(gOptions));
 
-    if (mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == endIdx) {
+    if ((mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == endIdx) || mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
         for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
             gConfig[i] = gOptions[i].getValue();        
         }
         Game::gGameConfig.mParms.mVsHiba.mData = gConfig[VS_HIBA];
         Game::gGameConfig.mParms.mVsY.mData    = gConfig[VS_Y];
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CLOSE, 0);
 
-        PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
+        
         return true;
     }
     else if (mController->isButtonDown(JUTGamePad::PRESS_DOWN | JUTGamePad::PRESS_A) && mCursorOptionIndex < endIdx) {
@@ -190,12 +191,12 @@ bool VsOptionsMenu::update() {
         if (mCursorOptionIndex > ARRAY_SIZE(gOptions)) {
             mCursorOptionIndex = ARRAY_SIZE(gOptions);
         }
-        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_SCROLL, 0);
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
     }
     else if (mController->isButtonDown(JUTGamePad::PRESS_L) && mPageNumber > 0) {
         mPageNumber--;
         mCursorOptionIndex -= OPTIONS_PER_PAGE;
-        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_SCROLL, 0);
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
     }
 
     return false;

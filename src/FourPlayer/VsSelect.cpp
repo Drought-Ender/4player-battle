@@ -6,7 +6,7 @@
 #include "Controller.h"
 
 int mRealWinCounts[4];
-bool gDrawVsMenu = false;
+bool gDrawVsMenu = true;
 
 namespace Morimura
 {
@@ -197,30 +197,41 @@ bool TFourVsSelect::doUpdateFadein() {
 }
 
 bool TFourVsSelect::doUpdate() {
+    if (!gDrawVsMenu) {
+        gDrawVsMenu = gOptionMenu->update();
+        return false;
+    }
+    Game::gNaviNum = Game::CalcNaviNum();
     Controller* controllerArray[4] = { mController, mController2, Game::gControllerP3, Game::gControllerP4};
 
     int* pikiNumArray = &mRedPikiNum;
 
-    if (_D4->mState == 0)
-    for (int i = 0; i < 4; i++) {
-        for (int c = 0; c < 2; c++) {
-            if (mTeamIDs[i] == c) {
-                if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_R)) {
-                    pikiNumArray[c]++;
-                    if (pikiNumArray[c] > 10) {
-                        pikiNumArray[c] = 10;
+    if (_D4->mState == 0) {
+        if (mController->isButtonDown(JUTGamePad::PRESS_START) && !mCanCancel) {
+            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_OPEN, 0);
+            gDrawVsMenu = false;
+            return false;
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int c = 0; c < 2; c++) {
+                if (mTeamIDs[i] == c) {
+                    if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_R)) {
+                        pikiNumArray[c]++;
+                        if (pikiNumArray[c] > 10) {
+                            pikiNumArray[c] = 10;
+                        }
+                        else {
+                            PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_INCREMENT, 0);
+                        }
                     }
-                    else {
-                        PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_INCREMENT, 0);
-                    }
-                }
-                else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_L)) {
-                    pikiNumArray[c]--;
-                    if (pikiNumArray[c] < 1) {
-                        pikiNumArray[c] = 1;
-                    }
-                    else {
-                        PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_DECREMENT, 0);
+                    else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_L)) {
+                        pikiNumArray[c]--;
+                        if (pikiNumArray[c] < 1) {
+                            pikiNumArray[c] = 1;
+                        }
+                        else {
+                            PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_DECREMENT, 0);
+                        }
                     }
                 }
             }
@@ -345,6 +356,23 @@ bool TFourVsSelect::doUpdate() {
 
     for (int i = 0; i < 4; i++) {
         Game::SetVsTeam(i, (Game::TeamID)mTeamIDs[i]);
+    }
+
+    for (int i = 0; i < Game::gNaviNum; i++) {
+        mNaviImages[i]->show();
+        mNaviBoxes[i]->show();
+        mWinBoxes[i]->show();
+        mNewWinCallbacks[i]->show();
+        mNaviNames[i]->show();
+    }
+
+
+    for (int i = Game::gNaviNum; i < 4; i++) {
+        mNaviImages[i]->hide();
+        mNaviBoxes[i]->hide();
+        mWinBoxes[i]->hide();
+        mNewWinCallbacks[i]->hide();
+        mNaviNames[i]->hide();
     }
     
 

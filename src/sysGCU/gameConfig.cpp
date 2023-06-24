@@ -76,7 +76,7 @@ GameConfig::GameConfig()
 	mParms.mShortCutRight.mData    = -1;
 	mParms.mAllocAllEnemy.mData    = 0;
 	mParms.mAI.mData               = 0;
-	mParms.mE3version.mData        = 0;
+	mParms.mE3version.mData        = 1;
 	mParms.mTimers.mData           = 0;
 	mParms.mMukki_cherry.mData     = 0;
 	mParms.mMarioClubDevelop.mData = 0;

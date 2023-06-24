@@ -8,6 +8,7 @@
 #include "Game/PikiMgr.h"
 #include "PikiAI.h"
 #include "Game/cellPyramid.h"
+#include "ebi/Screen/TTitleMenu.h"
 
 namespace Game
 {
@@ -194,6 +195,13 @@ void NaviMgr::doEntry() {
 }
 
 } // namespace Game
+
+// void ebi::Screen::TTitleMenu::doOpenScreen(ArgOpen* arg) {
+//     P2ASSERT(arg);
+//     ArgOpenTitleMenu* menuArg = static_cast<ArgOpenTitleMenu*>(arg);
+    
+// }
+
 
 // Game::Navi* PikiAI::Brain::searchOrima() {
 //     Vector3f pikiPos = mPiki->getPosition();

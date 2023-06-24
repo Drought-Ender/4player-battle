@@ -25,11 +25,7 @@ void MenuSection::run()
 {
 	_3C = false;
 	do {
-		mIsMainActive = true;
-		GameFlow::mActiveSectionFlag = 30;
-		gDrawVsMenu = false;
-		
-		
+		mIsMainActive = true;		
 		MenuSection::runChildSection();
 	} while (!_3C);
 }

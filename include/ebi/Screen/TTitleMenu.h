@@ -27,6 +27,12 @@ struct TTitleMenu : public TScreenBase {
 
 	// _00     = VTBL
 	// _00-_08 = TScreenBase
+	u8 _pad1[0x3C - 0x8];
+	long _3C;
+	u8 _pad2[0xDC - 0x3C];
+	int _DC;
+	u8 _pad3[0xE0 - 0xDC];
+
 };
 } // namespace Screen
 } // namespace ebi
