@@ -141,7 +141,7 @@ void Onyon::movieUserCommand(u32 code, MoviePlayer* player)
 		break;
 
 	case 101: // 0x65
-		if (mOnyonType <= ONYON_TYPE_YELLOW) {
+		if (mOnyonType < ONYON_TYPE_MAX) {
 			if (moviePlayer->mFlags & MoviePlayer::IS_FINISHED) {
 				setSpotState(SPOTSTATE_Opened);
 			} else {
@@ -153,7 +153,7 @@ void Onyon::movieUserCommand(u32 code, MoviePlayer* player)
 		break;
 
 	case 102: // 0x66
-		if (mOnyonType <= ONYON_TYPE_YELLOW) {
+		if (mOnyonType < ONYON_TYPE_MAX) {
 			if (moviePlayer->mFlags & MoviePlayer::IS_FINISHED) {
 				setSpotState(SPOTSTATE_Closed);
 			} else {
@@ -234,7 +234,7 @@ void Onyon::setType(int type)
 	mUfoPodOpen   = nullptr;
 
 	SysShape::Joint* jnt;
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_MAX) {
 		mContainer    = new efx::Container;
 		mContainerAct = new efx::ContainerAct;
 
@@ -278,7 +278,7 @@ void Onyon::setType(int type)
  */
 void Onyon::setupTevRegAnim(int type)
 {
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_MAX) {
 		mMatAnim1->start(&ItemOnyon::mgr->mOnyonTevAnim[type]);
 		mOnyonType = type;
 	} else if (mOnyonType == ONYON_TYPE_SHIP) {
@@ -365,7 +365,7 @@ void Onyon::getShadowParam(ShadowParam& param)
  * Address:	80176094
  * Size:	000034
  */
-bool Onyon::sound_culling() { return (mOnyonType <= ONYON_TYPE_YELLOW) ? Creature::sound_culling() : false; }
+bool Onyon::sound_culling() { return (mOnyonType < ONYON_TYPE_MAX) ? Creature::sound_culling() : false; }
 
 /*
  * --INFO--
@@ -382,7 +382,7 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 	P2ASSERTLINE(899, mCreature->isPellet());
 	Pellet* pellet = static_cast<Pellet*>(mCreature);
 
-	if (item->mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (item->mOnyonType < ONYON_TYPE_MAX) {
 		item->mAnimator.startAnim(3, item);
 		item->startSound(PSSE_EV_HOME_PELLET_FINISH);
 	} else if (item->mOnyonType == ONYON_TYPE_POD) {
@@ -427,7 +427,7 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 	}
 
 	item->mPikminType = item->mOnyonType;
-	if (item->mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (item->mOnyonType < ONYON_TYPE_MAX) {
 		SysShape::Joint* jnt = item->mModel->getJoint("body_1");
 		if (jnt) {
 			::efx::TOnyonEatAB onyonFX(jnt->getWorldMatrix());
@@ -669,8 +669,11 @@ void Onyon::onSetPosition()
 		setSpotEffect(false);
 	}
 
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_MAX) {
 		efx::OnyonSpotArg spotarg(mPosition, mOnyonType);
+		if (mOnyonType >= ONYON_TYPE_PURPLE) {
+			spotarg.mOnyonType = 0;
+		}
 		mSpotbeamModel = particleMgr->createModelEffect(&spotarg);
 		setSpotState(SPOTSTATE_Closed);
 		if (gameSystem->mMode == GSM_STORY_MODE) {
@@ -693,8 +696,8 @@ void Onyon::onSetPosition()
 		mPikiInJoint  = nullptr;
 	}
 
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
-		Radar::cRadarType radarids[] = { Radar::MAP_BLUE_ONION, Radar::MAP_RED_ONION, Radar::MAP_YELLOW_ONION };
+	if (mOnyonType < ONYON_TYPE_MAX) {
+		Radar::cRadarType radarids[] = { Radar::MAP_BLUE_ONION, Radar::MAP_RED_ONION, Radar::MAP_YELLOW_ONION, Radar::MAP_BLUE_ONION };
 		Radar::Mgr::entry(this, radarids[mOnyonType], 0);
 
 	} else if (mOnyonType == ONYON_TYPE_POD) {
@@ -711,7 +714,7 @@ void Onyon::onSetPosition()
  */
 void Onyon::setSpotState(Onyon::cSpotState state)
 {
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_MAX) {
 		mSpotState = state;
 		if (mSpotbeamModel) {
 			mSpotbeamModel->mCulled = false;
@@ -749,7 +752,7 @@ void Onyon::setSpotState(Onyon::cSpotState state)
  */
 void Onyon::updateSpot()
 {
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_MAX) {
 		switch (mSpotState) {
 		case SPOTSTATE_Closed:
 		case SPOTSTATE_Opened:
@@ -836,7 +839,7 @@ void Onyon::doAI()
 		animid = info->mId;
 	}
 
-	if (animid == 2 && mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (animid == 2 && mOnyonType < ONYON_TYPE_MAX) {
 		PSM::SeSound* sound = static_cast<PSM::SeSound*>(mSoundObj->startSound(PSSE_PK_SE_INSIDE_ONYON, 0));
 		if (sound) {
 			PSGame::SoundTable::SePerspInfo persp;
@@ -1219,7 +1222,7 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 	switch (event.mType) {
 	case KEYEVENT_END:
 		if (mToBirth) {
-			if (mOnyonType <= ONYON_TYPE_YELLOW) {
+			if (mOnyonType < ONYON_TYPE_MAX) {
 				SysShape::MotionListener* mlisten = this;
 				mAnimator.startAnim(1, mlisten);
 			}
@@ -1234,7 +1237,7 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 		break;
 
 	case KEYEVENT_1:
-		if (mOnyonType <= ONYON_TYPE_YELLOW) {
+		if (mOnyonType < ONYON_TYPE_MAX) {
 			switch (animid) {
 			case 1: // shoot out seeds
 				if (mToBirth) {
@@ -1406,7 +1409,7 @@ void Onyon::makeTrMatrix()
  */
 void Onyon::changeMaterial()
 {
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_MAX) {
 		int animid;
 		if (!mAnimator.mAnimInfo) {
 			animid = -1;
@@ -1521,7 +1524,7 @@ void Onyon::setSpotEffectActive(bool flag)
  */
 void Onyon::efxSuikomi()
 {
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_YELLOW) {
 		efx::TOnyonEatC onyonFX(&mObjMatrix);
 		onyonFX.create(nullptr);
 		startSound(PSSE_EV_HOME_PELLET_BACUUM);
@@ -1609,7 +1612,7 @@ void Onyon::enterPiki(Piki* piki)
 	PikiKillArg killarg(1);
 	piki->kill(&killarg);
 
-	if (mOnyonType <= ONYON_TYPE_YELLOW && mToBirth) {
+	if (mOnyonType < ONYON_TYPE_MAX && mToBirth) {
 		int animid;
 		if (!mAnimator.mAnimInfo) {
 			animid = -1;
@@ -1787,6 +1790,13 @@ BaseItem* ItemOnyon::Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenItem
 		objectType = ONYON_OBJECT_ONYON;
 		onyonType  = ONYON_TYPE_YELLOW;
 		break;
+	case ONYON_TYPE_PURPLE:
+		objectType = ONYON_OBJECT_ONYON;
+		onyonType  = ONYON_TYPE_PURPLE;
+		break;
+	case ONYON_TYPE_WHITE:
+		objectType = ONYON_OBJECT_ONYON;
+		onyonType  = ONYON_TYPE_WHITE;
 
 	case ONYON_TYPE_POD:
 		objectType = ONYON_OBJECT_POD;
@@ -1979,6 +1989,8 @@ J3DModelData* ItemOnyon::Mgr::generatorGetShape(GenItemParm* parm)
 	case ONYON_TYPE_RED:
 	case ONYON_TYPE_BLUE:
 	case ONYON_TYPE_YELLOW:
+	case ONYON_TYPE_PURPLE:
+	case ONYON_TYPE_WHITE:
 		objType = ONYON_OBJECT_ONYON;
 		break;
 	case ONYON_TYPE_POD:
@@ -2041,6 +2053,8 @@ ItemOnyon::Mgr::Mgr()
 	mOnyons[ONYON_TYPE_YELLOW] = nullptr;
 	mOnyons[ONYON_TYPE_RED]    = nullptr;
 	mOnyons[ONYON_TYPE_BLUE]   = nullptr;
+	mOnyons[ONYON_TYPE_PURPLE] = nullptr;
+	mOnyons[ONYON_TYPE_WHITE]  = nullptr;
 	mUfo                       = nullptr;
 	mPod                       = nullptr;
 	mItemName                  = "Onyon";
@@ -2070,7 +2084,7 @@ void Onyon::on_movie_end(bool)
 		}
 	} else {
 		bool checkboot = false;
-		if (mOnyonType <= ONYON_TYPE_YELLOW && gameSystem->mMode == GSM_STORY_MODE) {
+		if (mOnyonType < ONYON_TYPE_MAX && gameSystem->mMode == GSM_STORY_MODE) {
 			checkboot = true;
 		}
 		if (checkboot) {
@@ -2079,7 +2093,7 @@ void Onyon::on_movie_end(bool)
 		mAnimSpeed = 30.0f;
 	}
 
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_MAX) {
 
 		int animid = (mAnimator.mAnimInfo) ? mAnimator.mAnimInfo->mId : -1;
 
@@ -2268,6 +2282,12 @@ void ItemOnyon::Mgr::load()
 
 	file = JKRFileLoader::getGlbResource("kidou_yellow.brk", nullptr);
 	mOnyonTevAnim[2].attachResource(file, mModelData[0]); // yellow mat anim
+
+	file = JKRFileLoader::getGlbResource("kidou_purple.brk", nullptr);
+	mOnyonTevAnim[3].attachResource(file, mModelData[0]); // yellow mat anim
+
+	file = JKRFileLoader::getGlbResource("kidou_white.brk", nullptr);
+	mOnyonTevAnim[4].attachResource(file, mModelData[0]); // yellow mat anim
 
 	mObjectPathComponent               = "user/Kando/onyon";
 	JKRArchive* onyontextarc           = openTextArc("texts.szs");

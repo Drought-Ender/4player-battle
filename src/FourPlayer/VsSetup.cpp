@@ -244,7 +244,7 @@ Cave::MapNode* Cave::RandMapScore::getRandRoomMapNode()
 void Cave::RandMapScore::setVersusOnyon()
 {
 
-	if (!getFixObjNode(FIXNODE_VsRedOnyon) && !getFixObjNode(FIXNODE_VsBlueOnyon) && !getFixObjNode(FIXNODE_VsYellowOnyon)) {
+	if (!getFixObjNode(FIXNODE_VsRedOnyon) && !getFixObjNode(FIXNODE_VsBlueOnyon) && !getFixObjNode(FIXNODE_VsYellowOnyon) && !getFixObjNode(FIXNODE_VsPurpleOnyon)) {
 		MapNode* targetNode    = getRandRoomMapNode();
 		MapNode* onyonNodes[4] = { nullptr, nullptr, nullptr, nullptr };
 		BaseGen* onyonGens[4]  = { nullptr, nullptr, nullptr, nullptr };
@@ -263,13 +263,18 @@ void Cave::RandMapScore::setVersusOnyon()
             onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
 			calcNodeScore(onyonNodes[2]);
 
+			onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[2]);
+			calcNodeScore(onyonNodes[3]);
+
 			mFixObjNodes[FIXNODE_VsRedOnyon]  = onyonNodes[0];
 			mFixObjNodes[FIXNODE_VsBlueOnyon] = onyonNodes[1];
             mFixObjNodes[FIXNODE_VsYellowOnyon] = onyonNodes[2];
+			mFixObjNodes[FIXNODE_VsPurpleOnyon] = onyonNodes[3];
 
 			mFixObjGens[FIXNODE_VsRedOnyon]  = onyonGens[0];
 			mFixObjGens[FIXNODE_VsBlueOnyon] = onyonGens[1];
             mFixObjGens[FIXNODE_VsYellowOnyon] = onyonGens[2];
+			mFixObjGens[FIXNODE_VsPurpleOnyon] = onyonGens[3];
 
 			subNodeScore();
 		}
@@ -352,9 +357,12 @@ void Cave::RandMapScore::clearRoomAndDoorScore()
 		if (getFixObjNode(FIXNODE_VsBlueOnyon)) {
 			setStartMapNodeScore(getFixObjNode(FIXNODE_VsBlueOnyon));
 		}
-        if (getFixObjNode(FIXNODE_VsYellowOnyon)) {
-			setStartMapNodeScore(getFixObjNode(FIXNODE_VsYellowOnyon));
-		}
+        // if (getFixObjNode(FIXNODE_VsYellowOnyon)) {
+		// 	setStartMapNodeScore(getFixObjNode(FIXNODE_VsYellowOnyon));
+		// }
+		// if (getFixObjNode(FIXNODE_VsPurpleOnyon)) {
+		// 	setStartMapNodeScore(getFixObjNode(FIXNODE_VsPurpleOnyon));
+		// }
 
 	} else if (getFixObjNode(FIXNODE_Pod)) { // not versus mode, so start from pod/ship.
 		setStartMapNodeScore(getFixObjNode(FIXNODE_Pod));
@@ -368,7 +376,7 @@ void Cave::RandMapScore::makeObjectLayout(MapNode* mapNode, ObjectLayout* layout
 		if (mapNode == mFixObjNodes[i]) {
             OSReport("Make Object Laytout %i\n", i);
 			int layoutTypes[FIXNODE_Count]
-			    = { OBJLAYOUT_Pod, OBJLAYOUT_Hole, OBJLAYOUT_Fountain, OBJLAYOUT_VsRedOnyon, OBJLAYOUT_VsBlueOnyon, OBJLAYOUT_VsYellowOnyon };
+			    = { OBJLAYOUT_Pod, OBJLAYOUT_Hole, OBJLAYOUT_Fountain, OBJLAYOUT_VsRedOnyon, OBJLAYOUT_VsBlueOnyon, OBJLAYOUT_VsYellowOnyon, OBJLAYOUT_VsPurpleOnyon };
 			FixObjNode* rootObjNode  = new FixObjNode(layoutTypes[i]);
 			FixObjNode* childObjNode = new FixObjNode(layoutTypes[i]);
 
@@ -507,7 +515,17 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
                 case OBJLAYOUT_VsYellowOnyon: {
-					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_YELLOW);
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_WHITE);
+					Vector3f birthPos;
+					node->getBirthPosition(birthPos.x, birthPos.z);
+					birthPos.y = 0.0f;
+					pod->init(nullptr);
+					pod->mFaceDir = node->getDirection();
+					pod->setPosition(birthPos, false);
+					break;
+				}
+				case OBJLAYOUT_VsPurpleOnyon: {
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_PURPLE);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
 					birthPos.y = 0.0f;

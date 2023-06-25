@@ -11,8 +11,8 @@ namespace Cave {
  */
 ObjectLayout::ObjectLayout(MapNode* node)
 {
-	mNodeList = new ObjectLayoutNode*[9];
-	for (int i = 0; i < 9; i++) {
+	mNodeList = new ObjectLayoutNode*[OBJLAYOUT_COUNT];
+	for (int i = 0; i < OBJLAYOUT_COUNT; i++) {
 		mNodeList[i] = nullptr;
 	}
 
