@@ -85,6 +85,8 @@ struct Door : public CNode {
 // Size: 0x10
 struct RoomDoorInfo {
 	RoomDoorInfo();
+	WayPoint* mWaypoint;
+	Vector3f mLookAtPos;
 };
 
 struct RoomLink : public CNode {
@@ -208,6 +210,8 @@ struct MapRoom : public CellObject {
 	virtual void doDirectDraw(Graphics&);         // _44
 
 	void placeObjects(Cave::FloorInfo*, bool);
+
+	
 
 	// _00     = VTBL
 	// _00-_B8 = CellObject

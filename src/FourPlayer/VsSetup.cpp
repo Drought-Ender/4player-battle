@@ -9,6 +9,17 @@
 #include "PikiAI.h"
 #include "Game/cellPyramid.h"
 #include "ebi/Screen/TTitleMenu.h"
+#include "Game/mapParts.h"
+#include "Game/Entities/ItemOnyon.h"
+#include "Game/mapParts.h"
+#include "types.h"
+#include "Vector3.h"
+#include "Game/Entities/Item.h"
+#include "Game/EnemyBase.h"
+#include "Game/CurrTriInfo.h"
+#include "Game/gamePlayData.h"
+#include "Game/generalEnemyMgr.h"
+#include "Game/Cave/Node.h"
 
 namespace Game
 {
@@ -194,37 +205,188 @@ void NaviMgr::doEntry() {
     }
 }
 
+
+void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matching
+{
+	if (!mObjectLayoutInfo) {
+		return;
+	}
+	for (int nodeType = 0; nodeType < 8; nodeType++) {
+		for (int nodeIdx = 0; nodeIdx < mObjectLayoutInfo->getCount(nodeType); nodeIdx++) {
+			ObjectLayoutNode* node = static_cast<ObjectLayoutNode*>(mObjectLayoutInfo->getNode(nodeType, nodeIdx));
+			for (int subIdx = 0; subIdx < node->getBirthCount(); subIdx++) {
+				switch (nodeType)
+				{
+				case OBJLAYOUT_Hole: {
+					ItemHole::Item* hole = static_cast<ItemHole::Item*>(ItemHole::mgr->birth());
+					Vector3f birthPos;
+					node->getBirthPosition(birthPos.x, birthPos.z);
+					CurrTriInfo triInfo;
+					triInfo.mPosition = birthPos;
+					f32 minY = 0.0f;
+					if (mapMgr) {
+						triInfo._0C = 0;
+						mapMgr->getCurrTri(triInfo); 
+						minY = triInfo.mMinY;
+					}
+					birthPos.y = minY;
+					if (gameSystem->isChallengeMode()) {
+						ItemHole::InitArg holeArg;
+						holeArg.mInitialState = ItemHole::Hole_Close;
+						hole->init(&holeArg);
+					}
+					else {
+						hole->init(nullptr);
+					}
+					hole->mFaceDirection = node->getDirection();
+					hole->setPosition(birthPos, false);
+					if (floorInfo->useKaidanBarrel()) {
+						ItemBarrel::Item* barrel = static_cast<ItemBarrel::Item*>(ItemBarrel::mgr->birth());
+						barrel->init(nullptr);
+						barrel->setPosition(birthPos, false);
+					}
+					break;
+				}
+				case OBJLAYOUT_Pod: {
+					if (gameSystem->isVersusMode()) {
+						break;
+					}
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_POD, 0);
+					Vector3f birthPos;
+					node->getBirthPosition(birthPos.x, birthPos.z);
+					birthPos.y = 0.0f;
+					pod->init(nullptr);
+					pod->mFaceDir = node->getDirection();
+					pod->setPosition(birthPos, false);
+					break;
+				}
+				case OBJLAYOUT_VsBlueOnyon: {
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_BLUE);
+					Vector3f birthPos;
+					node->getBirthPosition(birthPos.x, birthPos.z);
+					birthPos.y = 0.0f;
+					pod->init(nullptr);
+					pod->mFaceDir = node->getDirection();
+					pod->setPosition(birthPos, false);
+					break;
+				}
+				case OBJLAYOUT_VsRedOnyon: {
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_RED);
+					Vector3f birthPos;
+					node->getBirthPosition(birthPos.x, birthPos.z);
+					birthPos.y = 0.0f;
+					pod->init(nullptr);
+					pod->mFaceDir = node->getDirection();
+					pod->setPosition(birthPos, false);
+					break;
+				}
+				case OBJLAYOUT_Fountain: {
+					ItemBigFountain::Item* fountain = static_cast<ItemBigFountain::Item*>(ItemBigFountain::mgr->birth());
+					Vector3f birthPos;
+					node->getBirthPosition(birthPos.x, birthPos.z);
+					birthPos.y = 0.0f;
+					if (gameSystem->isChallengeMode()) {
+						ItemBigFountain::InitArg fountainArg;
+						fountainArg.mInitState = 3; // Close state (lack of an enum)
+						fountain->init(&fountainArg);
+					}
+					else {
+						fountain->init(nullptr);
+					}
+					fountain->mFaceDir = node->getDirection();
+					fountain->setPosition(birthPos, false);
+					break;
+				}
+				case OBJLAYOUT_Enemy: {
+					Vector3f birthPos;
+					birthPos.y = 0.0f;
+					node->getBirthPosition(birthPos.x, birthPos.z);
+					birthPos.y = mapMgr->getMinY(birthPos);
+					EnemyBirthArg birthArg;
+					birthArg.mFaceDir  = node->getDirection();
+					birthArg.mPosition = birthPos;
+					
+					birthArg.mOtakaraItemCode = node->getExtraCode();
+					birthArg.mTekiBirthType = (EnemyTypeID::EEnemyTypeID)node->getObjectType();
+					node->isFixedBattery();
+
+					bool canSpawnTeki  = true;
+					bool isWaterwraith = false;
+					EnemyTypeID::EEnemyTypeID enemyType = (EnemyTypeID::EEnemyTypeID)node->getObjectId();
+					if (enemyType == EnemyTypeID::EnemyID_BlackMan) {
+						if (playData->mCaveSaveData.mIsWaterwraithAlive) {
+							isWaterwraith = true;
+						}
+						else {
+							canSpawnTeki = false;
+						}
+					}
+
+					if (canSpawnTeki) {
+						EnemyBase* enemy = generalEnemyMgr->birth(node->getObjectId(), birthArg);
+						if (enemy) {
+							enemy->init(nullptr);
+						}
+						if (isWaterwraith) {
+							BlackMan::Obj* waterwraith = static_cast<BlackMan::Obj*>(enemy);
+							waterwraith->setTimer(floorInfo->mParms.mWaterwraithTimer);
+							static_cast<RoomMapMgr*>(mapMgr)->mBlackMan = waterwraith;
+						}
+					}
+					break;
+				}
+				case OBJLAYOUT_Item: {
+					PelletIndexInitArg pelletIndex (node->getObjectId());
+					Pellet* pellet = pelletMgr->birth(&pelletIndex);
+					if (!pellet) {
+						break;
+					}
+					Vector3f birthPos;
+					node->getBirthPosition(birthPos.x, birthPos.z);
+					if (mapMgr) {
+						birthPos.y = mapMgr->getMinY(birthPos);
+						birthPos.y += pellet->getCylinderHeight() / 2;
+					}
+					else {
+						birthPos.y = 0.0f;
+					}
+					pellet->setPosition(birthPos, false);
+					Vector3f rotation;
+					rotation.y = node->getDirection();
+					rotation.x = 0.0f;
+					rotation.z = 0.0f;
+					Matrixf pelletRot;
+					pelletRot.makeTR(Vector3f::zero, rotation);
+					node->getDirection();
+					pellet->setOrientation(pelletRot);
+					pellet->allocateTexCaster();
+					break;
+				}
+				case OBJLAYOUT_Gate: {
+					int doorIdx = node->getBirthDoorIndex();
+					if (doorIdx == -1) {
+						break;
+					}
+					RoomDoorInfo* doorinfo = &mDoorInfos[doorIdx];
+					Vector3f birthPos = doorinfo->mWaypoint->mPosition;
+					f32 dir = JMath::atanTable_.atan2_(doorinfo->mLookAtPos.x, doorinfo->mLookAtPos.z);
+					ItemGateInitArg gateArg;
+					gateArg.mFaceDir = dir;
+
+					ItemGate* gate = static_cast<ItemGate*>(itemGateMgr->birth());
+					gate->init(&gateArg);
+					f32 health = static_cast<Cave::GateNode*>(node)->mUnit->mInfo->mLife;
+					gate->mMaxSegmentHealth     = health;
+					gate->mCurrentSegmentHealth = health;
+					gate->setPosition(birthPos, false);
+					break;
+				}
+				}
+			}
+
+		}
+	}
+}
+
+
 } // namespace Game
-
-// void ebi::Screen::TTitleMenu::doOpenScreen(ArgOpen* arg) {
-//     P2ASSERT(arg);
-//     ArgOpenTitleMenu* menuArg = static_cast<ArgOpenTitleMenu*>(arg);
-    
-// }
-
-
-// Game::Navi* PikiAI::Brain::searchOrima() {
-//     Vector3f pikiPos = mPiki->getPosition();
-//     Sys::Sphere targetSphere (pikiPos, 300.0f);
-
-//     Game::CellIteratorArg iCellArg = targetSphere;
-//     Game::CellIterator iCell = iCellArg;
-//     CI_LOOP(iCell) {
-//         Game::CellObject* cell = *iCell;
-//         if (cell->isNavi()) {
-//             Game::Navi* navi = static_cast<Game::Navi*>(cell);
-//             if (navi->isAlive()) {
-//                 Vector3f naviPos = navi->getPosition();
-//                 f32 distance = _distanceBetween(pikiPos, naviPos);
-//                 if (distance < 300.0f && Game::gameSystem->isVersusMode()) {
-//                     if (mPiki->mPikiKind != navi->getVsPikiColor()) {
-//                         return navi;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-
-
-
