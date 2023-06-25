@@ -26,13 +26,13 @@ char* NaviNameArray[4] = {
 };
 
 
-const f32 baseXOffs[2] = {341.0f, 475.0f};
+const f32 baseXOffs[4] = {341.0f, 385.0f, 429.0f, 475.0f};
 const f32 baseYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f}; // increments of 20
 
 const f32 boxXOffs[2] = {381.0f, 515.0f};
 const f32 boxYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f};
 
-const JUtility::TColor vsTeamColors[2] = { 0xff5050ff, 0x5050ffff };
+const JUtility::TColor vsTeamColors[] = { 0xff5050ff, 0x5050ffff, 0xffffffff, 0xff00ffff };
 
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
@@ -52,7 +52,7 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     }
 
     for (int i = Game::gNaviNum; i < 4; i++) {
-        mTeamIDs[i] = 1 - (i % 2);
+        mTeamIDs[i] = i;
     }
 
     Game::gNaviNum = Game::CalcNaviNum();
@@ -260,8 +260,8 @@ bool TFourVsSelect::doUpdate() {
     if (_D4->mState == 0)
     for (int i = 0; i < 4; i++) {
         P2ASSERT(controllerArray[i]);
-        if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_RIGHT)) {
-            if (mTeamIDs[i] == 1) {
+        if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_RIGHT) && !mAnimActive[i]) {
+            if (mTeamIDs[i] == 3) {
                 PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
                 mErrAnimActive[i] = true;
                 mErrAnimProgress[i] = 0.0f;
@@ -270,11 +270,13 @@ bool TFourVsSelect::doUpdate() {
             else {
                 mTeamIDs[i]++;
                 mAnimActive[i] = true;
+                mAnimProgress[i] = 0.0f;
                 mAnimSpeed[i] = 3.0f;
+                mAnimDir[i] = 1;
                 PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_THROW, 0);
             }
         }
-        else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_LEFT)) {
+        else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_LEFT) && !mAnimActive[i]) {
             if (mTeamIDs[i] == 0) {
                 mErrAnimActive[i] = true;
                 mErrAnimProgress[i] = 1.0f;
@@ -284,7 +286,9 @@ bool TFourVsSelect::doUpdate() {
             else {
                 mTeamIDs[i]--;
                 mAnimActive[i] = true;
-                mAnimSpeed[i] = -3.0f;
+                mAnimProgress[i] = 0.0f;
+                mAnimDir[i] = -1;
+                mAnimSpeed[i] = 3.0f;
                 PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_THROW, 0);
             }
         }
@@ -327,10 +331,10 @@ bool TFourVsSelect::doUpdate() {
                 
                 PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_GROUND, 0);
             }
-            mNaviBasePos[i].x = (baseXOffs[1] - baseXOffs[0]) * smoothedProgress + baseXOffs[0];
-            mLerpColors[i].r = vsTeamColors[0].r * (1.0f - smoothedProgress) + vsTeamColors[1].r * smoothedProgress;
-            mLerpColors[i].g = vsTeamColors[0].g * (1.0f - smoothedProgress) + vsTeamColors[1].g * smoothedProgress;
-            mLerpColors[i].b = vsTeamColors[0].b * (1.0f - smoothedProgress) + vsTeamColors[1].b * smoothedProgress;
+            mNaviBasePos[i].x = (baseXOffs[mTeamIDs[i]] - baseXOffs[mTeamIDs[i] - mAnimDir[i]]) * smoothedProgress + baseXOffs[mTeamIDs[i] - mAnimDir[i]];
+            mLerpColors[i].r = vsTeamColors[mTeamIDs[i] - mAnimDir[i]].r * (1.0f - smoothedProgress) + vsTeamColors[mTeamIDs[i]].r * smoothedProgress;
+            mLerpColors[i].g = vsTeamColors[mTeamIDs[i] - mAnimDir[i]].g * (1.0f - smoothedProgress) + vsTeamColors[mTeamIDs[i]].g * smoothedProgress;
+            mLerpColors[i].b = vsTeamColors[mTeamIDs[i] - mAnimDir[i]].b * (1.0f - smoothedProgress) + vsTeamColors[mTeamIDs[i]].b * smoothedProgress;
         }
         else if (mErrAnimActive[i]) {
             mErrAnimProgress[i] += sys->mDeltaTime * mErrAnimSpeed[i];

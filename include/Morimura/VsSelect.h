@@ -292,6 +292,7 @@ struct TFourVsSelect : public TVsSelect
 	f32 mErrAnimSpeed[4];
 	f32 mAnimProgress[4]; // 0 to 1
 	f32 mAnimSpeed[4];
+	int mAnimDir[4];
 	JUtility::TColor mLerpColors[4];
 };
 

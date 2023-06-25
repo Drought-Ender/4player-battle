@@ -751,6 +751,16 @@ void VsGameSection::createVsPikmins()
 	Onyon* blueOnyon = ItemOnyon::mgr->getOnyon(ONYON_TYPE_BLUE);
 	P2ASSERTLINE(1354, blueOnyon);
 	Vector3f blueOnyonPos = blueOnyon->getPosition();
+
+	Onyon* whiteOnyon = ItemOnyon::mgr->getOnyon(ONYON_TYPE_WHITE);
+	P2ASSERTLINE(1354, whiteOnyon);
+	Vector3f whiteOnyonPos = whiteOnyon->getPosition();
+
+
+	Onyon* purpleOnyon = ItemOnyon::mgr->getOnyon(ONYON_TYPE_PURPLE);
+	P2ASSERTLINE(1354, purpleOnyon);
+	Vector3f purpleOnyonPos = purpleOnyon->getPosition();
+
 	PikiContainer* pikmin = &mContainer1;
 	pikmin->clear();
 
@@ -758,6 +768,13 @@ void VsGameSection::createVsPikmins()
 	reds       = mOlimarHandicap * 5;
 	int& blues = pikmin->getCount(Blue, Leaf);
 	blues      = mLouieHandicap * 5;
+
+	int& whites = pikmin->getCount(White, Leaf);
+
+	int& purples = pikmin->getCount(Purple, Leaf);
+
+	purples = 10;
+	whites  = 10;
 	Vector3f spawnOnyonPos;
 
 	for (int color = Blue; color < PikiColorCount; color++) {
@@ -765,6 +782,12 @@ void VsGameSection::createVsPikmins()
 			spawnOnyonPos = redOnyonPos;
 		} else if (color == Blue) {
 			spawnOnyonPos = blueOnyonPos;
+		}
+		else if (color == White) {
+			spawnOnyonPos = whiteOnyonPos;
+		}
+		else if (color == Purple) {
+			spawnOnyonPos = purpleOnyonPos;
 		} else {
 			continue;
 		}

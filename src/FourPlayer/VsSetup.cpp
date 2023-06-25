@@ -642,5 +642,55 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 	}
 }
 
+Onyon* Pellet::getPelletGoal()
+{
+	Onyon* goalOnyon;
+
+	if ((gameSystem->isVersusMode())
+	    || ((getKind() != PELTYPE_TREASURE) && (getKind() != PELTYPE_BERRY) && (getKind() != PELTYPE_UPGRADE))) {
+		int maxCount = -1;
+		int counter  = 0;
+		int i        = 0;
+
+		for (int j = 0; j < ONYON_TYPE_MAX; j++) {
+			if (maxCount < (int)mPikminCount[j]) {
+				maxCount = mPikminCount[j];
+			}
+		}
+
+		int onyonType[ONYON_TYPE_MAX];
+		for (int j = 0; j < ONYON_TYPE_MAX; j++) {
+			if (maxCount == (int)mPikminCount[j]) {
+				onyonType[i++] = j;
+				counter++;
+			}
+		}
+
+		int idx = (int)((float)counter * randFloat());
+		if (idx >= counter) {
+			idx = ONYON_TYPE_BLUE;
+		}
+
+		int type  = onyonType[idx];
+		goalOnyon = ItemOnyon::mgr->getOnyon(type);
+		if ((gameSystem->mMode == GSM_STORY_MODE) && (!playData->hasBootContainer(type))) {
+			goalOnyon = nullptr;
+		}
+
+		if (goalOnyon == nullptr) {
+			goalOnyon = ItemOnyon::mgr->getOnyon(ONYON_TYPE_RED);
+			if (goalOnyon == nullptr) {
+				goalOnyon = ItemOnyon::mgr->mPod;
+			}
+		}
+	} else {
+		goalOnyon = ItemOnyon::mgr->mUfo;
+		if (ItemOnyon::mgr->mUfo == nullptr) {
+			goalOnyon = ItemOnyon::mgr->mPod;
+		}
+	}
+
+	return goalOnyon;
+}
 
 } // namespace Game
