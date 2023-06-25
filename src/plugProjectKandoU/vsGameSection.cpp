@@ -1592,8 +1592,8 @@ void VsGameSection::clearGetDopeCount()
  */
 int& VsGameSection::getGetDopeCount(int player, int type)
 {
-	JUTASSERTBOUNDSINCLUSIVELINE(2567, 0, player, 1, "%d playerID\n");
-	JUTASSERTBOUNDSINCLUSIVELINE(2568, 0, type, 1, "%d typeID\n");
+	JUTASSERTBOUNDSINCLUSIVELINE(2567, 0, player, 3, "%d playerID\n");
+	JUTASSERTBOUNDSINCLUSIVELINE(2568, 0, type, 3, "%d typeID\n");
 	return mDopeCounts[player][type];
 }
 

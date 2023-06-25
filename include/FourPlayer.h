@@ -98,7 +98,9 @@ namespace Game
 
 enum TeamID {
     TEAM_RED = 0,
-    TEAM_BLUE = 1
+    TEAM_BLUE = 1,
+    TEAM_WHITE,
+    TEAM_PURPLE
 };
 
     
@@ -116,6 +118,8 @@ int CalcNaviNum();
 int getVsTeam(int);
 int getVsPikiColor(int); // Gets the piki color of an index
 void SetVsTeam(int idx, TeamID team);
+int getTeamFromPiki(int);
+int getPikiFromTeam(int);
 
 
 

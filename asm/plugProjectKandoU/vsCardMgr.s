@@ -415,92 +415,6 @@ lbl_constructor:
 .endobj lbl_8051A4EC
 
 .section .text, "ax"  # 0x800056C0 - 0x80472F00
-.fn __ct__Q34Game6VsGame7CardMgrFPQ24Game13VsGameSectionPQ34Game6VsGame7TekiMgr, global
-/* 8023550C 0023244C  94 21 FF E0 */	stwu r1, -0x20(r1)
-/* 80235510 00232450  7C 08 02 A6 */	mflr r0
-/* 80235514 00232454  3C C0 80 23 */	lis r6, __ct__Q44Game6VsGame7CardMgr11SlotMachineFv@ha
-/* 80235518 00232458  38 E0 00 02 */	li r7, 2
-/* 8023551C 0023245C  90 01 00 24 */	stw r0, 0x24(r1)
-/* 80235520 00232460  38 06 56 54 */	addi r0, r6, __ct__Q44Game6VsGame7CardMgr11SlotMachineFv@l
-/* 80235524 00232464  38 C0 00 70 */	li r6, 0x70
-/* 80235528 00232468  93 E1 00 1C */	stw r31, 0x1c(r1)
-/* 8023552C 0023246C  7C BF 2B 78 */	mr r31, r5
-/* 80235530 00232470  38 A0 00 00 */	li r5, 0
-/* 80235534 00232474  93 C1 00 18 */	stw r30, 0x18(r1)
-/* 80235538 00232478  7C 9E 23 78 */	mr r30, r4
-/* 8023553C 0023247C  7C 04 03 78 */	mr r4, r0
-/* 80235540 00232480  93 A1 00 14 */	stw r29, 0x14(r1)
-/* 80235544 00232484  7C 7D 1B 78 */	mr r29, r3
-/* 80235548 00232488  38 7D 00 18 */	addi r3, r29, 0x18
-/* 8023554C 0023248C  4B E8 C2 F1 */	bl __construct_array
-/* 80235550 00232490  93 DD 01 0C */	stw r30, 0x10c(r29)
-/* 80235554 00232494  38 80 00 00 */	li r4, 0
-/* 80235558 00232498  38 00 00 01 */	li r0, 1
-/* 8023555C 0023249C  C0 02 C0 90 */	lfs f0, lbl_8051A3F0@sda21(r2)
-/* 80235560 002324A0  93 FD 01 10 */	stw r31, 0x110(r29)
-/* 80235564 002324A4  7F A3 EB 78 */	mr r3, r29
-/* 80235568 002324A8  90 9D 00 00 */	stw r4, 0(r29)
-/* 8023556C 002324AC  90 9D 00 04 */	stw r4, 4(r29)
-/* 80235570 002324B0  90 9D 00 74 */	stw r4, 0x74(r29)
-/* 80235574 002324B4  90 1D 00 E4 */	stw r0, 0xe4(r29)
-/* 80235578 002324B8  93 BD 00 78 */	stw r29, 0x78(r29)
-/* 8023557C 002324BC  93 BD 00 E8 */	stw r29, 0xe8(r29)
-/* 80235580 002324C0  D0 1D 01 04 */	stfs f0, 0x104(r29)
-/* 80235584 002324C4  48 00 23 E5 */	bl initDraw__Q34Game6VsGame7CardMgrFv
-/* 80235588 002324C8  38 00 00 FF */	li r0, 0xff
-/* 8023558C 002324CC  38 60 00 58 */	li r3, 0x58
-/* 80235590 002324D0  98 01 00 0C */	stb r0, 0xc(r1)
-/* 80235594 002324D4  98 01 00 0D */	stb r0, 0xd(r1)
-/* 80235598 002324D8  98 01 00 0E */	stb r0, 0xe(r1)
-/* 8023559C 002324DC  98 01 00 0F */	stb r0, 0xf(r1)
-/* 802355A0 002324E0  4B DE E9 05 */	bl __nw__FUl
-/* 802355A4 002324E4  7C 60 1B 79 */	or. r0, r3, r3
-/* 802355A8 002324E8  41 82 00 24 */	beq .L_802355CC
-/* 802355AC 002324EC  80 01 00 0C */	lwz r0, 0xc(r1)
-/* 802355B0 002324F0  38 E1 00 08 */	addi r7, r1, 8
-/* 802355B4 002324F4  38 82 C0 94 */	addi r4, r2, lbl_8051A3F4@sda21
-/* 802355B8 002324F8  38 A0 00 01 */	li r5, 1
-/* 802355BC 002324FC  90 01 00 08 */	stw r0, 8(r1)
-/* 802355C0 00232500  38 C0 00 02 */	li r6, 2
-/* 802355C4 00232504  48 1F 5E A9 */	bl __ct__8LightObjFPc10_GXLightID14ELightTypeFlagQ28JUtility6TColor
-/* 802355C8 00232508  7C 60 1B 78 */	mr r0, r3
-.L_802355CC:
-/* 802355CC 0023250C  90 1D 01 08 */	stw r0, 0x108(r29)
-/* 802355D0 00232510  38 00 00 FF */	li r0, 0xff
-/* 802355D4 00232514  C0 42 C0 78 */	lfs f2, lbl_8051A3D8@sda21(r2)
-/* 802355D8 00232518  7F A3 EB 78 */	mr r3, r29
-/* 802355DC 0023251C  80 9D 01 08 */	lwz r4, 0x108(r29)
-/* 802355E0 00232520  C0 22 C0 9C */	lfs f1, lbl_8051A3FC@sda21(r2)
-/* 802355E4 00232524  D0 44 00 28 */	stfs f2, 0x28(r4)
-/* 802355E8 00232528  C0 02 C0 A0 */	lfs f0, lbl_8051A400@sda21(r2)
-/* 802355EC 0023252C  D0 44 00 2C */	stfs f2, 0x2c(r4)
-/* 802355F0 00232530  C0 62 C0 A4 */	lfs f3, lbl_8051A404@sda21(r2)
-/* 802355F4 00232534  D0 24 00 30 */	stfs f1, 0x30(r4)
-/* 802355F8 00232538  C0 42 C0 A8 */	lfs f2, lbl_8051A408@sda21(r2)
-/* 802355FC 0023253C  80 9D 01 08 */	lwz r4, 0x108(r29)
-/* 80235600 00232540  C0 22 C0 90 */	lfs f1, lbl_8051A3F0@sda21(r2)
-/* 80235604 00232544  D0 04 00 1C */	stfs f0, 0x1c(r4)
-/* 80235608 00232548  C0 02 C0 AC */	lfs f0, lbl_8051A40C@sda21(r2)
-/* 8023560C 0023254C  D0 64 00 20 */	stfs f3, 0x20(r4)
-/* 80235610 00232550  D0 44 00 24 */	stfs f2, 0x24(r4)
-/* 80235614 00232554  80 9D 01 08 */	lwz r4, 0x108(r29)
-/* 80235618 00232558  D0 24 00 44 */	stfs f1, 0x44(r4)
-/* 8023561C 0023255C  80 9D 01 08 */	lwz r4, 0x108(r29)
-/* 80235620 00232560  98 04 00 34 */	stb r0, 0x34(r4)
-/* 80235624 00232564  98 04 00 35 */	stb r0, 0x35(r4)
-/* 80235628 00232568  98 04 00 36 */	stb r0, 0x36(r4)
-/* 8023562C 0023256C  98 04 00 37 */	stb r0, 0x37(r4)
-/* 80235630 00232570  80 9D 01 08 */	lwz r4, 0x108(r29)
-/* 80235634 00232574  D0 04 00 40 */	stfs f0, 0x40(r4)
-/* 80235638 00232578  83 E1 00 1C */	lwz r31, 0x1c(r1)
-/* 8023563C 0023257C  83 C1 00 18 */	lwz r30, 0x18(r1)
-/* 80235640 00232580  83 A1 00 14 */	lwz r29, 0x14(r1)
-/* 80235644 00232584  80 01 00 24 */	lwz r0, 0x24(r1)
-/* 80235648 00232588  7C 08 03 A6 */	mtlr r0
-/* 8023564C 0023258C  38 21 00 20 */	addi r1, r1, 0x20
-/* 80235650 00232590  4E 80 00 20 */	blr 
-.endfn __ct__Q34Game6VsGame7CardMgrFPQ24Game13VsGameSectionPQ34Game6VsGame7TekiMgr
-
 .fn __ct__Q44Game6VsGame7CardMgr11SlotMachineFv, weak
 /* 80235654 00232594  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 80235658 00232598  7C 08 02 A6 */	mflr r0
@@ -717,42 +631,6 @@ lbl_constructor:
 /* 80235960 002328A0  4E 80 00 20 */	blr 
 .endfn loadResource__Q34Game6VsGame7CardMgrFv
 
-.fn update__Q34Game6VsGame7CardMgrFv, global
-/* 80235964 002328A4  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 80235968 002328A8  7C 08 02 A6 */	mflr r0
-/* 8023596C 002328AC  90 01 00 14 */	stw r0, 0x14(r1)
-/* 80235970 002328B0  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 80235974 002328B4  7C 7F 1B 78 */	mr r31, r3
-/* 80235978 002328B8  80 6D 93 E8 */	lwz r3, gameSystem__4Game@sda21(r13)
-/* 8023597C 002328BC  4B F7 F6 4D */	bl paused__Q24Game10GameSystemFv
-/* 80235980 002328C0  54 60 06 3F */	clrlwi. r0, r3, 0x18
-/* 80235984 002328C4  40 82 00 14 */	bne .L_80235998
-/* 80235988 002328C8  38 7F 00 18 */	addi r3, r31, 0x18
-/* 8023598C 002328CC  48 00 16 D5 */	bl update__Q44Game6VsGame7CardMgr11SlotMachineFv
-/* 80235990 002328D0  38 7F 00 88 */	addi r3, r31, 0x88
-/* 80235994 002328D4  48 00 16 CD */	bl update__Q44Game6VsGame7CardMgr11SlotMachineFv
-.L_80235998:
-/* 80235998 002328D8  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 8023599C 002328DC  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 802359A0 002328E0  7C 08 03 A6 */	mtlr r0
-/* 802359A4 002328E4  38 21 00 10 */	addi r1, r1, 0x10
-/* 802359A8 002328E8  4E 80 00 20 */	blr 
-.endfn update__Q34Game6VsGame7CardMgrFv
-
-.fn stopSlot__Q34Game6VsGame7CardMgrFi, global
-/* 80235A50 00232990  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 80235A54 00232994  7C 08 02 A6 */	mflr r0
-/* 80235A58 00232998  1C 84 00 70 */	mulli r4, r4, 0x70
-/* 80235A5C 0023299C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 80235A60 002329A0  7C 60 1B 78 */	mr r0, r3
-/* 80235A64 002329A4  38 64 00 18 */	addi r3, r4, 0x18
-/* 80235A68 002329A8  7C 60 1A 14 */	add r3, r0, r3
-/* 80235A6C 002329AC  48 00 15 A5 */	bl startStop__Q44Game6VsGame7CardMgr11SlotMachineFv
-/* 80235A70 002329B0  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 80235A74 002329B4  7C 08 03 A6 */	mtlr r0
-/* 80235A78 002329B8  38 21 00 10 */	addi r1, r1, 0x10
-/* 80235A7C 002329BC  4E 80 00 20 */	blr 
-.endfn stopSlot__Q34Game6VsGame7CardMgrFi
 
 .fn clear__Q44Game6VsGame7CardMgr11SlotMachineFv, global
 /* 802369C8 00233908  C0 22 C0 78 */	lfs f1, lbl_8051A3D8@sda21(r2)

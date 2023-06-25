@@ -7,6 +7,19 @@
 #include "FourPlayer.h"
 #include "Game/NaviState.h"
 #include "Game/gameStat.h"
+#include "types.h"
+#include "Dolphin/rand.h"
+#include "Game/VsGame.h"
+#include "efx2d/Arg.h"
+#include "efx2d/T2DSprayset.h"
+#include "Light.h"
+#include "JSystem/JKernel/JKRArchive.h"
+#include "PSSystem/PSSystemIF.h"
+#include "Game/Entities/ItemOnyon.h"
+#include "Game/Stickers.h"
+#include "Game/pelletMgr.h"
+#include "Game/GameConfig.h"
+#include "nans.h"
 
 namespace Game
 {
@@ -17,14 +30,59 @@ bool NaviDopeArg::wasteable = false;
 namespace VsGame
 {
 
+VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* tekiMgr)
+{
+	mSection                      = section;
+	mTekiMgr                      = tekiMgr;
+	mSlotNum                      = 0;
+	mSlotTextures                 = nullptr;
+	mSlotMachines[0].mPlayerIndex = 0;
+	mSlotMachines[1].mPlayerIndex = 1;
+	mNewSlotMachines[0].mPlayerIndex = 2;
+	mNewSlotMachines[1].mPlayerIndex = 3;
+	mSlotMachines[0].mCardMgr     = this;
+	mSlotMachines[1].mCardMgr     = this;
+	mNewSlotMachines[0].mCardMgr = this;
+	mNewSlotMachines[1].mCardMgr = this;
+	_104                          = 40.0f;
+
+	initDraw();
+
+	JUtility::TColor color(0xFF, 0xFF, 0xFF, 0xFF);
+	mLightObj = new LightObj("test", GX_LIGHT0, TYPE_2, color);
+
+	mLightObj->mElevation     = Vector3f(0.0f, 0.0f, -1.0f);
+	mLightObj->mPosition      = Vector3f(555.0f, -250.0f, 4500.0f);
+	mLightObj->mCutoffAngle   = 40.0f;
+	mLightObj->mColor         = Color4(0xFF, 0xFF, 0xFF, 0xFF);
+	mLightObj->mRefBrightness = 0.98f;
+}
+
+void VsGame::CardMgr::update()
+{
+	if (!gameSystem->paused()) {
+		mSlotMachines[0].update();
+		mSlotMachines[1].update();
+		mNewSlotMachines[0].update();
+		mNewSlotMachines[1].update();
+	}
+}
+
+void VsGame::CardMgr::stopSlot(int idx) {
+	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
+	machines[idx]->startStop(); 
+}
+
+
 bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 {
 	tekiMgr    = mTekiMgr;
-	int slotID = mSlotMachines[user].mSlotID;
+	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
+	int slotID = machines[user]->mSlotID;
 
 	bool used = true;
 
-	if (mSlotMachines[user]._18) {
+	if (machines[user]->_18) {
 		return false;
 	}
 
@@ -35,7 +93,7 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 		break;
 	}
 	case PIKMIN_5: {
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(1 - user);
+		Onyon* onyon = ItemOnyon::mgr->getOnyon(getPikiFromTeam(user));
 		if (onyon) {
 			ItemOnyon::gVsChargeOkay = true;
 			for (int i = 0; i < 5; i++) {
@@ -46,7 +104,7 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 		break;
 	}
 	case PIKMIN_10: {
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(1 - user);
+		Onyon* onyon = ItemOnyon::mgr->getOnyon(getPikiFromTeam(user));
 		if (onyon) {
 			ItemOnyon::gVsChargeOkay = true;
 			for (int i = 0; i < 10; i++) {
@@ -258,17 +316,17 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 
 	if (used) {
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_GO, 0);
-		if (mSlotMachines[user].mCherryStock > 0) {
-			mSlotMachines[user].mCherryStock--;
-			mSlotMachines[user].start();
-			mSlotMachines[user]._18 = 0;
+		if (machines[user]->mCherryStock > 0) {
+			machines[user]->mCherryStock--;
+			machines[user]->start();
+			machines[user]->_18 = 0;
 		} else {
-			mSlotMachines[user].mSpinSpeed   = 0.0f;
-			mSlotMachines[user].mSpinAccel   = 0.0f;
-			mSlotMachines[user].mAppearState = 2;
-			mSlotMachines[user].mSlotID      = UNRESOLVED;
-			mSlotMachines[user].startZoomUse();
-			mSlotMachines[user]._18 = 1;
+			machines[user]->mSpinSpeed   = 0.0f;
+			machines[user]->mSpinAccel   = 0.0f;
+			machines[user]->mAppearState = 2;
+			machines[user]->mSlotID      = UNRESOLVED;
+			machines[user]->startZoomUse();
+			machines[user]->_18 = 1;
 		}
 	}
 
@@ -306,23 +364,25 @@ void CardMgr::draw(Graphics& gfx) {
 			mSlotsUpdated[i] = false;
 		}
 
+		SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
+
 		Vector3f olimarSlotPos = getSlotOrigin(0);
 		Vector3f louieSlotPos  = getSlotOrigin(1);
         Vector3f p3SlotPos     = getSlotOrigin(2);
         Vector3f p4SlotPos     = getSlotOrigin(3);
         
-		if (mSlotMachines[getVsTeam(0)].mSpinState) {
-			drawSlot(gfx, olimarSlotPos, mSlotMachines[getVsTeam(0)]);
+		if (machines[getVsTeam(0)]->mSpinState) {
+			drawSlot(gfx, olimarSlotPos, *machines[getVsTeam(0)]);
 		}
-		if (mSlotMachines[getVsTeam(1)].mSpinState) {
-			drawSlot(gfx, louieSlotPos, mSlotMachines[getVsTeam(1)]);
+		if (machines[getVsTeam(1)]->mSpinState) {
+			drawSlot(gfx, louieSlotPos, *machines[getVsTeam(1)]);
 		}
         if (gNaviNum >= 3) {
-            if (mSlotMachines[getVsTeam(2)].mSpinState) {
-                drawSlot(gfx, p3SlotPos, mSlotMachines[getVsTeam(2)]);
+            if (machines[getVsTeam(2)]->mSpinState) {
+                drawSlot(gfx, p3SlotPos, *machines[getVsTeam(2)]);
             }
-            if (mSlotMachines[getVsTeam(3)].mSpinState && gNaviNum == 4) {
-                drawSlot(gfx, p4SlotPos, mSlotMachines[getVsTeam(3)]);
+            if (machines[getVsTeam(3)]->mSpinState && gNaviNum == 4) {
+                drawSlot(gfx, p4SlotPos, *machines[getVsTeam(3)]);
             }
         }
 	}
@@ -340,13 +400,14 @@ inline Vector2f CardMgr::getLampPos(int user, int cherries)
 
 void CardMgr::gotPlayerCard(int user)
 {
-	if (mSlotMachines[user].mSpinState == 0) {
-		mSlotMachines[user].start();
-		mSlotMachines[user]._18 = 0;
-	} else if (mSlotMachines[user].mCherryStock < 4) {
+	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
+	if (machines[user]->mSpinState == 0) {
+		machines[user]->start();
+		machines[user]->_18 = 0;
+	} else if (machines[user]->mCherryStock < 4) {
         for (int i = 0; i < 4; i++) {
             if (getVsTeam(i) == user) {
-                Vector2f panePos = getLampPos(i, mSlotMachines[user].mCherryStock);
+                Vector2f panePos = getLampPos(i, machines[user]->mCherryStock);
                 OSReport("Owner %i\n", i);
 
                 JUtility::TColor color1(0xff, 0x96, 0x64, 0xff);
@@ -360,7 +421,7 @@ void CardMgr::gotPlayerCard(int user)
                 
             }
         }
-		mSlotMachines[user].mCherryStock++;
+		machines[user]->mCherryStock++;
 	}
 }
 
@@ -485,19 +546,19 @@ void CardMgr::SlotMachine::start()
 		selector.mValues[PIKMIN_10] = 150;
 	}
 
-	dopeCount0 = mCardMgr->mSection->getGetDopeCount(mPlayerIndex, 0);
-	dopeCount1 = mCardMgr->mSection->getGetDopeCount(1 - mPlayerIndex, 0);
+	// dopeCount0 = mCardMgr->mSection->getGetDopeCount(mPlayerIndex, 0);
+	// dopeCount1 = mCardMgr->mSection->getGetDopeCount(1 - mPlayerIndex, 0);
 
-	if (dopeCount0 > dopeCount1 + 2) {
-		selector.mValues[DOPE_RED] /= 2;
-	}
+	// if (dopeCount0 > dopeCount1 + 2) {
+	// 	selector.mValues[DOPE_RED] /= 2;
+	// }
 
-	dopeCount0 = mCardMgr->mSection->getGetDopeCount(mPlayerIndex, 1);
-	dopeCount1 = mCardMgr->mSection->getGetDopeCount(1 - mPlayerIndex, 1);
+	// dopeCount0 = mCardMgr->mSection->getGetDopeCount(mPlayerIndex, 1);
+	// dopeCount1 = mCardMgr->mSection->getGetDopeCount(1 - mPlayerIndex, 1);
 
-	if (dopeCount0 > dopeCount1 + 2) {
-		selector.mValues[DOPE_BLACK] /= 2;
-	}
+	// if (dopeCount0 > dopeCount1 + 2) {
+	// 	selector.mValues[DOPE_BLACK] /= 2;
+	// }
 
 	if (mPrevSelected != UNRESOLVED) {
 		selector.mValues[mPrevSelected] = 10;

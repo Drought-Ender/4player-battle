@@ -210,6 +210,7 @@ struct CardMgr {
 	VsGameSection* mSection;       // _10C
 	TekiMgr* mTekiMgr;             // _110
 	bool mSlotsUpdated[4];
+	SlotMachine mNewSlotMachines[2];
 };
 
 struct StageData : public CNode {

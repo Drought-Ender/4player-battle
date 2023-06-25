@@ -39,6 +39,12 @@ void SetVsTeam(int idx, TeamID teamID) {
     case TEAM_BLUE:
         pikiColor = Blue;
         break;
+	case TEAM_WHITE:
+		pikiColor = White;
+		break;
+	case TEAM_PURPLE:
+		pikiColor = Purple;
+		break;
     }
     gVsNaviIndexArray[idx] = pikiColor;
 }
@@ -55,17 +61,45 @@ int getVsPikiColor(int idx) {
     return gVsNaviIndexArray[idx];
 }
 
-int getVsTeam(int idx) {
-    EPikiKind pikiColor = (EPikiKind)gVsNaviIndexArray[idx];
-    switch (pikiColor)
+int getTeamFromPiki(int pikiColor) {
+	switch (pikiColor)
     {
     case Red:
-        return 0;
+        return TEAM_RED;
     case Blue:
-        return 1;
+        return TEAM_BLUE;
+	case White:
+		return TEAM_WHITE;
+	case Purple:
+		return TEAM_PURPLE; 
     }
-    return pikiColor;
+    return -1;
 }
+
+int getVsTeam(int idx) {
+    return getTeamFromPiki((EPikiKind)gVsNaviIndexArray[idx]);
+}
+
+int getPikiFromTeam(int idx) {
+	EPikiKind pikiColor = (EPikiKind)idx;
+	switch (idx)
+    {
+    case TEAM_RED:
+        pikiColor = Red;
+        break;
+    case TEAM_BLUE:
+        pikiColor = Blue;
+        break;
+	case TEAM_WHITE:
+		pikiColor = White;
+		break;
+	case TEAM_PURPLE:
+		pikiColor = Purple;
+		break;
+    }
+	return pikiColor;
+}
+
 
 
 // onTeam__Q24Game4NaviFi
@@ -691,6 +725,103 @@ Onyon* Pellet::getPelletGoal()
 	}
 
 	return goalOnyon;
+}
+
+void PelletGoalState::init(Pellet* pellet, StateArg* arg)
+{
+	pellet->clearClaim();
+
+	// check if a new upgrade is acquired
+	if (pellet->getKind() == PELTYPE_UPGRADE && gameSystem->mMode == GSM_STORY_MODE) {
+		int id = pellet->getConfigIndex();
+		if (id >= 0 && id < 12) {
+			playData->mOlimarData->getItem(id);
+		}
+	}
+	pellet->setAlive(false);
+	bool flag                = false;
+	PelletGoalStateArg* sarg = static_cast<PelletGoalStateArg*>(arg);
+	mOnyon                   = sarg->mCreature;
+	if (gameSystem->mMode == GSM_STORY_MODE || gameSystem->isChallengeMode()) {
+		flag = checkMovie(pellet);
+
+	} else if (gameSystem->mMode == GSM_VERSUS_MODE) {
+		int type = pellet->mPelletFlag;
+		if ((u32)type == Pellet::FLAG_VS_BEDAMA_RED) {
+			pellet->movie_begin(false);
+			mOnyon->movie_begin(false);
+			GameMessageVsRedOrSuckStart mesg(1);
+			mesg.mIsYellow = false;
+			gameSystem->mSection->sendMessage(mesg);
+
+		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_BLUE) {
+			pellet->movie_begin(false);
+			mOnyon->movie_begin(false);
+			GameMessageVsRedOrSuckStart mesg2(0);
+			mesg2.mIsYellow = false;
+			gameSystem->mSection->sendMessage(mesg2);
+
+		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_YELLOW) {
+			if ((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon) {
+				pellet->movie_begin(false);
+				mOnyon->movie_begin(false);
+				GameMessageVsRedOrSuckStart mesg3(getTeamFromPiki((EPikiKind)static_cast<Onyon*>(mOnyon)->mOnyonType));
+				mesg3.mIsYellow = true;
+				gameSystem->mSection->sendMessage(mesg3);
+
+			} else {
+				JUT_PANICLINE(512, "not onyon %d\n", mOnyon->mObjectTypeID);
+			}
+		}
+	}
+
+	if (flag) {
+		mOnyon->movie_begin(false);
+		pellet->movie_begin(false);
+	}
+
+	Vector3f sep = mOnyon->getSuckPos() - pellet->getPosition();
+	mDistance    = _length(sep);
+	_14          = 0.0f;
+	mSuckDelay   = 1.5f;
+
+	Vector3f vel = pellet->getVelocity();
+	vel.y        = 0.0f;
+	pellet->setVelocity(vel);
+	mScale = 1.0f;
+
+	if (pellet->mPelletView) {
+		mScale = pellet->mPelletView->viewGetBaseScale();
+	}
+
+	if (((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon || (int)mOnyon->mObjectTypeID == OBJTYPE_Ufo) && !flag) {
+		static_cast<Onyon*>(mOnyon)->efxSuikomi();
+	}
+	mInDemo     = flag;
+	mDidSuikomi = false;
+	if (!mInDemo) {
+		Iterator<Piki> it(pikiMgr);
+		CI_LOOP(it)
+		{
+			Piki* piki = *it;
+			piki->movie_end(false);
+		}
+
+		GeneralMgrIterator<EnemyBase> it2(generalEnemyMgr);
+		for (it2.first(); it2.mContainer; it2.next()) {
+			EnemyBase* enemy = it2.getObject();
+			enemy->movie_end(false);
+		}
+	}
+
+	pellet->sound_otakaraEventFinish();
+	if (!(u8)mOnyon->isSuckArriveWait()) {
+		InteractSuckArrive act(pellet);
+		mOnyon->stimulate(act);
+		mIsWaiting = 0;
+	} else {
+		mIsWaiting = 1;
+	}
 }
 
 } // namespace Game

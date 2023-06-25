@@ -480,13 +480,13 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 		}
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) {
-			GameMessageVsGetOtakara mesg(1 - item->mOnyonType);
+			GameMessageVsGetOtakara mesg(getTeamFromPiki((EPikiKind)item->mOnyonType));
 			gameSystem->mSection->sendMessage(mesg);
 			return true;
 		}
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_CHERRY) {
-			GameMessageVsGotCard mesg(1 - item->mOnyonType);
+			GameMessageVsGotCard mesg(getTeamFromPiki((EPikiKind)item->mOnyonType));
 			gameSystem->mSection->sendMessage(mesg);
 			return true;
 		}
