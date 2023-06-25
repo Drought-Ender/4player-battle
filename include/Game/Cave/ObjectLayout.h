@@ -9,14 +9,16 @@
 namespace Game {
 
 enum ObjectLayoutType {
-	OBJLAYOUT_Enemy       = 0,
-	OBJLAYOUT_Item        = 1,
-	OBJLAYOUT_Gate        = 2,
-	OBJLAYOUT_Hole        = 3,
-	OBJLAYOUT_Pod         = 4,
-	OBJLAYOUT_Fountain    = 5,
-	OBJLAYOUT_VsRedOnyon  = 6,
-	OBJLAYOUT_VsBlueOnyon = 7,
+	OBJLAYOUT_Enemy         = 0,
+	OBJLAYOUT_Item          = 1,
+	OBJLAYOUT_Gate          = 2,
+	OBJLAYOUT_Hole          = 3,
+	OBJLAYOUT_Pod           = 4,
+	OBJLAYOUT_Fountain      = 5,
+	OBJLAYOUT_VsRedOnyon    = 6,
+	OBJLAYOUT_VsBlueOnyon   = 7,
+	OBJLAYOUT_VsYellowOnyon = 8,
+	OBJLAYOUT_COUNT
 };
 
 /**
@@ -98,6 +100,10 @@ struct ObjectLayout : public ObjectLayoutInfo {
 
 	// _00, VTBL
 	ObjectLayoutNode** mNodeList; // _04
+};
+
+struct ObjectLayoutNew : public ObjectLayout {
+	ObjectLayoutNew(MapNode*);
 };
 } // namespace Cave
 } // namespace Game
