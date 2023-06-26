@@ -384,6 +384,8 @@ void Obj::setPelletColor(u16 color, bool check)
 		case PELCOLOR_BLUE:
 		case PELCOLOR_RED:
 		case PELCOLOR_YELLOW:
+		case PELCOLOR_PURPLE:
+		case PELCOLOR_WHITE:
 			if (check) {
 				if (playData->hasMetPikmin(color)) {
 					mPellet->setValidColor(color);
@@ -412,6 +414,8 @@ void Obj::changePelletColor()
 {
 	if (mPellet && mColor == PELCOLOR_RANDOM) {
 		if (mColorChangeTimer > C_PARMS->mPelplantParms.mColorChangeTime.mValue) {
+			int pelColorArr[] = { PELCOLOR_RED, PELCOLOR_YELLOW, PELCOLOR_BLUE, PELCOLOR_PURPLE, PELCOLOR_WHITE, PELCOLOR_RANDOM };
+			int pelColorIdx[] = { 2, 0, 1, 3, 4, 5 };
 			u16 initialColor;
 			if (mPellet) {
 				initialColor = mPellet->mPelletColor;
@@ -419,10 +423,10 @@ void Obj::changePelletColor()
 				initialColor = PELCOLOR_BLUE;
 			}
 
-			u16 nextColor = initialColor + 1;
+			u16 nextColor = pelColorArr[pelColorIdx[initialColor] + 1];
 			u16 colorCap  = nextColor;
 			while (!playData->hasMetPikmin(nextColor)) {
-				if (++nextColor > PELCOLOR_YELLOW) {
+				if (++nextColor > PELCOLOR_WHITE) {
 					nextColor = PELCOLOR_BLUE;
 				}
 
@@ -431,8 +435,8 @@ void Obj::changePelletColor()
 				}
 			}
 
-			if (nextColor > PELCOLOR_YELLOW) {
-				nextColor = PELCOLOR_BLUE;
+			if (nextColor > PELCOLOR_WHITE) {
+				nextColor = PELCOLOR_RED;
 			}
 
 			setPelletColor(nextColor, true);

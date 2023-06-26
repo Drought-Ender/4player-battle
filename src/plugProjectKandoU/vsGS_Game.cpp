@@ -1196,9 +1196,7 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mMarbleCountP4 = marbleCountP4;
 
 		for (int i = 0; i < 4; i++) {
-			OSReport("disp %i\n", i);
 			disp.mWinMarbleColors[i] = mWinColors[getVsTeam(i)];
-			OSReport("value %i\n", mWinColors[getVsTeam(i)]);
 		}
 
 

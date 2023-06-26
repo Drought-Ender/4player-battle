@@ -33,7 +33,9 @@
 #define PELCOLOR_BLUE   (0)
 #define PELCOLOR_RED    (1)
 #define PELCOLOR_YELLOW (2)
-#define PELCOLOR_RANDOM (3)
+#define PELCOLOR_PURPLE (3)
+#define PELCOLOR_WHITE  (4)
+#define PELCOLOR_RANDOM (5)
 
 // pellet types
 // for use with Pellet:mPelletType and getKind()
@@ -360,7 +362,7 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 
 	inline void setValidColor(u16 color)
 	{
-		P2ASSERTLINE(909, !(color > 2));
+		//P2ASSERTLINE(909, !(color > 2));
 		mPelletColor = color;
 	}
 

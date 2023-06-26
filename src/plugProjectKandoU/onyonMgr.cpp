@@ -752,7 +752,6 @@ void Onyon::setSpotState(Onyon::cSpotState state)
  */
 void Onyon::updateSpot()
 {
-	vsChargePikmin();
 	if (mOnyonType < ONYON_TYPE_MAX) {
 		switch (mSpotState) {
 		case SPOTSTATE_Closed:
