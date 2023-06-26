@@ -16,7 +16,7 @@ namespace Game {
         if (mPelletFlag == FLAG_VS_BEDAMA_YELLOW) {
             return VsOtakaraName::cBedamaYellowDepth;
         }
-        if (mPelletFlag == FLAG_VS_BEDAMA_RED || mPelletFlag == FLAG_VS_BEDAMA_BLUE) {
+        if (mPelletFlag == FLAG_VS_BEDAMA_RED || mPelletFlag == FLAG_VS_BEDAMA_BLUE || mPelletFlag == FLAG_VS_BEDAMA_WHITE || mPelletFlag == FLAG_VS_BEDAMA_PURPLE) {
             return VsOtakaraName::cBedamaRedBlueDepth;
         }
         return 0.0f;

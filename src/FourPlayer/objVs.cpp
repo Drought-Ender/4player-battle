@@ -127,6 +127,8 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 
     mColoredBedamaPanes[0] = paneBdamaR;
     mColoredBedamaPanes[1] = paneBdamaB;
+	mColoredBedamaPanes[2] = panePcup;
+	mColoredBedamaPanes[3] = panePcup;
 
 	J2DPane* root = scrn1->search('ROOT');
 

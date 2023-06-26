@@ -494,8 +494,8 @@ do_onInit__Q34Game13PelletOtakara6ObjectFPQ24Game15CreatureInitArg:
 /* 801FFFC8 001FCF08  98 1F 04 5E */	stb r0, 0x45e(r31)
 /* 801FFFCC 001FCF0C  48 00 00 0C */	b .L_801FFFD8
 .L_801FFFD0:
-/* 801FFFD0 001FCF10  38 00 FF FF */	li r0, -1
-/* 801FFFD4 001FCF14  98 1F 04 5E */	stb r0, 0x45e(r31)
+mr r3, r31
+bl setBedamaColor__Q34Game13PelletOtakara6ObjectFv
 .L_801FFFD8:
 /* 801FFFD8 001FCF18  80 01 00 14 */	lwz r0, 0x14(r1)
 /* 801FFFDC 001FCF1C  83 E1 00 0C */	lwz r31, 0xc(r1)

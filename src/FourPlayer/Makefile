@@ -9,6 +9,8 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/VsConfigFunc.o\
 	$(BUILD_DIR)/src/FourPlayer/pelletBounceBury.o\
 	$(BUILD_DIR)/src/FourPlayer/PikiModifier.o\
+	$(BUILD_DIR)/src/FourPlayer/PelletModifier.o\
+
 
 
 

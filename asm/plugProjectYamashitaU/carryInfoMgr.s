@@ -32,7 +32,7 @@ lbl_constructor:
 	.4byte 0x1E1EFFFF
 	.4byte 0xFF0000FF
 	.4byte 0xEAEA00FF
-	.4byte 0xFFFFFFFF
+	.4byte 0x4C0F8AFF
 	.4byte 0xFFFFFFFF
 	.4byte 0x669999FF
 	.4byte 0x66D3D3FF
@@ -41,7 +41,7 @@ lbl_constructor:
 	.4byte 0x1E1EFFFF
 	.4byte 0xFF0000FF
 	.4byte 0xEAEA00FF
-	.4byte 0xFFFFFFFF
+	.4byte 0x4C0F8AFF
 	.4byte 0xFFFFFFFF
 	.4byte 0x669999FF
 	.4byte 0x70D8D8FF

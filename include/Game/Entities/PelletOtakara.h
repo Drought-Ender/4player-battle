@@ -25,6 +25,8 @@ struct Object : public Pellet {
 	virtual void sound_otakaraEventStop();              // _214
 	virtual void sound_otakaraEventFinish();            // _218
 
+	bool setBedamaColor();
+
 	// _00      = VTBL
 	// _00-_458 = Pellet
 	J3DMaterial* mMaterial; // _458

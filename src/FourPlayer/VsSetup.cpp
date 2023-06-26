@@ -859,15 +859,15 @@ void PelletNumber::Object::changeMaterial() {
 		color.a = 0xff;
 		break;
 	case Purple:
-		color.r = 120;
+		color.r = 50;
 		color.g = 0;
-		color.b = 250;
+		color.b = 100;
 		color.a = 0xff;
 		break;
 	case White:
-		color.r = 200;
-		color.g = 255;
-		color.b = 220;
+		color.r = 179;
+		color.g = 230;
+		color.b = 179;
 		color.a = 0xff;
 	default:
 		color.r = 0xff;

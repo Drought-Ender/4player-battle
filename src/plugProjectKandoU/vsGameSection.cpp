@@ -385,9 +385,9 @@ void VsGameSection::onSetupFloatMemory()
 	mTekiMgr      = new VsGame::TekiMgr();
 	mCardMgr      = new VsGame::CardMgr(this, mTekiMgr);
 	mCardMgr->loadResource();
-	const char* marbles[3] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaYellow };
+	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaYellow, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite };
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
 
 		PelletInitArg initArg;
 		PelletList::cKind cKind;
@@ -815,9 +815,9 @@ void VsGameSection::createVsPikmins()
 		}
 	}
 	
-	const char* marbles[2] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue };
-	for (int onyonType = 0; onyonType < 2; onyonType++) {
-		Onyon* currentOnyon = ItemOnyon::mgr->getOnyon(1 - onyonType);
+	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
+	for (int onyonType = 0; onyonType < ARRAY_SIZE(marbles); onyonType++) {
+		Onyon* currentOnyon = ItemOnyon::mgr->getOnyon(getPikiFromTeam(onyonType));
 		PelletIterator pelletIter;
 		pelletIter.first();
 		while (!pelletIter.isDone()) {
@@ -1381,8 +1381,8 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 	if (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_NOTHING) {
 		return;
 	}
-	const char* marbles[2] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue };
-	for (int i = 0; i < 2; i++) {
+	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
+	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
 		PelletList::cKind kind;
 
 		PelletInitArg pelletArg;
