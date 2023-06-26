@@ -572,7 +572,7 @@ bool InteractBubble::actPiki(Game::Piki* piki)
  */
 bool InteractGas::actPiki(Game::Piki* piki)
 {
-	if (piki->gasInvicible()) {
+	if (piki->gasInvicible() && !gameSystem->isVersusMode()) {
 		return false;
 	}
 	if (piki->mCurrentState->invincible(piki)) {
@@ -591,6 +591,33 @@ bool InteractGas::actPiki(Game::Piki* piki)
 			}
 			PanicStateArg panicGas;
 			panicGas.mPanicType = PIKIPANIC_Gas;
+			piki->mFsm->transit(piki, PIKISTATE_Panic, &panicGas);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool InteractSpore::actPiki(Piki* piki) {
+	if (piki->gasInvicible() && !gameSystem->isVersusMode()) {
+		return false;
+	}
+	if (piki->mCurrentState->invincible(piki)) {
+		return false;
+	}
+
+	PikiState* currState = piki->mCurrentState;
+	int pikiKind         = piki->mPikiKind;
+	if (currState && currState->transittable(PIKISTATE_Panic)) {
+		if (pikiKind != Purple && pikiKind != Bulbmin) {
+			if (mCreature && mCreature->isTeki()) {
+				EnemyBase* teki = static_cast<EnemyBase*>(mCreature);
+				piki->setTekiKillID(teki->getEnemyTypeID());
+			} else {
+				piki->mTekiKillID = -1;
+			}
+			PanicStateArg panicGas;
+			panicGas.mPanicType = PIKIPANIC_Spore;
 			piki->mFsm->transit(piki, PIKISTATE_Panic, &panicGas);
 			return true;
 		}

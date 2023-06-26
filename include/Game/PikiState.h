@@ -15,7 +15,8 @@
 #define PIKIPANIC_Water (1)
 #define PIKIPANIC_Gas   (2)
 #define PIKIPANIC_Panic (3)
-#define PIKIPANIC_Other (4)
+#define PIKIPANIC_Spore (4)
+#define PIKIPANIC_Other (5)
 
 namespace Game {
 struct Piki;

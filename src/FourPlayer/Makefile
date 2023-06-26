@@ -8,6 +8,8 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/VsOptions.o\
 	$(BUILD_DIR)/src/FourPlayer/VsConfigFunc.o\
 	$(BUILD_DIR)/src/FourPlayer/pelletBounceBury.o\
+	$(BUILD_DIR)/src/FourPlayer/PikiModifier.o\
+
 
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)

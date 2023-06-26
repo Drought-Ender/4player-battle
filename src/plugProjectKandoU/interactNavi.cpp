@@ -219,6 +219,8 @@ bool InteractBubble::actNavi(Game::Navi* navi)
  */
 bool InteractGas::actNavi(Game::Navi*) { return false; }
 
+bool InteractSpore::actNavi(Navi*) { return false; }
+
 /*
  * --INFO--
  * Address:	801D85F8

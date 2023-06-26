@@ -344,6 +344,18 @@ struct InteractGas : public Interaction {
 	f32 mDamage; // _08
 };
 
+struct InteractSpore : public Interaction {
+	inline InteractSpore(Creature* parent, f32 damage)
+	    : Interaction(parent)
+	    , mDamage(damage)
+	{
+	}
+
+	virtual bool actPiki(Piki*); // _0C
+	virtual bool actNavi(Navi*); // _10
+	f32 mDamage;
+};
+
 struct InteractGotKey : public Interaction {
 	inline InteractGotKey(Creature* parent)
 	    : Interaction(parent)
