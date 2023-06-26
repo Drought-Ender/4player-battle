@@ -752,6 +752,7 @@ void Onyon::setSpotState(Onyon::cSpotState state)
  */
 void Onyon::updateSpot()
 {
+	vsChargePikmin();
 	if (mOnyonType < ONYON_TYPE_MAX) {
 		switch (mSpotState) {
 		case SPOTSTATE_Closed:
@@ -1251,10 +1252,18 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 							// versus mode onion counts
 							int reds  = GameStat::getMapPikmins(Red);
 							int blues = GameStat::getMapPikmins(Blue);
+							int whites = GameStat::getMapPikmins(White);
+							int purples = GameStat::getMapPikmins(Purple);
 							if (mOnyonType == ONYON_TYPE_BLUE && blues >= 50) {
 								mToBirth--;
 								continue;
 							} else if (mOnyonType == ONYON_TYPE_RED && reds >= 50) {
+								mToBirth--;
+								continue;
+							} else if (mOnyonType == ONYON_TYPE_PURPLE && purples >= 50) {
+								mToBirth--;
+								continue;
+							} else if (mOnyonType == ONYON_TYPE_WHITE && whites >= 50) {
 								mToBirth--;
 								continue;
 							}
@@ -1524,7 +1533,7 @@ void Onyon::setSpotEffectActive(bool flag)
  */
 void Onyon::efxSuikomi()
 {
-	if (mOnyonType < ONYON_TYPE_YELLOW) {
+	if (mOnyonType < ONYON_TYPE_MAX) {
 		efx::TOnyonEatC onyonFX(&mObjMatrix);
 		onyonFX.create(nullptr);
 		startSound(PSSE_EV_HOME_PELLET_BACUUM);
