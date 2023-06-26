@@ -12,6 +12,7 @@ extern int mRealWinCounts[4];
 extern bool gDrawVsMenu;
 
 struct VsOptionsMenu {
+    VsOptionsMenu();
     void init();
     bool update();
     void draw(Graphics&);

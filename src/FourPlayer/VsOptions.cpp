@@ -258,3 +258,10 @@ void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx) {
     
     //printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
 }
+
+VsOptionsMenu::VsOptionsMenu() {
+    mPageNumber = 0;
+    mSelectedOption = 0;
+    mCursorOptionIndex = 0;
+    mTooltipMessage = nullptr;
+}

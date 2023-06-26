@@ -260,7 +260,7 @@ void GameState::exec(VsGameSection* section)
 						}
 					}
 				} else if (!whiteLost) {
-					outcome = 2;        // blue win
+					outcome = 1;        // blue win
 					VsGameSection::mWhiteWinCount += 1;
 					section->mVsWinner = 2;
 					OSReport("White Won\n");
@@ -271,7 +271,7 @@ void GameState::exec(VsGameSection* section)
 						}
 					}
 				} else if (!purpleLost) {
-					outcome = 3;        // blue win
+					outcome = 1;        // blue win
 					VsGameSection::mPurpleWinCount += 1;
 					section->mVsWinner = 3;
 					OSReport("Purple Won\n");
