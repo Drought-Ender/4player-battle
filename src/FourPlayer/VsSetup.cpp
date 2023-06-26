@@ -747,26 +747,30 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 
 	} else if (gameSystem->mMode == GSM_VERSUS_MODE) {
 		int type = pellet->mPelletFlag;
+		int team = getTeamFromPiki((EPikiKind)static_cast<Onyon*>(mOnyon)->mOnyonType);
 		if ((u32)type == Pellet::FLAG_VS_BEDAMA_RED) {
 			pellet->movie_begin(false);
 			mOnyon->movie_begin(false);
-			GameMessageVsRedOrSuckStart mesg(1);
+			GameMessageVsRedOrSuckStart mesg(team);
 			mesg.mIsYellow = false;
+			mesg.mBedamaColor = 0;
 			gameSystem->mSection->sendMessage(mesg);
 
 		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_BLUE) {
 			pellet->movie_begin(false);
 			mOnyon->movie_begin(false);
-			GameMessageVsRedOrSuckStart mesg2(0);
+			GameMessageVsRedOrSuckStart mesg2(team);
 			mesg2.mIsYellow = false;
+			mesg2.mBedamaColor = 1;
 			gameSystem->mSection->sendMessage(mesg2);
 
 		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_YELLOW) {
 			if ((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon) {
 				pellet->movie_begin(false);
 				mOnyon->movie_begin(false);
-				GameMessageVsRedOrSuckStart mesg3(getTeamFromPiki((EPikiKind)static_cast<Onyon*>(mOnyon)->mOnyonType));
+				GameMessageVsRedOrSuckStart mesg3(getTeamFromPiki(team));
 				mesg3.mIsYellow = true;
+				mesg3.mBedamaColor = 0;
 				gameSystem->mSection->sendMessage(mesg3);
 
 			} else {

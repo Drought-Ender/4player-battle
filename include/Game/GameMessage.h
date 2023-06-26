@@ -118,6 +118,7 @@ struct GameMessageVsRedOrSuckStart : public GameMessage {
 	// _00 = VTBL
 	int mColor;     // _04 0 = blue 1 = red
 	bool mIsYellow; // _08 - unknown
+	int mBedamaColor;
 };
 
 extern int gUseCardNavi;

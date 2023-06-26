@@ -629,7 +629,7 @@ void GameState::setWinMarbleColor(int teamID, int color) {
  * Address:	8022A868
  * Size:	00014C
  */
-void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool isYellow)
+void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool isYellow, int marbleColor)
 {
 	if (isYellow) {
 		section->mRealMarbleCounts[player]++;
@@ -649,13 +649,13 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 		loseReason |= VSLOSE_Marble;
 	}
 
-	BitFlag<u8>& loseCauses = mLoseCauses[1 - player];
+	BitFlag<u8>& loseCauses = mLoseCauses[getTeamFromPiki(player)];
 	setLoseCause(loseCauses, loseReason);
 
-	mWinColors[player] = 1 - player;
+	mWinColors[player] = marbleColor;
 
 
-	Onyon* onyon                 = ItemOnyon::mgr->getOnyon(1 - player);
+	Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeam(player));
 	BaseGameSection* baseSection = gameSystem->mSection;
 
 	MoviePlayArg movieArgs("x19_vs_bedama", nullptr, baseSection->mMovieFinishCallback, 0);

@@ -290,7 +290,7 @@ struct State : public FSMState<VsGameSection> {
 	virtual void on_section_fadeout(VsGameSection*) { }                   // _38 (weak)
 	virtual bool goingToCave(VsGameSection*) { return false; }            // _3C (weak)
 	virtual void onBattleFinished(VsGameSection*, int, bool) { }          // _40 (weak)
-	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool) { }      // _44 (weak)
+	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool, int) { }      // _44 (weak)
 	virtual bool isCardUsable(VsGameSection*) { return false; }           // _48 (weak)
 
 	// _00     = VTBL
@@ -315,7 +315,7 @@ struct GameState : public State {
 	}
 	virtual bool goingToCave(VsGameSection*);                     // _3C
 	virtual void onBattleFinished(VsGameSection*, int, bool);     // _40
-	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool); // _44
+	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool, int); // _44
 	virtual bool isCardUsable(VsGameSection*);                    // _48
 	virtual void drawStatus(Graphics&, VsGameSection*);           // _4C
 	virtual void do_init(VsGameSection*);                         // _50

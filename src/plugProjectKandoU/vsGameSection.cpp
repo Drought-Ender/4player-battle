@@ -897,7 +897,7 @@ bool GameMessageVsBattleFinished::actVs(VsGameSection* section)
 bool GameMessageVsRedOrSuckStart::actVs(VsGameSection* section)
 {
 	if (section->mState) {
-		section->mState->onRedOrBlueSuckStart(section, mColor, mIsYellow);
+		section->mState->onRedOrBlueSuckStart(section, mColor, mIsYellow, mBedamaColor);
 	}
 	return true;
 }
