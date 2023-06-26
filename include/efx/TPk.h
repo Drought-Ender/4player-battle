@@ -25,6 +25,8 @@ void createSimpleDive(Vector3f&);
 void createSimpleChiru(Vector3f&, long);
 void createSimpleInstick(Vector3f&);
 void createSimpleDead(Vector3f&, long);
+void createSimpleGlow2(Vector3f&);
+
 
 struct TPkAp : public TSimple2 {
 	inline TPkAp()
