@@ -13,7 +13,7 @@ EBISAWA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectEbisawaU/ebiP2TitleCamera.o\
 	$(BUILD_DIR)/src/plugProjectEbisawaU/ebiP2TitleLight.o\
 	$(BUILD_DIR)/asm/plugProjectEbisawaU/ebiScreenMemoryCard.o\
-	$(BUILD_DIR)/asm/plugProjectEbisawaU/efxTPkEffectMgr.o\
+	$(BUILD_DIR)/src/plugProjectEbisawaU/efxTPkEffectMgr.o\
 	$(BUILD_DIR)/src/plugProjectEbisawaU/efxEnemyGeneral.o\
 	$(BUILD_DIR)/src/plugProjectEbisawaU/ebi3DGraph.o\
 	$(BUILD_DIR)/asm/plugProjectEbisawaU/ebiGeometry.o\
