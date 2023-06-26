@@ -52,8 +52,10 @@ enum LoseReasonFlags {
 };
 
 enum VSPlayerColor {
-	VSPLAYER_Red  = 0,
-	VSPLAYER_Blue = 1,
+	VSPLAYER_Red    = 0,
+	VSPLAYER_Blue   = 1,
+	VSPlayer_White  = 2,
+	VSPlayer_Purple = 3
 };
 
 struct TekiNode : public CNode {
@@ -290,12 +292,14 @@ struct State : public FSMState<VsGameSection> {
 	virtual void on_section_fadeout(VsGameSection*) { }                   // _38 (weak)
 	virtual bool goingToCave(VsGameSection*) { return false; }            // _3C (weak)
 	virtual void onBattleFinished(VsGameSection*, int, bool) { }          // _40 (weak)
-	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool, int) { }      // _44 (weak)
+	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool) { }      // _44 (weak)
 	virtual bool isCardUsable(VsGameSection*) { return false; }           // _48 (weak)
 
 	// _00     = VTBL
 	// _00-_0C = FSMState
 };
+
+extern int gBedamaColor;
 
 struct GameState : public State {
 	GameState();
@@ -315,7 +319,7 @@ struct GameState : public State {
 	}
 	virtual bool goingToCave(VsGameSection*);                     // _3C
 	virtual void onBattleFinished(VsGameSection*, int, bool);     // _40
-	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool, int); // _44
+	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool); // _44
 	virtual bool isCardUsable(VsGameSection*);                    // _48
 	virtual void drawStatus(Graphics&, VsGameSection*);           // _4C
 	virtual void do_init(VsGameSection*);                         // _50
@@ -377,19 +381,39 @@ struct GameState : public State {
 
 	inline void setLoseCause(BitFlag<u8>& player, u32 flag) { player.typeView |= flag; }
 
-	inline bool getMarbleLoss(bool& loseRed, bool& loseBlue)
+	inline bool getMarbleLoss(bool& loseRed, bool& loseBlue, bool& loseWhite, bool& losePurple)
 	{
 		bool moviePlayerActive = moviePlayer->mFlags & MoviePlayer::IS_ACTIVE;
 
 		loseRed  = false;
 		loseBlue = false;
+		loseWhite = false;
+		losePurple = false;
 
-		if (!moviePlayerActive && isLoseCause(VSPLAYER_Blue, VSLOSE_Marble)) {
+		bool marbleCollected = isLoseCause(VSPLAYER_Blue, VSLOSE_Marble) || isLoseCause(VSPLAYER_Red, VSLOSE_Marble) || isLoseCause(VSPlayer_White, VSLOSE_Marble) || isLoseCause(VSPlayer_Purple, VSLOSE_Marble);
+
+		if (!moviePlayerActive && marbleCollected) {
 			loseRed = true;
-		}
-
-		if (!moviePlayerActive && isLoseCause(VSPLAYER_Red, VSLOSE_Marble)) {
 			loseBlue = true;
+			loseWhite = true;
+			losePurple = true;
+		
+
+			if (isLoseCause(VSPLAYER_Blue, VSLOSE_Marble)) {
+				loseBlue = false;
+			}
+
+			if (isLoseCause(VSPLAYER_Red, VSLOSE_Marble)) {
+				loseRed = false;
+			}
+
+			if (isLoseCause(VSPlayer_White, VSLOSE_Marble)) {
+				loseWhite = false;
+			}
+
+			if (isLoseCause(VSPlayer_Purple, VSLOSE_Marble)) {
+				losePurple = false;
+			}
 		}
 	}
 
@@ -406,7 +430,7 @@ struct GameState : public State {
 	f32 mDisplayTime;           // _20
 	bool mHasKeyDemoPlayed;     // _24
 	BitFlag<u8> mLoseCauses[4]; // _25
-	bool mWinColors[4];
+	int mWinColors[4];
 	int mNaviStatus[4];
 };
 

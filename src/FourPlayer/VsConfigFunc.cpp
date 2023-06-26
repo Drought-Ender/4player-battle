@@ -23,11 +23,19 @@ namespace Game {
     }
 
     int Pellet::getBedamaPikiColor() {
-        int color = mPelletFlag - Pellet::FLAG_VS_BEDAMA_RED;
-        if (color <= 1) {
-            color = 1 - color;
+        switch (mPelletFlag)
+        {
+        case FLAG_VS_BEDAMA_RED:
+            return Red;
+        case FLAG_VS_BEDAMA_BLUE:
+            return Blue;
+        case FLAG_VS_BEDAMA_WHITE:
+            return White;
+        case FLAG_VS_BEDAMA_PURPLE:
+            return Purple;
+        default:
+            return -1;
         }
-        return color;
     }
 
 

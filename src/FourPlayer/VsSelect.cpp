@@ -377,9 +377,6 @@ bool TFourVsSelect::doUpdate() {
     for (int i = 0; i < Game::gNaviNum; i++) {
         Game::SetVsTeam(i, (Game::TeamID)mTeamIDs[i]);
     }
-    for (int i = Game::gNaviNum; i < 4; i++) {
-        Game::SetVsTeam(i, (Game::TeamID)-1);
-    }
 
     for (int i = 0; i < Game::gNaviNum; i++) {
         mNaviImages[i]->show();

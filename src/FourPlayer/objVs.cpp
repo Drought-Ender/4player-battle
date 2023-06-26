@@ -679,7 +679,13 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 	}
 
 	if (!mPlayWinSound) {
-		if (P1win && P2win) {
+		if (P1win && P2win && P3win && P4win && Game::gNaviNum == 4) {
+			mPlayWinSound = true;
+			ogSound->setVsDraw();
+		} else if (P1win && P2win && P3win && Game::gNaviNum == 3) {
+			mPlayWinSound = true;
+			ogSound->setVsDraw();
+		} else if (P1win && P2win && Game::gNaviNum == 2) {
 			mPlayWinSound = true;
 			ogSound->setVsDraw();
 		} else if (P1win) {
@@ -688,6 +694,13 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 		} else if (P2win) {
 			mPlayWinSound = true;
 			ogSound->setVsWin2P();
+		} else if (P3win) {
+			mPlayWinSound = true;
+			ogSound->setVsWin2P();
+		}
+		else if (P4win) {
+			mPlayWinSound = true;
+			ogSound->setVsWin1P();
 		}
 	}
 }
@@ -708,7 +721,7 @@ void FourObjVs::setWinBedamaColor(int color, int player) {
     OSReport("FourObjVs::setWinBedamaColor(int %i, int %i)\n", color, player);
     ScreenSet* screens[4] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 }; 
 
-    J2DPictureEx** winDamaPanes[] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P};
+    J2DPictureEx** winDamaPanes[] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P };
 
     f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : 260.0f;
     f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs - 40.0f;

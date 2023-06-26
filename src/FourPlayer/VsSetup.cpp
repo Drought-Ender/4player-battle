@@ -72,8 +72,10 @@ int getTeamFromPiki(int pikiColor) {
 		return TEAM_WHITE;
 	case Purple:
 		return TEAM_PURPLE; 
+	case -1:
+		return -1;
     }
-    return -1;
+    JUT_PANIC("GET PIKI %i\n", pikiColor);
 }
 
 int getVsTeam(int idx) {
@@ -295,10 +297,16 @@ void Cave::RandMapScore::setVersusOnyon()
 			calcNodeScore(onyonNodes[1]);
 
             onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
+			JUT_ASSERT(onyonNodes[2], "NO ROOM FOR WHITE ONYON");
+
 			calcNodeScore(onyonNodes[2]);
 
+			
 			onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[2]);
+			JUT_ASSERT(onyonNodes[3], "NO ROOM FOR PURPLE ONYON");
 			calcNodeScore(onyonNodes[3]);
+
+			
 
 			mFixObjNodes[FIXNODE_VsRedOnyon]  = onyonNodes[0];
 			mFixObjNodes[FIXNODE_VsBlueOnyon] = onyonNodes[1];
@@ -370,7 +378,6 @@ Cave::MapNode* Cave::RandMapScore::getMaxScoreRoomMapNode(int count, MapNode** m
 			}
 		}
 	}
-	P2ASSERT(maxScoreNode);
 	return maxScoreNode;
 }
 
@@ -768,7 +775,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			if ((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon) {
 				pellet->movie_begin(false);
 				mOnyon->movie_begin(false);
-				GameMessageVsRedOrSuckStart mesg3(getTeamFromPiki(team));
+				GameMessageVsRedOrSuckStart mesg3(team);
 				mesg3.mIsYellow = true;
 				mesg3.mBedamaColor = 0;
 				gameSystem->mSection->sendMessage(mesg3);

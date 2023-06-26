@@ -143,6 +143,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			mOnyon->movie_begin(false);
 			GameMessageVsRedOrSuckStart mesg(1);
 			mesg.mIsYellow = false;
+			mesg.mBedamaColor = 0;
 			gameSystem->mSection->sendMessage(mesg);
 
 		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_BLUE) {
@@ -150,6 +151,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			mOnyon->movie_begin(false);
 			GameMessageVsRedOrSuckStart mesg2(0);
 			mesg2.mIsYellow = false;
+			mesg2.mBedamaColor = 1;
 			gameSystem->mSection->sendMessage(mesg2);
 
 		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_YELLOW) {
@@ -158,6 +160,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 				mOnyon->movie_begin(false);
 				GameMessageVsRedOrSuckStart mesg3(1 - static_cast<Onyon*>(mOnyon)->mOnyonType);
 				mesg3.mIsYellow = true;
+				mesg3.mBedamaColor = 0;
 				gameSystem->mSection->sendMessage(mesg3);
 
 			} else {

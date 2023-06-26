@@ -95,6 +95,8 @@ struct VsGameSection : public BaseGameSection {
 
 	static int mRedWinCount;
 	static int mBlueWinCount;
+	static int mWhiteWinCount;
+	static int mPurpleWinCount;
 	static int mDrawCount;
 	static int mNaviWinCounts[4];
 

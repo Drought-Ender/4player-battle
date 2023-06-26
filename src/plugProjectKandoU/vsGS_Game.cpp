@@ -100,6 +100,8 @@ void GameState::clearLoseCauses()
 {
 	mLoseCauses[0].clear();
 	mLoseCauses[1].clear();
+	mLoseCauses[2].clear();
+	mLoseCauses[3].clear();
 	_16 = 0;
 }
 
@@ -221,12 +223,13 @@ void GameState::exec(VsGameSection* section)
 				setFlag(VSGS_Unk10);
 				int outcome;
 				int outcomes[4] = {0, 0, 0, 0};
-				u8 redLost  = getLoseCauses(VSPLAYER_Red);
-				u8 blueLost = getLoseCauses(VSPLAYER_Blue);
+				u8 redLost    = getLoseCauses(VSPLAYER_Red);
+				u8 blueLost   = getLoseCauses(VSPLAYER_Blue);
+				u8 whiteLost  = getLoseCauses(VSPlayer_White);
+				u8 purpleLost = getLoseCauses(VSPlayer_Purple);
 
-				OSReport("Set Outcome\n");
 
-				if (!redLost && !blueLost) { // neither player lost
+				if (!redLost && !blueLost && !whiteLost && !purpleLost) { // neither player lost
 					outcome = 3;             // draw
 					VsGameSection::mDrawCount += 1;
 
@@ -256,8 +259,30 @@ void GameState::exec(VsGameSection* section)
 							outcomes[i] = 1;
 						}
 					}
-
-				} else {         // both lost/something wacky happened
+				} else if (!whiteLost) {
+					outcome = 2;        // blue win
+					VsGameSection::mWhiteWinCount += 1;
+					section->mVsWinner = 2;
+					OSReport("White Won\n");
+					for (int i = 0; i < 4; i++) {
+						if (getVsPikiColor(i) == White) {
+							mRealWinCounts[i]++;
+							outcomes[i] = 1;
+						}
+					}
+				} else if (!purpleLost) {
+					outcome = 3;        // blue win
+					VsGameSection::mPurpleWinCount += 1;
+					section->mVsWinner = 3;
+					OSReport("Purple Won\n");
+					for (int i = 0; i < 4; i++) {
+						if (getVsPikiColor(i) == Purple) {
+							mRealWinCounts[i]++;
+							outcomes[i] = 1;
+						}
+					}
+				}
+				else {         // both lost/something wacky happened
 					outcome = 3; // draw
 					VsGameSection::mDrawCount += 1;
 					section->mVsWinner = -1;
@@ -302,8 +327,24 @@ void GameState::exec(VsGameSection* section)
 					}
 				}
 			}
-			if (!GameStat::getAllPikmins(Blue) && ItemOnyon::mgr->getOnyon(Red)->mToBirth == 0) {
+			if (!GameStat::getAllPikmins(Blue) && ItemOnyon::mgr->getOnyon(Blue)->mToBirth == 0) {
 				setLoseCause(VSPLAYER_Blue, VSLOSE_Extinction);
+				for (int i = 0; i < 4; i++) {
+					if (getVsPikiColor(i) == Blue) {
+						mNaviStatus[i] = VSLOSE_Extinction;
+					}
+				}
+			}
+			if (!GameStat::getAllPikmins(White) && ItemOnyon::mgr->getOnyon(White)->mToBirth == 0) {
+				setLoseCause(VSPlayer_White, VSLOSE_Extinction);
+				for (int i = 0; i < 4; i++) {
+					if (getVsPikiColor(i) == Blue) {
+						mNaviStatus[i] = VSLOSE_Extinction;
+					}
+				}
+			}
+			if (!GameStat::getAllPikmins(Purple) && ItemOnyon::mgr->getOnyon(Purple)->mToBirth == 0) {
+				setLoseCause(VSPlayer_Purple, VSLOSE_Extinction);
 				for (int i = 0; i < 4; i++) {
 					if (getVsPikiColor(i) == Blue) {
 						mNaviStatus[i] = VSLOSE_Extinction;
@@ -393,7 +434,7 @@ void GameState::exec(VsGameSection* section)
 
 		// check we're in VS Mode and that someone needs to lose
 		if (gameSystem->isVersusMode() && !isFlag(VSGS_Unk9) && !isFlag(VSGS_Unk10) && _16 != 1
-		    && (getLoseCauses(VSPLAYER_Red) || getLoseCauses(VSPLAYER_Blue))) {
+		    && (getLoseCauses(VSPLAYER_Red) || getLoseCauses(VSPLAYER_Blue) || getLoseCauses(VSPlayer_White) || getLoseCauses(VSPlayer_Purple))) {
 			gameSystem->resetFlag(GAMESYS_Unk6);
 			setFlag(VSGS_Unk9);
 			gameSystem->setPause(true, nullptr, 3);
@@ -606,7 +647,11 @@ void GameState::onBattleFinished(VsGameSection* section, int winnerMaybe, bool c
 		return;
 	}
 
-	setLoseCause(1 - winnerMaybe, VSLOSE_ColoredMarble);
+	for (int i = 0; i < 4; i++) {
+		if (i != winnerMaybe) {
+			setLoseCause(i, VSLOSE_ColoredMarble);
+		}
+	}
 
 	if (check) {
 		_16 = 1;
@@ -629,7 +674,7 @@ void GameState::setWinMarbleColor(int teamID, int color) {
  * Address:	8022A868
  * Size:	00014C
  */
-void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool isYellow, int marbleColor)
+void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool isYellow)
 {
 	if (isYellow) {
 		section->mRealMarbleCounts[player]++;
@@ -649,10 +694,15 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 		loseReason |= VSLOSE_Marble;
 	}
 
-	BitFlag<u8>& loseCauses = mLoseCauses[getTeamFromPiki(player)];
-	setLoseCause(loseCauses, loseReason);
+	for (int i = 0; i < 4; i++) {
+		if (i != player) {
+			BitFlag<u8>& loseCauses = mLoseCauses[i];
+			setLoseCause(loseCauses, loseReason);
+		}
+	}
 
-	mWinColors[player] = marbleColor;
+	mWinColors[player] = gBedamaColor;
+	OSReport("Win color %i %i\n", player, gBedamaColor);
 
 
 	Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeam(player));
@@ -1146,13 +1196,15 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mMarbleCountP4 = marbleCountP4;
 
 		for (int i = 0; i < 4; i++) {
+			OSReport("disp %i\n", i);
 			disp.mWinMarbleColors[i] = mWinColors[getVsTeam(i)];
+			OSReport("value %i\n", mWinColors[getVsTeam(i)]);
 		}
 
 
-		bool blueMarble, redMarble;
-		getMarbleLoss(redMarble, blueMarble);
-		disp.setMarbleConditions(redMarble, blueMarble);
+		bool blueMarble, redMarble, whiteMarble, purpleMarble;
+		getMarbleLoss(redMarble, blueMarble, whiteMarble, purpleMarble);
+		disp.setMarbleConditions(redMarble, blueMarble, whiteMarble, purpleMarble);
 
 		Screen::gGame2DMgr->setDispMember(&disp);
 

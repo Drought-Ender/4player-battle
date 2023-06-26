@@ -692,9 +692,9 @@ struct DispMemberVs : public DispMemberBase {
 	virtual u32 getOwnerID() { return OWNER_OGA; }         // _0C (weak)
 	virtual u64 getMemberID() { return MEMBER_VS; }        // _10 (weak)
 
-	inline void setMarbleConditions(bool red, bool blue)
+	inline void setMarbleConditions(bool red, bool blue, bool white, bool purple)
 	{
-		bool conditions[4] = { red, blue, false, false };
+		bool conditions[4] = { red, blue, white, purple };
 		bool* flagArr[4] = { &mFlags[0], &mFlags[1], &mFlag2[0], &mFlag2[1] };
 		for (int i = 0; i < 4; i++) {
 			if (conditions[Game::getVsTeam(i)]) {

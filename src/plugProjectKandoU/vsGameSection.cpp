@@ -74,6 +74,8 @@ void FSM::transit(VsGameSection* section, int state, StateArg* arg) { StateMachi
 
 int VsGameSection::mRedWinCount;
 int VsGameSection::mBlueWinCount;
+int VsGameSection::mWhiteWinCount;
+int VsGameSection::mPurpleWinCount;
 int VsGameSection::mDrawCount;
 
 int VsGameSection::mNaviWinCounts[4] = {0, 0, 0, 0};
@@ -889,6 +891,8 @@ bool GameMessageVsBattleFinished::actVs(VsGameSection* section)
 	return true;
 }
 
+int VsGame::gBedamaColor = 0;
+
 /*
  * --INFO--
  * Address:	801C2ECC
@@ -896,8 +900,11 @@ bool GameMessageVsBattleFinished::actVs(VsGameSection* section)
  */
 bool GameMessageVsRedOrSuckStart::actVs(VsGameSection* section)
 {
+	
+	VsGame::gBedamaColor = mBedamaColor;
+	OSReport("Bedama Color %i\n", VsGame::gBedamaColor);
 	if (section->mState) {
-		section->mState->onRedOrBlueSuckStart(section, mColor, mIsYellow, mBedamaColor);
+		section->mState->onRedOrBlueSuckStart(section, mColor, mIsYellow);
 	}
 	return true;
 }
