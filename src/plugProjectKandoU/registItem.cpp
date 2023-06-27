@@ -28,41 +28,30 @@ void ItemMgr::createManagers(u32 flags)
 	bool inCave      = (flags >> 1) & 1;
 	bool isExitFloor = flags & 1;
 
-	GenerateMgr<ItemBarrel::Mgr>(ItemBarrel::mgr, "-Barrel-");
-	GenerateMgr<ItemUjamushi::Mgr>(ItemUjamushi::mgr, "-Ujamushi-");
+	//GenerateMgr<ItemBarrel::Mgr>(ItemBarrel::mgr, "-Barrel-");
+	//GenerateMgr<ItemUjamushi::Mgr>(ItemUjamushi::mgr, "-Ujamushi-");
 
 	sys->heapStatusStart("-Weed-", nullptr);
-	if (inCave) {
-		ItemWeed::mgr = new ItemWeed::Mgr;
-		ItemWeed::mgr->loadResources();
-		itemMgr->addMgr(ItemWeed::mgr);
-	} else {
-		ItemWeed::mgr = nullptr;
-	}
+
+	ItemWeed::mgr = nullptr;
+	
 	sys->heapStatusEnd("-Weed-");
 
-	GenerateMgr<ItemDownFloor::Mgr>(ItemDownFloor::mgr, "-DownFloor-");
+	//GenerateMgr<ItemDownFloor::Mgr>(ItemDownFloor::mgr, "-DownFloor-");
 	GenerateMgr<ItemTreasure::Mgr>(ItemTreasure::mgr, "-Treasure-");
 	GenerateMgr<ItemPikihead::Mgr>(ItemPikihead::mgr, "-PikiHead-");
 
 	sys->heapStatusStart("-Plant-", nullptr);
-	if (inCave) {
-		ItemPlant::mgr = new ItemPlant::Mgr;
-		ItemPlant::mgr->loadResources();
-		itemMgr->addMgr(ItemPlant::mgr);
-	} else {
-		ItemPlant::mgr = nullptr;
-	}
+
+
+	ItemPlant::mgr = nullptr;
+	
 	sys->heapStatusEnd("-Plant-");
 
 	sys->heapStatusStart("-Rock-", nullptr);
-	if (inCave) {
-		ItemRock::mgr = new ItemRock::Mgr;
-		ItemRock::mgr->loadResources();
-		itemMgr->addMgr(ItemRock::mgr);
-	} else {
-		ItemRock::mgr = nullptr;
-	}
+
+	ItemRock::mgr = nullptr;
+	
 	sys->heapStatusEnd("-Rock-");
 
 	GenerateMgr<ItemHoney::Mgr>(ItemHoney::mgr, "-Honey-");
@@ -75,43 +64,27 @@ void ItemMgr::createManagers(u32 flags)
 	sys->heapStatusEnd("-Onyon-");
 
 	sys->heapStatusStart("-Hole-", nullptr);
-	if (isExitFloor) {
-		ItemHole::mgr = new ItemHole::Mgr;
-		ItemHole::mgr->loadResources();
-		itemMgr->addMgr(ItemHole::mgr);
-	} else {
-		ItemHole::mgr = nullptr;
-	}
+
+	ItemHole::mgr = nullptr;
+
 	sys->heapStatusEnd("-Hole-");
 
 	sys->heapStatusStart("-Cave-", nullptr);
-	if (inCave) {
-		ItemCave::mgr = new ItemCave::Mgr;
-		ItemCave::mgr->loadResources();
-		itemMgr->addMgr(ItemCave::mgr);
-	} else {
-		ItemCave::mgr = nullptr;
-	}
+
+	ItemCave::mgr = nullptr;
+	
 	sys->heapStatusEnd("-Cave-");
 
 	sys->heapStatusStart("-BigFountain-", nullptr);
-	if (isExitFloor) {
-		ItemBigFountain::mgr = new ItemBigFountain::Mgr;
-		ItemBigFountain::mgr->loadResources();
-		itemMgr->addMgr(ItemBigFountain::mgr);
-	} else {
-		ItemBigFountain::mgr = nullptr;
-	}
+
+	ItemBigFountain::mgr = nullptr;
+	
 	sys->heapStatusEnd("-BigFountain-");
 
 	sys->heapStatusStart("-Bridge-", nullptr);
-	if (inCave) {
-		ItemBridge::mgr = new ItemBridge::Mgr;
-		ItemBridge::mgr->loadResources();
-		itemMgr->addMgr(ItemBridge::mgr);
-	} else {
-		ItemBridge::mgr = nullptr;
-	}
+
+	ItemBridge::mgr = nullptr;
+	
 	sys->heapStatusEnd("-Bridge-");
 
 	sys->heapStatusStart("-Gate-", nullptr);
