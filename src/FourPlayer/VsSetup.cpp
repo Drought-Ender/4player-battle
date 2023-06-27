@@ -62,22 +62,7 @@ int getVsPikiColor(int idx) {
     return gVsNaviIndexArray[idx];
 }
 
-int getTeamFromPiki(int pikiColor) {
-	switch (pikiColor)
-    {
-    case Red:
-        return TEAM_RED;
-    case Blue:
-        return TEAM_BLUE;
-	case White:
-		return TEAM_WHITE;
-	case Purple:
-		return TEAM_PURPLE; 
-	case -1:
-		return -1;
-    }
-    JUT_PANIC("GET PIKI %i\n", pikiColor);
-}
+
 
 int getVsTeam(int idx) {
     return getTeamFromPiki((EPikiKind)gVsNaviIndexArray[idx]);
@@ -770,6 +755,22 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			GameMessageVsRedOrSuckStart mesg2(team);
 			mesg2.mIsYellow = false;
 			mesg2.mBedamaColor = 1;
+			gameSystem->mSection->sendMessage(mesg2);
+
+		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_WHITE) {
+			pellet->movie_begin(false);
+			mOnyon->movie_begin(false);
+			GameMessageVsRedOrSuckStart mesg2(team);
+			mesg2.mIsYellow = false;
+			mesg2.mBedamaColor = 2;
+			gameSystem->mSection->sendMessage(mesg2);
+
+		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_PURPLE) {
+			pellet->movie_begin(false);
+			mOnyon->movie_begin(false);
+			GameMessageVsRedOrSuckStart mesg2(team);
+			mesg2.mIsYellow = false;
+			mesg2.mBedamaColor = 3;
 			gameSystem->mSection->sendMessage(mesg2);
 
 		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_YELLOW) {

@@ -60,8 +60,8 @@ typedef JUtility::TColor TColorPair[2];
 const TColorPair gGetMarbleColors[4] = { 
 	{ 0xff0000ff, 0xff8787ff },  
 	{ 0x2020ffff, 0x5787ffff },
-	{ 0x00000000, 0x00000000 },
-	{ 0x00000000, 0x00000000 }
+	{ 0xffffffff, 0xe8f9e2ff },
+	{ 0xae42ffff, 0xd281ffff }
 };
 
 void FourObjVs::doCreate(JKRArchive* arc) {
@@ -121,14 +121,16 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	recolorPane(scrn4, teamColors[Game::getVsTeam(3)]);
 
 	J2DPictureEx* paneBdamaR = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_red'));
+	J2DPictureEx* paneBdamaW = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_white'));
+	J2DPictureEx* paneBdamaP = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_purpl'));
 	J2DPictureEx* paneBdamaY = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_yello'));
 	J2DPictureEx* paneBdamaB = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_blue'));
 	J2DPictureEx* panePcup   = static_cast<J2DPictureEx*>(bdamaScreen->search('Pcup'));
 
     mColoredBedamaPanes[0] = paneBdamaR;
     mColoredBedamaPanes[1] = paneBdamaB;
-	mColoredBedamaPanes[2] = panePcup;
-	mColoredBedamaPanes[3] = panePcup;
+	mColoredBedamaPanes[2] = paneBdamaW;
+	mColoredBedamaPanes[3] = paneBdamaP;
 
 	J2DPane* root = scrn1->search('ROOT');
 

@@ -115,11 +115,26 @@ extern PlayCamera* gCameraP4;
 extern Controller* gControllerP3;
 extern Controller* gControllerP4;
 
+
+
 int CalcNaviNum();
 int getVsTeam(int);
 int getVsPikiColor(int); // Gets the piki color of an index
 void SetVsTeam(int idx, TeamID team);
-int getTeamFromPiki(int);
+int getTeamFromPiki(int pikiColor) {
+	switch (pikiColor)
+    {
+    case 1: // red
+        return TEAM_RED;
+    case 0: // blue
+        return TEAM_BLUE;
+	case 4: // white
+		return TEAM_WHITE;
+	case 3: // purple
+		return TEAM_PURPLE; 
+    }
+    JUT_PANIC("GET PIKI %i\n", pikiColor);
+}
 int getPikiFromTeam(int);
 
 

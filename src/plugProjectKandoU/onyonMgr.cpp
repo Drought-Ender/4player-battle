@@ -452,32 +452,21 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 	}
 
 	if (gameSystem->isVersusMode()) {
-		const char* peltnames[2] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue };
+		const char* peltnames[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
+		
+		
 
-		for (int i = 0; i < 2; i++) {
-			if (!strcmp(peltnames[i], pellet->mConfig->mParams.mName.mData)) {
-				if (i == 1 - item->mOnyonType) {
-					_08 = 1;
-
-					Vector3f offs = item->getFlagSetPos();
-					offs.y += (pellet->getCylinderHeight() * 0.5f + 2.0f);
-					pellet->setPosition(offs, 0);
-
-					Vector3f vel(0.0f, 400.0f, 0.0f);
-					pellet->setVelocity(vel);
-					pellet->setAlive(true);
-					pellet->finish_carrymotion();
-
-					// TODO: define when pellet states
-					pellet->mPelletSM->transit(pellet, 5, nullptr);
-				} else {
-					GameMessageVsBattleFinished msg;
-					msg.mWinningSide = 1 - i;
-					gameSystem->mSection->sendMessage(msg);
-					return true;
-				}
+		for (int i = 0; i < ARRAY_SIZE(peltnames); i++) {
+			if (strcmp(peltnames[i], pellet->mConfig->mParams.mName.mData) == 0) {
+				GameMessageVsBattleFinished msg;
+				msg.mWinningSide = getTeamFromPiki(item->mOnyonType);
+				gameSystem->mSection->sendMessage(msg);
+				return true;
 			}
 		}
+
+		// TODO: define when pellet states
+		pellet->mPelletSM->transit(pellet, 5, nullptr);
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) {
 			GameMessageVsGetOtakara mesg(getTeamFromPiki((EPikiKind)item->mOnyonType));
