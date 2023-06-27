@@ -82,10 +82,12 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	}
 
 	mBloGroup = new og::Screen::BloGroup(4);
-	mBloGroup->addBlo("challenge_1P.blo", mScreenP1->mScreen, 0x1040000, arc);
-	mBloGroup->addBlo("challenge_1P.blo", mScreenP2->mScreen, 0x1040000, arc);
-    mBloGroup->addBlo("challenge_1P.blo", mScreenP3->mScreen, 0x1040000, arc);
-    mBloGroup->addBlo("challenge_1P.blo", mScreenP4->mScreen, 0x1040000, arc);
+
+	const char* bloName = (Game::gNaviNum == 2) ? "challenge_1P.blo" : "small_1P.blo";
+	mBloGroup->addBlo(const_cast<char*>(bloName), mScreenP1->mScreen, 0x1040000, arc);
+	mBloGroup->addBlo(const_cast<char*>(bloName), mScreenP2->mScreen, 0x1040000, arc);
+    mBloGroup->addBlo(const_cast<char*>(bloName), mScreenP3->mScreen, 0x1040000, arc);
+    mBloGroup->addBlo(const_cast<char*>(bloName), mScreenP4->mScreen, 0x1040000, arc);
 
 	mScreenP1->init(&mDisp->mOlimarData, arc, &mDisp->mP1PikminCount);
 	mScreenP2->init(&mDisp->mLouieData, arc, &mDisp->mP2PikminCount);
@@ -136,8 +138,13 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 
     bool use4PSetup = Game::gNaviNum > 2;
 
-    f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : 260.0f;
-    f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs - 40.0f;
+	mBedamaScale = (Game::gNaviNum <= 2) ? 1.0f : 0.75f;
+
+    f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : 220.0f;
+    f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs + (20.0f - 20.0f * mBedamaScale);
+
+	
+	f32 incSize = 40.0f * mBedamaScale;
 
     
 
@@ -152,11 +159,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		    = og::Screen::CopyPictureToPane(paneBdamaR, root, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
 		mScaleMgrP1_1[i] = new og::Screen::ScaleMgr;
 		mScaleMgrP1_2[i] = new og::Screen::ScaleMgr;
-		xoffs += 40;
-        if (i == 1 && use4PSetup) {
-            xoffs = 0;
-            yoffs += 40;
-        }
+		xoffs += incSize;
 		mPane_windama1P[i]->hide();
 	}
 
@@ -174,11 +177,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		    = og::Screen::CopyPictureToPane(paneBdamaR, root2, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
 		mScaleMgrP2_1[i] = new og::Screen::ScaleMgr;
 		mScaleMgrP2_2[i] = new og::Screen::ScaleMgr;
-		xoffs += 40;
-        if (i == 1 && use4PSetup) {
-            xoffs = 0;
-            yoffs += 40;
-        }
+		xoffs += incSize;
 		mPane_windama2P[i]->hide();
 	}
 
@@ -195,11 +194,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		    = og::Screen::CopyPictureToPane(paneBdamaR, root3, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
 		mScaleMgrP3_1[i] = new og::Screen::ScaleMgr;
 		mScaleMgrP3_2[i] = new og::Screen::ScaleMgr;
-		xoffs += 40;
-        if (i == 1 && use4PSetup) {
-            xoffs = 0;
-            yoffs += 40;
-        }
+		xoffs += incSize;
 		mPane_windama3P[i]->hide();
 	}
 
@@ -215,11 +210,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		    = og::Screen::CopyPictureToPane(paneBdamaR, root4, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
 		mScaleMgrP4_1[i] = new og::Screen::ScaleMgr;
 		mScaleMgrP4_2[i] = new og::Screen::ScaleMgr;
-		xoffs += 40;
-        if (i == 1 && use4PSetup) {
-            xoffs = 0;
-            yoffs += 40;
-        }
+		xoffs += incSize;
 		mPane_windama4P[i]->hide();
 	}
 
@@ -297,9 +288,9 @@ void FourObjVs::doUpdateCommon() {
         mScreenP3->update(mDisp->mP3Data);
         mScreenP4->update(mDisp->mP4Data);
         mScreenP1->mScreen->setXY(-10.0f, scale * -300.0f);
-        mScreenP2->mScreen->setXY(300.0f, scale * -300.0f);
-        mScreenP3->mScreen->setXY(-10.0f, scale * 300.0f + 205.0f);
-        mScreenP4->mScreen->setXY(300.0f, scale * 300.0f + 205.0f);
+        mScreenP2->mScreen->setXY(295.0f, scale * -300.0f);
+        mScreenP3->mScreen->setXY(-10.0f, scale * 300.0f + 225.0f);
+        mScreenP4->mScreen->setXY(295.0f, scale * 300.0f + 225.0f);
         if (mDisp->mHideP4) {
             mScreenP4->mScreen->hide();
         }
@@ -384,14 +375,14 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 	bool P4win = false;
 
 	for (int i = 0; i < 4; i++) {
-        f32 p1ScaleYellow = mScaleMgrP1_1[i]->calc();
-		f32 p2ScaleYellow = mScaleMgrP2_1[i]->calc();
-		f32 p1ScaleColor = mScaleMgrP1_2[i]->calc();
-		f32 p2ScaleColor = mScaleMgrP2_2[i]->calc();
-		f32 p3ScaleYellow = mScaleMgrP3_1[i]->calc();
-		f32 p4ScaleYellow = mScaleMgrP4_1[i]->calc();
-		f32 p3ScaleColor = mScaleMgrP3_2[i]->calc();
-		f32 p4ScaleColor = mScaleMgrP4_2[i]->calc();
+        f32 p1ScaleYellow = mScaleMgrP1_1[i]->calc() * mBedamaScale;
+		f32 p2ScaleYellow = mScaleMgrP2_1[i]->calc() * mBedamaScale;
+		f32 p1ScaleColor = mScaleMgrP1_2[i]->calc()  * mBedamaScale;
+		f32 p2ScaleColor = mScaleMgrP2_2[i]->calc()  * mBedamaScale;
+		f32 p3ScaleYellow = mScaleMgrP3_1[i]->calc() * mBedamaScale;
+		f32 p4ScaleYellow = mScaleMgrP4_1[i]->calc() * mBedamaScale;
+		f32 p3ScaleColor = mScaleMgrP3_2[i]->calc()  * mBedamaScale;
+		f32 p4ScaleColor = mScaleMgrP4_2[i]->calc()  * mBedamaScale;
 
         mPane_windama1P[i]->updateScale(p1ScaleColor);
         mPane_windama2P[i]->updateScale(p2ScaleColor);
@@ -727,9 +718,6 @@ void FourObjVs::setWinBedamaColor(int color, int player) {
 
     J2DPictureEx** winDamaPanes[] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P };
 
-    f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : 260.0f;
-    f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs - 40.0f;
-
     
 
     u32 xoffs = 0;
@@ -741,6 +729,8 @@ void FourObjVs::setWinBedamaColor(int color, int player) {
 
 
     for (int bedamaIdx = 0; bedamaIdx < 4; bedamaIdx++) {
+		P2ASSERT(winDamas[bedamaIdx]);
+		P2ASSERT(mColoredBedamaPanes[color]);
         winDamas[bedamaIdx]->changeTexture(mColoredBedamaPanes[color]->getTIMG(0), 0);
     }
     

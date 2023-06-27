@@ -211,6 +211,8 @@ struct FourObjVs : public ObjVs {
 
 	int mWinDamaColor[4];
 
+	f32 mBedamaScale;
+
 	void doUpdateCommon();
 	void setOnOffBdama4P(bool doEfx);
 	void checkObake();
