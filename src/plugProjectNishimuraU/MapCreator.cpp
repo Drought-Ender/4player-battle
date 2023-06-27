@@ -41,6 +41,7 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 void RoomMapMgr::nishimuraPlaceRooms()
 {
 	const int numRooms = Cave::randMapMgr->getNumRooms();
+	OSReport("Room count %i\n", numRooms);
 	allocRooms(numRooms);
 
 	for (int index = 0; index < numRooms; index++) {

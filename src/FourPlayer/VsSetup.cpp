@@ -272,6 +272,7 @@ void Cave::RandMapScore::setVersusOnyon()
 		BaseGen* onyonGens[4]  = { nullptr, nullptr, nullptr, nullptr };
 
 		if (targetNode) {
+			OSReport("Set versus onyon\n");
 			calcNodeScore(targetNode);
 
 			onyonNodes[0] = getMaxScoreRoomMapNode(targetNode, &onyonGens[0]);
@@ -280,17 +281,17 @@ void Cave::RandMapScore::setVersusOnyon()
 			copyNodeScore();
 
 			onyonNodes[1] = getMaxScoreRoomMapNode(onyonNodes[0], &onyonGens[1]);
-			calcNodeScore(onyonNodes[1]);
+			// calcNodeScore(onyonNodes[1]);
 
             onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
 			JUT_ASSERT(onyonNodes[2], "NO ROOM FOR WHITE ONYON");
 
-			calcNodeScore(onyonNodes[2]);
+			// calcNodeScore(onyonNodes[2]);
 
 			
 			onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[2]);
 			JUT_ASSERT(onyonNodes[3], "NO ROOM FOR PURPLE ONYON");
-			calcNodeScore(onyonNodes[3]);
+			// calcNodeScore(onyonNodes[3]);
 
 			
 

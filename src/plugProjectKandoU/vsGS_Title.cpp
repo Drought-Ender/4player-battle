@@ -352,7 +352,12 @@ void TitleState::execVs(VsGameSection* section)
 			section->mVsStageData = data;
 			section->mVsStageNum  = stageNumber;
 
-			if (gConfig[MAP_TYPE]) {
+			if (getTeamCount() > 2) {
+				OSReport("Using big map\n");
+				strcpy(section->mCaveInfoFilename, data->mCaveInfoFilename);
+				sprintf(section->mEditFilename, "four/%s", data->mStageLayoutFilePath);
+			}
+			else if (gConfig[MAP_TYPE]) {
 				sprintf(section->mCaveInfoFilename, "old/%s", data->mCaveInfoFilename);
 				sprintf(section->mEditFilename, "old/%s", data->mStageLayoutFilePath);
 			}

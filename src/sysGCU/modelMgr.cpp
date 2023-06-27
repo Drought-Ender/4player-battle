@@ -56,6 +56,8 @@
  */
 void _Print(char* name, ...) { OSReport("modelMgr"); }
 
+bool gPikiActive = false;
+
 namespace SysShape {
 
 /*
@@ -82,6 +84,9 @@ ModelMgr::ModelMgr(int modelDataLimit, J3DModelData** modelData, int heapLimit, 
 	}
 }
 
+
+
+
 /*
  * --INFO--
  * Address:	8042ACD8
@@ -97,7 +102,17 @@ int ModelMgr::calcMaximumModelSize()
 		}
 	}
 	// TODO: This 0x7C is probably a sizeof something.
-	return maximum + 0x7C;
+	int maxsize = maximum + 0x7C;
+	if (maxsize == 5720) {
+		if (gPikiActive) {
+			return 2500;
+		}
+		return 1952;
+	}
+	if (maxsize == 3140) {
+		return 2816;
+	}
+	return maxsize;
 }
 
 /*

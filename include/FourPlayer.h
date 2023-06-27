@@ -104,6 +104,13 @@ enum TeamID {
     TEAM_PURPLE
 };
 
+#define PIKI_COLOR_BLUE 0
+#define PIKI_COLOR_RED 1
+#define PIKI_COLOR_YELLOW 2
+#define PIKI_COLOR_PURPLE 3
+#define PIKI_COLOR_WHITE 4
+#define PIKI_COLOR_BULBMIN 5
+#define PIKI_COLOR_CARROT 6
     
 extern int gNaviNum;
 extern int gVsNaviIndexArray[4];
@@ -121,21 +128,41 @@ int CalcNaviNum();
 int getVsTeam(int);
 int getVsPikiColor(int); // Gets the piki color of an index
 void SetVsTeam(int idx, TeamID team);
+
+
+/// @brief takes in a piki color and converts it to the corrisponding team
+/// @param pikiColor int from 0 to 6 representing a piki color
+/// @return the team idx from 0 to 3
 int getTeamFromPiki(int pikiColor) {
 	switch (pikiColor)
     {
-    case 1: // red
+    case PIKI_COLOR_RED: // red
         return TEAM_RED;
-    case 0: // blue
+    case PIKI_COLOR_BLUE: // blue
         return TEAM_BLUE;
-	case 4: // white
+	case PIKI_COLOR_WHITE: // white
 		return TEAM_WHITE;
-	case 3: // purple
+	case PIKI_COLOR_PURPLE: // purple
 		return TEAM_PURPLE; 
     }
     JUT_PANIC("GET PIKI %i\n", pikiColor);
 }
 int getPikiFromTeam(int);
+
+int getTeamCount() {
+    bool active[4] = { false, false, false, false };
+    int count = 0;
+
+    for (int i = 0; i < 4; i++) {
+        int teamIdx = getVsTeam(i);
+        if (!active[teamIdx]) {
+            count++;
+            active[teamIdx] = true;
+        }
+    }
+
+    return count;
+}
 
 
 
