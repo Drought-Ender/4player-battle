@@ -4,12 +4,15 @@
 #include "Game/CameraMgr.h"
 #include "JSystem/J2D/J2DPrint.h"
 #include "ConfigEnums.h"
+#include "types.h"
 
 struct Controller;
 
 extern int mRealWinCounts[4];
 
 extern bool gDrawVsMenu;
+
+typedef f32 VsWeights[4];
 
 struct VsOptionsMenu {
     VsOptionsMenu();

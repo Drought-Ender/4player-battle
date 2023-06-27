@@ -12,8 +12,8 @@ namespace Cave {
 RandMapScore::RandMapScore(MapUnitGenerator* generator)
 {
 	mGenerator       = generator;
-	mVersusHighScore = 0;
-	mVersusLowScore  = 0;
+	mVersusRedScore = 0;
+	mVersusBlueScore  = 0;
 	mFixObjNodes     = new MapNode*[FIXNODE_Count];
 	mFixObjGens      = new BaseGen*[FIXNODE_Count];
 
@@ -128,14 +128,14 @@ void RandMapScore::getGlobalPosition(int idx, Vector3f& position)
  * Address:	8024CC2C
  * Size:	000008
  */
-int RandMapScore::getVersusHighScore() { return mVersusHighScore; }
+int RandMapScore::getVersusHighScore() { return mVersusRedScore; }
 
 /*
  * --INFO--
  * Address:	8024CC34
  * Size:	000008
  */
-int RandMapScore::getVersusLowScore() { return mVersusLowScore; }
+int RandMapScore::getVersusLowScore() { return mVersusBlueScore; }
 
 /*
  * --INFO--
@@ -877,9 +877,9 @@ void RandMapScore::subNodeScore()
 	{
 		currNode->subNodeScoreToVersusScore();
 		if (currNode == getFixObjNode(FIXNODE_VsRedOnyon)) {
-			mVersusLowScore = currNode->getVersusScore();
+			mVersusBlueScore = currNode->getVersusScore();
 		} else if (currNode == getFixObjNode(FIXNODE_VsBlueOnyon)) {
-			mVersusHighScore = currNode->getVersusScore();
+			mVersusRedScore = currNode->getVersusScore();
 		}
 	}
 }

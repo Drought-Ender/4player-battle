@@ -232,8 +232,8 @@ void NaviMgr::doEntry() {
 Cave::RandMapScore::RandMapScore(MapUnitGenerator* generator)
 {
 	mGenerator       = generator;
-	mVersusHighScore = 0;
-	mVersusLowScore  = 0;
+	mVersusRedScore = 0;
+	mVersusBlueScore  = 0;
 	mFixObjNodes     = new MapNode*[FIXNODE_Count];
 	mFixObjGens      = new BaseGen*[FIXNODE_Count];
 
@@ -266,49 +266,62 @@ Cave::MapNode* Cave::RandMapScore::getRandRoomMapNode()
 void Cave::RandMapScore::setVersusOnyon()
 {
 
-	if (!getFixObjNode(FIXNODE_VsRedOnyon) && !getFixObjNode(FIXNODE_VsBlueOnyon) && !getFixObjNode(FIXNODE_VsYellowOnyon) && !getFixObjNode(FIXNODE_VsPurpleOnyon)) {
+	if (!getFixObjNode(FIXNODE_VsRedOnyon) && !getFixObjNode(FIXNODE_VsBlueOnyon) && !getFixObjNode(FIXNODE_VsWhiteOnyon) && !getFixObjNode(FIXNODE_VsPurpleOnyon)) {
 		MapNode* targetNode    = getRandRoomMapNode();
 		MapNode* onyonNodes[4] = { nullptr, nullptr, nullptr, nullptr };
 		BaseGen* onyonGens[4]  = { nullptr, nullptr, nullptr, nullptr };
 
 		if (targetNode) {
+
+			FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode) {
+				currNode->mVsScore = 10000;
+			}
+
 			OSReport("Set versus onyon\n");
 			calcNodeScore(targetNode);
 
 			onyonNodes[0] = getMaxScoreRoomMapNode(targetNode, &onyonGens[0]);
 			calcNodeScore(onyonNodes[0]);
 
-			copyNodeScore();
+			subNodeScore();
+
 
 			onyonNodes[1] = getMaxScoreRoomMapNode(onyonNodes[0], &onyonGens[1]);
-			// calcNodeScore(onyonNodes[1]);
+			calcNodeScore(onyonNodes[1]);
+
+			subNodeScore();
 
             onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
+			
 			JUT_ASSERT(onyonNodes[2], "NO ROOM FOR WHITE ONYON");
-
-			// calcNodeScore(onyonNodes[2]);
+			calcNodeScore(onyonNodes[2]);
+			
 
 			
-			onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[2]);
+			onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[3]);
 			JUT_ASSERT(onyonNodes[3], "NO ROOM FOR PURPLE ONYON");
-			// calcNodeScore(onyonNodes[3]);
+			calcNodeScore(onyonNodes[3]);
+			subNodeScore();
 
-			
+			onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
+			calcNodeScore(onyonNodes[2]);
 
 			mFixObjNodes[FIXNODE_VsRedOnyon]  = onyonNodes[0];
 			mFixObjNodes[FIXNODE_VsBlueOnyon] = onyonNodes[1];
-            mFixObjNodes[FIXNODE_VsYellowOnyon] = onyonNodes[2];
+            mFixObjNodes[FIXNODE_VsWhiteOnyon] = onyonNodes[2];
 			mFixObjNodes[FIXNODE_VsPurpleOnyon] = onyonNodes[3];
 
 			mFixObjGens[FIXNODE_VsRedOnyon]  = onyonGens[0];
 			mFixObjGens[FIXNODE_VsBlueOnyon] = onyonGens[1];
-            mFixObjGens[FIXNODE_VsYellowOnyon] = onyonGens[2];
+            mFixObjGens[FIXNODE_VsWhiteOnyon] = onyonGens[2];
 			mFixObjGens[FIXNODE_VsPurpleOnyon] = onyonGens[3];
-
 			subNodeScore();
 		}
 	}
 }
+
+void Cave::MapNode::copyNodeScoreToVersusScore() { mVsScore = mNodeScore; }
+
 
 Cave::MapNode* Cave::RandMapScore::getMaxScoreRoomMapNode(MapNode* mapNode, BaseGen** maxScoreGen)
 {
@@ -385,12 +398,12 @@ void Cave::RandMapScore::clearRoomAndDoorScore()
 		if (getFixObjNode(FIXNODE_VsBlueOnyon)) {
 			setStartMapNodeScore(getFixObjNode(FIXNODE_VsBlueOnyon));
 		}
-        // if (getFixObjNode(FIXNODE_VsYellowOnyon)) {
-		// 	setStartMapNodeScore(getFixObjNode(FIXNODE_VsYellowOnyon));
-		// }
-		// if (getFixObjNode(FIXNODE_VsPurpleOnyon)) {
-		// 	setStartMapNodeScore(getFixObjNode(FIXNODE_VsPurpleOnyon));
-		// }
+        if (getFixObjNode(FIXNODE_VsWhiteOnyon)) {
+			setStartMapNodeScore(getFixObjNode(FIXNODE_VsWhiteOnyon));
+		}
+		if (getFixObjNode(FIXNODE_VsPurpleOnyon)) {
+			setStartMapNodeScore(getFixObjNode(FIXNODE_VsPurpleOnyon));
+		}
 
 	} else if (getFixObjNode(FIXNODE_Pod)) { // not versus mode, so start from pod/ship.
 		setStartMapNodeScore(getFixObjNode(FIXNODE_Pod));
@@ -404,7 +417,7 @@ void Cave::RandMapScore::makeObjectLayout(MapNode* mapNode, ObjectLayout* layout
 		if (mapNode == mFixObjNodes[i]) {
             OSReport("Make Object Laytout %i\n", i);
 			int layoutTypes[FIXNODE_Count]
-			    = { OBJLAYOUT_Pod, OBJLAYOUT_Hole, OBJLAYOUT_Fountain, OBJLAYOUT_VsRedOnyon, OBJLAYOUT_VsBlueOnyon, OBJLAYOUT_VsYellowOnyon, OBJLAYOUT_VsPurpleOnyon };
+			    = { OBJLAYOUT_Pod, OBJLAYOUT_Hole, OBJLAYOUT_Fountain, OBJLAYOUT_VsRedOnyon, OBJLAYOUT_VsBlueOnyon, OBJLAYOUT_VsWhiteOnyon, OBJLAYOUT_VsPurpleOnyon };
 			FixObjNode* rootObjNode  = new FixObjNode(layoutTypes[i]);
 			FixObjNode* childObjNode = new FixObjNode(layoutTypes[i]);
 
@@ -446,13 +459,22 @@ void Cave::RandMapScore::subNodeScore()
 	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode)
 	{
 		currNode->subNodeScoreToVersusScore();
-		if (currNode == getFixObjNode(FIXNODE_VsRedOnyon)) {
-			mVersusLowScore = currNode->getVersusScore();
-		} else if (currNode == getFixObjNode(FIXNODE_VsBlueOnyon)) {
-			mVersusHighScore = currNode->getVersusScore();
-		}
-		else if (currNode == getFixObjNode(FIXNODE_VsYellowOnyon)) {
-			
+		if (getFixObjNode(FIXNODE_VsRedOnyon) && getFixObjNode(FIXNODE_VsBlueOnyon) && getFixObjNode(FIXNODE_VsWhiteOnyon) && getFixObjGen(FIXNODE_VsPurpleOnyon)) {
+			if (currNode == getFixObjNode(FIXNODE_VsRedOnyon)) {
+				mVersusRedScore = currNode->getVersusScore();
+				OSReport("RedScore %i\n", mVersusRedScore);
+			} else if (currNode == getFixObjNode(FIXNODE_VsBlueOnyon)) {
+				mVersusBlueScore = currNode->getVersusScore();
+				OSReport("BlueScore %i\n", mVersusBlueScore);
+			}
+			else if (currNode == getFixObjNode(FIXNODE_VsWhiteOnyon)) {
+				mVersusWhiteScore = currNode->getVersusScore();
+				OSReport("WhiteScore %i\n", mVersusWhiteScore);
+			}
+			else if (currNode == getFixObjNode(FIXNODE_VsPurpleOnyon)) {
+				mVersusPurpleScore = currNode->getVersusScore();
+				OSReport("PurpleScore %i\n", mVersusPurpleScore);
+			}
 		}
 	}
 }
@@ -542,7 +564,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					pod->setPosition(birthPos, false);
 					break;
 				}
-                case OBJLAYOUT_VsYellowOnyon: {
+                case OBJLAYOUT_VsWhiteOnyon: {
 					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_WHITE);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
@@ -886,5 +908,132 @@ void PelletNumber::Object::changeMaterial() {
 	mModel->mJ3dModel->calcMaterial();
 	mModel->mJ3dModel->diff();
 }
+
+void Cave::RandItemUnit::getItemDropPosition(Vector3f& position, f32 weight, int floorIndex)
+{
+	weight = 0.5f;
+
+	MapNode* nodes[2];
+	MapNode* dropList[256];
+	MapNode* dropNode;
+
+	nodes[0] = mGenerator->mPlacedMapNodes;
+	nodes[1] = mGenerator->mVisitedMapNodes;
+
+	OSReport("Scores %u, %u, %u, %u\n", mMapScore->mVersusRedScore, mMapScore->mVersusBlueScore, mMapScore->mVersusWhiteScore, mMapScore->mVersusPurpleScore);
+
+	int score = weight * (f32)mMapScore->mVersusRedScore + (1.0f - weight) * (f32)mMapScore->mVersusBlueScore
+	+ weight * (f32)mMapScore->mVersusWhiteScore + (1.0f - weight) * (f32)mMapScore->mVersusPurpleScore;
+
+	if (floorIndex < 0) {
+		int dropIndex = 1280000;
+		for (int i = 0; i < 2; i++) {
+			FOREACH_NODE(MapNode, nodes[i]->mChild, mapNode) { getItemDropMapNode(mapNode, &dropNode, score, dropIndex); }
+		}
+
+		if (dropNode) {
+			position = getItemBaseGenPosition(dropNode, score);
+		} else {
+			JUT_PANICLINE(375, "item slot none\n");
+		}
+
+	} else {
+		int dropIndex = 0;
+		BaseGen* basegen[256];
+		for (int i = 0; i < 2; i++) {
+			FOREACH_NODE(MapNode, nodes[i]->mChild, mapNode) { getItemDropList(mapNode, dropList, basegen, dropIndex); }
+		}
+
+		if (floorIndex < dropIndex) {
+			position = getItemBaseGenPosition(dropList, basegen, dropIndex, score, floorIndex);
+		} else {
+			JUT_PANICLINE(398, "item slot not enough\n");
+		}
+	}
+}
+
+void Cave::RandItemUnit::getItemDropPosition(Vector3f& position, VsWeights weight, int floorIndex)
+{
+	MapNode* nodes[2];
+	MapNode* dropList[256];
+	MapNode* dropNode;
+
+	nodes[0] = mGenerator->mPlacedMapNodes;
+	nodes[1] = mGenerator->mVisitedMapNodes;
+
+	OSReport("Scores %u, %u, %u, %u\n", mMapScore->mVersusRedScore, mMapScore->mVersusBlueScore, mMapScore->mVersusWhiteScore, mMapScore->mVersusPurpleScore);
+
+	int score = weight[0] * (f32)mMapScore->mVersusRedScore + weight[1] * (f32)mMapScore->mVersusBlueScore
+	+ weight[2] * (f32)mMapScore->mVersusWhiteScore + weight[3] * (f32)mMapScore->mVersusPurpleScore;
+
+	if (floorIndex < 0) {
+		int dropIndex = 1280000;
+		for (int i = 0; i < 2; i++) {
+			FOREACH_NODE(MapNode, nodes[i]->mChild, mapNode) { getItemDropMapNode(mapNode, &dropNode, score, dropIndex); }
+		}
+
+		if (dropNode) {
+			position = getItemBaseGenPosition(dropNode, score);
+		} else {
+			JUT_PANICLINE(375, "item slot none\n");
+		}
+
+	} else {
+		int dropIndex = 0;
+		BaseGen* basegen[256];
+		for (int i = 0; i < 2; i++) {
+			FOREACH_NODE(MapNode, nodes[i]->mChild, mapNode) { getItemDropList(mapNode, dropList, basegen, dropIndex); }
+		}
+
+		if (floorIndex < dropIndex) {
+			position = getItemBaseGenPosition(dropList, basegen, dropIndex, score, floorIndex);
+		} else {
+			JUT_PANICLINE(398, "item slot not enough\n");
+		}
+	}
+}
+
+void Cave::RandMapMgr::getItemDropPosition(Vector3f& position, VsWeights minDist, VsWeights maxDist)
+{
+	VsWeights dists;
+	for (int i = 0; i < 4; i++) {
+		dists[i] = minDist[i] + randWeightFloat(maxDist[i] - minDist[i]);
+	}
+
+	mRandItemUnit->getItemDropPosition(position, dists, -1);
+}
+
+void Cave::RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p1, VsWeights p2)
+{
+	VsWeights avg;
+	VsWeights weight;
+	for (int i = 0; i < 4; i++) {
+		avg[i] = 0.5f * (p1[i] + p2[i]);
+		weight[i] = (p2[i] - avg[i] > 0.0f) ? p2[i] - avg[i] : -(p2[i] - avg[i]);
+	}
+
+	MapNode* nodeList[16];
+	BaseGen* genList[16];
+
+	int randVal  = 2.0f * randFloat();
+	int absCount = ((count < 0) ? -count : count) - 1; // ?? what even is this
+	mRandItemUnit->setItemDropPositionList(nodeList, genList);
+
+	for (int i = 0; i < count; i++) {
+		VsWeights val;
+		for (int j = 0; j < 4; j++) {
+			val[j] = avg[j];
+			if (((i < 0) ? -i : i) != absCount) { // ?? again, what
+				if (i == randVal) {
+					val[j] = avg[j] + randWeightFloat(weight[j]);
+				} else {
+					val[j] = avg[j] - randWeightFloat(weight[j]);
+				}
+			}
+		}
+		mRandItemUnit->getItemDropPosition(positions[i], val, i);
+	}
+}
+
 
 } // namespace Game

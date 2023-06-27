@@ -860,12 +860,6 @@
 /* 80243868 002407A8  4E 80 00 20 */	blr 
 .endfn setNodeScore__Q34Game4Cave7MapNodeFi
 
-.fn copyNodeScoreToVersusScore__Q34Game4Cave7MapNodeFv, global
-/* 8024386C 002407AC  80 03 00 38 */	lwz r0, 0x38(r3)
-/* 80243870 002407B0  90 03 00 3C */	stw r0, 0x3c(r3)
-/* 80243874 002407B4  4E 80 00 20 */	blr 
-.endfn copyNodeScoreToVersusScore__Q34Game4Cave7MapNodeFv
-
 .fn subNodeScoreToVersusScore__Q34Game4Cave7MapNodeFv, global
 /* 80243878 002407B8  80 83 00 38 */	lwz r4, 0x38(r3)
 /* 8024387C 002407BC  80 03 00 3C */	lwz r0, 0x3c(r3)

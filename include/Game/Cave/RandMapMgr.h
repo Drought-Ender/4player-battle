@@ -5,6 +5,7 @@
 #include "Game/mapParts.h"
 #include "Game/Cave/RandMapUnit.h"
 #include "JSystem/JUtility/JUTTexture.h"
+#include "FourPlayer.h"
 
 struct Graphics;
 
@@ -119,6 +120,7 @@ struct RandItemUnit {
 
 	void setItemDropPositionList(Game::Cave::MapNode**, Game::Cave::BaseGen**);
 	void getItemDropPosition(Vector3f&, f32, int);
+	void getItemDropPosition(Vector3f&, VsWeights, int);
 	MapNode* getItemNormalSetMapNode(Game::Cave::BaseGen**);
 	MapNode* getItemHardSetMapNode(Game::Cave::BaseGen**);
 	ItemUnit* getItemUnit();
@@ -177,7 +179,11 @@ struct RandMapMgr : public CNode {
 	ObjectLayoutInfo* makeObjectLayoutInfo(int);
 	void getStartPosition(Vector3f&, int);
 	void getItemDropPosition(Vector3f&, f32, f32);
+
+	void getItemDropPosition(Vector3f&, f32*, f32*);
+
 	void getItemDropPosition(Vector3f*, int, f32, f32);
+	void getItemDropPosition(Vector3f*, int, f32*, f32*);
 	void setUnitTexture(int, JUTTexture*);
 	void setCaptureOn();
 	void captureRadarMap(Graphics&);
@@ -248,8 +254,10 @@ struct RandMapScore {
 	MapUnitGenerator* mGenerator; // _00
 	MapNode** mFixObjNodes;       // _04, array of 5 map nodes, see FixObjNodeTypes enum
 	BaseGen** mFixObjGens;        // _08, array of 5 gens, see FixObjNodeTypes enum
-	u32 mVersusHighScore;         // _0C
-	u32 mVersusLowScore;          // _10
+	u32 mVersusRedScore;         // _0C
+	u32 mVersusBlueScore;          // _10
+	u32 mVersusWhiteScore;
+	u32 mVersusPurpleScore;
 };
 
 // instantiated in Nishimura/MapCreator.cpp

@@ -16,7 +16,7 @@ enum FixObjNodeTypes {
 	FIXNODE_Fountain    = 2,
 	FIXNODE_VsRedOnyon  = 3,
 	FIXNODE_VsBlueOnyon = 4,
-	FIXNODE_VsYellowOnyon = 5,
+	FIXNODE_VsWhiteOnyon = 5,
 	FIXNODE_VsPurpleOnyon = 6,
 	FIXNODE_Count, // 5
 };
