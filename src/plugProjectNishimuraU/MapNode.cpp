@@ -421,6 +421,9 @@ void MapNode::setNodeScore(int score) { mNodeScore = score; }
  */
 void MapNode::copyNodeScoreToVersusScore() { mVsScore = mNodeScore; }
 
+
+
+
 /*
  * --INFO--
  * Address:	80243878

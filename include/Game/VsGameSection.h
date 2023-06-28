@@ -100,6 +100,8 @@ struct VsGameSection : public BaseGameSection {
 	static int mDrawCount;
 	static int mNaviWinCounts[4];
 
+	#define YELLOW_MARBLE_COUNT 13
+
 
 	bool mIsVersusMode;                            // _174
 	VSFifo* mVsFifo;                               // _178
@@ -138,10 +140,7 @@ struct VsGameSection : public BaseGameSection {
 	f32 mYellowScore[2];                           // _370
 	f32 mRedBlueScore[2];                          // _378
 	Pellet* mMarbleRedBlue[4];                     // _380
-	Pellet* mMarbleYellow[7];                      // _388
-	int mDopeCounts[2][2];                         // _3A4
-	int mPlayer2Cherries;                          // _3B4
-	int mPlayer1Cherries;                          // _3B8
+	Pellet* mMarbleYellow[YELLOW_MARBLE_COUNT];    // _388
 	int mPokoCount;                                // _3BC
 	f32 mTimeLimit;                                // _3C0
 	int mCardCount;                                // _3C4

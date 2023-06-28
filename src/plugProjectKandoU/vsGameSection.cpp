@@ -229,7 +229,7 @@ void VsGameSection::onInit()
 
 	Radar::mgr = new Radar::Mgr();
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 		mMarbleYellow[i] = nullptr;
 	}
 }
@@ -418,7 +418,7 @@ void VsGameSection::postSetupFloatMemory()
 		Vector3f position      = Vector3f(0.0f);
 		createRedBlueBedamas(position);
 
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 			mMarbleYellow[i] = nullptr;
 		}
 
@@ -946,12 +946,12 @@ bool GameMessageVsAddEnemy::actVs(VsGameSection* section)
 bool GameMessagePelletBorn::actVs(VsGameSection* section)
 {
 	if (mPellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) { // is yellow bedama
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 			if (section->mMarbleYellow[i] == mPellet) {
 				return false;
 			}
 		}
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 			if (!section->mMarbleYellow[i]) {
 				section->mMarbleYellow[i] = mPellet;
 				return true;
@@ -970,7 +970,7 @@ bool GameMessagePelletBorn::actVs(VsGameSection* section)
 bool GameMessagePelletDead::actVs(VsGameSection* section)
 {
 	if (mPellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) { // is yellow bedama
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 			if (section->mMarbleYellow[i] == mPellet) {
 				section->mMarbleYellow[i] = nullptr;
 				return true;
@@ -1342,14 +1342,21 @@ void VsGameSection::dropCard(VsGameSection::DropCardArg& arg)
 void VsGameSection::createYellowBedamas(int bedamas)
 {
 	if (mVsStageData) {
-		bedamas = mVsStageData->mStartNumYellowMarbles;
+		if (Game::getTeamCount() == 2) {
+			bedamas = mVsStageData->mStartNumYellowMarbles;
+		}
+		else {
+			bedamas = mVsStageData->mStartNumYellowMarblesVsFour;
+		}
 		if (bedamas == 0) {
 			return;
 		}
-		if (bedamas >= 7) {
-			bedamas = 7;
+		if (bedamas >= YELLOW_MARBLE_COUNT) {
+			bedamas = YELLOW_MARBLE_COUNT;
 		}
 	}
+
+	OSReport("Bedamas %i\n", bedamas);
 
 	PelletList::cKind kind;
 	char* name = const_cast<char*>(VsOtakaraName::cBedamaYellow);
@@ -1412,13 +1419,13 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 void VsGameSection::calcVsScores()
 {
 
-	f32 yellowMarbleRedDist[7];
-	f32 yellowMarbleBlueDist[7];
+	f32 yellowMarbleRedDist[YELLOW_MARBLE_COUNT];
+	f32 yellowMarbleBlueDist[YELLOW_MARBLE_COUNT];
 	Onyon* onyons[2];
 	onyons[0] = ItemOnyon::mgr->getOnyon(ONYON_TYPE_RED);
 	onyons[1] = ItemOnyon::mgr->getOnyon(ONYON_TYPE_BLUE);
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 		Pellet* marble = mMarbleYellow[i];
 
 		if (marble && marble->isAlive() && marble->getStateID() == 0) {
@@ -1588,10 +1595,10 @@ void VsGameSection::calcVsScores()
  */
 void VsGameSection::clearGetDopeCount()
 {
-	mDopeCounts[1][1] = 0;
-	mDopeCounts[1][0] = 0;
-	mDopeCounts[0][1] = 0;
-	mDopeCounts[0][0] = 0;
+	for (int i = 0; i < 4; i++) {
+		gDopeCountArray[i][0] = 0;
+		gDopeCountArray[i][1] = 0;
+	}
 }
 
 /*
@@ -1603,7 +1610,7 @@ int& VsGameSection::getGetDopeCount(int player, int type)
 {
 	JUTASSERTBOUNDSINCLUSIVELINE(2567, 0, player, 3, "%d playerID\n");
 	JUTASSERTBOUNDSINCLUSIVELINE(2568, 0, type, 3, "%d typeID\n");
-	return mDopeCounts[player][type];
+	return gDopeCountArray[player][type];
 }
 
 /*
@@ -1613,8 +1620,7 @@ int& VsGameSection::getGetDopeCount(int player, int type)
  */
 void VsGameSection::clearGetCherryCount()
 {
-	mPlayer1Cherries = 0;
-	mPlayer2Cherries = 0;
+
 }
 
 /*

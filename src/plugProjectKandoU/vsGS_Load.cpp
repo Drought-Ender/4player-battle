@@ -53,7 +53,7 @@ void LoadState::init(Game::VsGameSection* section, StateArg* args)
 	_9C = 0;
 	_A0 = 15.0f;
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 		section->mMarbleYellow[i] = nullptr;
 	}
 }

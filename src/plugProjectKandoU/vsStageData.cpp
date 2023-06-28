@@ -126,6 +126,7 @@ StageData::StageData()
 	mIndex2D        = 0;
 	sprintf(mStageLayoutFilePath, "random");
 	mStartNumYellowMarbles = 7;
+	mStartNumYellowMarblesVsFour = 13;
 }
 
 /*
@@ -160,6 +161,9 @@ void StageData::read(Stream& stream)
 	}
 	if (version >= 4) {
 		mStartNumYellowMarbles = stream.readInt();
+	}
+	if (version >= 5) {
+		mStartNumYellowMarblesVsFour = stream.readInt();
 	}
 }
 

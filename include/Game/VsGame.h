@@ -233,6 +233,7 @@ struct StageData : public CNode {
 	int mIndex2D;                  // _6C
 	char mStageLayoutFilePath[64]; // _70
 	int mStartNumYellowMarbles;    // _B0
+	int mStartNumYellowMarblesVsFour;
 };
 
 struct StageList : public CNode {
