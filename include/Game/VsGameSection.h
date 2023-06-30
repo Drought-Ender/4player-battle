@@ -9,6 +9,7 @@
 #include "Game/VsGameSection.h"
 #include "Game/Entities/ItemBigFountain.h"
 #include "Game/Entities/ItemHole.h"
+#include "FourPlayer.h"
 
 struct Controller;
 
@@ -34,8 +35,8 @@ struct State;
 
 struct VsGameSection : public BaseGameSection {
 	struct DropCardArg {
-		f32 _00; // _00
-		f32 _04; // _04
+		VsWeights mMinDists; // _00
+		VsWeights mMaxDists; // _04
 	};
 
 	VsGameSection(JKRHeap*, bool);
@@ -134,11 +135,11 @@ struct VsGameSection : public BaseGameSection {
 	int mVsWinner;                                 // _34C
 	f32 mPikminRatio;                              // _350
 	f32 mPikminCountTimer;                         // _354
-	f32 mRedBlueYellowScore[2];                    // _358
-	f32 mCherryScore[2];                           // _360
-	f32 mMaxCherryScore[2];                        // _368
-	f32 mYellowScore[2];                           // _370
-	f32 mRedBlueScore[2];                          // _378
+	f32 mRedBlueYellowScore[4];                    // _358
+	f32 mCherryScore[4];                           // _360
+	f32 mMinCherryScore[4];                        // _368
+	f32 mYellowScore[4];                           // _370
+	f32 mRedBlueScore[4];                          // _378
 	Pellet* mMarbleRedBlue[4];                     // _380
 	Pellet* mMarbleYellow[YELLOW_MARBLE_COUNT];    // _388
 	int mPokoCount;                                // _3BC
@@ -150,6 +151,8 @@ struct VsGameSection : public BaseGameSection {
 	int mDispMarbleCounts[4];                      // _3D4
 	int mRealMarbleCounts[4];                      // _3DC
 };
+
+//const static int vsGameSize = sizeof(VsGameSection);
 
 
 

@@ -341,6 +341,10 @@ struct Creature : public CellObject {
 	void updateLOD(AILODParm&);
 	void updateStick(Vector3f&);
 
+	inline bool isPelletBuried() {
+		return mCaptureMatrix;
+	}
+
 	static bool usePacketCulling;
 	static Creature* currOp;
 

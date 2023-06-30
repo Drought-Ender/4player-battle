@@ -220,8 +220,8 @@ void VsGameSection::onInit()
 	mYellowScore[0]        = 0.0f;
 	mCherryScore[1]        = 0.0f;
 	mCherryScore[0]        = 0.0f;
-	mMaxCherryScore[1]     = 0.0f;
-	mMaxCherryScore[0]     = 0.0f;
+	mMinCherryScore[1]     = 0.0f;
+	mMinCherryScore[0]     = 0.0f;
 	mRedBlueScore[1]       = 0.0f;
 	mRedBlueScore[0]       = 0.0f;
 	mMarbleRedBlue[1]      = nullptr;
@@ -934,6 +934,7 @@ bool GameMessageVsGetOtakara::actVs(VsGameSection* section)
  */
 bool GameMessageVsAddEnemy::actVs(VsGameSection* section)
 {
+	return false;
 	section->mTekiMgr->entry(_04, _08);
 	return true;
 }
@@ -1176,61 +1177,55 @@ void VsGameSection::initCardGeneration()
  */
 void VsGameSection::updateCardGeneration()
 {
-	bool isHigh          = false;
-	int maxSpawnCherries = 5;
-	f32 spawnFactor      = (mRedBlueScore[0] - mRedBlueScore[1]) - (mYellowScore[0] - mYellowScore[1]);
-	f32 factor1          = 0.4f;
-	f32 factor2          = 0.6f;
-	if (FABS(spawnFactor) < 0.2f) {
-
-	} else if (0.2f <= FABS(spawnFactor) < 0.4f) {
-		maxSpawnCherries = 5;
-		isHigh           = true;
-		factor1          = 0.3f;
-		factor2          = 0.5f;
-	} else if (0.4f <= FABS(spawnFactor) < 0.8f) {
-		maxSpawnCherries = 6;
-		isHigh           = true;
-		factor1          = 0.2f;
-		factor2          = 0.4f;
-	} else if (0.8f <= FABS(spawnFactor)) {
-		maxSpawnCherries = 7;
-		isHigh           = true;
-		factor1          = 0.2f;
-		factor2          = 0.4f;
+	int maxSpawnCherries[2] = { 0, 0 };
+	f32 spawnFactor[2];
+	for (int i = 0; i < 2; i++) {
+		spawnFactor[i] = (mRedBlueScore[i * 2] - mYellowScore[i * 2]) - (mRedBlueScore[i * 2 + 1] - mYellowScore[i * 2 + 1]);
 	}
-
-	if (spawnFactor < 0.0f) {
-		f32 temp = factor1;
-		factor1  = 1.0f - factor2;
-		factor2  = 1.0f - temp;
+	f32 lowFactor[2];
+	for (int i = 0; i < 2; i++) {
+		lowFactor[i] = mCherryScore[i * 2] - mCherryScore[i * 2 + 1];
 	}
+	f32 factors[2][2] = { {0.4f, 0.6f}, {0.4f, 0.6f} };
+	bool isUrgent[2] = { false, false };
+	for (int i = 0; i < 2; i++) {
+		if (FABS(spawnFactor[i]) < 0.2f) {
 
-	if (!isHigh) {
-		f32 absLowFactor;
-		f32 lowFactor = mCherryScore[1] - mCherryScore[0];
-		lowFactor /= 2.0f;
-		absLowFactor = FABS(lowFactor);
-		if (absLowFactor <= 0.1f) {
+		} else if (0.2f <= FABS(spawnFactor[i]) < 0.4f) {
+			isUrgent[i]      = true;
+			factors[i][0]          = 0.3f;
+			factors[i][1]          = 0.5f;
+		} else if (0.4f <= FABS(spawnFactor[i]) < 0.8f) {
+			maxSpawnCherries[i] = 1;
+			isUrgent[i]           = true;
+			factors[i][0]          = 0.2f;
+			factors[i][1]          = 0.4f;
+		} else if (0.8f <= FABS(spawnFactor[i])) {
+			maxSpawnCherries[i] = 2;
+			isUrgent[i]           = true;
+			factors[i][0]          = 0.2f;
+			factors[i][1]          = 0.4f;
+		}
 
-		} else {
-			if (absLowFactor < 0.2f) {
-				factor1 = 0.4f;
-				factor2 = 0.55f;
-			} else if (absLowFactor < 0.5f) {
-				factor1 = 0.4f;
-				factor2 = 0.5f;
-			} else if (absLowFactor < 1.0f) {
-				factor1 = 0.3f;
-				factor2 = 0.5f;
-				if (absLowFactor > 0.9f) {
-					maxSpawnCherries = 5;
+
+		if (!isUrgent[i]) {
+			f32 absLowFactor = FABS(lowFactor[i] * 0.5f);
+			if (absLowFactor <= 0.1f) {
+
+			} else {
+				if (absLowFactor < 0.2f) {
+					factors[i][0] = 0.4f;
+					factors[i][1] = 0.55f;
+				} else if (absLowFactor < 0.5f) {
+					factors[i][0] = 0.4f;
+					factors[i][1] = 0.5f;
+				} else if (absLowFactor < 1.0f) {
+					factors[i][0] = 0.3f;
+					factors[i][1] = 0.5f;
+					if (absLowFactor > 0.9f) {
+						maxSpawnCherries[i] = 0;
+					}
 				}
-			}
-			if (lowFactor < 0.0f) {
-				f32 temp = factor1;
-				factor1  = 1.0f - factor2;
-				factor2  = 1.0f - temp;
 			}
 		}
 	}
@@ -1245,17 +1240,26 @@ void VsGameSection::updateCardGeneration()
 	const f32 cardTimerConst[] = {0.5f,  3.0f, 6.0f, 10.0f, 14.0f, 20.0f, 0};
 	const f32 cardTimerRand[]  = {0.75f, 1.0f, 2.0f, 3.0f,  4.0f,  6.0f,  0};
 
-	if (mCardCount < 4 || (isHigh && mCardCount < maxSpawnCherries) && gConfig[CHERRY_RATE] != ConfigEnums::RATE_NEVER) { // config is never spawn
+	bool hasUrgency = isUrgent[0] || isUrgent[1] || isUrgent[2] || isUrgent[3];
+	int spawnCherries = maxSpawnCherries[0] + maxSpawnCherries[1] + maxSpawnCherries[2] + maxSpawnCherries[3] + 5;
+	if (spawnCherries > 10) spawnCherries = 10;
+
+	if (mCardCount < 4 || (hasUrgency && mCardCount < spawnCherries) && gConfig[CHERRY_RATE] != ConfigEnums::RATE_NEVER) { // config is never spawn
 		f32 ticking = sys->mDeltaTime;
-		if (isHigh) {
+		if (hasUrgency) {
 			ticking *= 2.0f;
 		}
 		mSpawnTimer -= ticking;
 		if (mSpawnTimer <= 0.0f) {
+			for (int i = 0; i < 4; i++) {
+				OSReport("%i: mRedBlueScore %f, mYellowScore %f, mCherryScore %f\n", i, mRedBlueScore[i], mYellowScore[i], mCherryScore[i]);
+			}
 			mSpawnTimer = cardTimerRand[gConfig[CHERRY_RATE]] * randFloat() + cardTimerConst[gConfig[CHERRY_RATE]];
 			DropCardArg arg;
-			arg._00 = factor1;
-			arg._04 = factor2;
+			arg.mMinDists[0] = factors[0][0];
+			arg.mMinDists[1] = factors[1][0];
+			arg.mMinDists[0] = factors[0][1];
+			arg.mMinDists[1] = factors[1][1];
 			dropCard(arg);
 		}
 	}
@@ -1307,7 +1311,7 @@ Pellet* VsGameSection::createCardPellet()
 void VsGameSection::dropCard(VsGameSection::DropCardArg& arg)
 {
 	Vector3f spawn;
-	Cave::randMapMgr->getItemDropPosition(spawn, arg._00, arg._04);
+	Cave::randMapMgr->getItemDropPosition(spawn, arg.mMinDists, arg.mMaxDists);
 	f32 radius = (randFloat() * 20.0f);
 	f32 angle  = randFloat() * TAU;
 
@@ -1420,11 +1424,12 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 void VsGameSection::calcVsScores()
 {
 
-	f32 yellowMarbleRedDist[YELLOW_MARBLE_COUNT];
-	f32 yellowMarbleBlueDist[YELLOW_MARBLE_COUNT];
-	Onyon* onyons[2];
+	f32 yellowMarbleDist[4][YELLOW_MARBLE_COUNT];
+	Onyon* onyons[4];
 	onyons[0] = ItemOnyon::mgr->getOnyon(ONYON_TYPE_RED);
 	onyons[1] = ItemOnyon::mgr->getOnyon(ONYON_TYPE_BLUE);
+	onyons[2] = ItemOnyon::mgr->getOnyon(ONYON_TYPE_WHITE);
+	onyons[3] = ItemOnyon::mgr->getOnyon(ONYON_TYPE_PURPLE);
 
 	for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 		Pellet* marble = mMarbleYellow[i];
@@ -1432,59 +1437,52 @@ void VsGameSection::calcVsScores()
 		if (marble && marble->isAlive() && marble->getStateID() == 0) {
 			int marbleCarryFactor = -1;
 			if (marble->isCarried()) {
-				switch (marble->mCarryColor) {
-				case Red:
-					marbleCarryFactor = 0;
-					break;
-				case Blue:
-					marbleCarryFactor = 1;
-					break;
+				if (marble->mCarryColor != 5) {
+					marbleCarryFactor = getTeamFromPiki(marble->mCarryColor);
 				}
 			}
 
 			Vector3f marblePosition   = marble->getPosition();
-			Vector3f redOnyonPosition = onyons[0]->getPosition();
-			f32 expDistRed            = _distanceXZ(marblePosition, redOnyonPosition);
-
-			Vector3f blueOnyonPosition = onyons[1]->getPosition();
-			f32 expDistBlue            = _distanceXZ(marblePosition, blueOnyonPosition);
-
-			f32 score  = 1.0f / ((f32)exp((expDistBlue / (expDistRed + expDistBlue) - 0.5f) * -10.0f) + 1.0f);
-			bool check = false;
-			if (marble->mCaptureMatrix) {
-				check = true;
+			f32 scores[4];
+			for (int our = 0; our < 4; our++) {
+				Vector3f ourOnyonPos = onyons[our]->getPosition();
+				f32 ourDistance = _distanceXZ(marblePosition, ourOnyonPos);
+				scores[our] = 0;
+				for (int their = 0; their < 4; their++) {
+					if (our == their) continue;
+					Vector3f theirOnyonPos = onyons[their]->getPosition();
+					f32 theirDistance = _distanceXZ(marblePosition, theirOnyonPos);
+					scores[our] += 1.0f / ((f32)exp((theirDistance / (ourDistance + theirDistance) - 0.5f) * -10.0f) + 1.0f) / 3;
+				}
 			}
 
-			if (!check) {
-				if (marbleCarryFactor == -1) {
-					yellowMarbleRedDist[i]  = score;
-					yellowMarbleBlueDist[i] = 1.0f - score;
-				} else if (marbleCarryFactor == 0) {
-					yellowMarbleRedDist[i]  = score;
-					yellowMarbleBlueDist[i] = 0.0f;
-				} else {
-					yellowMarbleRedDist[i]  = 0.0f;
-					yellowMarbleBlueDist[i] = 1.0f - score;
+			if (!marble->isPelletBuried()) {
+				for (int teamColor = 0; teamColor < 4; teamColor++) {
+					if (marbleCarryFactor == teamColor) {
+						yellowMarbleDist[teamColor][i] = 0.0f;
+					}
+					else {
+						yellowMarbleDist[teamColor][i] = scores[teamColor];
+					}
 				}
 			} else {
-				yellowMarbleRedDist[i]  = 0.1f * score;
-				yellowMarbleBlueDist[i] = 0.1f * (1.0f - score);
+				for (int teamColor = 0; teamColor < 4; teamColor++) {
+					yellowMarbleDist[teamColor][i] = 0.1f * scores[teamColor];
+				}
 			}
 		} else {
-			yellowMarbleRedDist[i]  = -1.0f;
-			yellowMarbleBlueDist[i] = -1.0f;
+			for (int teamColor = 0; teamColor < 4; teamColor++) {
+				yellowMarbleDist[teamColor][i] = 0.0f;
+			}
 		}
 	}
 
-	f32 yellowScore[2];
-	for (int i = 0; i < 2; i++) {
+	f32 yellowScore[4];
+	for (int i = 0; i < 4; i++) {
 		f32 count = mRealMarbleCounts[i];
-		for (int j = 0; j < 7; j++) {
-			if (i == 0 && yellowMarbleRedDist[j] >= 0.0f) {
-				count += yellowMarbleRedDist[j];
-			}
-			if (i == 1 && yellowMarbleBlueDist[j] >= 0.0f) {
-				count += yellowMarbleBlueDist[j];
+		for (int j = 0; j < YELLOW_MARBLE_COUNT; j++) {
+			if (yellowMarbleDist[i][j] >= 0.0f) {
+				count += yellowMarbleDist[i][j];
 			}
 		}
 		if (count >= 4.0f) {
@@ -1495,97 +1493,99 @@ void VsGameSection::calcVsScores()
 		mYellowScore[i] = yellowScore[i];
 	}
 
-	f32 redBlueScore[] = { 0.0f, 0.0f };
+	f32 redBlueScore[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 4; i++) {
 		Pellet* marble = mMarbleRedBlue[i];
 		Onyon* onyon   = onyons[i];
 		if (marble) {
 			Vector3f marblePosition = marble->getPosition();
 			Vector3f onyonPosition  = onyon->getPosition();
-			f32 expDistRed          = _distanceXZ(marblePosition, onyonPosition);
-
-			Vector3f otherOnyonPosition = onyons[(1 - i)]->getPosition();
-			f32 expDistBlue             = _distanceXZ(marblePosition, otherOnyonPosition);
-			redBlueScore[i]             = 1.0f / ((f32)exp((expDistRed / (expDistRed + expDistBlue) - 0.5f) * -10.0f) + 1.0f);
-			mRedBlueScore[i]            = redBlueScore[i];
+			f32 ourDist = _distanceXZ(marblePosition, onyonPosition);
+			redBlueScore[i] = 0;
+			for (int other = 0; other < 4; other++) {
+				if (other == i) continue;
+				Vector3f otherOnyonPosition = onyons[other]->getPosition();
+				f32 otherDist = _distanceXZ(marblePosition, otherOnyonPosition);
+				redBlueScore[i] += 1.0f / ((f32)exp((ourDist / (ourDist + otherDist) - 0.5f) * -10.0f) + 1.0f) / 3;
+			}
+			mRedBlueScore[i] = redBlueScore[i];
 		}
 	}
 
-	mRedBlueYellowScore[0] = redBlueScore[1] + ((yellowScore[0] - yellowScore[1]) - redBlueScore[0]);
-	mRedBlueYellowScore[1] = redBlueScore[0] + ((yellowScore[1] - yellowScore[0]) - redBlueScore[1]);
+	for (int our = 0; our < 4; our++) {
+		mRedBlueYellowScore[our] = yellowScore[our] - redBlueScore[our];
+		for (int their = 0; their < 4; their++) {
+			if (our == their) continue;
+			mRedBlueYellowScore[our] -= (yellowScore[their] - redBlueScore[their]) / 3;
+		}
+	}
 
 	f32 cherryValue;
-	f32 cherryRedDist[10];
-	f32 cherryBlueDist[10];
+	f32 cherryDist[4][10];
+	
 	for (int i = 0; i < 10; i++) {
 		Pellet* cherry = mCherryArray[i];
 		if (cherry->isAlive() && cherry->getStateID() == 0) {
 			int cherryCarryFactor = -1;
 			if (cherry->isCarried()) {
-				switch (cherry->mCarryColor) {
-				case Red:
-					cherryCarryFactor = 0;
-					break;
-				case Blue:
-					cherryCarryFactor = 1;
-					break;
+				if (cherry->mCarryColor != 5) {
+					cherryCarryFactor = getTeamFromPiki(cherry->mCarryColor);
 				}
 			}
+
 			Vector3f cherryPosition   = cherry->getPosition();
-			Vector3f redOnyonPosition = onyons[0]->getPosition();
-			f32 expDistRed            = _distanceXZ(cherryPosition, redOnyonPosition);
+			f32 score[4];
 
-			Vector3f blueOnyonPosition = onyons[1]->getPosition();
-			f32 expDistBlue            = _distanceXZ(cherryPosition, blueOnyonPosition);
-			f32 score                  = 1.0f / ((f32)exp((expDistBlue / (expDistRed + expDistBlue) - 0.5f) * -10.0f) + 1.0f);
-
-			bool check = false;
-			if (cherry->mCaptureMatrix) {
-				check = true;
+			for (int our = 0; our < 4; our++) {
+				Vector3f ourOnyonPosition = onyons[our]->getPosition();
+				f32 ourDist            = _distanceXZ(cherryPosition, ourOnyonPosition);
+				score[our] = 0.0f;
+				for (int their = 0; their < 4; their++) {
+					if (our == their) continue;
+					Vector3f theirOnyonPosition = onyons[their]->getPosition();
+					f32 theirDist            = _distanceXZ(cherryPosition, theirOnyonPosition);
+					score[our] = 1.0f / ((f32)exp((theirDist / (ourDist + theirDist) - 0.5f) * -10.0f) + 1.0f) / 3;
+				}
 			}
-			if (!check) {
-				if (cherryCarryFactor == -1) {
-					cherryRedDist[i]  = score;
-					cherryBlueDist[i] = 1.0f - score;
-				} else if (cherryCarryFactor == 0) {
-					cherryRedDist[i]  = score;
-					cherryBlueDist[i] = 0.0f;
-				} else {
-					cherryRedDist[i]  = 0.0f;
-					cherryBlueDist[i] = 1.0f - score;
+
+			if (!cherry->isPelletBuried()) {
+				for (int teamColor = 0; teamColor < 4; teamColor++) {
+					if (cherry->mCarryColor == teamColor) {
+						cherryDist[teamColor][i] = 0.0f;
+					}
+					else {
+						cherryDist[teamColor][i] = score[teamColor];
+					}
 				}
 			} else {
-				cherryRedDist[i]  = 0.1f * score;
-				cherryBlueDist[i] = 0.1f * (1.0f - score);
+				for (int teamColor = 0; teamColor < 4; teamColor++) {
+					cherryDist[teamColor][i]  = 0.1f * score[teamColor];
+				}
 			}
 		} else {
-			cherryRedDist[i]  = -1.0f;
-			cherryBlueDist[i] = -1.0f;
+			for (int teamColor = 0; teamColor < 4; teamColor++) {
+				cherryDist[teamColor][i]  = 0.0f;
+			}
 		}
 	}
 
 	f32 redCherryValue;
 	f32 blueCherryValue;
-	for (int i = 0; i < 2; i++) {
-		mMaxCherryScore[i] = 0.0f;
+	for (int i = 0; i < 4; i++) {
+		mMinCherryScore[i] = 0.0f;
 		f32 count          = 0.0f;
 		for (int j = 0; j < 10; j++) {
+			count += cherryDist[i][j];
 			f32 miniCount = 0.0f;
-			if (i == 0 && cherryRedDist[j] >= 0.0f) {
-				count += cherryRedDist[j];
-				miniCount = cherryRedDist[j];
+			if (cherryDist[i][j] >= 0.0f) {
+				miniCount = cherryDist[i][j];
 			}
-			if (i == 1 && cherryBlueDist[j] >= 0.0f) {
-				count += cherryBlueDist[j];
-				miniCount = cherryBlueDist[j];
-			}
-			if (mMaxCherryScore[i] <= miniCount) {
-				mMaxCherryScore[i] = miniCount;
+			if (mMinCherryScore[i] <= miniCount) {
+				mMinCherryScore[i] = miniCount;
 			}
 		}
-		yellowMarbleRedDist[i] = count / 4.0f;
-		mCherryScore[i]        = count;
+		mCherryScore[i] = count;
 	}
 }
 

@@ -299,7 +299,8 @@ struct RoomMapMgr : public MapMgr {
 	BoundBox mBoundbox;                  // _DC
 	uint mMapUnitInterfaceCount;         // _F4
 	MapUnitInterface* mMapUnitInterface; // _F8
-	Vector3f mStartPositions[2];         // _FC
+	Vector3f* mStartPositions;           // _FC
+	int _PADDING[5];
 	Game::BlackMan::Obj* mBlackMan;      // _114
 	u32* m_118;                          // _118 TODO: rename
 	u32 m_11C;                           // _11C TODO: rename

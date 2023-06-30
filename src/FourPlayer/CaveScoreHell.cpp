@@ -4,6 +4,7 @@
 #include "Dolphin/rand.h"
 #include "Game/gamePlayData.h"
 #include "Game/generalEnemyMgr.h"
+#include "Game/Cave/Info.h"
 
 
 OnyonTypes gScoreDelegations[2][2] = { {ONYON_TYPE_RED, ONYON_TYPE_BLUE}, {ONYON_TYPE_WHITE, ONYON_TYPE_PURPLE} };
@@ -64,7 +65,6 @@ void RandMapScore::setVersusOnyon()
 
 		if (targetNode) {
 
-			OSReport("Set versus onyon\n");
 			calcNodeScore(targetNode);
 
 			onyonNodes[0] = getMaxScoreRoomMapNode(targetNode, &onyonGens[0]);
@@ -222,7 +222,6 @@ void RandMapScore::makeObjectLayout(MapNode* mapNode, ObjectLayout* layout)
 {
 	for (int i = 0; i < FIXNODE_Count; i++) {
 		if (mapNode == mFixObjNodes[i]) {
-            OSReport("Make Object Laytout %i\n", i);
 			int layoutTypes[FIXNODE_Count]
 			    = { OBJLAYOUT_Pod, OBJLAYOUT_Hole, OBJLAYOUT_Fountain, OBJLAYOUT_VsRedOnyon, OBJLAYOUT_VsBlueOnyon, OBJLAYOUT_VsWhiteOnyon, OBJLAYOUT_VsPurpleOnyon };
 			FixObjNode* rootObjNode  = new FixObjNode(layoutTypes[i]);
@@ -262,7 +261,7 @@ bool RandMapScore::isFixObjSet(MapNode* mapNode, BaseGen* baseGen)
 }
 
 int MapNode::getVersusScore() {
-    return absVal(mVsScore[0]) - absVal(mVsScore[1]);
+    return mVsScore[0] + mVsScore[1];
 }
 
 int MapNode::getVersusScore(int color) {
@@ -403,6 +402,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_Enemy: {
+					OSReport("OBJLAYOUT_Enemy\n");
 					Vector3f birthPos;
 					birthPos.y = 0.0f;
 					node->getBirthPosition(birthPos.x, birthPos.z);
@@ -537,7 +537,6 @@ void RandItemUnit::getItemDropPosition(Vector3f& position, f32 weight, int floor
 
 void RandMapMgr::getItemDropPosition(Vector3f& position, VsWeights minDists, VsWeights maxDists)
 {
-	OSReport("RandMapMgr::getItemDropPosition(Vector3f&, VsWeights, VsWeights)\n");
     VsWeights weight;
     weight[FIRST_SCORE] = minDists[FIRST_SCORE] + randWeightFloat(maxDists[FIRST_SCORE] - minDists[FIRST_SCORE]);
     weight[SECOND_SCORE] = minDists[SECOND_SCORE] + randWeightFloat(maxDists[SECOND_SCORE] - minDists[SECOND_SCORE]);
@@ -546,7 +545,6 @@ void RandMapMgr::getItemDropPosition(Vector3f& position, VsWeights minDists, VsW
 
 void RandItemUnit::getItemDropPosition(Vector3f& position, VsWeights weight, int floorIndex)
 {
-	OSReport("RandItemUnit::getItemDropPosition(Vector3f&, VsWeights, int %i)\n", floorIndex);
 	MapNode* nodes[2];
 	MapNode* dropList[256];
 	MapNode* dropNode;
@@ -559,8 +557,6 @@ void RandItemUnit::getItemDropPosition(Vector3f& position, VsWeights weight, int
 	score[FIRST_SCORE] = ((f32)mMapScore->mVersusHighScore[FIRST_SCORE]) * weight[FIRST_SCORE] + (f32)mMapScore->mVersusLowScore[FIRST_SCORE] * (1 - weight[FIRST_SCORE]);
     score[SECOND_SCORE] = ((f32)mMapScore->mVersusHighScore[SECOND_SCORE]) * weight[SECOND_SCORE] + (f32)mMapScore->mVersusLowScore[SECOND_SCORE] * (1 - weight[SECOND_SCORE]);
 
-	OSReport("Score[0] = %i | mVersusHighScore[0] = %i | mVersusLowScore[0] = %i | weight[0] = %f\n", score[0], mMapScore->mVersusHighScore[0], mMapScore->mVersusLowScore[0], weight[0]);
-	OSReport("Score[1] = %i | mVersusHighScore[1] = %i | mVersusLowScore[1] = %i | weight[1] = %f\n", score[1], mMapScore->mVersusHighScore[1], mMapScore->mVersusLowScore[1], weight[1]);
 
 	if (floorIndex < 0) {
 		int dropIndex = 1280000;
@@ -658,7 +654,6 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode* node, int scores[2])
 
 void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p1, VsWeights p2)
 {
-	OSReport("RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights %f %f, VsWeights %f %f)\n", p1[0], p1[1], p2[0], p2[1]);
     VsWeights avg;
     VsWeights weight;
 	avg[FIRST_SCORE]    = 0.5f * (p1[FIRST_SCORE] + p2[FIRST_SCORE]);
@@ -666,7 +661,6 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 	weight[FIRST_SCORE] = (p2[FIRST_SCORE] - avg[FIRST_SCORE] > 0.0f) ? p2[FIRST_SCORE] - avg[FIRST_SCORE] : -(p2[FIRST_SCORE] - avg[FIRST_SCORE]);
     weight[SECOND_SCORE] = (p2[SECOND_SCORE] - avg[SECOND_SCORE] > 0.0f) ? p2[SECOND_SCORE] - avg[SECOND_SCORE] : -(p2[SECOND_SCORE] - avg[SECOND_SCORE]);
 
-	OSReport("avgs %f %f, weights %f %f\n", avg[0], avg[1], weight[0], weight[1]);
 
 	MapNode* nodeList[16];
 	BaseGen* genList[16];
@@ -692,7 +686,6 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 
 Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, int count, int scores[2], int idx)
 {
-	OSReport("RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen**, int, int[2], int)\n");
 	MapNode* redOnyonNode  = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon);  // r27
 	MapNode* blueOnyonNode = mMapScore->getFixObjNode(FIXNODE_VsBlueOnyon); // r28
     MapNode* whiteOnyonNode  = mMapScore->getFixObjNode(FIXNODE_VsWhiteOnyon);  // r27
@@ -765,7 +758,6 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 
 void RandItemUnit::getItemDropMapNode(MapNode* testNode, MapNode** outNode, int scores[2], int& outScore)
 {
-	OSReport("RandItemUnit::getItemDropMapNode(MapNode*, MapNode**, int[2], int&)\n");
 	bool check   = false;
 	int unitKind = testNode->mUnitInfo->getUnitKind();
 	if (unitKind == UNITKIND_Room) {
@@ -789,7 +781,6 @@ void RandItemUnit::getItemDropMapNode(MapNode* testNode, MapNode** outNode, int 
 	if (check) {
 		int absScore = absVal(testNode->getVersusScore(FIRST_SCORE) - scores[FIRST_SCORE]) 
         + absVal(testNode->getVersusScore(SECOND_SCORE) - scores[SECOND_SCORE]);
-		OSReport("Have abscore of %i\n", absScore);
 		if (absScore < outScore || (absScore == outScore && randWeightFloat(1.0f) < 0.5f)) {
 			*outNode = testNode;
 			outScore = absScore;
@@ -804,6 +795,267 @@ int RandMapScore::getVersusLowScore(int color) {
 int RandMapScore::getVersusHighScore(int color) {
     return mVersusHighScore[color];
 }
+
+void RandEnemyUnit::setEnemySlot()
+{
+	OSReport("RandEnemyUnit::setEnemySlot()\n");
+	if (mTotalCount < mMaxEnemies) {
+		OSReport("RandEnemyUnit::setEnemyTypeC()\n");
+		setEnemyTypeC();
+		OSReport("RandEnemyUnit::setEnemyTypeF()\n");
+		setEnemyTypeF();
+		OSReport("RandEnemyUnit::setEnemyTypeB()\n");
+		setEnemyTypeB();
+		OSReport("RandEnemyUnit::setEnemyTypeA()\n");
+		setEnemyTypeA();
+	}
+}
+
+void RandMapMgr::getStartPosition(Vector3f& position, int idx)
+{
+	if (mGenerator->mIsVersusMode) {
+		switch (idx)
+		{
+		case TEAM_RED:
+			mRandMapScore->getGlobalPosition(FIXNODE_VsRedOnyon, position);
+			break;
+		case TEAM_BLUE:
+			mRandMapScore->getGlobalPosition(FIXNODE_VsBlueOnyon, position);
+		case TEAM_WHITE:
+			mRandMapScore->getGlobalPosition(FIXNODE_VsWhiteOnyon, position);
+		case TEAM_PURPLE:
+			mRandMapScore->getGlobalPosition(FIXNODE_VsWhiteOnyon, position);
+		default:
+			break;
+		}
+	} else {
+		mRandMapScore->getGlobalPosition(FIXNODE_Pod, position);
+	}
+
+	position.y += 50.0f;
+}
+
+struct ColorGen {
+	BaseGen* gen;
+	int color;
+};
+
+void RandEnemyUnit::setVersusEasyEnemy()
+{
+	MapNode* onyonNodes[] = { nullptr, nullptr, nullptr, nullptr };
+	BaseGen* onyonGens[] = { nullptr, nullptr, nullptr, nullptr };
+
+	for (int i = 0; i < 4; i++) {
+		onyonNodes[i] = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
+		onyonGens[i] = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
+	}
+	
+	EnemyTypeID::EEnemyTypeID vsEasyIDs[] = { EnemyTypeID::EnemyID_Pelplant, EnemyTypeID::EnemyID_UjiA };
+
+	int enemyCounts[ARRAY_SIZE(vsEasyIDs)][4] = { {0, 0, 0, 0}, {0, 0, 0, 0} };
+
+	EnemyNode* mainNode = mGenerator->mMainEnemies;
+
+	EnemyUnit* enemyUnits[] = { nullptr, nullptr };
+	
+	for (EnemyNode* currNode = (EnemyNode*)(mainNode->mChild); currNode;) {
+		EnemyUnit* unit = currNode->mEnemyUnit;
+		TekiInfo* currInfo = currNode->getTekiInfo();
+		EnemyNode* nextNode = (EnemyNode*)currNode->mNext;
+
+		if (currInfo) {
+			if (currInfo->mEnemyID == vsEasyIDs[0]) {
+				enemyCounts[0][0] += currInfo->mWeight / 10;
+				enemyUnits[0] = unit;
+				currNode->del();
+				mainNode->addHead(currNode);
+			}
+			else if (currInfo->mEnemyID == vsEasyIDs[1]) {
+				enemyCounts[1][0] += currInfo->mWeight / 10;
+				OSReport("Enemy Count 2 %i\n", enemyCounts[1][0]);
+				enemyUnits[1] = unit;
+				currNode->del();
+				mainNode->addHead(currNode);
+			}
+		}
+		currNode = nextNode;
+	}
+
+	
+	for (int i = 0; i < 2; i++) {
+		OSReport("enemyCounts[%i][0] %i\n", i, enemyCounts[i][0]);
+		if (enemyCounts[i][0] == 0) continue;
+
+
+		for (int j = 3; j >= 0; j--) {
+			enemyCounts[i][j] = enemyCounts[i][0] / 4;
+		}
+		if (enemyUnits[i]) {
+			for (int j = 0; j < 4; j++) {
+				if (enemyCounts[i][j] != 0) {
+					BaseGen* spawnBaseGen = getVersusEasyEnemyBaseGen(onyonNodes[j], onyonGens[j]);
+					if (spawnBaseGen) {
+						makeSetEnemyTypeA(onyonNodes[j], spawnBaseGen, enemyUnits[i], enemyCounts[i][j]);
+					}
+				}
+			}
+
+		}
+	}
+}
+
+void RandEnemyUnit::setSlotEnemyTypeA(int& first, int& second, int third) {
+	int maxGenScore;
+	int maxGenTeam;
+	Vector3f positions[4];
+	for (int i = 0; i < 4; i++) {
+		MapNode* onyonNode = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
+		BaseGen* onyonGen = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
+		if (onyonNode) {
+			positions[i] = onyonNode->getBaseGenGlobalPosition(onyonGen);
+		}
+		if (i == 0 && third == 0) {
+			maxGenScore = onyonNode->getVersusScore();
+			maxGenTeam = -1;
+		}
+		if (i == 1 && third == 1) {
+			maxGenScore = onyonNode->getVersusScore();
+			maxGenTeam = 1;
+		}
+	}
+
+	BaseGen* validGens[128];
+	MapNode* validNodes[128];
+	int scores[128];
+	int currScore = 0;
+	int count = 0;
+
+	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode) {
+		if (currNode->mUnitInfo->getUnitKind() != UNITKIND_Room) continue;
+		BaseGen* firstGen = currNode->mUnitInfo->getBaseGen();
+		if (!firstGen) continue;
+		
+		FOREACH_NODE(BaseGen, firstGen->mChild, currGen) {
+			if (currGen->mSpawnType != BaseGen::TekiA__Easy || isEnemySetGen(currNode, currGen)) continue;
+			bool genLegal = true;
+
+			for (int i = 0; i < 4; i++) {
+				Vector3f genPos = currNode->getBaseGenGlobalPosition(currGen);
+				if (_distanceBetween(positions[i], genPos) < 400.0f) {
+					genLegal = false;
+					break;
+				}
+			}
+
+			if (genLegal) {
+				validGens[count]  = currGen;
+				validNodes[count] = currNode;
+				int score = maxGenTeam * (currNode->getVersusScore() + maxGenScore);
+				if (score < 1) {
+					score = 1;
+				}
+				currScore += score;
+				scores[count] = score;
+				count++;
+			}
+		}
+
+		
+	}
+
+	mMapTile = nullptr;
+	mSpawn   = nullptr;
+	if (count == 0) return;
+
+	int randScore = randFloat() * currScore;
+	int newCurrScore = 0;
+	for (int i = 0; i < count; i++) {
+		newCurrScore += scores[i];
+		if (newCurrScore > randScore) {
+			mMapTile = validNodes[i];
+			mSpawn   = validGens[i];
+			first = validGens[i]->mMaximum;
+			second = validGens[i]->mMinimum;
+			return;
+		}
+	}
+}
+
+void RandEnemyUnit::setSlotEnemyTypeB(int third) {
+	int maxGenScore;
+	int maxGenTeam;
+	Vector3f positions[4];
+	for (int i = 0; i < 4; i++) {
+		MapNode* onyonNode = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
+		BaseGen* onyonGen = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
+		if (onyonNode) {
+			positions[i] = onyonNode->getBaseGenGlobalPosition(onyonGen);
+		}
+		if (i == 0 && third == 0) {
+			maxGenScore = onyonNode->getVersusScore();
+			maxGenTeam = -1;
+		}
+		if (i == 1 && third == 1) {
+			maxGenScore = onyonNode->getVersusScore();
+			maxGenTeam = 1;
+		}
+	}
+
+	BaseGen* validGens[128];
+	MapNode* validNodes[128];
+	int scores[128];
+	int currScore = 0;
+	int count = 0;
+
+	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode) {
+		if (currNode->mUnitInfo->getUnitKind() != UNITKIND_Room) continue;
+		BaseGen* firstGen = currNode->mUnitInfo->getBaseGen();
+		if (!firstGen) continue;
+		
+		FOREACH_NODE(BaseGen, firstGen->mChild, currGen) {
+			if (currGen->mSpawnType != BaseGen::TekiB__Hard || isEnemySetGen(currNode, currGen)) continue;
+			bool genLegal = true;
+
+			for (int i = 0; i < 4; i++) {
+				Vector3f genPos = currNode->getBaseGenGlobalPosition(currGen);
+				if (_distanceBetween(positions[i], genPos) < 400.0f) {
+					genLegal = false;
+					break;
+				}
+			}
+
+			if (genLegal) {
+				validGens[count]  = currGen;
+				validNodes[count] = currNode;
+				int score = maxGenTeam * (currNode->getVersusScore() + maxGenScore);
+				if (score < 1) {
+					score = 1;
+				}
+				currScore += score;
+				scores[count] = score;
+				count++;
+			}
+		}
+
+		
+	}
+
+	mMapTile = nullptr;
+	mSpawn   = nullptr;
+	if (count == 0) return;
+
+	int randScore = randFloat() * currScore;
+	int newCurrScore = 0;
+	for (int i = 0; i < count; i++) {
+		newCurrScore += scores[i];
+		if (newCurrScore > randScore) {
+			mMapTile = validNodes[i];
+			mSpawn   = validGens[i];
+			return;
+		}
+	}
+}
+
 
 } // namespace Cave
 

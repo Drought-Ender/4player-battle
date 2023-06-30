@@ -9178,18 +9178,6 @@ doDirectDraw__Q24Game10RoomMapMgrFR8Graphics:
 /* 801BE680 001BB5C0  38 21 00 20 */	addi r1, r1, 0x20
 /* 801BE684 001BB5C4  4E 80 00 20 */	blr 
 
-.global "getStartPosition__Q24Game10RoomMapMgrFR10Vector3<f>i"
-"getStartPosition__Q24Game10RoomMapMgrFR10Vector3<f>i":
-/* 801BE688 001BB5C8  1C 05 00 0C */	mulli r0, r5, 0xc
-/* 801BE68C 001BB5CC  7C 63 02 14 */	add r3, r3, r0
-/* 801BE690 001BB5D0  C0 03 00 FC */	lfs f0, 0xfc(r3)
-/* 801BE694 001BB5D4  D0 04 00 00 */	stfs f0, 0(r4)
-/* 801BE698 001BB5D8  C0 03 01 00 */	lfs f0, 0x100(r3)
-/* 801BE69C 001BB5DC  D0 04 00 04 */	stfs f0, 4(r4)
-/* 801BE6A0 001BB5E0  C0 03 01 04 */	lfs f0, 0x104(r3)
-/* 801BE6A4 001BB5E4  D0 04 00 08 */	stfs f0, 8(r4)
-/* 801BE6A8 001BB5E8  4E 80 00 20 */	blr 
-
 .global getDemoMatrix__Q24Game10RoomMapMgrFv
 getDemoMatrix__Q24Game10RoomMapMgrFv:
 /* 801BE6AC 001BB5EC  38 60 00 00 */	li r3, 0

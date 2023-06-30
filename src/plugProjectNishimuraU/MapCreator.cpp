@@ -33,6 +33,12 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	}
 }
 
+void RoomMapMgr::getStartPosition(Vector3f& pos, int idx) {
+	OSReport("RoomMapMgr::getStartPosition(Vector3f&, int)\n");
+	P2ASSERT(mStartPositions);
+	pos = mStartPositions[idx];
+}
+
 /*
  * --INFO--
  * Address:	8024C6D4
@@ -48,15 +54,20 @@ void RoomMapMgr::nishimuraPlaceRooms()
 		float centreX;
 		float centreY;
 		int direction;
-
+		OSReport("RandMapMgr::getRoomData(int, f32&, f32&, int&)\n");
 		char* unitName         = Cave::randMapMgr->getRoomData(index, centreX, centreY, direction); // sets centreX, centreY, and direction
+		OSReport("RandMapMgr::makeRoomLink(int)\n");
 		RoomLink* pRoomLink    = Cave::randMapMgr->makeRoomLink(index);
+		OSReport("RandMapMgr::makeObjectLayoutInfo(int)\n");
 		ObjectLayoutInfo* pOLI = Cave::randMapMgr->makeObjectLayoutInfo(index);
 
+		OSReport("RoomMapMgr::makeRoom(char*, f32, f32, int, int, RoomLink*, ObjectLayoutInfo*)\n");
 		makeRoom(unitName, centreX, centreY, direction, index, pRoomLink, pOLI);
 	}
 
-	for (int i = 0; i < 2; i++) {
+	mStartPositions = new Vector3f[4];
+
+	for (int i = 0; i < 4; i++) {
 		Vector3f startPos(0.0f, 0.0f, 0.0f);
 		Cave::randMapMgr->getStartPosition(startPos, i);
 
@@ -64,6 +75,7 @@ void RoomMapMgr::nishimuraPlaceRooms()
 		mStartPositions[i].y = startPos.y;
 		mStartPositions[i].z = startPos.z;
 	}
+	OSReport("Done\n");
 }
 
 /*

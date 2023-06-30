@@ -422,46 +422,6 @@
 /* 80244A2C 0024196C  4E 80 00 20 */	blr 
 .endfn makeRoomLink__Q34Game4Cave10RandMapMgrFi
 
-.fn "getStartPosition__Q34Game4Cave10RandMapMgrFR10Vector3<f>i", global
-/* 80244AB4 002419F4  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 80244AB8 002419F8  7C 08 02 A6 */	mflr r0
-/* 80244ABC 002419FC  90 01 00 14 */	stw r0, 0x14(r1)
-/* 80244AC0 00241A00  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 80244AC4 00241A04  7C 9F 23 78 */	mr r31, r4
-/* 80244AC8 00241A08  80 83 00 18 */	lwz r4, 0x18(r3)
-/* 80244ACC 00241A0C  88 04 00 02 */	lbz r0, 2(r4)
-/* 80244AD0 00241A10  28 00 00 00 */	cmplwi r0, 0
-/* 80244AD4 00241A14  41 82 00 34 */	beq .L_80244B08
-/* 80244AD8 00241A18  2C 05 00 00 */	cmpwi r5, 0
-/* 80244ADC 00241A1C  40 82 00 18 */	bne .L_80244AF4
-/* 80244AE0 00241A20  80 63 00 34 */	lwz r3, 0x34(r3)
-/* 80244AE4 00241A24  7F E5 FB 78 */	mr r5, r31
-/* 80244AE8 00241A28  38 80 00 03 */	li r4, 3
-/* 80244AEC 00241A2C  48 00 80 DD */	bl "getGlobalPosition__Q34Game4Cave12RandMapScoreFiR10Vector3<f>"
-/* 80244AF0 00241A30  48 00 00 28 */	b .L_80244B18
-.L_80244AF4:
-/* 80244AF4 00241A34  80 63 00 34 */	lwz r3, 0x34(r3)
-/* 80244AF8 00241A38  7F E5 FB 78 */	mr r5, r31
-/* 80244AFC 00241A3C  38 80 00 04 */	li r4, 4
-/* 80244B00 00241A40  48 00 80 C9 */	bl "getGlobalPosition__Q34Game4Cave12RandMapScoreFiR10Vector3<f>"
-/* 80244B04 00241A44  48 00 00 14 */	b .L_80244B18
-.L_80244B08:
-/* 80244B08 00241A48  80 63 00 34 */	lwz r3, 0x34(r3)
-/* 80244B0C 00241A4C  7F E5 FB 78 */	mr r5, r31
-/* 80244B10 00241A50  38 80 00 00 */	li r4, 0
-/* 80244B14 00241A54  48 00 80 B5 */	bl "getGlobalPosition__Q34Game4Cave12RandMapScoreFiR10Vector3<f>"
-.L_80244B18:
-/* 80244B18 00241A58  C0 3F 00 04 */	lfs f1, 4(r31)
-/* 80244B1C 00241A5C  C0 02 C3 C8 */	lfs f0, lbl_8051A728@sda21(r2)
-/* 80244B20 00241A60  EC 01 00 2A */	fadds f0, f1, f0
-/* 80244B24 00241A64  D0 1F 00 04 */	stfs f0, 4(r31)
-/* 80244B28 00241A68  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 80244B2C 00241A6C  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 80244B30 00241A70  7C 08 03 A6 */	mtlr r0
-/* 80244B34 00241A74  38 21 00 10 */	addi r1, r1, 0x10
-/* 80244B38 00241A78  4E 80 00 20 */	blr 
-.endfn "getStartPosition__Q34Game4Cave10RandMapMgrFR10Vector3<f>i"
-
 .fn "getItemDropPosition__Q34Game4Cave10RandMapMgrFR10Vector3<f>ff", global
 /* 80244B3C 00241A7C  94 21 FF C0 */	stwu r1, -0x40(r1)
 /* 80244B40 00241A80  7C 08 02 A6 */	mflr r0

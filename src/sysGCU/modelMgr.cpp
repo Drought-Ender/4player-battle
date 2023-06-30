@@ -105,7 +105,7 @@ int ModelMgr::calcMaximumModelSize()
 	int maxsize = maximum + 0x7C;
 	if (maxsize == 5720) {
 		if (gPikiActive) {
-			return 2500;
+			return 2350;
 		}
 		return 1952;
 	}
