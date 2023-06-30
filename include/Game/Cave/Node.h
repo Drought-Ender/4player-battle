@@ -262,14 +262,16 @@ struct MapNode : public CNode {
 	int getGateScore(int);
 	void setEnemyScore();
 	void setNodeScore(int);
+	void copyNodeScoreToVersusScore(int color);
 	void copyNodeScoreToVersusScore();
-	void subNodeScoreToVersusScore();
+	void subNodeScoreToVersusScore(int color);
 	void draw(f32, f32, f32);
 	int getNodeOffsetX();
 	int getNodeOffsetY();
 	int getEnemyScore();
 	int getNodeScore();
 	int getVersusScore();
+	int getVersusScore(int color);
 	char* getUnitName();
 	void getNodeCentreOffset(f32&, f32&);
 	int getDirection();
@@ -294,7 +296,7 @@ struct MapNode : public CNode {
 	int mYGridOffset;        // _30
 	int mEnemyScore;         // _34
 	int mNodeScore;          // _38
-	int mVsScore;            // _3C
+	s16 mVsScore[2];         // _3C
 };
 
 /**

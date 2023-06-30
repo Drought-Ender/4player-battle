@@ -959,11 +959,6 @@
 /* 802439B8 002408F8  4E 80 00 20 */	blr 
 .endfn getNodeScore__Q34Game4Cave7MapNodeFv
 
-.fn getVersusScore__Q34Game4Cave7MapNodeFv, global
-/* 802439BC 002408FC  80 63 00 3C */	lwz r3, 0x3c(r3)
-/* 802439C0 00240900  4E 80 00 20 */	blr 
-.endfn getVersusScore__Q34Game4Cave7MapNodeFv
-
 .fn getUnitName__Q34Game4Cave7MapNodeFv, global
 /* 802439C4 00240904  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 802439C8 00240908  7C 08 02 A6 */	mflr r0

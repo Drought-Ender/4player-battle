@@ -10,6 +10,8 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/pelletBounceBury.o\
 	$(BUILD_DIR)/src/FourPlayer/PikiModifier.o\
 	$(BUILD_DIR)/src/FourPlayer/PelletModifier.o\
+	$(BUILD_DIR)/src/FourPlayer/CaveScoreHell.o\
+
 
 
 

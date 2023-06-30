@@ -127,9 +127,12 @@ struct RandItemUnit {
 	int getItemSlotNum(MapNode*);
 	bool isItemSetHard();
 	void getItemDropMapNode(MapNode*, MapNode**, int, int&);
+	void getItemDropMapNode(MapNode*, MapNode**, int[2], int&);
 	Vector3f getItemBaseGenPosition(MapNode*, int);
+	Vector3f getItemBaseGenPosition(MapNode*, int[2]);
 	void getItemDropList(MapNode*, MapNode**, BaseGen**, int&);
 	Vector3f getItemBaseGenPosition(MapNode**, BaseGen**, int, int, int);
+	Vector3f getItemBaseGenPosition(MapNode**, BaseGen**, int, int[2], int);
 	void getItemDropSortingList(MapNode**, BaseGen**, int*, int);
 
 	int mItemCount;               // _00
@@ -180,10 +183,12 @@ struct RandMapMgr : public CNode {
 	void getStartPosition(Vector3f&, int);
 	void getItemDropPosition(Vector3f&, f32, f32);
 
-	void getItemDropPosition(Vector3f&, f32*, f32*);
+	void getItemDropPosition(Vector3f&, VsWeights, VsWeights);
 
 	void getItemDropPosition(Vector3f*, int, f32, f32);
-	void getItemDropPosition(Vector3f*, int, f32*, f32*);
+
+	void getItemDropPosition(Vector3f*, int, VsWeights, VsWeights);
+
 	void setUnitTexture(int, JUTTexture*);
 	void setCaptureOn();
 	void captureRadarMap(Graphics&);
@@ -231,8 +236,8 @@ struct RandMapScore {
 	MapNode* getFixObjNode(int);
 	BaseGen* getFixObjGen(int);
 	void getGlobalPosition(int, Vector3f&);
-	int getVersusHighScore();
-	int getVersusLowScore();
+	int getVersusHighScore(int);
+	int getVersusLowScore(int);
 	bool isScoreSetDone();
 	void clearRoomAndDoorScore();
 	void setUnitAndDoorScore();
@@ -242,8 +247,8 @@ struct RandMapScore {
 	MapNode* getMaxScoreRoomMapNode(MapNode*, BaseGen**);
 	MapNode* getMaxScoreRoomMapNode(int count, MapNode** mapNode, BaseGen** maxScoreGen);
 	void calcNodeScore(MapNode*);
-	void copyNodeScore();
-	void subNodeScore();
+	void copyNodeScore(int color);
+	void subNodeScore(int color);
 	void setMapNodeScore(MapNode*, int);
 	void setChallengeFixObjNormal();
 	void setChallengeFixObjHard();
@@ -254,10 +259,8 @@ struct RandMapScore {
 	MapUnitGenerator* mGenerator; // _00
 	MapNode** mFixObjNodes;       // _04, array of 5 map nodes, see FixObjNodeTypes enum
 	BaseGen** mFixObjGens;        // _08, array of 5 gens, see FixObjNodeTypes enum
-	u32 mVersusRedScore;         // _0C
-	u32 mVersusBlueScore;          // _10
-	u32 mVersusWhiteScore;
-	u32 mVersusPurpleScore;
+	int mVersusHighScore[2];         // _0C
+	int mVersusLowScore[2];
 };
 
 // instantiated in Nishimura/MapCreator.cpp
