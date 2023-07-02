@@ -30,26 +30,6 @@ namespace Game
 int gVsNaviIndexArray[4] = { Red, Blue, Blue, Red };
 int gDopeCountArray[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} };
 
-void SetVsTeam(int idx, TeamID teamID) {
-    EPikiKind pikiColor = (EPikiKind)teamID;
-    switch (teamID)
-    {
-    case TEAM_RED:
-        pikiColor = Red;
-        break;
-    case TEAM_BLUE:
-        pikiColor = Blue;
-        break;
-	case TEAM_WHITE:
-		pikiColor = White;
-		break;
-	case TEAM_PURPLE:
-		pikiColor = Purple;
-		break;
-    }
-    gVsNaviIndexArray[idx] = pikiColor;
-}
-
 int Navi::getVsPikiColor() {
     return gVsNaviIndexArray[mNaviIndex];
 }

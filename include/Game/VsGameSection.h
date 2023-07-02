@@ -150,6 +150,7 @@ struct VsGameSection : public BaseGameSection {
 	Pellet** mCherryArray;                         // _3D0
 	int mDispMarbleCounts[4];                      // _3D4
 	int mRealMarbleCounts[4];                      // _3DC
+	int mGetDopeCount[4][2];
 };
 
 //const static int vsGameSize = sizeof(VsGameSection);

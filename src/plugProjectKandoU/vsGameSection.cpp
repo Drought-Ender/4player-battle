@@ -935,7 +935,6 @@ bool GameMessageVsGetOtakara::actVs(VsGameSection* section)
  */
 bool GameMessageVsAddEnemy::actVs(VsGameSection* section)
 {
-	return false;
 	section->mTekiMgr->entry(_04, _08);
 	return true;
 }
@@ -1598,8 +1597,8 @@ void VsGameSection::calcVsScores()
 void VsGameSection::clearGetDopeCount()
 {
 	for (int i = 0; i < 4; i++) {
-		gDopeCountArray[i][0] = 0;
-		gDopeCountArray[i][1] = 0;
+		mGetDopeCount[i][0] = 0;
+		mGetDopeCount[i][1] = 0;
 	}
 }
 
@@ -1612,7 +1611,7 @@ int& VsGameSection::getGetDopeCount(int player, int type)
 {
 	JUTASSERTBOUNDSINCLUSIVELINE(2567, 0, player, 3, "%d playerID\n");
 	JUTASSERTBOUNDSINCLUSIVELINE(2568, 0, type, 3, "%d typeID\n");
-	return gDopeCountArray[player][type];
+	return mGetDopeCount[player][type];
 }
 
 /*

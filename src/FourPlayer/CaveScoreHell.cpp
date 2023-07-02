@@ -1056,6 +1056,82 @@ void RandEnemyUnit::setSlotEnemyTypeB(int third) {
 	}
 }
 
+void RandEnemyUnit::setSlotEnemyTypeF(int third) {
+	int maxGenScore;
+	int maxGenTeam;
+	Vector3f positions[4];
+	for (int i = 0; i < 4; i++) {
+		MapNode* onyonNode = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
+		BaseGen* onyonGen = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
+		if (onyonNode) {
+			positions[i] = onyonNode->getBaseGenGlobalPosition(onyonGen);
+		}
+		if (i == 0 && third == 0) {
+			maxGenScore = onyonNode->getVersusScore();
+			maxGenTeam = -1;
+		}
+		if (i == 1 && third == 1) {
+			maxGenScore = onyonNode->getVersusScore();
+			maxGenTeam = 1;
+		}
+	}
+
+	BaseGen* validGens[128];
+	MapNode* validNodes[128];
+	int scores[128];
+	int currScore = 0;
+	int count = 0;
+
+	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode) {
+		if (currNode->mUnitInfo->getUnitKind() != UNITKIND_Room) continue;
+		BaseGen* firstGen = currNode->mUnitInfo->getBaseGen();
+		if (!firstGen) continue;
+		
+		FOREACH_NODE(BaseGen, firstGen->mChild, currGen) {
+			if (currGen->mSpawnType != BaseGen::TekiF__Special || isEnemySetGen(currNode, currGen)) continue;
+			bool genLegal = true;
+
+			for (int i = 0; i < 4; i++) {
+				Vector3f genPos = currNode->getBaseGenGlobalPosition(currGen);
+				if (_distanceBetween(positions[i], genPos) < 400.0f) {
+					genLegal = false;
+					break;
+				}
+			}
+
+			if (genLegal) {
+				validGens[count]  = currGen;
+				validNodes[count] = currNode;
+				int score = maxGenTeam * (currNode->getVersusScore() + maxGenScore);
+				if (score < 1) {
+					score = 1;
+				}
+				currScore += score;
+				scores[count] = score;
+				count++;
+			}
+		}
+
+		
+	}
+
+	mMapTile = nullptr;
+	mSpawn   = nullptr;
+	if (count == 0) return;
+
+	int randScore = randFloat() * currScore;
+	int newCurrScore = 0;
+	for (int i = 0; i < count; i++) {
+		newCurrScore += scores[i];
+		if (newCurrScore > randScore) {
+			mMapTile = validNodes[i];
+			mSpawn   = validGens[i];
+			return;
+		}
+	}
+}
+
+
 
 } // namespace Cave
 

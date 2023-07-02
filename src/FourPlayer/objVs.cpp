@@ -5,6 +5,10 @@
 #include "efx2d/T2DSensor.h"
 #include "FourPlayer.h"
 #include "JSystem/JUtility/JUTTexture.h"
+#include "Game/Navi.h"
+#include "CherryTarget.h"
+#include "Game/VsGameSection.h"
+#include "Game/VsGame.h"
 
 namespace og
 {
@@ -102,6 +106,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     P2DScreen::Mgr_tuning* scrn3 = mScreenP3->mScreen;
     P2DScreen::Mgr_tuning* scrn4 = mScreenP4->mScreen;
 
+	J2DPictureEx* olimarPicture = static_cast<J2DPictureEx*>(mScreenP1->mScreen->search('navi'));
 	J2DPictureEx* louiePicture = static_cast<J2DPictureEx*>(mScreenP2->mScreen->search('navi'));
 	J2DPictureEx* presidentPicture = static_cast<J2DPictureEx*>(mScreenP3->mScreen->search('navi'));
 	J2DPictureEx* wifePicture = static_cast<J2DPictureEx*>(mScreenP4->mScreen->search('navi'));
@@ -216,6 +221,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 
 	mScreenIcons = new P2DScreen::Mgr_tuning;
 	mScreenIcons->set("obake_icon.blo", 0x1040000, arc);
+	
 
 	J2DPictureEx* paneObake = static_cast<J2DPictureEx*>(mScreenIcons->search('obake'));
 	mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
@@ -226,6 +232,35 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	mPaneObake2P->setAlpha(mAlphaObakeP2 * 255.0f);
     mPaneObake3P->setAlpha(mAlphaObakeP1 * 255.0f);
 	mPaneObake4P->setAlpha(mAlphaObakeP2 * 255.0f);
+
+
+	mScreenStickIcons = new P2DScreen::Mgr_tuning;
+	mScreenStickIcons->set("cherry_target.blo", 0x1040000, arc);
+	J2DPictureEx* paneOutStick = static_cast<J2DPictureEx*>(mScreenStickIcons->search('CtrlBubl'));
+	J2DPictureEx* paneCtick    = static_cast<J2DPictureEx*>(mScreenStickIcons->search('CStick'));
+	JUT_ASSERT(paneOutStick, "ctrlbubl missing\n");
+	JUT_ASSERT(paneCtick, "cstick missing\n");
+
+	Vector2f positions[4] = { Vector2f(-15.0f, -15.0f), Vector2f(15.0f, -15.0f), Vector2f(-15.0f, 15.0f), Vector2f(15.0f, 15.0f) };
+
+	J2DPane* roots[4] = { root, root2, root3, root4 };
+	J2DPictureEx* naviIcons[4] = { olimarPicture, louiePicture, presidentPicture, wifePicture };
+
+	for (int i = 0; i < 4; i++) {
+		mOutCircle[i] = og::Screen::CopyPictureToPane(paneOutStick, roots[i], msVal.mRouletteXOffs + 125.0f, msVal.mRouletteP1YOffs + 150.0f, 'CtrlBb00' + i);
+		mCStick[i]    = og::Screen::CopyPictureToPane(paneCtick, roots[i], msVal.mRouletteXOffs + 125.0f, msVal.mRouletteP1YOffs + 150.0f, 'CStick00' + i);
+		mCStickBasePos[i] = Vector2f(mCStick[i]->mOffset.x, mCStick[i]->mOffset.y);
+		for (int j = 0; j < 4; j++) {
+			mExtraIcons[i][j] = og::Screen::CopyPictureToPane(naviIcons[j], roots[i], 
+			msVal.mRouletteXOffs + 125.0f + positions[j].x, 
+			msVal.mRouletteP1YOffs + 150.0f + positions[j].y, 
+			'NaviIcn0' + i * 4 + j
+			);
+			mExtraIcons[i][j]->updateScale(0.5f);
+			mExtraIcons[i][j]->setAlpha(127);
+		}
+	}
+
     // for (int i = 0; i < 4; i++) {
     //     setWinBedamaColor(i, mDisp->mWinMarbleColors[i]);
     // }
@@ -263,10 +298,37 @@ bool FourObjVs::checkUpdateWinColor() {
     return updated;
 }
 
+void FourObjVs::updateCSticks() {
+	for (int i = 0; i < 4; i++) {
+		Game::Navi* navi = Game::naviMgr->getAt(i);
+		if (navi && navi->isAlive() && navi->mController1) {
+			Vector2f pos = CherryTarget::GetXY(navi->mController1) * 10.0f;
+			Vector2f netPos = pos + mCStickBasePos[i];
+			mCStick[i]->setOffset(netPos.x, netPos.y);
+		}
+
+		if (static_cast<Game::VsGameSection*>(Game::gameSystem->mSection)->mCardMgr->getSlotMachine(i)->dispCherryTarget()) {
+			mCStick[i]->show();
+			mOutCircle[i]->show();
+			for (int j = 0; j < 4; j++) {
+				mExtraIcons[i][j]->show();
+			}
+		}
+		else {
+			mCStick[i]->hide();
+			mOutCircle[i]->hide();
+			for (int j = 0; j < 4; j++) {
+				mExtraIcons[i][j]->hide();
+			}
+		}
+	}
+}
+
 void FourObjVs::doUpdateCommon() {
     checkUpdateWinColor();
     setOnOffBdama4P(!mSetBedamaFlag);
     checkObake();
+	updateCSticks();
 	if (mDoneState == 1) {
 		if (mFinishTimer <= 0.0f)
 			mDoneState = 2;

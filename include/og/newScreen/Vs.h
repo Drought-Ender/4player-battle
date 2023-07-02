@@ -201,6 +201,12 @@ struct FourObjVs : public ObjVs {
 
 	J2DPictureEx* mColoredBedamaPanes[4];
 
+	P2DScreen::Mgr_tuning* mScreenStickIcons;
+	J2DPictureEx* mCStick[4];
+	Vector2f mCStickBasePos[4];
+	J2DPictureEx* mOutCircle[4];
+	J2DPictureEx* mExtraIcons[4][4];
+
 
 	J2DPictureEx* mPaneObake3P;
 	J2DPictureEx* mPaneObake4P;
@@ -215,6 +221,7 @@ struct FourObjVs : public ObjVs {
 
 	void doUpdateCommon();
 	void setOnOffBdama4P(bool doEfx);
+	void updateCSticks();
 	void checkObake();
 	void recolorPane(P2DScreen::Mgr_tuning*, JUtility::TColor&);
 };

@@ -123,6 +123,8 @@ struct CardMgr {
 		void updateZoomIn();
 		void updateZoomUse();
 
+		bool dispCherryTarget();
+
 		bool equalTo(int);
 		bool goodPlace();
 
@@ -187,6 +189,8 @@ struct CardMgr {
 	void gotPlayerCard(int);
 	void initDraw();
 	void drawSlot(Graphics&, Vector3f&, SlotMachine&);
+
+	SlotMachine* getSlotMachine(int i);
 
 	Vector3f getSlotOrigin(int);
 	Vector2f getLampPos(int, int);

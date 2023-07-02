@@ -19,6 +19,7 @@
 #include "Game/Stickers.h"
 #include "Game/pelletMgr.h"
 #include "Game/GameConfig.h"
+#include "CherryTarget.h"
 #include "nans.h"
 
 namespace Game
@@ -68,19 +69,40 @@ void VsGame::CardMgr::update()
 	}
 }
 
-void VsGame::CardMgr::stopSlot(int idx) {
+void CardMgr::stopSlot(int idx) {
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 	machines[idx]->startStop(); 
 }
 
+CardMgr::SlotMachine* CardMgr::getSlotMachine(int idx) {
+	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
+	return machines[idx];
+}
 
-bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
+bool CardMgr::SlotMachine::dispCherryTarget() {
+	switch (mSlotID)
+	{
+	case TEKI_HANACHIRASHI:
+	case TEKI_SARAI:
+	case TEKI_BOMBOTAKRA:
+	case TEKI_ROCK:
+	case TEKI_TANK:
+		return true;
+	default:
+		return false;
+	};
+}
+
+bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 {
 	tekiMgr    = mTekiMgr;
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 	int slotID = machines[user]->mSlotID;
 
 	bool used = true;
+
+	int target = CherryTarget::GetTarget(naviMgr->getAt(gUseCardNavi)->mController2);
+	OSReport("Target is %i\n", target);
 
 	if (machines[user]->_18) {
 		return false;
@@ -189,7 +211,7 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 		break;
 	}
 	case RESET_BEDAMA: {
-		int color      = 1 - user;
+		int color      = getPikiFromTeam(user);
 		Onyon* onyon   = ItemOnyon::mgr->getOnyon(color);
 		Pellet* bedama = nullptr;
 		PelletIterator IPellet;
@@ -230,8 +252,13 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 	}
 	case TEKI_HANACHIRASHI:
 	case TEKI_SARAI: {
+		if (target == -1) {
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
+			used = false;
+			break;
+		}
 		int tekiID   = slotID - 7;
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(user);
+		Onyon* onyon = ItemOnyon::mgr->getOnyon(getVsPikiColor(target));
 		Vector3f onyonPos;
 		if (onyon) {
 			onyonPos = onyon->getPosition();
@@ -251,6 +278,11 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 	}
 	case TEKI_ROCK:
 	case TEKI_BOMBOTAKRA: {
+		if (target == -1) {
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
+			used = false;
+			break;
+		}
 
 		float radiusVariance = 150.0f;
 		float enemyHeight    = 0.0f;
@@ -264,34 +296,38 @@ bool CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 		}
 
 		int tekiID = slotID - 7;
-		for (int i = 0; i < 4; i++) {
-			if (getVsTeam(i) == user) continue;
 
-			Navi* navi = naviMgr->getAt(i);
-			for (int i = 0; i < num; i++) {
-				Vector3f spawnNaviPos;
-				if (navi) {
-					spawnNaviPos = navi->getPosition();
 
-					float faceDir = navi->getFaceDir();
-					float radius  = randFloat() * radiusVariance;
+		Navi* navi = naviMgr->getAt(target);
+		for (int i = 0; i < num; i++) {
+			Vector3f spawnNaviPos;
+			if (navi) {
+				spawnNaviPos = navi->getPosition();
 
-					float angle  = randFloat() * TAU;
-					float height = enemyHeight;
+				float faceDir = navi->getFaceDir();
+				float radius  = randFloat() * radiusVariance;
 
-					Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
+				float angle  = randFloat() * TAU;
+				float height = enemyHeight;
 
-					spawnNaviPos += spawnOffset;
-				}
-				tekiMgr->birth(tekiID, spawnNaviPos, true);
+				Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
+
+				spawnNaviPos += spawnOffset;
 			}
+			tekiMgr->birth(tekiID, spawnNaviPos, true);
 		}
+		
 		break;
 	}
 	case TEKI_TANK: {
+		if (target == -1) {
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
+			used = false;
+			break;
+		}
 		u32 TekiID = (!user) ? 4 : 5;
 
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(user);
+		Onyon* onyon = ItemOnyon::mgr->getOnyon(getVsPikiColor(target));
 		Vector3f onyonPos;
 		if (onyon) {
 

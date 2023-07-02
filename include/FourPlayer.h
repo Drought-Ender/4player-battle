@@ -130,7 +130,25 @@ extern Controller* gControllerP4;
 int CalcNaviNum();
 int getVsTeam(int);
 int getVsPikiColor(int); // Gets the piki color of an index
-void SetVsTeam(int idx, TeamID team);
+void SetVsTeam(int idx, TeamID teamID) {
+    int pikiColor = (int)teamID;
+    switch (teamID)
+    {
+    case TEAM_RED:
+        pikiColor = PIKI_COLOR_RED;
+        break;
+    case TEAM_BLUE:
+        pikiColor = PIKI_COLOR_BLUE;
+        break;
+	case TEAM_WHITE:
+		pikiColor = PIKI_COLOR_WHITE;
+		break;
+	case TEAM_PURPLE:
+		pikiColor = PIKI_COLOR_PURPLE;
+		break;
+    }
+    gVsNaviIndexArray[idx] = pikiColor;
+}
 
 
 /// @brief takes in a piki color and converts it to the corrisponding team
