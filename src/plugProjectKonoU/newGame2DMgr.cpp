@@ -813,10 +813,11 @@ void Game2DMgr::close_GameOver()
 {
 	switch (mScreenMgr->getSceneType()) {
 	case SCENE_GAME_OVER_GENERAL:
-	case SCENE_PIKMIN_DOWN: {
+	 {
 		mScreenMgr->endScene(nullptr);
 		break;
 	}
+	case SCENE_PIKMIN_DOWN:
 	case SCENE_ORIMA_DOWN:
 	case SCENE_LUJI_DOWN:
 	case SCENE_PRESIDENT_DOWN: {

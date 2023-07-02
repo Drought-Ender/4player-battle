@@ -336,6 +336,12 @@ struct GameState : public State {
 	void open_GameChallenge(VsGameSection*, int);
 	void update_GameChallenge(VsGameSection*);
 
+	void checkVsPikminZero(VsGameSection*);
+	void setDeathLose();
+
+	bool isWinExtinction();
+	void onOrimaDownDone(int idx);
+
 	inline void updateNavi(VsGameSection* section, int naviIndex)
 	{
 		if (section->mGhostIconTimers[naviIndex] > 0.0f) {
@@ -437,6 +443,7 @@ struct GameState : public State {
 	BitFlag<u8> mLoseCauses[4]; // _25
 	int mWinColors[4];
 	int mNaviStatus[4];
+	int mExtinctions[4];
 };
 
 struct VSState : public GameState {

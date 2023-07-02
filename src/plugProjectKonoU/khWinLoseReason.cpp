@@ -71,75 +71,45 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 	}
 
 	DispWinLoseReason* disp = static_cast<DispWinLoseReason*>(mDispMember);
-	mOutcome[0]             = disp->mOutcomeRed;
-	switch (disp->mOutcomeRed) {
-	case 1: // captain down
-	{
-		mScreenObj[0] = new Morimura::TOrimaDown2D;
-		registObj(mScreenObj[0], arc);
-		Morimura::TOrimaDown2D* screen = static_cast<Morimura::TOrimaDown2D*>(mScreenObj[0]);
-		P2ASSERTLINE(149, screen);
-		screen->mGameOverScreen->setPosY(ObjWinLoseReason::msVal.mYOffsetP1);
-		screen->mType      = 1;
-		screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
-		break;
-	}
-	case 2: // piki extinct
-	{
-		mScreenObj[0] = new Morimura::TPikminDown2D;
-		registObj(mScreenObj[0], arc);
-		Morimura::TPikminDown2D* screen = static_cast<Morimura::TPikminDown2D*>(mScreenObj[0]);
-		P2ASSERTLINE(159, screen);
-		screen->mGameOverScreen->setPosY(ObjWinLoseReason::msVal.mYOffsetP1);
-		screen->mType      = 1;
-		screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
-		break;
-	}
-	case 3: {
-		mScreenObj[0] = new ObjWinLoseReason(0);
-		registObj(mScreenObj[0], arc);
-		mDone[0] = true;
-		break;
-	}
-	default:
-		mDone[0] = 1;
-		break;
-	}
-
-	mOutcome[1] = disp->mOutcomeBlue;
-	switch (disp->mOutcomeBlue) {
-	case 1: // captain down
-	{
-		mScreenObj[1] = new Morimura::TLujiDown2D;
-		registObj(mScreenObj[1], arc);
-		Morimura::TOrimaDown2D* screen = static_cast<Morimura::TOrimaDown2D*>(mScreenObj[1]);
-		P2ASSERTLINE(180, screen);
-		screen->mGameOverScreen->setPosY(ObjWinLoseReason::msVal.mYOffsetP2);
-		screen->mType      = 2;
-		screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
-		break;
-	}
-	case 2: // piki extinct
-	{
-		mScreenObj[1] = new Morimura::TPikminDown2D;
-		registObj(mScreenObj[1], arc);
-		Morimura::TPikminDown2D* screen = static_cast<Morimura::TPikminDown2D*>(mScreenObj[1]);
-		P2ASSERTLINE(190, screen);
-		screen->mGameOverScreen->setPosY(ObjWinLoseReason::msVal.mYOffsetP2);
-		screen->mType      = 2;
-		screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
-		break;
-	}
-	case 3: // default (marble?)
-	{
-		mScreenObj[1] = new ObjWinLoseReason(1);
-		registObj(mScreenObj[1], arc);
-		mDone[1] = 1;
-		break;
-	}
-	default:
-		mDone[1] = 1;
-		break;
+	for (int i = 0; i < 4; i++) {
+		mOutcome[i]             = disp->mOutcomeNavis[i];
+		f32 posY = (i < 2) ? ObjWinLoseReason::msVal.mYOffsetP1 : ObjWinLoseReason::msVal.mYOffsetP2;
+		f32 posX = (i & 1) ? 160.0f : -160.0f;
+		switch (mOutcome[i]) {
+		case 1: // captain down
+		{
+			mScreenObj[i] = new Morimura::TOrimaDown2D;
+			registObj(mScreenObj[i], arc);
+			Morimura::TOrimaDown2D* screen = static_cast<Morimura::TOrimaDown2D*>(mScreenObj[i]);
+			P2ASSERTLINE(149, screen);
+			screen->mGameOverScreen->setPosXY(posX, posY);
+			screen->mGameOverScreen->mScreen->scaleScreen(0.5f);
+			screen->mType      = i + 1;
+			screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
+			break;
+		}
+		case 2: // piki extinct
+		{
+			mScreenObj[i] = new Morimura::TPikminDown2D;
+			registObj(mScreenObj[i], arc);
+			Morimura::TPikminDown2D* screen = static_cast<Morimura::TPikminDown2D*>(mScreenObj[i]);
+			P2ASSERTLINE(159, screen);
+			screen->mGameOverScreen->setPosXY(posX, posY);
+			screen->mGameOverScreen->mScreen->scaleScreen(0.5f);
+			screen->mType      = i + 1;
+			screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
+			break;
+		}
+		case 3: {
+			mScreenObj[i] = new ObjWinLoseReason(i);
+			registObj(mScreenObj[i], arc);
+			mDone[i] = true;
+			break;
+		}
+		default:
+			mDone[i] = 1;
+			break;
+		}
 	}
 
 	setColorBG(0, 0, 0, 160);
@@ -204,7 +174,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 void SceneWinLoseReason::doUpdateActive()
 {
 	mCounter++;
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 4; i++) {
 		switch (mOutcome[i]) {
 		case 1:
 		case 2:

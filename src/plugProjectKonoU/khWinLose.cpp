@@ -33,7 +33,7 @@ ObjWinLose::ObjWinLose()
 
 	mDoUpdateAnim = false;
 	mFrameTimer   = 0;
-	mScreenNum    = 2;
+	mScreenNum    = 4;
 	mAlpha        = 0;
 }
 

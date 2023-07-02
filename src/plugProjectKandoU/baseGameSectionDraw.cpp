@@ -15,8 +15,11 @@
 #include "System.h"
 #include "Light.h"
 #include "nans.h"
+#include "Game/MoviePlayer.h"
 
 const char* message = "drct-post";
+
+bool gDrawNavi[4];
 
 namespace Game {
 /*
@@ -42,7 +45,9 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	// Draw particles for both viewports
 	sys->mTimers->_start("part-draw", true);
 	for (int i = 0; i < gNaviNum; i++) {
-		drawParticle(gfx, i);
+		if (gDrawNavi[i] || (i == 0 && moviePlayer->mFlags & moviePlayer->IS_ACTIVE)) {
+			drawParticle(gfx, i);
+		}
 	}
 	sys->mTimers->_stop("part-draw");
 
@@ -51,7 +56,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	sys->mTimers->_start("drct-post", true);
 	mLightMgr->set(gfx);
 	Viewport* vp = gfx.getViewport(0);
-	if (vp && vp->viewable()) {
+	if (vp && vp->viewable() && gDrawNavi[0] || moviePlayer->mFlags & moviePlayer->IS_ACTIVE) {
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
 	}
@@ -59,7 +64,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	mLightMgr->set(gfx);
 	for (int i = 1; i < gNaviNum; i++) {
 		vp = gfx.getViewport(i);
-		if (vp && vp->viewable()) {
+		if (vp && vp->viewable() && gDrawNavi[i]) {
 			gfx.mCurrentViewport = vp;
 			directDrawPost(gfx, vp);
 		}
@@ -74,7 +79,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
  */
 void BaseGameSection::newdraw_drawAll(Viewport* vp)
 {
-	if (vp->mVpId >= gNaviNum) {
+	if (vp->mVpId >= gNaviNum || !gDrawNavi[vp->mVpId] && !(vp->mVpId == 0 && moviePlayer->mFlags & moviePlayer->IS_ACTIVE)) {
 		return;
 	}
 	sys->mTimers->_start("draw_calc", true);

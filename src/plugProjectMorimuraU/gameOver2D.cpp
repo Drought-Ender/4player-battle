@@ -297,6 +297,8 @@ void addYPos(J2DPane*, f32)
  */
 void TGameOverScreen::setPosY(f32 pos) { mScreen->setXY(0.0f, pos); }
 
+void TGameOverScreen::setPosXY(f32 posX, f32 posY) { mScreen->setXY(posX, posY); }
+
 /*
  * --INFO--
  * Address:	803489CC

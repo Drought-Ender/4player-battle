@@ -84,6 +84,7 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		section->mRealMarbleCounts[i] = 0;
 		mWinColors[i] = 0;
 		mNaviStatus[i] = -1;
+		mExtinctions[i] = false;
 	}
 	section->mGhostIconTimers[1]    = 0.0f;
 	section->mGhostIconTimers[0]    = 0.0f;
@@ -163,11 +164,88 @@ bool GameState::goingToCave(VsGameSection* section) { return isFlag(VSGS_Unk1); 
  */
 static void fakeFuncVsGsGame() { og::Screen::DispMemberChallenge2P disp; }
 
+void pikminZeroFunc(int idx) {
+	
+	VsGameSection* section = static_cast<VsGameSection*>(gameSystem->mSection);
+
+	MoviePlayArg movieArg("s05_pikminzero", nullptr, section->mMovieFinishCallback, idx);
+	movieArg.mDelegateStart = section->mMovieStartCallback;
+
+	Navi* deadNavi = naviMgr->getAt(idx);
+	movieArg.setTarget(deadNavi);
+	moviePlayer->mTargetNavi = deadNavi;
+	switch (idx)
+	{
+	case 0:
+		moviePlayer->mActingCamera = section->mOlimarCamera;
+		break;
+	case 1:
+		moviePlayer->mActingCamera = section->mLouieCamera;
+		break;
+	case 2:
+		moviePlayer->mActingCamera = gCameraP3;
+		break;
+	case 3:
+		moviePlayer->mActingCamera = gCameraP4;
+		break;
+	}
+
+	Screen::gGame2DMgr->open_GameOver(Screen::Game2DMgr::GOTITLE_PikminZero);
+	moviePlayer->play(movieArg);
+
+	
+}
+
 /*
  * --INFO--
  * Address:	802296F4
  * Size:	0008FC
  */
+
+void GameState::setDeathLose() {
+	for (int i = 0; i < 4; i++) {
+		if (mNaviStatus[i] != -1) {
+			setLoseCause(i, mNaviStatus[i]);
+		}
+	}
+}
+
+bool GameState::isWinExtinction() {
+	int count = 0;
+	for (int i = 0; i < 4; i++) {
+		if (mExtinctions[i]) {
+			count++;
+		}
+	}
+	return count >= 3;
+}
+
+void GameState::checkVsPikminZero(VsGameSection* section) {
+	for (int teamID = 0; teamID < 4; teamID++) {
+		int pikiColor = getPikiFromTeam(teamID);
+		if (GameStat::getAllPikmins(pikiColor) == 0 && ItemOnyon::mgr->getOnyon(pikiColor)->mToBirth == 0) {
+			//setLoseCause(VSPLAYER_Red, VSLOSE_Extinction);
+			for (int i = 0; i < 4; i++) {
+				if (getVsPikiColor(i) == pikiColor && mNaviStatus[i] == -1) {
+					mNaviStatus[i] = VSLOSE_Extinction;
+					if (!mExtinctions[teamID]) {
+						mExtinctions[teamID] = true;
+						if (isWinExtinction()) {
+							setDeathLose();
+							return;
+						}
+						pikminZeroFunc(i);
+					}
+				}
+			}
+		}
+	}
+}
+
+void GameState::onOrimaDownDone(int idx) {
+
+}
+
 void GameState::exec(VsGameSection* section)
 {
 	if (isFlag(VSGS_Unk16)) {
@@ -175,6 +253,12 @@ void GameState::exec(VsGameSection* section)
 	}
 
 	section->BaseGameSection::doUpdate();
+
+	for (int i = 0; i < 4; i++) {
+		if (mNaviStatus[i] != -1) {
+			naviMgr->getAt(i)->disableController();
+		}
+	}
 
 	if (gFancyCamera) {
 		section->updateFancyCam();
@@ -319,38 +403,7 @@ void GameState::exec(VsGameSection* section)
 		}
 
 		if (!_16) {
-			if (!GameStat::getAllPikmins(Red) && ItemOnyon::mgr->getOnyon(Red)->mToBirth == 0) {
-				setLoseCause(VSPLAYER_Red, VSLOSE_Extinction);
-				for (int i = 0; i < 4; i++) {
-					if (getVsPikiColor(i) == Red) {
-						mNaviStatus[i] = VSLOSE_Extinction;
-					}
-				}
-			}
-			if (!GameStat::getAllPikmins(Blue) && ItemOnyon::mgr->getOnyon(Blue)->mToBirth == 0) {
-				setLoseCause(VSPLAYER_Blue, VSLOSE_Extinction);
-				for (int i = 0; i < 4; i++) {
-					if (getVsPikiColor(i) == Blue) {
-						mNaviStatus[i] = VSLOSE_Extinction;
-					}
-				}
-			}
-			if (!GameStat::getAllPikmins(White) && ItemOnyon::mgr->getOnyon(White)->mToBirth == 0) {
-				setLoseCause(VSPlayer_White, VSLOSE_Extinction);
-				for (int i = 0; i < 4; i++) {
-					if (getVsPikiColor(i) == Blue) {
-						mNaviStatus[i] = VSLOSE_Extinction;
-					}
-				}
-			}
-			if (!GameStat::getAllPikmins(Purple) && ItemOnyon::mgr->getOnyon(Purple)->mToBirth == 0) {
-				setLoseCause(VSPlayer_Purple, VSLOSE_Extinction);
-				for (int i = 0; i < 4; i++) {
-					if (getVsPikiColor(i) == Blue) {
-						mNaviStatus[i] = VSLOSE_Extinction;
-					}
-				}
-			}
+			checkVsPikminZero(section);
 		}
 
 	} else {
@@ -469,7 +522,6 @@ void GameState::exec(VsGameSection* section)
 
 			for (int i = 0; i < 4; i++) {
 				winLoseReason.mOutcomeNavis[i] = mNaviStatus[i];
-
 			}
 
 			P2ASSERTLINE(513, Screen::gGame2DMgr->open_WinLoseReason(winLoseReason));
@@ -947,7 +999,12 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 	} else if (config->is("s03_orimadown")) {
 		naviMgr->informOrimaDead(p2);
 		Screen::gGame2DMgr->close_GameOver();
+		
 		if (gameSystem->isVersusMode()) {
+			naviMgr->getAt(p2)->setDeadLaydown();
+			gDrawNavi[p2] = false;
+			onOrimaDownDone(p2);
+			return;
 			JUT_PANICLINE(1279, "cannot happen !\n");
 
 		} else {
@@ -959,8 +1016,23 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		}
 
 	} else if (config->is("s05_pikminzero")) {
-		PSMCancelToPauseOffMainBgm();
 		Screen::gGame2DMgr->close_GameOver();
+		og::Screen::DispMemberVs vs;
+		Screen::gGame2DMgr->open_GameVs(vs, 0);
+		static_cast<VsGameSection*>(gameSystem->mSection)->startMainBgm();
+		if (gameSystem->isVersusMode()) {
+			for (int i = 0; i < 4; i++) {
+				if (getVsPikiColor(i) == getVsPikiColor(p2)) {
+					naviMgr->informOrimaDead(i);
+					naviMgr->getAt(i)->setDeadLaydown();
+					gDrawNavi[i] = false;
+				}
+			}
+
+			return;
+			JUT_PANICLINE(1279, "cannot happen !\n");
+		}
+		PSMCancelToPauseOffMainBgm();
 		ResultArg arg;
 		arg.mEndFlag.clear();
 		transit(section, VGS_Result, &arg);
@@ -1005,22 +1077,46 @@ void GameState::onOrimaDown(VsGameSection* section, int idx)
 
 	if (gameSystem->isVersusMode()) {
 		if (!_16) {
-			setLoseCause(teamIdx, VSLOSE_OrimaDown);
 			mNaviStatus[idx] = VSLOSE_OrimaDown;
+			bool naviTeamExinct = true;
+			for (int i = 0; i < 4; i++) {
+				if (mNaviStatus[i] == -1 && getVsPikiColor(idx) == getVsPikiColor(i)) {
+					naviTeamExinct = false;
+				}
+			}
+			if (naviTeamExinct) {
+				mExtinctions[getVsTeam(idx)] = true;
+				if (isWinExtinction()) {
+					setDeathLose();
+					return;
+				}
+			}
 		}
-		return;
+		//return;
 	}
 
-	MoviePlayArg movieArg("s03_orimadown", nullptr, section->mMovieFinishCallback, teamIdx);
+	OSReport("Downed Navi %i\n", idx);
+
+	MoviePlayArg movieArg("s03_orimadown", nullptr, section->mMovieFinishCallback, idx);
 	movieArg.mDelegateStart = section->mMovieStartCallback;
 
-	Navi* deadNavi = naviMgr->getAt(teamIdx);
+	Navi* deadNavi = naviMgr->getAt(idx);
 	movieArg.setTarget(deadNavi);
 	moviePlayer->mTargetNavi = deadNavi;
-	if (teamIdx == 0) {
+	switch (idx)
+	{
+	case 0:
 		moviePlayer->mActingCamera = section->mOlimarCamera;
-	} else {
+		break;
+	case 1:
 		moviePlayer->mActingCamera = section->mLouieCamera;
+		break;
+	case 2:
+		moviePlayer->mActingCamera = gCameraP3;
+		break;
+	case 3:
+		moviePlayer->mActingCamera = gCameraP4;
+		break;
 	}
 
 	moviePlayer->play(movieArg);
@@ -1197,7 +1293,11 @@ void GameState::update_GameChallenge(VsGameSection* section)
 
 		for (int i = 0; i < 4; i++) {
 			disp.mWinMarbleColors[i] = mWinColors[getVsTeam(i)];
+
+			disp.mNaviInactiveFlags[i] = mNaviStatus[i] != -1;
 		}
+
+		
 
 
 		bool blueMarble, redMarble, whiteMarble, purpleMarble;
@@ -1233,6 +1333,8 @@ void GameState::update_GameChallenge(VsGameSection* section)
 	disp.mLouieData.mNaviLifeRatio = louie->getLifeRatio();
 	disp.mDataGame.mMapPikminCount = GameStat::getMapPikmins(-1);
 	Screen::gGame2DMgr->setDispMember(&disp);
+
+	
 }
 
 /*

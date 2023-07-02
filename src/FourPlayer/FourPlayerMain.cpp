@@ -15,6 +15,9 @@
 
 #include "JSystem/J3D/J3DModelLoader.h"
 
+f32 gFirstViewportHeight = 0.5f;
+f32 gOtherViewportHeight = 0.5f;
+
 namespace Game
 {
 
@@ -37,6 +40,9 @@ int gNaviNum = 2;
 
 void BaseGameSection::birthNavis() {
 	gNaviNum = CalcNaviNum();
+	for (int i = 0; i < 4; i++) {
+		gDrawNavi[i] = true;
+	}
 	PlayCamera* playCameraPtrArr[4] = {mOlimarCamera, mLouieCamera, gCameraP3, gCameraP4};
     for (int i = 0; i < 4; i++) {
         Vector3f startVelocity = 0.0f;
@@ -444,6 +450,7 @@ void BaseGameSection::setPlayerMode(int naviIdx)
 	case 3:
 	case 4: {
 		mSecondViewportHeight = 0.5f;
+		gOtherViewportHeight  = 0.5f;
 		mSplit                = 0.0f;
 		gSplit4 = true;
 		mSplitter->split4(0.5f, 0.5f);
@@ -591,7 +598,7 @@ void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback) {
 void BaseGameSection::updateSplitter2() {
 	BaseGameSection::updateSplitter();
 	if (mSplitter && gSplit4) {
-		mSplitter->split4(mSecondViewportHeight, mSecondViewportHeight);
+		mSplitter->split4(mSecondViewportHeight, gOtherViewportHeight);
 	}
 }
 

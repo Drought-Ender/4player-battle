@@ -13,6 +13,15 @@ inline Vector2<u16> getScreenSize()
 
 struct Graphics;
 
+namespace Game
+{
+	extern bool gSplit4;
+} // namespace Game
+
+
+extern f32 gFirstViewportHeight;
+extern f32 gOtherViewportHeight;
+
 struct Splitter {
 	virtual void split2(f32);      // _08 (weak)
 	virtual void split4(f32, f32); // _0C (weak)

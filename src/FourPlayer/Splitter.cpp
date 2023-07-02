@@ -40,7 +40,7 @@ FourSplitter::FourSplitter(Graphics* gfx) {
 }
 
 void FourSplitter::split4(f32 scaleX, f32 scaleY) {
-    //OSReport("FourSplitter::split4(f32 %f, f32 %f)\n", scaleX, scaleY);
+    OSReport("FourSplitter::split4(f32 %f, f32 %f)\n", scaleX, scaleY);
     const Vector2f  cent = (mRect.p1 + mRect.p2) * 0.5f;
     const Vector2f& topL = mRect.p1;
     const Vector2f& botR = mRect.p2;
@@ -68,12 +68,13 @@ void FourSplitter::split4(f32 scaleX, f32 scaleY) {
     viewports[2]->mViewportScale.p2.y = (1.0f - scaleY) / 0.5f;
     viewports[3]->mViewportScale.p2.y = (1.0f - scaleY) / 0.5f;
 
-
     f32 viewHeight = viewports[0]->mRect1.p2.y - viewports[0]->mRect1.p1.y;
     f32 viewWidth  = viewports[0]->mRect1.p2.x - viewports[0]->mRect1.p1.x;
 
     viewports[1]->mViewportScale.p1.x = viewports[0]->mViewportScale.p2.x * viewWidth  - mRect.p2.x * 0.5f;
     viewports[3]->mViewportScale.p1.x = viewports[0]->mViewportScale.p2.x * viewWidth  - mRect.p2.x * 0.5f;
+
+    OSReport("VpScale1 %f %f\n", viewports[1]->mViewportScale.p2.x, viewports[1]->mViewportScale.p2.y);
 
     viewports[2]->mViewportScale.p1.y = viewports[0]->mViewportScale.p2.y * viewHeight - mRect.p2.y * 0.5f;
     viewports[3]->mViewportScale.p1.y = viewports[0]->mViewportScale.p2.y * viewHeight - mRect.p2.y * 0.5f;

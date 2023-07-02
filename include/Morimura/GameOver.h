@@ -14,6 +14,7 @@ struct TGameOverScreen {
 
 	void init(const char*, u32);
 	void setPosY(f32);
+	void setPosXY(f32, f32);
 	void addAnim(char*);
 	void update();
 	void draw(Graphics&, J2DPerspGraph*);

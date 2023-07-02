@@ -358,8 +358,11 @@ void FourObjVs::doUpdateCommon() {
         }
     }
 	ScreenSet* screens[] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 };
-	for (int i = Game::gNaviNum; i < ARRAY_SIZE(screens); i++) {
-		screens[i]->mScreen->setXY(0.0f, -600.0f);
+	for (int i = 0; i < ARRAY_SIZE(screens); i++) {
+		if (i >= Game::gNaviNum || mDisp->mNaviInactiveFlags[i]) {
+			screens[i]->mScreen->setXY(0.0f, -600.0f);
+			screens[i]->mScreen->hide();
+		}
 	}
     mBloGroup->update();
 }

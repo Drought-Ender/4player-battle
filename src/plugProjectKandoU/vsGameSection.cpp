@@ -268,6 +268,7 @@ bool VsGameSection::doUpdate()
 	mFsm->exec(this);
 
 	if (gameSystem->isVersusMode()) {
+
 		int redPikmins  = GameStat::getMapPikmins(1) - (mOlimarHandicap - 3);
 		int bluePikmins = GameStat::getMapPikmins(0) - (mLouieHandicap - 3);
 		if (redPikmins < 0) {
@@ -673,10 +674,27 @@ void VsGameSection::onMovieStart(MovieConfig* movie, u32 param_2, u32 playerMode
 {
 	movie->is("s03_orimadown");
 	if (gameSystem->isMultiplayerMode()) {
-		if (playerMode == 1) {
-			BaseGameSection::setPlayerMode(1);
-		} else {
-			BaseGameSection::setPlayerMode(0);
+		OSReport("PlayedMode %i\n", playerMode);
+		switch (playerMode)
+		{
+		case 0:
+			mSecondViewportHeight = 1.0f;
+			gOtherViewportHeight  = 1.0f;
+			break;
+		case 1:
+			gSplit4 = false;
+			mSecondViewportHeight = 0.0f;
+			gOtherViewportHeight  = 1.0f;
+			break;
+		case 2:
+			mSecondViewportHeight = 1.0f;
+			gOtherViewportHeight  = 0.0f;
+			break;
+		case 3:
+			mSecondViewportHeight = 0.0f;
+			gOtherViewportHeight  = 0.0f;
+		default:
+			break;
 		}
 	}
 

@@ -12,6 +12,8 @@ extern int mRealWinCounts[4];
 
 extern bool gDrawVsMenu;
 
+extern bool gDrawNavi[4];
+
 typedef f32 VsWeights[2]; // delegations
 
 struct VsOptionsMenu {
