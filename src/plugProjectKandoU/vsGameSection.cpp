@@ -113,6 +113,7 @@ VsGameSection::VsGameSection(JKRHeap* heap, bool gameMode)
 		mVsFifo->becomeCurrent();
 		GXSetGPFifo(mVsFifo->mFifo);
 	}
+	OSReport("Memory Size %p\n", *(int*)(0x80000028));
 }
 
 /*
