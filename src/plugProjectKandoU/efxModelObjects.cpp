@@ -93,11 +93,11 @@ void OnyonSpotData::loadResources()
 	file = JKRFileLoader::getGlbResource("onyonspot_yellow.brk", nullptr);
 	mTevanims[ONYON_TYPE_YELLOW].attachResource(file, *mModelData);
 
-	// file = JKRFileLoader::getGlbResource("onyonspot_purple.brk", nullptr);
-	// mTevanims[ONYON_TYPE_PURPLE].attachResource(file, *mModelData);
+	file = JKRFileLoader::getGlbResource("onyonspot_purple.brk", nullptr);
+	mTevanims[ONYON_TYPE_PURPLE].attachResource(file, *mModelData);
 
-	// file = JKRFileLoader::getGlbResource("onyonspot_white.brk", nullptr);
-	// mTevanims[ONYON_TYPE_WHITE].attachResource(file, *mModelData);
+	file = JKRFileLoader::getGlbResource("onyonspot_white.brk", nullptr);
+	mTevanims[ONYON_TYPE_WHITE].attachResource(file, *mModelData);
 }
 
 /*

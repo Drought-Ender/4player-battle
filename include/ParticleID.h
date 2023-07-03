@@ -340,6 +340,18 @@
 #define PID_OrimaLightAct_Loozy_2 (0x0E0) // louie light whistle 2
 #define PID_OrimaLight_Loozy_2    (0x0E1) // louie light (trail/base)
 
+
+#define PID_OrimaLight_White_1    (0x2BC) // louie light (star shape)
+#define PID_OrimaLightAct_White_1 (0x2BD) // louie light whistle 1
+#define PID_OrimaLightAct_White_2 (0x2BE) // louie light whistle 2
+#define PID_OrimaLight_White_2    (0x2BF) // louie light (trail/base)
+
+
+#define PID_OrimaLight_Purple_1    (0x2C1) // louie light (star shape)
+#define PID_OrimaLightAct_Purple_1 (0x2C2) // louie light whistle 1
+#define PID_OrimaLightAct_Purple_2 (0x2C3) // louie light whistle 2
+#define PID_OrimaLight_Purple_2    (0x2C4) // louie light (trail/base)
+
 #define PID_NewKurageBomb_1  (0x0E2) // lesser jellyfloat death 1?
 #define PID_NewKurageBomb_2  (0x0E3) // lesser jellyfloat death 2?
 #define PID_NewKurageDeadRun (0x0E4) // lesser jellyfloat death run?
@@ -372,6 +384,12 @@
 #define PID_ContainerAct_Yellow_1 (0x0FC) // interactable yellow onion beam 1
 #define PID_ContainerAct_Yellow_2 (0x0FD) // interactable yellow onion beam 2
 
+#define PID_ContainerAct_Purple_1 (0x2B8)
+#define PID_ContainerAct_Purple_2 (0x2B9)
+
+#define PID_ContainerAct_White_1 (0x2BA)
+#define PID_ContainerAct_White_2 (0x2BB)
+
 #define PID_OnyonEatAB_1  (0x0FE) // onion suck 1?
 #define PID_OnyonEatAB_2  (0x0FF) // onion suck 2?
 #define PID_OnyonEatC     (0x100) // onion suck 3?
@@ -383,6 +401,8 @@
 #define PID_Container_Blue   (0x105) // blue onion beacon base
 #define PID_Container_Red    (0x106) // red onion beacon base
 #define PID_Container_Yellow (0x107) // yellow onion beacon base
+#define PID_Container_Purple (0x2b6)
+#define PID_Container_White  (0x2b7)
 
 #define PID_OoOtaElec_1  (0x108) // titan dweevil elec glow
 #define PID_OoOtaElec_2  (0x109) // titan dweevil elec sparks

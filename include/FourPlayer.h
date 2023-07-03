@@ -203,6 +203,16 @@ int getTeamMembers(int team) {
 }
 
 bool isTeamActive(int idx) {
+    if (gEffectiveTeamCount == 4) return true;
+    for (int i = 0; i < 4; i++) {
+        if (getVsTeam(i) == idx) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool doesTeamHavePlayers(int idx) {
     for (int i = 0; i < 4; i++) {
         if (getVsTeam(i) == idx) {
             return true;

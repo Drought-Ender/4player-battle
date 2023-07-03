@@ -236,6 +236,91 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 	mArrowMatAnim->start(&naviMgr->_88[0]);
 }
 
+void efx::TNaviEffect::setNaviType(enumNaviType type)
+{
+	switch (type) {
+	case NAVITYPE_Olimar:
+		mCursor.mContextNum           = WHISTLE_CONTEXT_NUM;
+		mCursor.mAngleSpeed           = TCursor::kAngleSpeed;
+		mCursor.mOneEmitter.mEffectID = PID_Cursor_Default;
+		mLight.mNaviType              = 0;
+		mLightAct.mNaviType           = 0;
+		break;
+	case NAVITYPE_Louie:
+		mCursor.mContextNum           = WHISTLE_CONTEXT_NUM;
+		mCursor.mAngleSpeed           = TCursor::kAngleSpeed;
+		mCursor.mOneEmitter.mEffectID = PID_Cursor_Default;
+		mLight.mNaviType              = 1;
+		mLightAct.mNaviType           = 1;
+		break;
+	case NAVITYPE_President:
+		mCursor.mContextNum           = WHISTLE_CONTEXT_NUM;
+		mCursor.mAngleSpeed           = TCursor::kAngleSpeed;
+		mCursor.mOneEmitter.mEffectID = PID_Cursor_Default;
+		mLight.mNaviType              = 2;
+		mLightAct.mNaviType           = 2;
+		break;
+	case 3:
+		mCursor.mContextNum           = WHISTLE_CONTEXT_NUM;
+		mCursor.mAngleSpeed           = TCursor::kAngleSpeed;
+		mCursor.mOneEmitter.mEffectID = PID_Cursor_Default;
+		mLight.mNaviType              = 3;
+		mLightAct.mNaviType           = 3;
+		break;
+	}
+}
+
+bool efx::TOrimaLight::create(Arg* arg)
+{
+	switch (mNaviType) {
+	case 0:
+		mItems[0].mEffectID = PID_OrimaLight_Orima_1;
+		mItems[1].mEffectID = PID_OrimaLight_Orima_2;
+		break;
+	case 1:
+		mItems[0].mEffectID = PID_OrimaLight_Loozy_1;
+		mItems[1].mEffectID = PID_OrimaLight_Loozy_2;
+		break;
+	case 2:
+		mItems[0].mEffectID = PID_OrimaLight_White_1;
+		mItems[1].mEffectID = PID_OrimaLight_White_2;
+		break;
+	case 3:
+		mItems[0].mEffectID = PID_OrimaLight_Purple_1;
+		mItems[1].mEffectID = PID_OrimaLight_Purple_2;
+		break;
+	}
+	return TSyncGroup2::create(arg);
+}
+
+/*
+ * --INFO--
+ * Address:	803B69E0
+ * Size:	000060
+ */
+bool efx::TOrimaLightAct::create(Arg* arg)
+{
+	switch (mNaviType) {
+	case 0:
+		mItems[0].mEffectID = PID_OrimaLightAct_Orima_1;
+		mItems[1].mEffectID = PID_OrimaLightAct_Orima_2;
+		break;
+	case 1:
+		mItems[0].mEffectID = PID_OrimaLightAct_Loozy_1;
+		mItems[1].mEffectID = PID_OrimaLightAct_Loozy_2;
+		break;
+	case 2:
+		mItems[0].mEffectID = PID_OrimaLightAct_White_1;
+		mItems[1].mEffectID = PID_OrimaLightAct_White_2;
+		break;
+	case 3:
+		mItems[0].mEffectID = PID_OrimaLightAct_Purple_1;
+		mItems[1].mEffectID = PID_OrimaLightAct_Purple_2;
+		break;
+	}
+	return TSyncGroup2::create(arg);
+}
+
 void BaseGameSection::setCamController()
 {
 	Navi* navis[4];

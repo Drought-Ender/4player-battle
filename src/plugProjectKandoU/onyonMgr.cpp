@@ -660,9 +660,6 @@ void Onyon::onSetPosition()
 
 	if (mOnyonType < ONYON_TYPE_MAX) {
 		efx::OnyonSpotArg spotarg(mPosition, mOnyonType);
-		if (mOnyonType >= ONYON_TYPE_PURPLE) {
-			spotarg.mOnyonType = 0;
-		}
 		mSpotbeamModel = particleMgr->createModelEffect(&spotarg);
 		setSpotState(SPOTSTATE_Closed);
 		if (gameSystem->mMode == GSM_STORY_MODE) {

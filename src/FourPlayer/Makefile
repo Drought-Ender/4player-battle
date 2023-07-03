@@ -12,6 +12,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/PelletModifier.o\
 	$(BUILD_DIR)/src/FourPlayer/CaveScoreHell.o\
 	$(BUILD_DIR)/src/FourPlayer/CherryTarget.o\
+	$(BUILD_DIR)/src/FourPlayer/efx.o\
 
 
 

@@ -425,7 +425,7 @@ void Obj::changePelletColor()
 
 			u16 nextColor = pelColorArr[pelColorIdx[initialColor] + 1];
 			u16 colorCap  = nextColor;
-			while (!playData->hasMetPikmin(nextColor)) {
+			while (!playData->hasMetPikmin(nextColor)) {// || !(nextColor == PELCOLOR_YELLOW || isTeamActive(getTeamFromPiki(nextColor)))) {
 				if (++nextColor > PELCOLOR_WHITE) {
 					nextColor = PELCOLOR_BLUE;
 				}

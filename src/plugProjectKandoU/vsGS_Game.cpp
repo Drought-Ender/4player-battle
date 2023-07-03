@@ -85,7 +85,7 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		mWinColors[i] = 0;
 		mNaviStatus[i] = -1;
 		mExtinctions[i] = false;
-		if (!isTeamActive(i)) {
+		if (!doesTeamHavePlayers(i)) {
 			mExtinctions[i] = true;
 		}
 	}
@@ -207,7 +207,7 @@ void pikminZeroFunc(int idx) {
 
 void GameState::setDeathLose() {
 	for (int i = 0; i < 4; i++) {
-		if (mNaviStatus[i] != -1) {
+		if (mNaviStatus[i] != -1 && mExtinctions[getVsTeam(i)]) {
 			setLoseCause(getVsTeam(i), mNaviStatus[i]);
 		}
 	}
@@ -237,7 +237,7 @@ void GameState::checkVsPikminZero(VsGameSection* section) {
 				if (getVsPikiColor(i) == pikiColor && mNaviStatus[i] == -1) {
 					mNaviStatus[i] = VSLOSE_Extinction;
 				}
-				if (!mExtinctions[teamID]) {
+				if (getVsPikiColor(i) == pikiColor && !mExtinctions[teamID]) {
 					mExtinctions[teamID] = true;
 					if (isWinExtinction()) {
 						setDeathLose();
@@ -326,7 +326,7 @@ void GameState::exec(VsGameSection* section)
 					outcome = 3;             // draw
 					VsGameSection::mDrawCount += 1;
 
-				} else if (!redLost && isTeamActive(TEAM_RED)) { // red didn't lose
+				} else if (!redLost && doesTeamHavePlayers(TEAM_RED)) { // red didn't lose
 					outcome = 1;       // red win
 					VsGameSection::mRedWinCount += 1;
 					section->mVsWinner = 0;
@@ -340,7 +340,7 @@ void GameState::exec(VsGameSection* section)
 						}
 					}
 
-				} else if (!blueLost && isTeamActive(TEAM_BLUE)) { // blue didn't lose
+				} else if (!blueLost && doesTeamHavePlayers(TEAM_BLUE)) { // blue didn't lose
 					outcome = 2;        // blue win
 					VsGameSection::mBlueWinCount += 1;
 					section->mVsWinner = 1;
@@ -352,7 +352,7 @@ void GameState::exec(VsGameSection* section)
 							outcomes[i] = 1;
 						}
 					}
-				} else if (!whiteLost && isTeamActive(TEAM_WHITE)) {
+				} else if (!whiteLost && doesTeamHavePlayers(TEAM_WHITE)) {
 					outcome = 1;        // blue win
 					VsGameSection::mWhiteWinCount += 1;
 					section->mVsWinner = 2;
@@ -363,7 +363,7 @@ void GameState::exec(VsGameSection* section)
 							outcomes[i] = 1;
 						}
 					}
-				} else if (!purpleLost && isTeamActive(TEAM_PURPLE)) {
+				} else if (!purpleLost && doesTeamHavePlayers(TEAM_PURPLE)) {
 					outcome = 1;        // blue win
 					VsGameSection::mPurpleWinCount += 1;
 					section->mVsWinner = 3;
