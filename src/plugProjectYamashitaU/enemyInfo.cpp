@@ -106,10 +106,14 @@ EnemyInfo gEnemyInfo[] = {
    {"BlackMan",           EnemyTypeID::EnemyID_BlackMan,       -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             EnemyTypeID::EnemyID_Tyre,        1,    BDT_Boss},
    {"Tyre",               EnemyTypeID::EnemyID_Tyre,           -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Empty},
    {"DangoMushi",         EnemyTypeID::EnemyID_DangoMushi,     -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
+   {"Gtank",              EnemyTypeID::EnemyID_Gtank,          -1,                                1,      0x0097,    "Tank",         "Tank",         "Tank",         "",         "",         "Tank",         "Tank",         -1,                               0,    BDT_Strong},
+   {"Mtank",              EnemyTypeID::EnemyID_Mtank,          -1,                                1,      0x0097,    "Tank",         "Tank",         "Tank",         "",         "",         "Tank",         "Tank",         -1,                               0,    BDT_Strong},
 };
 // clang-format on
 
 int gEnemyInfoNum = ARRAY_SIZE(gEnemyInfo);
+
+int gMaxEnemyID = EnemyTypeID::EnemyID_COUNT;
 
 namespace EnemyInfoFunc {
 /**

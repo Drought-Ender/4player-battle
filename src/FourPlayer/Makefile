@@ -13,9 +13,11 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/CaveScoreHell.o\
 	$(BUILD_DIR)/src/FourPlayer/CherryTarget.o\
 	$(BUILD_DIR)/src/FourPlayer/efx.o\
-
-
-
+	$(BUILD_DIR)/src/FourPlayer/Enemy.o\
+	$(BUILD_DIR)/src/FourPlayer/Gtank.o\
+	$(BUILD_DIR)/src/FourPlayer/GtankMgr.o\
+	$(BUILD_DIR)/src/FourPlayer/Mtank.o\
+	$(BUILD_DIR)/src/FourPlayer/MtankMgr.o\
 
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)

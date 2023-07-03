@@ -141,6 +141,8 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_BlackMan       = 99,  // Waterwraith
     EnemyID_UmiMushiBase   = 100, // Bloyster base (crashes)
     EnemyID_UmiMushiBlind  = 101, // Toady Bloyster
+    EnemyID_Gtank          = 102,
+    EnemyID_Mtank          = 103,
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00
@@ -151,6 +153,7 @@ u8 mCount;    // _04
 extern EnemyInfo gEnemyInfo[];
 
 extern int gEnemyInfoNum;
+extern int gMaxEnemyID;
 
 namespace EnemyInfoFunc {
 EnemyInfo* getEnemyInfo(int id, int flags);
@@ -180,4 +183,75 @@ inline int getEnemyMgrID(int enemyID)
 	 || id == EnemyTypeID::EnemyID_BigTreasure)
 
 } // namespace Game
+
+
+// enemy switch case groups
+
+#define SwitchChappy Game::EnemyTypeID::EnemyID_Chappy:\
+	case Game::EnemyTypeID::EnemyID_BlueChappy: \
+	case Game::EnemyTypeID::EnemyID_YellowChappy: \
+	case Game::EnemyTypeID::EnemyID_KumaChappy
+
+#define SwitchKochappy Game::EnemyTypeID::EnemyID_Kochappy: \
+	case Game::EnemyTypeID::EnemyID_BlueKochappy: \
+	case Game::EnemyTypeID::EnemyID_YellowKochappy: \
+	case Game::EnemyTypeID::EnemyID_KumaKochappy
+
+#define SwitchTank Game::EnemyTypeID::EnemyID_Tank: \
+	case Game::EnemyTypeID::EnemyID_Wtank:\
+    case Game::EnemyTypeID::EnemyID_Gtank:\
+    case Game::EnemyTypeID::EnemyID_Mtank
+
+#define SwitchSarai Game::EnemyTypeID::EnemyID_Sarai: \
+	case Game::EnemyTypeID::EnemyID_Demon
+
+#define SwitchBug Game::EnemyTypeID::EnemyID_ElecBug
+
+#define SwitchGrub Game::EnemyTypeID::EnemyID_UjiA: \
+	case Game::EnemyTypeID::EnemyID_UjiB: \
+	case Game::EnemyTypeID::EnemyID_Tobi
+
+#define SwitchOtakara Game::EnemyTypeID::EnemyID_FireOtakara: \
+	case Game::EnemyTypeID::EnemyID_WaterOtakara: \
+	case Game::EnemyTypeID::EnemyID_GasOtakara: \
+	case Game::EnemyTypeID::EnemyID_ElecOtakara: \
+    case Game::EnemyTypeID::EnemyID_BombOtakara
+
+#define SwitchMiniHoudai Game::EnemyTypeID::EnemyID_MiniHoudai: \
+	case Game::EnemyTypeID::EnemyID_FminiHoudai
+
+#define SwitchKabuto Game::EnemyTypeID::EnemyID_Kabuto: \
+	case Game::EnemyTypeID::EnemyID_Rkabuto: \
+	case Game::EnemyTypeID::EnemyID_Fkabuto
+
+#define SwitchBeetle Game::EnemyTypeID::EnemyID_Kogane: \
+	case Game::EnemyTypeID::EnemyID_Wealthy: \
+	case Game::EnemyTypeID::EnemyID_Fart
+
+#define SwitchPom Game::EnemyTypeID::EnemyID_BluePom: \
+	case Game::EnemyTypeID::EnemyID_RedPom: \
+	case Game::EnemyTypeID::EnemyID_YellowPom: \
+	case Game::EnemyTypeID::EnemyID_BlackPom: \
+	case Game::EnemyTypeID::EnemyID_WhitePom: \
+	case Game::EnemyTypeID::EnemyID_RandPom
+
+#define SwitchHiba Game::EnemyTypeID::EnemyID_Hiba: \
+	case Game::EnemyTypeID::EnemyID_GasHiba: \
+	case Game::EnemyTypeID::EnemyID_ElecHiba
+    
+#define SwitchInanimate \
+    SwitchPom: case SwitchHiba: \
+    case Game::EnemyTypeID::EnemyID_Egg:\
+    case Game::EnemyTypeID::EnemyID_Bomb
+
+#define SwitchFlying \
+    Game::EnemyTypeID::EnemyID_Mar: \
+	case Game::EnemyTypeID::EnemyID_Hanachirashi: \
+	case Game::EnemyTypeID::EnemyID_Kurage: \
+	case Game::EnemyTypeID::EnemyID_OniKurage 
+
+#define SwitchWraith \
+    Game::EnemyTypeID::EnemyID_Tyre: \
+	case Game::EnemyTypeID::EnemyID_BlackMan
+
 #endif

@@ -93,6 +93,7 @@ void TekiStat::Mgr::clear()
  */
 void TekiStat::Mgr::allocate(int amount)
 {
+	amount = gMaxEnemyID;
 	mData  = new Info[amount];
 	mCount = amount;
 }

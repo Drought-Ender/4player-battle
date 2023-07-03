@@ -29,17 +29,11 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 	bool docreate;
 	f32 scale;
 	switch (argt->mTypeID) {
-	case Game::EnemyTypeID::EnemyID_Chappy:
-	case Game::EnemyTypeID::EnemyID_BlueChappy:
-	case Game::EnemyTypeID::EnemyID_YellowChappy:
-	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case SwitchChappy:
 		scale = 1.75f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kochappy:
-	case Game::EnemyTypeID::EnemyID_BlueKochappy:
-	case Game::EnemyTypeID::EnemyID_YellowKochappy:
-	case Game::EnemyTypeID::EnemyID_KumaKochappy:
+	case SwitchKochappy:
 		scale = 0.65f;
 		break;
 
@@ -55,8 +49,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 0.6f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Tank:
-	case Game::EnemyTypeID::EnemyID_Wtank:
+	case SwitchTank:
 		scale = 0.88f;
 		break;
 
@@ -72,8 +65,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 0.53f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Sarai:
-	case Game::EnemyTypeID::EnemyID_Demon:
+	case SwitchSarai:
 		scale = 0.78f;
 		break;
 
@@ -81,7 +73,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 0.75f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecBug:
+	case SwitchBug:
 		docreate = false;
 		return docreate;
 
@@ -89,17 +81,11 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 1.1f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_UjiA:
-	case Game::EnemyTypeID::EnemyID_UjiB:
-	case Game::EnemyTypeID::EnemyID_Tobi:
+	case SwitchGrub:
 		scale = 0.45f;
 		break;
 
 	case Game::EnemyTypeID::EnemyID_Qurione:
-		docreate = false;
-		return docreate;
-
-	case Game::EnemyTypeID::EnemyID_Egg:
 		docreate = false;
 		return docreate;
 
@@ -127,10 +113,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 0.75f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_FireOtakara:
-	case Game::EnemyTypeID::EnemyID_WaterOtakara:
-	case Game::EnemyTypeID::EnemyID_GasOtakara:
-	case Game::EnemyTypeID::EnemyID_ElecOtakara:
+	case SwitchOtakara:
 		scale = 0.65f;
 		break;
 
@@ -170,8 +153,7 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 2.15f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_MiniHoudai:
-	case Game::EnemyTypeID::EnemyID_FminiHoudai:
+	case SwitchMiniHoudai:
 		scale = 1.45f;
 		break;
 
@@ -197,29 +179,13 @@ bool TEnemyPiyo::create(efx::Arg* arg)
 		scale = 2.45f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kogane:
-	case Game::EnemyTypeID::EnemyID_Wealthy:
-	case Game::EnemyTypeID::EnemyID_Fart:
+	case SwitchBeetle:
 		docreate = false;
 		return docreate;
 
-	case Game::EnemyTypeID::EnemyID_BombOtakara:
-		scale = 0.65f;
-		break;
-
-	case Game::EnemyTypeID::EnemyID_BluePom:
-	case Game::EnemyTypeID::EnemyID_RedPom:
-	case Game::EnemyTypeID::EnemyID_YellowPom:
-	case Game::EnemyTypeID::EnemyID_BlackPom:
-	case Game::EnemyTypeID::EnemyID_WhitePom:
-	case Game::EnemyTypeID::EnemyID_RandPom:
-	case Game::EnemyTypeID::EnemyID_Hiba:
-	case Game::EnemyTypeID::EnemyID_GasHiba:
-	case Game::EnemyTypeID::EnemyID_ElecHiba:
-	case Game::EnemyTypeID::EnemyID_Bomb:
+	case SwitchInanimate:
 	case Game::EnemyTypeID::EnemyID_DangoMushi:
-	case Game::EnemyTypeID::EnemyID_Tyre:
-	case Game::EnemyTypeID::EnemyID_BlackMan:
+	case SwitchWraith:
 		docreate = false;
 		return docreate;
 
@@ -462,17 +428,11 @@ bool TEnemyDead::create(efx::Arg* arg)
 
 	f32 scale;
 	switch (argt->mTypeID) {
-	case Game::EnemyTypeID::EnemyID_Chappy:
-	case Game::EnemyTypeID::EnemyID_BlueChappy:
-	case Game::EnemyTypeID::EnemyID_YellowChappy:
-	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case SwitchChappy:
 		scale = 1.8f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kochappy:
-	case Game::EnemyTypeID::EnemyID_BlueKochappy:
-	case Game::EnemyTypeID::EnemyID_YellowKochappy:
-	case Game::EnemyTypeID::EnemyID_KumaKochappy:
+	case SwitchKochappy:
 		scale = 0.85f;
 		break;
 
@@ -488,8 +448,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 0.8f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Tank:
-	case Game::EnemyTypeID::EnemyID_Wtank:
+	case SwitchTank:
 		scale = 1.0f;
 		break;
 
@@ -505,8 +464,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 0.75f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Sarai:
-	case Game::EnemyTypeID::EnemyID_Demon:
+	case SwitchSarai:
 		scale = 0.9f;
 		break;
 
@@ -514,7 +472,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 1.35f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecBug:
+	case SwitchBug:
 		scale = 0.9f;
 		break;
 
@@ -522,19 +480,13 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 1.3f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_UjiA:
-	case Game::EnemyTypeID::EnemyID_UjiB:
-	case Game::EnemyTypeID::EnemyID_Tobi:
+	case SwitchGrub:
 		scale = 0.6f;
 		break;
 
 	case Game::EnemyTypeID::EnemyID_Qurione:
 		scale = 0.6f;
 		break;
-
-	case Game::EnemyTypeID::EnemyID_Egg:
-		docreate = false;
-		return docreate;
 
 	case Game::EnemyTypeID::EnemyID_Armor:
 		scale = 1.45f;
@@ -560,10 +512,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 1.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_FireOtakara:
-	case Game::EnemyTypeID::EnemyID_WaterOtakara:
-	case Game::EnemyTypeID::EnemyID_GasOtakara:
-	case Game::EnemyTypeID::EnemyID_ElecOtakara:
+	case SwitchOtakara:
 		scale = 0.7f;
 		break;
 
@@ -571,10 +520,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 0.85f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Mar:
-	case Game::EnemyTypeID::EnemyID_Hanachirashi:
-	case Game::EnemyTypeID::EnemyID_Kurage:
-	case Game::EnemyTypeID::EnemyID_OniKurage:
+	case SwitchFlying:
 		docreate = false;
 		return docreate;
 
@@ -594,8 +540,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 2.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_MiniHoudai:
-	case Game::EnemyTypeID::EnemyID_FminiHoudai:
+	case SwitchMiniHoudai:
 		scale = 1.6f;
 		break;
 
@@ -603,9 +548,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 1.45f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kabuto:
-	case Game::EnemyTypeID::EnemyID_Rkabuto:
-	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case SwitchKabuto:
 		scale = 1.5f;
 		break;
 
@@ -621,18 +564,11 @@ bool TEnemyDead::create(efx::Arg* arg)
 		docreate = false;
 		return docreate;
 
-	case Game::EnemyTypeID::EnemyID_Kogane:
-	case Game::EnemyTypeID::EnemyID_Wealthy:
-	case Game::EnemyTypeID::EnemyID_Fart:
+	case SwitchBeetle:
 		scale = 0.94f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_BombOtakara:
-		scale = 0.7f;
-		break;
-
-	case Game::EnemyTypeID::EnemyID_Tyre:
-	case Game::EnemyTypeID::EnemyID_BlackMan:
+	case SwitchWraith:
 		docreate = false;
 		return docreate;
 
@@ -640,16 +576,7 @@ bool TEnemyDead::create(efx::Arg* arg)
 		scale = 2.5f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_BluePom:
-	case Game::EnemyTypeID::EnemyID_RedPom:
-	case Game::EnemyTypeID::EnemyID_YellowPom:
-	case Game::EnemyTypeID::EnemyID_BlackPom:
-	case Game::EnemyTypeID::EnemyID_WhitePom:
-	case Game::EnemyTypeID::EnemyID_RandPom:
-	case Game::EnemyTypeID::EnemyID_Hiba:
-	case Game::EnemyTypeID::EnemyID_GasHiba:
-	case Game::EnemyTypeID::EnemyID_ElecHiba:
-	case Game::EnemyTypeID::EnemyID_Bomb:
+	case SwitchInanimate:
 		docreate = false;
 		return docreate;
 
@@ -689,18 +616,12 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 
 	f32 scale;
 	switch (argt->mTypeID) {
-	case Game::EnemyTypeID::EnemyID_Chappy:
-	case Game::EnemyTypeID::EnemyID_BlueChappy:
-	case Game::EnemyTypeID::EnemyID_YellowChappy:
-	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case SwitchChappy:
 		scale   = 1.4f;
 		isSmall = false;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kochappy:
-	case Game::EnemyTypeID::EnemyID_BlueKochappy:
-	case Game::EnemyTypeID::EnemyID_YellowKochappy:
-	case Game::EnemyTypeID::EnemyID_KumaKochappy:
+	case SwitchKochappy:
 		scale   = 1.0f;
 		isSmall = true;
 		break;
@@ -718,8 +639,7 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_Baby:
 		return false;
 
-	case Game::EnemyTypeID::EnemyID_Tank:
-	case Game::EnemyTypeID::EnemyID_Wtank:
+	case SwitchTank:
 		scale   = 1.0f;
 		isSmall = true;
 		break;
@@ -733,28 +653,22 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_Tadpole:
 		return false;
 
-	case Game::EnemyTypeID::EnemyID_Sarai:
-	case Game::EnemyTypeID::EnemyID_Demon:
+	case SwitchSarai:
 		return false;
 
 	case Game::EnemyTypeID::EnemyID_BombSarai:
 		return false;
 
-	case Game::EnemyTypeID::EnemyID_ElecBug:
+	case SwitchBug:
 		return false;
 
 	case Game::EnemyTypeID::EnemyID_Catfish:
 		return false;
 
-	case Game::EnemyTypeID::EnemyID_UjiA:
-	case Game::EnemyTypeID::EnemyID_UjiB:
-	case Game::EnemyTypeID::EnemyID_Tobi:
+	case SwitchGrub:
 		return false;
 
 	case Game::EnemyTypeID::EnemyID_Qurione:
-		return false;
-
-	case Game::EnemyTypeID::EnemyID_Egg:
 		return false;
 
 	case Game::EnemyTypeID::EnemyID_Armor:
@@ -779,10 +693,7 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 	case Game::EnemyTypeID::EnemyID_Jigumo:
 		return false;
 
-	case Game::EnemyTypeID::EnemyID_FireOtakara:
-	case Game::EnemyTypeID::EnemyID_WaterOtakara:
-	case Game::EnemyTypeID::EnemyID_GasOtakara:
-	case Game::EnemyTypeID::EnemyID_ElecOtakara:
+	case SwitchOtakara:
 		scale   = 1.3f;
 		isSmall = true;
 		break;
@@ -792,12 +703,9 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 		isSmall = true;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Mar:
+	case SwitchFlying:
 	case Game::EnemyTypeID::EnemyID_SnakeCrow:
-	case Game::EnemyTypeID::EnemyID_Hanachirashi:
-	case Game::EnemyTypeID::EnemyID_Kurage:
 	case Game::EnemyTypeID::EnemyID_SnakeWhole:
-	case Game::EnemyTypeID::EnemyID_OniKurage:
 	case Game::EnemyTypeID::EnemyID_ShijimiChou:
 		return false;
 
@@ -806,8 +714,7 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 		isSmall = false;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_MiniHoudai:
-	case Game::EnemyTypeID::EnemyID_FminiHoudai:
+	case SwitchMiniHoudai:
 		scale   = 1.0f;
 		isSmall = false;
 		break;
@@ -817,9 +724,7 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 		isSmall = true;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kabuto:
-	case Game::EnemyTypeID::EnemyID_Rkabuto:
-	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case SwitchKabuto:
 		scale   = 1.6f;
 		isSmall = true;
 		break;
@@ -832,16 +737,9 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 		isSmall = false;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kogane:
-	case Game::EnemyTypeID::EnemyID_Wealthy:
-	case Game::EnemyTypeID::EnemyID_Fart:
+	case SwitchBeetle:
 	case Game::EnemyTypeID::EnemyID_UmiMushi:
 		return false;
-
-	case Game::EnemyTypeID::EnemyID_BombOtakara:
-		scale   = 1.3f;
-		isSmall = true;
-		break;
 
 	case Game::EnemyTypeID::EnemyID_BlackMan:
 		scale   = 1.0;
@@ -856,16 +754,7 @@ bool TEnemyWalkSmoke::create(efx::Arg* arg)
 		isSmall = false;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_BluePom:
-	case Game::EnemyTypeID::EnemyID_RedPom:
-	case Game::EnemyTypeID::EnemyID_YellowPom:
-	case Game::EnemyTypeID::EnemyID_BlackPom:
-	case Game::EnemyTypeID::EnemyID_WhitePom:
-	case Game::EnemyTypeID::EnemyID_RandPom:
-	case Game::EnemyTypeID::EnemyID_Hiba:
-	case Game::EnemyTypeID::EnemyID_GasHiba:
-	case Game::EnemyTypeID::EnemyID_ElecHiba:
-	case Game::EnemyTypeID::EnemyID_Bomb:
+	case SwitchInanimate:
 		return false;
 
 	default:
@@ -1026,18 +915,12 @@ bool TEnemyDive::create(efx::Arg* arg)
 TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 {
 	switch (id) {
-	case Game::EnemyTypeID::EnemyID_Chappy:
-	case Game::EnemyTypeID::EnemyID_BlueChappy:
-	case Game::EnemyTypeID::EnemyID_YellowChappy:
-	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case SwitchChappy:
 		mType  = 1;
 		mScale = 0.92f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kochappy:
-	case Game::EnemyTypeID::EnemyID_BlueKochappy:
-	case Game::EnemyTypeID::EnemyID_YellowKochappy:
-	case Game::EnemyTypeID::EnemyID_KumaKochappy:
+	case SwitchKochappy:
 		mType  = 2;
 		mScale = 1.4f;
 		break;
@@ -1057,8 +940,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 1.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Tank:
-	case Game::EnemyTypeID::EnemyID_Wtank:
+	case SwitchTank:
 		mType  = 1;
 		mScale = 0.6f;
 		break;
@@ -1077,8 +959,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 1.2f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Sarai:
-	case Game::EnemyTypeID::EnemyID_Demon:
+	case SwitchSarai:
 		mType  = 1;
 		mScale = 0.65f;
 		break;
@@ -1088,7 +969,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 0.8f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecBug:
+	case SwitchBug:
 		mType  = 1;
 		mScale = 0.65f;
 		break;
@@ -1098,9 +979,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 0.75f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_UjiA:
-	case Game::EnemyTypeID::EnemyID_UjiB:
-	case Game::EnemyTypeID::EnemyID_Tobi:
+	case SwitchGrub:
 		mType  = 2;
 		mScale = 1.0f;
 		break;
@@ -1145,10 +1024,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 1.5f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_FireOtakara:
-	case Game::EnemyTypeID::EnemyID_WaterOtakara:
-	case Game::EnemyTypeID::EnemyID_GasOtakara:
-	case Game::EnemyTypeID::EnemyID_ElecOtakara:
+	case SwitchOtakara:
 		mType  = 2;
 		mScale = 1.3f;
 		break;
@@ -1194,8 +1070,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 1.25f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_MiniHoudai:
-	case Game::EnemyTypeID::EnemyID_FminiHoudai:
+	case SwitchMiniHoudai:
 		mType  = 1;
 		mScale = 0.85f;
 		break;
@@ -1205,9 +1080,7 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 0.9f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kabuto:
-	case Game::EnemyTypeID::EnemyID_Rkabuto:
-	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case SwitchKabuto:
 		mType  = 1;
 		mScale = 0.8f;
 		break;
@@ -1227,16 +1100,9 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 1.2f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kogane:
-	case Game::EnemyTypeID::EnemyID_Wealthy:
-	case Game::EnemyTypeID::EnemyID_Fart:
+	case SwitchBeetle:
 		mType  = 2;
 		mScale = 1.25f;
-		break;
-
-	case Game::EnemyTypeID::EnemyID_BombOtakara:
-		mType  = 2;
-		mScale = 1.3f;
 		break;
 
 	case Game::EnemyTypeID::EnemyID_BlackMan:
@@ -1254,19 +1120,12 @@ TEnemyBombScaleTable::TEnemyBombScaleTable(Game::EnemyTypeID::EEnemyTypeID id)
 		mScale = 1.45f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Hiba:
-	case Game::EnemyTypeID::EnemyID_GasHiba:
-	case Game::EnemyTypeID::EnemyID_ElecHiba:
+	case SwitchHiba:
 		mType  = 2;
 		mScale = 1.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_BluePom:
-	case Game::EnemyTypeID::EnemyID_RedPom:
-	case Game::EnemyTypeID::EnemyID_YellowPom:
-	case Game::EnemyTypeID::EnemyID_BlackPom:
-	case Game::EnemyTypeID::EnemyID_WhitePom:
-	case Game::EnemyTypeID::EnemyID_RandPom:
+	case SwitchPom:
 		mType  = 1;
 		mScale = 1.0f;
 		break;
@@ -1542,17 +1401,11 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 	bool docreate;
 	f32 scale;
 	switch (argt->mTypeID) {
-	case Game::EnemyTypeID::EnemyID_Chappy:
-	case Game::EnemyTypeID::EnemyID_BlueChappy:
-	case Game::EnemyTypeID::EnemyID_YellowChappy:
-	case Game::EnemyTypeID::EnemyID_KumaChappy:
+	case SwitchChappy:
 		scale = 1.3f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kochappy:
-	case Game::EnemyTypeID::EnemyID_BlueKochappy:
-	case Game::EnemyTypeID::EnemyID_YellowKochappy:
-	case Game::EnemyTypeID::EnemyID_KumaKochappy:
+	case SwitchKochappy:
 		scale = 0.45f;
 		break;
 
@@ -1568,8 +1421,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 0.65f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Tank:
-	case Game::EnemyTypeID::EnemyID_Wtank:
+	case SwitchTank:
 		scale = 0.8f;
 		break;
 
@@ -1585,8 +1437,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 0.55f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Sarai:
-	case Game::EnemyTypeID::EnemyID_Demon:
+	case SwitchSarai:
 		scale = 0.9f;
 		break;
 
@@ -1594,7 +1445,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 1.4f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecBug:
+	case SwitchBug:
 		scale = 0.9f;
 		break;
 
@@ -1602,19 +1453,13 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 1.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_UjiA:
-	case Game::EnemyTypeID::EnemyID_UjiB:
-	case Game::EnemyTypeID::EnemyID_Tobi:
+	case SwitchGrub:
 		scale = 0.45f;
 		break;
 
 	case Game::EnemyTypeID::EnemyID_Qurione:
 		docreate = false;
 		return docreate;
-
-	case Game::EnemyTypeID::EnemyID_Egg:
-		scale = 0.65f;
-		break;
 
 	case Game::EnemyTypeID::EnemyID_Armor:
 		scale = 1.4f;
@@ -1640,10 +1485,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 0.9f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_FireOtakara:
-	case Game::EnemyTypeID::EnemyID_WaterOtakara:
-	case Game::EnemyTypeID::EnemyID_GasOtakara:
-	case Game::EnemyTypeID::EnemyID_ElecOtakara:
+	case SwitchOtakara:
 		scale = 1.1f;
 		break;
 
@@ -1683,8 +1525,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 1.85f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_MiniHoudai:
-	case Game::EnemyTypeID::EnemyID_FminiHoudai:
+	case SwitchMiniHoudai:
 		scale = 1.35f;
 		break;
 
@@ -1692,9 +1533,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 1.8f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kabuto:
-	case Game::EnemyTypeID::EnemyID_Rkabuto:
-	case Game::EnemyTypeID::EnemyID_Fkabuto:
+	case SwitchKabuto:
 		scale = 1.3f;
 		break;
 
@@ -1722,10 +1561,6 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 0.7f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_BombOtakara:
-		scale = 1.1f;
-		break;
-
 	case Game::EnemyTypeID::EnemyID_BlackMan:
 		scale = 1.5f;
 		break;
@@ -1738,16 +1573,7 @@ bool TEnemyHamonChasePos::create(efx::Arg* arg)
 		scale = 2.8f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_BluePom:
-	case Game::EnemyTypeID::EnemyID_RedPom:
-	case Game::EnemyTypeID::EnemyID_YellowPom:
-	case Game::EnemyTypeID::EnemyID_BlackPom:
-	case Game::EnemyTypeID::EnemyID_WhitePom:
-	case Game::EnemyTypeID::EnemyID_RandPom:
-	case Game::EnemyTypeID::EnemyID_Hiba:
-	case Game::EnemyTypeID::EnemyID_GasHiba:
-	case Game::EnemyTypeID::EnemyID_ElecHiba:
-	case Game::EnemyTypeID::EnemyID_Bomb:
+	case SwitchInanimate:
 		docreate = false;
 		return docreate;
 
@@ -1817,17 +1643,11 @@ f32 TEnemyHamon::getLimitDepth_()
 	f32 depth = 10000.0f;
 
 	switch (mEnemyID) {
-	case Game::EnemyTypeID::EnemyID_Chappy:
-	case Game::EnemyTypeID::EnemyID_KumaChappy:
-	case Game::EnemyTypeID::EnemyID_BlueChappy:
-	case Game::EnemyTypeID::EnemyID_YellowChappy:
+	case SwitchChappy:
 		depth = 80.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kochappy:
-	case Game::EnemyTypeID::EnemyID_BlueKochappy:
-	case Game::EnemyTypeID::EnemyID_YellowKochappy:
-	case Game::EnemyTypeID::EnemyID_KumaKochappy:
+	case SwitchKochappy:
 		depth = 27.0f;
 		break;
 
@@ -1843,8 +1663,7 @@ f32 TEnemyHamon::getLimitDepth_()
 		depth = 20.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Tank:
-	case Game::EnemyTypeID::EnemyID_Wtank:
+	case SwitchTank:
 		depth = 34.0f;
 		break;
 
@@ -1860,8 +1679,7 @@ f32 TEnemyHamon::getLimitDepth_()
 		depth = 17.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Sarai:
-	case Game::EnemyTypeID::EnemyID_Demon:
+	case SwitchSarai:
 		depth = 40.0f;
 		break;
 
@@ -1869,7 +1687,7 @@ f32 TEnemyHamon::getLimitDepth_()
 		depth = 110.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_ElecBug:
+	case SwitchBug:
 		depth = 27.0f;
 		break;
 
@@ -1877,9 +1695,7 @@ f32 TEnemyHamon::getLimitDepth_()
 		depth = 30.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_UjiA:
-	case Game::EnemyTypeID::EnemyID_UjiB:
-	case Game::EnemyTypeID::EnemyID_Tobi:
+	case SwitchGrub:
 		depth = 12.0f;
 		break;
 
@@ -1911,10 +1727,7 @@ f32 TEnemyHamon::getLimitDepth_()
 		depth = 40.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_FireOtakara:
-	case Game::EnemyTypeID::EnemyID_WaterOtakara:
-	case Game::EnemyTypeID::EnemyID_GasOtakara:
-	case Game::EnemyTypeID::EnemyID_ElecOtakara:
+	case SwitchOtakara:
 		depth = 45.0f;
 		break;
 
@@ -1942,9 +1755,7 @@ f32 TEnemyHamon::getLimitDepth_()
 		depth = 20.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_Kabuto:
-	case Game::EnemyTypeID::EnemyID_Fkabuto:
-	case Game::EnemyTypeID::EnemyID_Rkabuto:
+	case SwitchKabuto:
 		depth = 55.0f;
 		break;
 
@@ -1968,26 +1779,15 @@ f32 TEnemyHamon::getLimitDepth_()
 		depth = 15.0f;
 		break;
 
-	case Game::EnemyTypeID::EnemyID_BombOtakara:
-		depth = 45.0f;
-		break;
-
-	case Game::EnemyTypeID::EnemyID_BluePom:
-	case Game::EnemyTypeID::EnemyID_RedPom:
-	case Game::EnemyTypeID::EnemyID_YellowPom:
-	case Game::EnemyTypeID::EnemyID_BlackPom:
-	case Game::EnemyTypeID::EnemyID_WhitePom:
-	case Game::EnemyTypeID::EnemyID_RandPom:
+	case SwitchPom:
 	case Game::EnemyTypeID::EnemyID_Qurione:
 	case Game::EnemyTypeID::EnemyID_SnakeCrow:
 	case Game::EnemyTypeID::EnemyID_SnakeWhole:
 	case Game::EnemyTypeID::EnemyID_KingChappy:
-	case Game::EnemyTypeID::EnemyID_MiniHoudai:
-	case Game::EnemyTypeID::EnemyID_FminiHoudai:
+	case SwitchMiniHoudai:
 	case Game::EnemyTypeID::EnemyID_Hana:
 	case Game::EnemyTypeID::EnemyID_UmiMushi:
-	case Game::EnemyTypeID::EnemyID_Tyre:
-	case Game::EnemyTypeID::EnemyID_BlackMan:
+	case SwitchWraith:
 	case Game::EnemyTypeID::EnemyID_DangoMushi:
 		break;
 	}

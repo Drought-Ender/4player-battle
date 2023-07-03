@@ -374,6 +374,115 @@ struct Mgr : public Tank::Mgr {
 	Obj* mObj;               // _48, array of Objs, probably
 };
 } // namespace Wtank
+
+namespace Gtank {
+struct Obj : public Tank::Obj {
+	Obj();
+
+	//////////////// VTABLE
+	virtual ~Obj() { }                                 // _1BC (weak)
+	virtual void changeMaterial();                     // _200
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
+	{
+		return EnemyTypeID::EnemyID_Gtank;
+	}
+	virtual void createEffect();              // _2FC
+	virtual void setupEffect();               // _300
+	virtual void startEffect();               // _304
+	virtual void startYodare();               // _308
+	virtual void finishEffect();              // _30C
+	virtual void effectDrawOn();              // _310
+	virtual void effectDrawOff();             // _314
+	virtual void interactCreature(Creature*); // _318
+	virtual void stopEffectRadius(f32);       // _31C
+	virtual void createChargeSE();            // _320
+	virtual void createDisChargeSE();         // _324
+	//////////////// VTABLE END
+
+	// _00 		= VTBL
+	// _00-_308	= Tank::Obj
+	efx::TTankEffect* mTankEffect; // _308
+	                                 // _30C = PelletView
+};
+
+struct Mgr : public Tank::Mgr {
+	Mgr(int objLimit, u8 modelType);
+
+	// virtual ~Mgr();                                     // _58 (weak)
+	virtual void createObj(int);                       // _A0
+	virtual EnemyBase* getEnemy(int idx);              // _A4
+	virtual void doAlloc();                            // _A8
+	virtual void loadTexData();                        // _D0
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_Gtank;
+	}
+	virtual ResTIMG* getChangeTexture() // _E0 (weak)
+	{
+		return mChangeTexture;
+	}
+
+	// _00 		= VTBL
+	// _00-_44	= EnemyMgrBase
+	ResTIMG* mChangeTexture; // _44, probably
+	Obj* mObj;               // _48, array of Objs, probably
+};
+} // namespace Gtank
+
+namespace Mtank {
+struct Obj : public Tank::Obj {
+	Obj();
+
+	//////////////// VTABLE
+	virtual ~Obj() { }                                 // _1BC (weak)
+	virtual void changeMaterial();                     // _200
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _258 (weak)
+	{
+		return EnemyTypeID::EnemyID_Mtank;
+	}
+	virtual void createEffect();              // _2FC
+	virtual void setupEffect();               // _300
+	virtual void startEffect();               // _304
+	virtual void startYodare();               // _308
+	virtual void finishEffect();              // _30C
+	virtual void effectDrawOn();              // _310
+	virtual void effectDrawOff();             // _314
+	virtual void interactCreature(Creature*); // _318
+	virtual void stopEffectRadius(f32);       // _31C
+	virtual void createChargeSE();            // _320
+	virtual void createDisChargeSE();         // _324
+	//////////////// VTABLE END
+
+	// _00 		= VTBL
+	// _00-_308	= Tank::Obj
+	efx::TTankEffect* mTankEffect; // _308
+	                                 // _30C = PelletView
+};
+
+struct Mgr : public Tank::Mgr {
+	Mgr(int objLimit, u8 modelType);
+
+	// virtual ~Mgr();                                     // _58 (weak)
+	virtual void createObj(int);                       // _A0
+	virtual EnemyBase* getEnemy(int idx);              // _A4
+	virtual void doAlloc();                            // _A8
+	virtual void loadTexData();                        // _D0
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_Mtank;
+	}
+	virtual ResTIMG* getChangeTexture() // _E0 (weak)
+	{
+		return mChangeTexture;
+	}
+
+	// _00 		= VTBL
+	// _00-_44	= EnemyMgrBase
+	ResTIMG* mChangeTexture; // _44, probably
+	Obj* mObj;               // _48, array of Objs, probably
+};
+} // namespace Gtank
+
 } // namespace Game
 
 #endif
