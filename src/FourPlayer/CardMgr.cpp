@@ -199,7 +199,7 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 		CI_LOOP(IPiki)
 		{
 			Piki* piki = *IPiki;
-			if (piki->getKind() == 1 - user && piki->isAlive() && (int)piki->getHappa() != Flower) {
+			if (piki->getKind() == getPikiFromTeam(user) && piki->isAlive() && (int)piki->getHappa() != Flower) {
 				piki->changeHappa(Flower);
 				Vector3f vec = piki->_25C;
 				efx::TPkGlow2 particle;
