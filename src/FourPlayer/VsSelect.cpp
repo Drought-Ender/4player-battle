@@ -310,7 +310,7 @@ bool TFourVsSelect::doUpdate() {
 
         if (mAnimActive[i]) {
             mAnimProgress[i] += sys->mDeltaTime * mAnimSpeed[i];
-            f32 smoothedProgress = (1.0f - domainSqrt(pikmin2_cosf(mAnimProgress[i] * PI))) * 0.5f;
+            f32 smoothedProgress = (1.0f - oddSqrt(pikmin2_cosf(mAnimProgress[i] * PI))) * 0.5f;
             if (mAnimProgress[i] < 0.0f) {
                 mAnimActive[i] = false;
                 mAnimProgress[i] = 0.0f;

@@ -85,6 +85,9 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		mWinColors[i] = 0;
 		mNaviStatus[i] = -1;
 		mExtinctions[i] = false;
+		if (!isTeamActive(i)) {
+			mExtinctions[i] = true;
+		}
 	}
 	section->mGhostIconTimers[1]    = 0.0f;
 	section->mGhostIconTimers[0]    = 0.0f;
@@ -205,7 +208,7 @@ void pikminZeroFunc(int idx) {
 void GameState::setDeathLose() {
 	for (int i = 0; i < 4; i++) {
 		if (mNaviStatus[i] != -1) {
-			setLoseCause(i, mNaviStatus[i]);
+			setLoseCause(getVsTeam(i), mNaviStatus[i]);
 		}
 	}
 }
@@ -223,21 +226,27 @@ bool GameState::isWinExtinction() {
 void GameState::checkVsPikminZero(VsGameSection* section) {
 	for (int teamID = 0; teamID < 4; teamID++) {
 		int pikiColor = getPikiFromTeam(teamID);
-		if (GameStat::getAllPikmins(pikiColor) == 0 && ItemOnyon::mgr->getOnyon(pikiColor)->mToBirth == 0) {
+		if (isTeamActive(teamID) && GameStat::getAllPikmins(pikiColor) == 0 && ItemOnyon::mgr->getOnyon(pikiColor)->mToBirth == 0) {
 			//setLoseCause(VSPLAYER_Red, VSLOSE_Extinction);
 			for (int i = 0; i < 4; i++) {
 				if (getVsPikiColor(i) == pikiColor && mNaviStatus[i] == -1) {
 					mNaviStatus[i] = VSLOSE_Extinction;
-					if (!mExtinctions[teamID]) {
-						mExtinctions[teamID] = true;
-						if (isWinExtinction()) {
-							setDeathLose();
-							return;
-						}
-						pikminZeroFunc(i);
-					}
 				}
 			}
+			for (int i = 0; i < 4; i++) {
+				if (getVsPikiColor(i) == pikiColor && mNaviStatus[i] == -1) {
+					mNaviStatus[i] = VSLOSE_Extinction;
+				}
+				if (!mExtinctions[teamID]) {
+					mExtinctions[teamID] = true;
+					if (isWinExtinction()) {
+						setDeathLose();
+						return;
+					}
+					pikminZeroFunc(i);
+				}
+			}
+
 		}
 	}
 }
@@ -317,7 +326,7 @@ void GameState::exec(VsGameSection* section)
 					outcome = 3;             // draw
 					VsGameSection::mDrawCount += 1;
 
-				} else if (!redLost) { // red didn't lose
+				} else if (!redLost && isTeamActive(TEAM_RED)) { // red didn't lose
 					outcome = 1;       // red win
 					VsGameSection::mRedWinCount += 1;
 					section->mVsWinner = 0;
@@ -331,7 +340,7 @@ void GameState::exec(VsGameSection* section)
 						}
 					}
 
-				} else if (!blueLost) { // blue didn't lose
+				} else if (!blueLost && isTeamActive(TEAM_BLUE)) { // blue didn't lose
 					outcome = 2;        // blue win
 					VsGameSection::mBlueWinCount += 1;
 					section->mVsWinner = 1;
@@ -343,7 +352,7 @@ void GameState::exec(VsGameSection* section)
 							outcomes[i] = 1;
 						}
 					}
-				} else if (!whiteLost) {
+				} else if (!whiteLost && isTeamActive(TEAM_WHITE)) {
 					outcome = 1;        // blue win
 					VsGameSection::mWhiteWinCount += 1;
 					section->mVsWinner = 2;
@@ -354,7 +363,7 @@ void GameState::exec(VsGameSection* section)
 							outcomes[i] = 1;
 						}
 					}
-				} else if (!purpleLost) {
+				} else if (!purpleLost && isTeamActive(TEAM_PURPLE)) {
 					outcome = 1;        // blue win
 					VsGameSection::mPurpleWinCount += 1;
 					section->mVsWinner = 3;
@@ -372,15 +381,10 @@ void GameState::exec(VsGameSection* section)
 					section->mVsWinner = -1;
 				}
 
-				if (Game::gNaviNum == 2) {
 
-					kh::Screen::DispWinLose winLose(outcome, 1, outcomes, true);
-					Screen::gGame2DMgr->open_WinLose(winLose);
-				}
-				else {
-					kh::Screen::DispWinLose winLose(outcome, 1, outcomes, false);
-					Screen::gGame2DMgr->open_WinLose(winLose);
-				}
+				kh::Screen::DispWinLose winLose(outcome, 1, outcomes, false);
+				Screen::gGame2DMgr->open_WinLose(winLose);
+				
 				return;
 
 			} else {
@@ -517,8 +521,8 @@ void GameState::exec(VsGameSection* section)
 			}
 
 			kh::Screen::DispWinLoseReason winLoseReason;
-			winLoseReason.mOutcomeRed = redReason;
-			winLoseReason.mOutcomeBlue = blueReason;
+			winLoseReason.mOutcomeRed = -1;
+			winLoseReason.mOutcomeBlue = 1;
 
 			for (int i = 0; i < 4; i++) {
 				winLoseReason.mOutcomeNavis[i] = mNaviStatus[i];
@@ -1019,7 +1023,7 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		Screen::gGame2DMgr->close_GameOver();
 		og::Screen::DispMemberVs vs;
 		Screen::gGame2DMgr->open_GameVs(vs, 0);
-		static_cast<VsGameSection*>(gameSystem->mSection)->startMainBgm();
+		section->startMainBgm();
 		if (gameSystem->isVersusMode()) {
 			for (int i = 0; i < 4; i++) {
 				if (getVsPikiColor(i) == getVsPikiColor(p2)) {

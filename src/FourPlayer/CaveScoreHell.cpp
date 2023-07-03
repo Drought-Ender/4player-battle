@@ -5,9 +5,31 @@
 #include "Game/gamePlayData.h"
 #include "Game/generalEnemyMgr.h"
 #include "Game/Cave/Info.h"
+#include "FourPlayer.h"
 
 
-OnyonTypes gScoreDelegations[2][2] = { {ONYON_TYPE_RED, ONYON_TYPE_BLUE}, {ONYON_TYPE_WHITE, ONYON_TYPE_PURPLE} };
+int gScoreDelegations[2][2] = { {ONYON_TYPE_RED, ONYON_TYPE_BLUE}, {ONYON_TYPE_WHITE, ONYON_TYPE_PURPLE} };
+int gEffectiveTeamCount = 4;
+
+void initScoreDelegations() {
+	if (Game::getTeamCount() > 2) {
+		gEffectiveTeamCount = 4;
+		gScoreDelegations[0][0] = ONYON_TYPE_RED;
+		gScoreDelegations[0][1] = ONYON_TYPE_BLUE;
+		gScoreDelegations[1][0] = ONYON_TYPE_WHITE;
+		gScoreDelegations[1][1] = ONYON_TYPE_PURPLE;
+	}
+	else {
+		gEffectiveTeamCount = 2;
+		int deleID = 0;
+		for (int i = 0; i < 4; i++) {
+			if (Game::isTeamActive(i)) {
+				gScoreDelegations[0][deleID++] = (OnyonTypes)Game::getPikiFromTeam(i);
+			}
+		}
+	}
+}
+
 
 enum ScoreDelegations {
     FIRST_SCORE,
@@ -57,6 +79,7 @@ MapNode* RandMapScore::getRandRoomMapNode()
 
 void RandMapScore::setVersusOnyon()
 {
+	initScoreDelegations();
 
 	if (!getFixObjNode(FIXNODE_VsRedOnyon) && !getFixObjNode(FIXNODE_VsBlueOnyon) && !getFixObjNode(FIXNODE_VsWhiteOnyon) && !getFixObjNode(FIXNODE_VsPurpleOnyon)) {
 		MapNode* targetNode    = getRandRoomMapNode();
@@ -76,20 +99,21 @@ void RandMapScore::setVersusOnyon()
 			calcNodeScore(onyonNodes[1]);
 			subNodeScore(FIRST_SCORE);
 
-
-            onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
-			JUT_ASSERT(onyonNodes[2], "NO ROOM FOR WHITE ONYON");
-			calcNodeScore(onyonNodes[2]);
-            
-			onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[3]);
-			JUT_ASSERT(onyonNodes[3], "NO ROOM FOR PURPLE ONYON");
-			calcNodeScore(onyonNodes[3]);
-			
-			onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
-			calcNodeScore(onyonNodes[2]);
-			copyNodeScore(SECOND_SCORE);
-            calcNodeScore(onyonNodes[3]);
-			subNodeScore(SECOND_SCORE);
+			if (gEffectiveTeamCount > 2) {
+				onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
+				JUT_ASSERT(onyonNodes[2], "NO ROOM FOR WHITE ONYON");
+				calcNodeScore(onyonNodes[2]);
+				
+				onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[3]);
+				JUT_ASSERT(onyonNodes[3], "NO ROOM FOR PURPLE ONYON");
+				calcNodeScore(onyonNodes[3]);
+				
+				onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
+				calcNodeScore(onyonNodes[2]);
+				copyNodeScore(SECOND_SCORE);
+				calcNodeScore(onyonNodes[3]);
+				subNodeScore(SECOND_SCORE);
+			}
 
 			mFixObjNodes[FIXNODE_VsRedOnyon]  = onyonNodes[0];
 			mFixObjNodes[FIXNODE_VsBlueOnyon] = onyonNodes[1];
@@ -251,7 +275,7 @@ bool RandMapScore::isFixObjSet(MapNode* mapNode, BaseGen* baseGen)
 	}
 
 	// test remaining fix obj nodes
-	for (int i = 1; i < FIXNODE_Count; i++) {
+	for (int i = 1; i < FIXNODE_VsRedOnyon + gEffectiveTeamCount; i++) {
 		if (mapNode == getFixObjNode(i) && baseGen == getFixObjGen(i)) {
 			return false;
 		}
@@ -345,7 +369,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_VsBlueOnyon: {
-					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_BLUE);
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, gScoreDelegations[0][1]);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
 					birthPos.y = 0.0f;
@@ -355,7 +379,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_VsRedOnyon: {
-					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_RED);
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, gScoreDelegations[0][0]);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
 					birthPos.y = 0.0f;
@@ -365,7 +389,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
                 case OBJLAYOUT_VsWhiteOnyon: {
-					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_WHITE);
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, gScoreDelegations[1][0]);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
 					birthPos.y = 0.0f;
@@ -375,7 +399,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_VsPurpleOnyon: {
-					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, ONYON_TYPE_PURPLE);
+					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, gScoreDelegations[1][1]);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
 					birthPos.y = 0.0f;
@@ -612,7 +636,7 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode* node, int scores[2])
 		Vector3f onyonPos;
         int firstScoreDiff = node->getVersusScore(FIRST_SCORE) - scores[FIRST_SCORE];
         int secondScoreDiff = node->getVersusScore(SECOND_SCORE) - scores[SECOND_SCORE];
-        if (absVal(firstScoreDiff) > absVal(secondScoreDiff)) {
+        if (absVal(firstScoreDiff) > absVal(secondScoreDiff) || gEffectiveTeamCount == 2) {
             if (firstScoreDiff > 0) {
                 onyonPos = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon)->getBaseGenGlobalPosition(mMapScore->getFixObjGen(FIXNODE_VsRedOnyon));
             } else {
@@ -781,6 +805,9 @@ void RandItemUnit::getItemDropMapNode(MapNode* testNode, MapNode** outNode, int 
 	if (check) {
 		int absScore = absVal(testNode->getVersusScore(FIRST_SCORE) - scores[FIRST_SCORE]) 
         + absVal(testNode->getVersusScore(SECOND_SCORE) - scores[SECOND_SCORE]);
+		if (gEffectiveTeamCount == 2) {
+			absScore = absVal(testNode->getVersusScore(FIRST_SCORE) - scores[FIRST_SCORE]);
+		} 
 		if (absScore < outScore || (absScore == outScore && randWeightFloat(1.0f) < 0.5f)) {
 			*outNode = testNode;
 			outScore = absScore;
@@ -821,8 +848,10 @@ void RandMapMgr::getStartPosition(Vector3f& position, int idx)
 			break;
 		case TEAM_BLUE:
 			mRandMapScore->getGlobalPosition(FIXNODE_VsBlueOnyon, position);
+			break;
 		case TEAM_WHITE:
 			mRandMapScore->getGlobalPosition(FIXNODE_VsWhiteOnyon, position);
+			break;
 		case TEAM_PURPLE:
 			mRandMapScore->getGlobalPosition(FIXNODE_VsWhiteOnyon, position);
 		default:
@@ -887,11 +916,11 @@ void RandEnemyUnit::setVersusEasyEnemy()
 		if (enemyCounts[i][0] == 0) continue;
 
 
-		for (int j = 3; j >= 0; j--) {
-			enemyCounts[i][j] = enemyCounts[i][0] / 4;
+		for (int j = gEffectiveTeamCount - 1; j >= 0; j--) {
+			enemyCounts[i][j] = enemyCounts[i][0] / gEffectiveTeamCount;
 		}
 		if (enemyUnits[i]) {
-			for (int j = 0; j < 4; j++) {
+			for (int j = 0; j < gEffectiveTeamCount; j++) {
 				if (enemyCounts[i][j] != 0) {
 					BaseGen* spawnBaseGen = getVersusEasyEnemyBaseGen(onyonNodes[j], onyonGens[j]);
 					if (spawnBaseGen) {

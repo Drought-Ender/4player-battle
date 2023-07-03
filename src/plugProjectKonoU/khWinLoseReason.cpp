@@ -52,6 +52,8 @@ SceneWinLoseReason::SceneWinLoseReason()
 {
 	mScreenObj[1] = nullptr;
 	mScreenObj[0] = nullptr;
+	mOutcome[3]   = -1;
+	mOutcome[2]   = -1;
 	mOutcome[1]   = -1;
 	mOutcome[0]   = -1;
 	mDone[1]      = false;
@@ -71,7 +73,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 	}
 
 	DispWinLoseReason* disp = static_cast<DispWinLoseReason*>(mDispMember);
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < Game::gNaviNum; i++) {
 		mOutcome[i]             = disp->mOutcomeNavis[i];
 		f32 posY = (i < 2) ? ObjWinLoseReason::msVal.mYOffsetP1 : ObjWinLoseReason::msVal.mYOffsetP2;
 		f32 posX = (i & 1) ? 160.0f : -160.0f;

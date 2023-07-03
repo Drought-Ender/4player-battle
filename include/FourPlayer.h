@@ -6,6 +6,11 @@
 #include "ConfigEnums.h"
 #include "types.h"
 
+
+
+extern int gScoreDelegations[2][2];
+extern int gEffectiveTeamCount;
+
 struct Controller;
 
 extern int mRealWinCounts[4];
@@ -187,12 +192,31 @@ int getTeamCount() {
     return count;
 }
 
+int getTeamMembers(int team) {
+    int count = 0;
+    for (int i = 0; i < 4; i++) {
+        if (getVsTeam(i) == team) {
+            count++;
+        }
+    }
+    return count;
+}
+
+bool isTeamActive(int idx) {
+    for (int i = 0; i < 4; i++) {
+        if (getVsTeam(i) == idx) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 
 } // namespace Game
 
 // a sqrt function suited to all domains
-f32 domainSqrt(f32 x) { 
+f32 oddSqrt(f32 x) { 
     if (x > 0.0f) {
         return sqrtf(x);
     }

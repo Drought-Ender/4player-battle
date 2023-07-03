@@ -387,7 +387,7 @@ void Obj::setPelletColor(u16 color, bool check)
 		case PELCOLOR_PURPLE:
 		case PELCOLOR_WHITE:
 			if (check) {
-				if (playData->hasMetPikmin(color)) {
+				if (playData->hasMetPikmin(color) && (color == PELCOLOR_YELLOW || isTeamActive(getTeamFromPiki(color)))) {
 					mPellet->setValidColor(color);
 					return;
 				}
