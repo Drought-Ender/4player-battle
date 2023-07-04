@@ -231,7 +231,7 @@ void GameState::checkVsPikminZero(VsGameSection* section) {
 			for (int i = 0; i < 4; i++) {
 				if (getVsPikiColor(i) == pikiColor && mNaviStatus[i] == -1) {
 					mNaviStatus[i] = VSLOSE_Extinction;
-					mOrimaDownState[i] = 2;
+					mOrimaDownState[i] = 3;
 				}
 				if (getVsPikiColor(i) == pikiColor && !mExtinctions[teamID]) {
 					mExtinctions[teamID] = true;
@@ -318,6 +318,8 @@ void GameState::exec(VsGameSection* section)
 				u8 whiteLost  = getLoseCauses(VSPlayer_White);
 				u8 purpleLost = getLoseCauses(VSPlayer_Purple);
 
+				OSReport("Loss %i, %i, %i, %i\n", redLost, blueLost, whiteLost, purpleLost);
+
 
 				if (!redLost && !blueLost && !whiteLost && !purpleLost) { // neither player lost
 					outcome = 3;             // draw
@@ -373,6 +375,7 @@ void GameState::exec(VsGameSection* section)
 					}
 				}
 				else {         // both lost/something wacky happened
+					OSReport("Draw!\n");
 					outcome = 3; // draw
 					VsGameSection::mDrawCount += 1;
 				}
@@ -1107,11 +1110,27 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 		if (mOrimaDownState[i] > 0) {
 			orimaDownCount++;
 		}
+		if (mOrimaDownState[i] == 1) {
+			mOrimaDownState[i] = 2;
+		}
 	}
 	OSReport("Orimas down %i\n", orimaDownCount);
 
+	if (orimaDownCount == 4) {
+		for (int i = 0; i < 4; i++) {
+			mExtinctions[i] = true;
+			if (mNaviStatus[i] == -1) {
+				mNaviStatus[i] = VSLOSE_OrimaDown;
+				mOrimaDownState[i] = 3;
+			}
+		}
+		setDeathLose();
+		OSReport("DRAW!\n");
+		return;
+	}
+
 	for (int idx = 0; idx < 4; idx++) {
-		if (mOrimaDownState[idx] == 1) {
+		if ((mOrimaDownState[idx] == 2 && orimaDownCount == 3)) {
 			mNaviStatus[idx] = VSLOSE_OrimaDown;
 			bool naviTeamExinct = true;
 			for (int i = 0; i < 4; i++) {
@@ -1122,6 +1141,7 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 			if (naviTeamExinct) {
 				mExtinctions[getVsTeam(idx)] = true;
 				if (isWinExtinction()) {
+					OSReport("Set death lose\n");
 					setDeathLose();
 				}
 			}
@@ -1130,8 +1150,8 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 
 	if (orimaDownCount >= 3) {
 		for (int i = 0; i < 4; i++) {
-			if (mOrimaDownState[i] == 1) {
-				mOrimaDownState[i] = 2;
+			if (mOrimaDownState[i] == 2) {
+				mOrimaDownState[i] = 3;
 			}
 		}
 		return;
@@ -1140,7 +1160,7 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 
 	
 	for (int i = 0; i < 4; i++) {
-		if (mOrimaDownState[i] != 1) continue;
+		if (mOrimaDownState[i] != 2) continue;
 		MoviePlayArg movieArg("s03_orimadown", nullptr, section->mMovieFinishCallback, i);
 		movieArg.mDelegateStart = section->mMovieStartCallback;
 
@@ -1163,7 +1183,7 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 			break;
 		}
 		moviePlayer->play(movieArg);
-		mOrimaDownState[i] = 2;
+		mOrimaDownState[i] = 3;
 	}
 }
 
