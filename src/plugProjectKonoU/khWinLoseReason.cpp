@@ -114,6 +114,8 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 		}
 	}
 
+	if (mDone[0] && mDone[1] && mDone[2] && mDone[3]) return;
+
 	setColorBG(0, 0, 0, 160);
 
 	int flag = 0;

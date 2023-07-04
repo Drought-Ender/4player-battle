@@ -383,8 +383,20 @@ void VsGameSection::initPlayData()
 
 void VsGameSection::onSetupFloatMemory()
 {
+
 	Farm::farmMgr = nullptr;
 	mTekiMgr      = new VsGame::TekiMgr();
+
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Hanachirashi, 4);
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Sarai, 4);
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Rock, 12);
+	mTekiMgr->entry(EnemyTypeID::EnemyID_BombOtakara, 2);
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Tank, 2);
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Wtank, 2);
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Gtank, 2);
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Mtank, 2);
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Tobi, 20);
+
 	mCardMgr      = new VsGame::CardMgr(this, mTekiMgr);
 	mCardMgr->loadResource();
 	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaYellow, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite };
@@ -964,7 +976,7 @@ bool GameMessageVsGetOtakara::actVs(VsGameSection* section)
  */
 bool GameMessageVsAddEnemy::actVs(VsGameSection* section)
 {
-	section->mTekiMgr->entry(_04, _08);
+	//section->mTekiMgr->entry(_04, _08);
 	return true;
 }
 

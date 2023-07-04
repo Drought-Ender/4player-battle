@@ -522,7 +522,7 @@ void GameState::exec(VsGameSection* section)
 
 			kh::Screen::DispWinLoseReason winLoseReason;
 			winLoseReason.mOutcomeRed = -1;
-			winLoseReason.mOutcomeBlue = 1;
+			winLoseReason.mOutcomeBlue = -1;
 
 			for (int i = 0; i < 4; i++) {
 				winLoseReason.mOutcomeNavis[i] = mNaviStatus[i];

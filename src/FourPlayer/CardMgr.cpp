@@ -325,7 +325,7 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 			used = false;
 			break;
 		}
-		u32 TekiID = (!user) ? 4 : 5;
+		u32 TekiID = 4 + user;
 
 		Onyon* onyon = ItemOnyon::mgr->getOnyon(getVsPikiColor(target));
 		Vector3f onyonPos;
