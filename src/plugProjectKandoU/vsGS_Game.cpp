@@ -220,7 +220,7 @@ bool GameState::isWinExtinction() {
 			count++;
 		}
 	}
-	return count >= 3;
+	return count == 3;
 }
 
 void GameState::checkVsPikminZero(VsGameSection* section) {
@@ -378,7 +378,6 @@ void GameState::exec(VsGameSection* section)
 				else {         // both lost/something wacky happened
 					outcome = 3; // draw
 					VsGameSection::mDrawCount += 1;
-					section->mVsWinner = -1;
 				}
 
 
@@ -1097,8 +1096,9 @@ void GameState::onOrimaDown(VsGameSection* section, int idx)
 				}
 			}
 		}
-		//return;
 	}
+
+	if (_16) return;
 
 	OSReport("Downed Navi %i\n", idx);
 

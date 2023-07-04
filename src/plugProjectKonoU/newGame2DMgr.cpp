@@ -1253,6 +1253,7 @@ int Game2DMgr::check_WinLoseReason() const
 	} else {
 		ret                                   = 0;
 		kh::Screen::SceneWinLoseReason* scene = reinterpret_cast<kh::Screen::SceneWinLoseReason*>(mScreenMgr->mBackupScene);
+		P2ASSERT(scene);
 		if (scene->mDone[0] && scene->mDone[1] && scene->mDone[2] && scene->mDone[3]) {
 			ret = 1;
 		}
