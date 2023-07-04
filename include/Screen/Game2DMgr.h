@@ -168,7 +168,7 @@ struct Game2DMgr : public JKRDisposer {
 	bool open_ChallengeResult(Morimura::DispMemberChallengeResult&);
 	bool isEndChallengeResult();
 	bool open_VsSelect(Morimura::DispMemberVsSelect&);
-	u32 check_VsSelect(int&, int&, int&);
+	u32 check_VsSelect(int&, int&, int&, int&, int&);
 	bool open_HighScore(Morimura::DispMemberHighScore&);
 	bool isEndHighScore();
 	bool drawKanteiMsg(Graphics&);

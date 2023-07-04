@@ -36,7 +36,6 @@ const JUtility::TColor vsTeamColors[] = { 0xff5050ff, 0x5050ffff, 0xffffffff, 0x
 
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
-    
 
     gOptionMenu = new VsOptionsMenu;
     gOptionMenu->init();
@@ -46,6 +45,10 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     }
 
     TVsSelect::doCreate(rarc);
+
+    
+    mWhitePikiNum = _1F8->mWhiteHandicap;
+    mPurplePikiNum = _1F8->mPurpleHandicap;
 
     for (int i = 0; i < 4; i++) {
         mTeamIDs[i] = Game::getVsTeam(i);
@@ -206,6 +209,12 @@ bool TFourVsSelect::doUpdateFadein() {
     return TVsSelect::doUpdateFadein();
 }
 
+void TFourVsSelect::doUpdateFadeoutFinish() {
+    TVsSelect::doUpdateFadeoutFinish();
+    _1F8->mWhiteHandicap  = mWhitePikiNum;
+    _1F8->mPurpleHandicap = mPurplePikiNum;
+}
+
 bool TFourVsSelect::doUpdate() {
     if (!gDrawVsMenu) {
         gDrawVsMenu = gOptionMenu->update();
@@ -220,7 +229,7 @@ bool TFourVsSelect::doUpdate() {
 	}
     Controller* controllerArray[4] = { mController, mController2, Game::gControllerP3, Game::gControllerP4};
 
-    int* pikiNumArray = &mRedPikiNum;
+    int* pikiNumArray[4] = { &mRedPikiNum, &mBluePikiNum, &mWhitePikiNum, &mPurplePikiNum };
 
     if (_D4->mState == 0) {
         if (mController->isButtonDown(JUTGamePad::PRESS_START) && !mCanCancel) {
@@ -229,21 +238,21 @@ bool TFourVsSelect::doUpdate() {
             return false;
         }
         for (int i = 0; i < 4; i++) {
-            for (int c = 0; c < 2; c++) {
+            for (int c = 0; c < 4; c++) {
                 if (mTeamIDs[i] == c) {
                     if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_R)) {
-                        pikiNumArray[c]++;
-                        if (pikiNumArray[c] > 10) {
-                            pikiNumArray[c] = 10;
+                        (*pikiNumArray[c])++;
+                        if (*pikiNumArray[c] > 10) {
+                            *pikiNumArray[c] = 10;
                         }
                         else {
                             PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_INCREMENT, 0);
                         }
                     }
                     else if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_L)) {
-                        pikiNumArray[c]--;
-                        if (pikiNumArray[c] < 1) {
-                            pikiNumArray[c] = 1;
+                        (*pikiNumArray[c])--;
+                        if (*pikiNumArray[c] < 1) {
+                            *pikiNumArray[c] = 1;
                         }
                         else {
                             PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_DECREMENT, 0);
@@ -271,7 +280,7 @@ bool TFourVsSelect::doUpdate() {
                 mTeamIDs[i]++;
                 mAnimActive[i] = true;
                 mAnimProgress[i] = 0.0f;
-                mAnimSpeed[i] = 3.0f;
+                mAnimSpeed[i] = 9.0f;
                 mAnimDir[i] = 1;
                 PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_THROW, 0);
             }
@@ -288,7 +297,7 @@ bool TFourVsSelect::doUpdate() {
                 mAnimActive[i] = true;
                 mAnimProgress[i] = 0.0f;
                 mAnimDir[i] = -1;
-                mAnimSpeed[i] = 3.0f;
+                mAnimSpeed[i] = 9.0f;
                 PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_THROW, 0);
             }
         }
@@ -406,6 +415,13 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
         return;
     }
     TVsSelect::doDraw(gfx);
+
+    J2DPrint printWhite(getPikminFont(), vsTeamColors[2], vsTeamColors[2]);
+    J2DPrint printPurple(getPikminFont(), vsTeamColors[3], vsTeamColors[3]);
+    
+    
+    printWhite.print(310.0f, 280.0f, "%i", mWhitePikiNum * 5);
+    printPurple.print(310.0f, 330.0f, "%i", mPurplePikiNum * 5);   
 }
 
 } // namespace name

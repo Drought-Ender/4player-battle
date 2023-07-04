@@ -261,6 +261,7 @@ bool InteractDope::actPiki(Game::Piki* piki)
 				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_ELEMENT) {
 					PanicStateArg pargs;
 					pargs.mPanicType = navi->getVsTeam();
+					if (pargs.mPanicType == PIKIPANIC_Panic) pargs.mPanicType = PIKIPANIC_Spore;
 					piki->mFsm->transit(piki, PIKISTATE_Panic, &pargs);
 					return true;
 				}

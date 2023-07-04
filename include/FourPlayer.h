@@ -5,6 +5,8 @@
 #include "JSystem/J2D/J2DPrint.h"
 #include "ConfigEnums.h"
 #include "types.h"
+#include "P2JME/P2JME.h"
+
 
 
 
@@ -18,6 +20,10 @@ extern int mRealWinCounts[4];
 extern bool gDrawVsMenu;
 
 extern bool gDrawNavi[4];
+
+JUTFont* getPikminFont() {
+    return gP2JMEMgr->mFont;
+}
 
 typedef f32 VsWeights[2]; // delegations
 

@@ -139,9 +139,7 @@ int GetConfigSize() {
 }
 
 
-JUTFont* getPikminFont() {
-    return gP2JMEMgr->mFont;
-}
+
 
 #define OPTIONS_PER_PAGE (10)
 

@@ -426,7 +426,6 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_Enemy: {
-					OSReport("OBJLAYOUT_Enemy\n");
 					Vector3f birthPos;
 					birthPos.y = 0.0f;
 					node->getBirthPosition(birthPos.x, birthPos.z);

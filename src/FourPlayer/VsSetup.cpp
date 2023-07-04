@@ -211,7 +211,6 @@ void NaviMgr::doEntry() {
         if (gameSystem->isVersusMode()) {
             for (int i = 0; i < 4; i++) {
                 if (navi->mNaviIndex == i && pikiMgr->mFlags[0] & (1 << getVsPikiColor(i))) {
-                    OSReport("Flagged\n");
                     navi->mLod.mFlags &= ~vsFlags[i];
                 }
             }

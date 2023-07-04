@@ -1862,7 +1862,7 @@ bool Game2DMgr::open_VsSelect(Morimura::DispMemberVsSelect& disp)
  * Address:	803FFF04
  * Size:	000078
  */
-u32 Game2DMgr::check_VsSelect(int& ret1, int& ret2, int& ret3)
+u32 Game2DMgr::check_VsSelect(int& ret1, int& ret2, int& ret3, int& ret4, int& ret5)
 {
 	ret1 = -1;
 
@@ -1872,6 +1872,8 @@ u32 Game2DMgr::check_VsSelect(int& ret1, int& ret2, int& ret3)
 		ret1 = disp->mSelectedStageIndex;
 		ret2 = disp->mOlimarHandicap;
 		ret3 = disp->mLouieHandicap;
+		ret4 = disp->mWhiteHandicap;
+		ret5 = disp->mPurpleHandicap;
 	}
 	return disp->_34;
 }

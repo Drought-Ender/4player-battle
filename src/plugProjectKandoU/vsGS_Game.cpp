@@ -1114,7 +1114,6 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 			mOrimaDownState[i] = 2;
 		}
 	}
-	OSReport("Orimas down %i\n", orimaDownCount);
 
 	if (orimaDownCount == 4) {
 		for (int i = 0; i < 4; i++) {

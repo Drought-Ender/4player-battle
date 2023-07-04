@@ -132,6 +132,8 @@ struct VsGameSection : public BaseGameSection {
 	int mVsStageNum;                               // _340
 	int mOlimarHandicap;                           // _344
 	int mLouieHandicap;                            // _348
+	int mWhiteHandicap;
+	int mPurpleHandicap;
 	int mVsWinner;                                 // _34C
 	f32 mPikminRatio;                              // _350
 	f32 mPikminCountTimer;                         // _354
@@ -153,9 +155,7 @@ struct VsGameSection : public BaseGameSection {
 	int mGetDopeCount[4][2];
 };
 
-//const static int vsGameSize = sizeof(VsGameSection);
-
-
+const static int vsGameSize = sizeof(VsGameSection);
 
 } // namespace Game
 

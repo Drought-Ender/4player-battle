@@ -291,6 +291,8 @@ void TitleState::execVs(VsGameSection* section)
 			select.mDebugExpHeap   = mExpHeap;
 			select.mOlimarHandicap = section->mOlimarHandicap;
 			select.mLouieHandicap  = section->mLouieHandicap;
+			select.mWhiteHandicap  = section->mWhiteHandicap;
+			select.mPurpleHandicap = section->mPurpleHandicap;
 			select.mRedWinCount    = section->mRedWinCount;
 			select.mBlueWinCount   = section->mBlueWinCount;
 			select.mVsWinner       = section->mVsWinner;
@@ -337,7 +339,7 @@ void TitleState::execVs(VsGameSection* section)
 		}
 
 		int stageNumber;
-		int check = Screen::gGame2DMgr->check_VsSelect(stageNumber, section->mOlimarHandicap, section->mLouieHandicap);
+		int check = Screen::gGame2DMgr->check_VsSelect(stageNumber, section->mOlimarHandicap, section->mLouieHandicap, section->mWhiteHandicap, section->mPurpleHandicap);
 		switch (check) {
 		case 2:
 			section->mIsMenuRunning = true;

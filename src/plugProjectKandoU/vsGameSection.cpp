@@ -98,6 +98,8 @@ VsGameSection::VsGameSection(JKRHeap* heap, bool gameMode)
 	mVsWinner              = -1;
 	mLouieHandicap         = 2;
 	mOlimarHandicap        = 2;
+	mWhiteHandicap         = 2;
+	mPurpleHandicap        = 2;
 	for (int i = 0; i < 4; i++)
 	{
 		mRealMarbleCounts[i] = 0;
@@ -815,8 +817,8 @@ void VsGameSection::createVsPikmins()
 
 		int& purples = pikmin->getCount(gScoreDelegations[1][1], Leaf);
 
-		purples = 10;
-		whites  = 10;
+		purples = mPurpleHandicap * 5;
+		whites  = mWhiteHandicap * 5;
 	}
 
 

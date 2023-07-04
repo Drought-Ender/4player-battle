@@ -26,6 +26,8 @@ struct DispMemberVsSelect : public og::Screen::DispMemberBase {
 		mStageNumber          = 0;
 		mOlimarHandicap       = 3;
 		mLouieHandicap        = 3;
+		mWhiteHandicap        = 3;
+		mPurpleHandicap       = 3;
 		mRedWinCount          = 0;
 		mBlueWinCount         = 0;
 		mVsWinner             = -1;
@@ -52,6 +54,8 @@ struct DispMemberVsSelect : public og::Screen::DispMemberBase {
 	int mStageCount;                                               // _30
 	int _34;                                                       // _34
 	int mNaviWinCounts[4];
+	int mWhiteHandicap;
+	int mPurpleHandicap;
 };
 
 struct TVsSelectCBWinNum : public og::Screen::CallBack_CounterDay {
@@ -241,8 +245,8 @@ struct TVsSelect : public TScrollList {
 	f32 _268;
 	f32 _26C;
 	f32 _270;
-	int mRedPikiNum;
-	int mBluePikiNum;
+	int mRedPikiNum; // _274
+	int mBluePikiNum; // _278
 	u32 _27C;
 	u32 _280;
 	u32 _284;
@@ -272,6 +276,7 @@ struct TFourVsSelect : public TVsSelect
 	virtual bool doUpdate();
 	virtual void doDraw(Graphics& gfx);
 	virtual bool doUpdateFadein();
+	virtual void doUpdateFadeoutFinish();
 
 	J2DPictureEx* mNaviImages[4];
 	J2DPictureEx* mNaviBoxes[4];
@@ -294,6 +299,8 @@ struct TFourVsSelect : public TVsSelect
 	f32 mAnimSpeed[4];
 	int mAnimDir[4];
 	JUtility::TColor mLerpColors[4];
+	int mWhitePikiNum;
+	int mPurplePikiNum;
 };
 
 
