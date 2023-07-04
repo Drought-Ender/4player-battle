@@ -420,14 +420,14 @@ void Obj::changePelletColor()
 			if (mPellet) {
 				initialColor = mPellet->mPelletColor;
 			} else {
-				initialColor = PELCOLOR_BLUE;
+				initialColor = PELCOLOR_RED;
 			}
 
 			u16 nextColor = pelColorArr[pelColorIdx[initialColor] + 1];
 			u16 colorCap  = nextColor;
-			while (!playData->hasMetPikmin(nextColor)) {// || !(nextColor == PELCOLOR_YELLOW || isTeamActive(getTeamFromPiki(nextColor)))) {
+			while (nextColor != PELCOLOR_YELLOW && !isTeamActive(getTeamFromPelplant(nextColor))) {
 				if (++nextColor > PELCOLOR_WHITE) {
-					nextColor = PELCOLOR_BLUE;
+					nextColor = PELCOLOR_RED;
 				}
 
 				if (nextColor == colorCap) {

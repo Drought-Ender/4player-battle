@@ -12,7 +12,7 @@
 #include "Game/CameraMgr.h"
 #include "FourPlayer.h"
 #include "Game/GameLight.h"
-
+#include "Game/PikiMgr.h"
 #include "JSystem/J3D/J3DModelLoader.h"
 
 f32 gFirstViewportHeight = 0.5f;

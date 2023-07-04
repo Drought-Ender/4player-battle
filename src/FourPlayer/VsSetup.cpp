@@ -127,20 +127,31 @@ void Navi::incDopeCount(int dope) {
     }
 }
 
+
+void PikiMgr::setVsXlu(int p1, bool p2)
+{
+	if (p2) {
+		mFlags[0] &= ~(1 << p1);
+	} else {
+		mFlags[0] |= 1 << p1;
+	}
+}
+
+
 void PikiMgr::doEntry() {
 
     
     u8 flag = mFlags[1];
     if (gameSystem->isVersusMode()) {
-        u8 vsFlags[4];
-        for (int i = 0; i < 4; i++) {
-            vsFlags[i] = 0x0;
-            for (int j = 0; j < 4; j++) {
-                if (getVsPikiColor(j) != i) {
-                    vsFlags[i] |= 0x10 << j;
-                }
-            }
-        }
+		u8 vsFlags[4];
+		for (int viewerNavi = 0; viewerNavi < 4; viewerNavi++) {
+			vsFlags[viewerNavi] = 0x0;
+			for (int viewPiki = 0; viewPiki < 4; viewPiki++) {
+				if (getVsPikiColor(viewerNavi) != getPikiFromTeam(viewPiki)) {
+					vsFlags[viewerNavi] |= 0x10 << viewPiki;
+				}
+			}
+   		}
         for (int i = 0; i < mMax; i++) {
             if (mOpenIds[i]) {
                 continue;
@@ -152,7 +163,7 @@ void PikiMgr::doEntry() {
             }
 
             for (int i = 0; i < 4; i++) {
-                if (piki->mPikiKind == i && mFlags[0] & (1 << i)) {
+                if (getTeamFromPiki(piki->mPikiKind) == i && pikiMgr->mFlags[0] & (1 << getVsPikiColor(i))) {
                     piki->mLod.mFlags &= ~vsFlags[i];
                 }
             }

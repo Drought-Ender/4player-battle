@@ -1027,6 +1027,7 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		if (gameSystem->isVersusMode()) {
 			for (int i = 0; i < 4; i++) {
 				if (getVsPikiColor(i) == getVsPikiColor(p2)) {
+					naviMgr->getAt(i)->kill(nullptr);
 					naviMgr->informOrimaDead(i);
 					naviMgr->getAt(i)->setDeadLaydown();
 					gDrawNavi[i] = false;

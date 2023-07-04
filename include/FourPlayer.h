@@ -175,6 +175,22 @@ int getTeamFromPiki(int pikiColor) {
     }
     JUT_PANIC("GET PIKI %i\n", pikiColor);
 }
+
+int getTeamFromPelplant(int pikiColor) {
+	switch (pikiColor)
+    {
+    case PIKI_COLOR_RED: // red
+        return TEAM_RED;
+    case PIKI_COLOR_BLUE: // blue
+        return TEAM_BLUE;
+	case PIKI_COLOR_WHITE: // white
+		return TEAM_WHITE;
+	case PIKI_COLOR_PURPLE: // purple
+		return TEAM_PURPLE; 
+    }
+    return -1;
+}
+
 int getPikiFromTeam(int);
 
 int getTeamCount() {
@@ -203,6 +219,7 @@ int getTeamMembers(int team) {
 }
 
 bool isTeamActive(int idx) {
+    if (idx < 0|| idx >= 4) return false;
     if (gEffectiveTeamCount == 4) return true;
     for (int i = 0; i < 4; i++) {
         if (getVsTeam(i) == idx) {
@@ -211,6 +228,7 @@ bool isTeamActive(int idx) {
     }
     return false;
 }
+
 
 bool doesTeamHavePlayers(int idx) {
     for (int i = 0; i < 4; i++) {
