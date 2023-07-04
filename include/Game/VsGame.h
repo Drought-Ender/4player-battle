@@ -337,6 +337,7 @@ struct GameState : public State {
 	void update_GameChallenge(VsGameSection*);
 
 	void checkVsPikminZero(VsGameSection*);
+	void checkOrimaDown(VsGameSection*);
 	void setDeathLose();
 
 	bool isWinExtinction();
@@ -443,7 +444,8 @@ struct GameState : public State {
 	BitFlag<u8> mLoseCauses[4]; // _25
 	int mWinColors[4];
 	int mNaviStatus[4];
-	int mExtinctions[4];
+	int mOrimaDownState[4];
+	bool mExtinctions[4];
 };
 
 struct VSState : public GameState {

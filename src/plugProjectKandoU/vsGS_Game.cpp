@@ -88,6 +88,7 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		if (!doesTeamHavePlayers(i)) {
 			mExtinctions[i] = true;
 		}
+		mOrimaDownState[i] = 0;
 	}
 	section->mGhostIconTimers[1]    = 0.0f;
 	section->mGhostIconTimers[0]    = 0.0f;
@@ -220,22 +221,17 @@ bool GameState::isWinExtinction() {
 			count++;
 		}
 	}
-	return count == 3;
+	return count >= 3;
 }
 
 void GameState::checkVsPikminZero(VsGameSection* section) {
 	for (int teamID = 0; teamID < 4; teamID++) {
 		int pikiColor = getPikiFromTeam(teamID);
 		if (isTeamActive(teamID) && GameStat::getAllPikmins(pikiColor) == 0 && ItemOnyon::mgr->getOnyon(pikiColor)->mToBirth == 0) {
-			//setLoseCause(VSPLAYER_Red, VSLOSE_Extinction);
 			for (int i = 0; i < 4; i++) {
 				if (getVsPikiColor(i) == pikiColor && mNaviStatus[i] == -1) {
 					mNaviStatus[i] = VSLOSE_Extinction;
-				}
-			}
-			for (int i = 0; i < 4; i++) {
-				if (getVsPikiColor(i) == pikiColor && mNaviStatus[i] == -1) {
-					mNaviStatus[i] = VSLOSE_Extinction;
+					mOrimaDownState[i] = 2;
 				}
 				if (getVsPikiColor(i) == pikiColor && !mExtinctions[teamID]) {
 					mExtinctions[teamID] = true;
@@ -302,6 +298,7 @@ void GameState::exec(VsGameSection* section)
 	}
 
 	checkPikminZero(section);
+	
 
 	if (gameSystem->isVersusMode()) {
 		section->calcVsScores();
@@ -407,6 +404,7 @@ void GameState::exec(VsGameSection* section)
 
 		if (!_16) {
 			checkVsPikminZero(section);
+			checkOrimaDown(section);
 		}
 
 	} else {
@@ -1076,6 +1074,7 @@ void GameState::onNextFloor(VsGameSection* section, ItemHole::Item* hole)
 void GameState::onOrimaDown(VsGameSection* section, int idx)
 {
 	int teamIdx = getVsTeam(idx);
+	mOrimaDownState[idx] = 1;
 
 	P2ASSERTBOUNDSLINE(1341, 0, teamIdx, 4);
 
@@ -1092,39 +1091,80 @@ void GameState::onOrimaDown(VsGameSection* section, int idx)
 				mExtinctions[getVsTeam(idx)] = true;
 				if (isWinExtinction()) {
 					setDeathLose();
-					return;
 				}
 			}
 		}
 	}
 
-	if (_16) return;
-
 	OSReport("Downed Navi %i\n", idx);
 
-	MoviePlayArg movieArg("s03_orimadown", nullptr, section->mMovieFinishCallback, idx);
-	movieArg.mDelegateStart = section->mMovieStartCallback;
 
-	Navi* deadNavi = naviMgr->getAt(idx);
-	movieArg.setTarget(deadNavi);
-	moviePlayer->mTargetNavi = deadNavi;
-	switch (idx)
-	{
-	case 0:
-		moviePlayer->mActingCamera = section->mOlimarCamera;
-		break;
-	case 1:
-		moviePlayer->mActingCamera = section->mLouieCamera;
-		break;
-	case 2:
-		moviePlayer->mActingCamera = gCameraP3;
-		break;
-	case 3:
-		moviePlayer->mActingCamera = gCameraP4;
-		break;
+}
+
+void GameState::checkOrimaDown(VsGameSection* section) {
+	int orimaDownCount = 0;
+	for (int i = 0; i < 4; i++) {
+		if (mOrimaDownState[i] > 0) {
+			orimaDownCount++;
+		}
+	}
+	OSReport("Orimas down %i\n", orimaDownCount);
+
+	for (int idx = 0; idx < 4; idx++) {
+		if (mOrimaDownState[idx] == 1) {
+			mNaviStatus[idx] = VSLOSE_OrimaDown;
+			bool naviTeamExinct = true;
+			for (int i = 0; i < 4; i++) {
+				if (mNaviStatus[i] == -1 && getVsPikiColor(idx) == getVsPikiColor(i)) {
+					naviTeamExinct = false;
+				}
+			}
+			if (naviTeamExinct) {
+				mExtinctions[getVsTeam(idx)] = true;
+				if (isWinExtinction()) {
+					setDeathLose();
+				}
+			}
+		}
 	}
 
-	moviePlayer->play(movieArg);
+	if (orimaDownCount >= 3) {
+		for (int i = 0; i < 4; i++) {
+			if (mOrimaDownState[i] == 1) {
+				mOrimaDownState[i] = 2;
+			}
+		}
+		return;
+	}
+
+
+	
+	for (int i = 0; i < 4; i++) {
+		if (mOrimaDownState[i] != 1) continue;
+		MoviePlayArg movieArg("s03_orimadown", nullptr, section->mMovieFinishCallback, i);
+		movieArg.mDelegateStart = section->mMovieStartCallback;
+
+		Navi* deadNavi = naviMgr->getAt(i);
+		movieArg.setTarget(deadNavi);
+		moviePlayer->mTargetNavi = deadNavi;
+		switch (i)
+		{
+		case 0:
+			moviePlayer->mActingCamera = section->mOlimarCamera;
+			break;
+		case 1:
+			moviePlayer->mActingCamera = section->mLouieCamera;
+			break;
+		case 2:
+			moviePlayer->mActingCamera = gCameraP3;
+			break;
+		case 3:
+			moviePlayer->mActingCamera = gCameraP4;
+			break;
+		}
+		moviePlayer->play(movieArg);
+		mOrimaDownState[i] = 2;
+	}
 }
 
 /*
