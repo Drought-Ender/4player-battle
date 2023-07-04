@@ -1284,8 +1284,8 @@ void VsGameSection::updateCardGeneration()
 			DropCardArg arg;
 			arg.mMinDists[0] = factors[0][0];
 			arg.mMinDists[1] = factors[1][0];
-			arg.mMinDists[0] = factors[0][1];
-			arg.mMinDists[1] = factors[1][1];
+			arg.mMaxDists[0] = factors[0][1];
+			arg.mMaxDists[1] = factors[1][1];
 			dropCard(arg);
 		}
 	}
@@ -1404,8 +1404,8 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	JUT_ASSERTLINE(2163, bedamas <= 50, "oosugi %d\n", bedamas);
 
 	Vector3f positions[50];
-	VsWeights mindists = { 0.5f, 0.5f };
-	VsWeights maxdists = { 0.5f, 0.5f };
+	VsWeights mindists = { 0.45f, 0.45f };
+	VsWeights maxdists = { 0.55f, 0.55f };
 	Cave::randMapMgr->getItemDropPosition(positions, bedamas, mindists, maxdists);
 	for (int i = 0; i < bedamas; i++) {
 		Pellet* pellet = pelletMgr->birth(&pelletArg);
@@ -1459,6 +1459,8 @@ void VsGameSection::calcVsScores()
 	onyons[1] = ItemOnyon::mgr->getOnyon(gScoreDelegations[0][1]);
 	onyons[2] = ItemOnyon::mgr->getOnyon(gScoreDelegations[1][0]);
 	onyons[3] = ItemOnyon::mgr->getOnyon(gScoreDelegations[1][1]);
+
+	int* scoreDelegationsArr = *gScoreDelegations;
 
 	for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 		Pellet* marble = mMarbleYellow[i];
@@ -1525,7 +1527,7 @@ void VsGameSection::calcVsScores()
 	f32 redBlueScore[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	for (int i = 0; i < gEffectiveTeamCount; i++) {
-		Pellet* marble = mMarbleRedBlue[i];
+		Pellet* marble = mMarbleRedBlue[getTeamFromPiki(scoreDelegationsArr[i])];
 		Onyon* onyon   = onyons[i];
 		if (marble) {
 			Vector3f marblePosition = marble->getPosition();

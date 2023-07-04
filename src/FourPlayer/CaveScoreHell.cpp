@@ -562,8 +562,8 @@ void RandItemUnit::getItemDropPosition(Vector3f& position, f32 weight, int floor
 void RandMapMgr::getItemDropPosition(Vector3f& position, VsWeights minDists, VsWeights maxDists)
 {
     VsWeights weight;
-    weight[FIRST_SCORE] = minDists[FIRST_SCORE] + randWeightFloat(maxDists[FIRST_SCORE] - minDists[FIRST_SCORE]);
-    weight[SECOND_SCORE] = minDists[SECOND_SCORE] + randWeightFloat(maxDists[SECOND_SCORE] - minDists[SECOND_SCORE]);
+    weight[FIRST_SCORE] = minDists[FIRST_SCORE] + randFloat() * (maxDists[FIRST_SCORE] - minDists[FIRST_SCORE]);
+    weight[SECOND_SCORE] = minDists[SECOND_SCORE] + randFloat() * (maxDists[SECOND_SCORE] - minDists[SECOND_SCORE]);
 	mRandItemUnit->getItemDropPosition(position, weight, -1);
 }
 
