@@ -235,6 +235,7 @@ void GameState::checkVsPikminZero(VsGameSection* section) {
 				}
 				if (getVsPikiColor(i) == pikiColor && !mExtinctions[teamID]) {
 					mExtinctions[teamID] = true;
+					naviMgr->getAt(i)->movie_begin(true);
 					if (isWinExtinction()) {
 						setDeathLose();
 						return;

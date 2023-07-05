@@ -557,7 +557,7 @@ lbl_constructor:
 /* 8042CAB0 004299F0  4B FD 1D E9 */	bl stopFinalFloorSound__Q26Screen9Game2DMgrFv
 .L_8042CAB4:
 /* 8042CAB4 004299F4  80 1C 01 8C */	lwz r0, 0x18c(r28)
-/* 8042CAB8 004299F8  38 80 00 02 */	li r4, 2
+/* 8042CAB8 004299F8  38 80 00 02 */	li r4, 4
 /* 8042CABC 004299FC  90 1C 01 9C */	stw r0, 0x19c(r28)
 /* 8042CAC0 00429A00  80 1C 01 90 */	lwz r0, 0x190(r28)
 /* 8042CAC4 00429A04  90 1C 01 A0 */	stw r0, 0x1a0(r28)
@@ -1607,7 +1607,7 @@ lbl_constructor:
 /* 8042D99C 0042A8DC  48 00 05 A9 */	bl stop__Q24Game11MoviePlayerFv
 /* 8042D9A0 0042A8E0  80 6D 9A A0 */	lwz r3, gGame2DMgr__6Screen@sda21(r13)
 /* 8042D9A4 0042A8E4  38 00 00 00 */	li r0, 0
-/* 8042D9A8 0042A8E8  38 80 00 02 */	li r4, 2
+/* 8042D9A8 0042A8E8  38 80 00 02 */	li r4, 4
 /* 8042D9AC 0042A8EC  80 63 00 18 */	lwz r3, 0x18(r3)
 /* 8042D9B0 0042A8F0  98 03 00 92 */	stb r0, 0x92(r3)
 /* 8042D9B4 0042A8F4  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)

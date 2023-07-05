@@ -2633,12 +2633,12 @@ doDraw__Q24Game15BaseGameSectionFR8Graphics:
 /* 8014BC58 00148B98  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8014BC5C 00148B9C  28 03 00 00 */	cmplwi r3, 0
 /* 8014BC60 00148BA0  41 82 00 34 */	beq .L_8014BC94
-/* 8014BC64 00148BA4  38 80 00 02 */	li r4, 2
+/* 8014BC64 00148BA4  38 80 00 02 */	li r4, 4
 /* 8014BC68 00148BA8  48 10 68 05 */	bl controllerLock__Q24Game9CameraMgrFi
 /* 8014BC6C 00148BAC  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8014BC70 00148BB0  48 10 64 5D */	bl update__Q24Game9CameraMgrFv
 /* 8014BC74 00148BB4  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
-/* 8014BC78 00148BB8  38 80 00 02 */	li r4, 2
+/* 8014BC78 00148BB8  38 80 00 02 */	li r4, 4
 /* 8014BC7C 00148BBC  48 10 68 61 */	bl controllerUnLock__Q24Game9CameraMgrFi
 /* 8014BC80 00148BC0  48 00 00 14 */	b .L_8014BC94
 .L_8014BC84:
@@ -2733,12 +2733,12 @@ doDraw__Q24Game15BaseGameSectionFR8Graphics:
 /* 8014BC58 00148B98  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8014BC5C 00148B9C  28 03 00 00 */	cmplwi r3, 0
 /* 8014BC60 00148BA0  41 82 00 34 */	beq .L_8014BC94
-/* 8014BC64 00148BA4  38 80 00 02 */	li r4, 2
+/* 8014BC64 00148BA4  38 80 00 02 */	li r4, 4
 /* 8014BC68 00148BA8  48 10 68 05 */	bl controllerLock__Q24Game9CameraMgrFi
 /* 8014BC6C 00148BAC  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8014BC70 00148BB0  48 10 64 5D */	bl update__Q24Game9CameraMgrFv
 /* 8014BC74 00148BB4  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
-/* 8014BC78 00148BB8  38 80 00 02 */	li r4, 2
+/* 8014BC78 00148BB8  38 80 00 02 */	li r4, 4
 /* 8014BC7C 00148BBC  48 10 68 61 */	bl controllerUnLock__Q24Game9CameraMgrFi
 /* 8014BC80 00148BC0  48 00 00 14 */	b .L_8014BC94
 .L_8014BC84:
@@ -10670,10 +10670,10 @@ setupFloatMemory__Q24Game15BaseGameSectionFv:
 /* 80151328 0014E268  48 01 13 D1 */	bl getMapRotation__Q24Game6MapMgrFv
 /* 8015132C 0014E26C  FC 20 F8 90 */	fmr f1, f31
 /* 80151330 0014E270  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
-/* 80151334 0014E274  38 80 00 02 */	li r4, 2
+/* 80151334 0014E274  38 80 00 02 */	li r4, 4
 /* 80151338 0014E278  48 10 0D 01 */	bl setCameraAngle__Q24Game9CameraMgrFfi
 /* 8015133C 0014E27C  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
-/* 80151340 0014E280  38 80 00 02 */	li r4, 2
+/* 80151340 0014E280  38 80 00 02 */	li r4, 4
 /* 80151344 0014E284  48 10 11 99 */	bl controllerUnLock__Q24Game9CameraMgrFi
 /* 80151348 0014E288  80 6D 9A EC */	lwz r3, sys@sda21(r13)
 /* 8015134C 0014E28C  38 9E 03 8C */	addi r4, r30, 0x38c
@@ -11540,10 +11540,10 @@ setupFloatMemory__Q24Game15BaseGameSectionFv:
 /* 80151328 0014E268  48 01 13 D1 */	bl getMapRotation__Q24Game6MapMgrFv
 /* 8015132C 0014E26C  FC 20 F8 90 */	fmr f1, f31
 /* 80151330 0014E270  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
-/* 80151334 0014E274  38 80 00 02 */	li r4, 2
+/* 80151334 0014E274  38 80 00 02 */	li r4, 4
 /* 80151338 0014E278  48 10 0D 01 */	bl setCameraAngle__Q24Game9CameraMgrFfi
 /* 8015133C 0014E27C  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
-/* 80151340 0014E280  38 80 00 02 */	li r4, 2
+/* 80151340 0014E280  38 80 00 02 */	li r4, 4
 /* 80151344 0014E284  48 10 11 99 */	bl controllerUnLock__Q24Game9CameraMgrFi
 /* 80151348 0014E288  80 6D 9A EC */	lwz r3, sys@sda21(r13)
 /* 8015134C 0014E28C  38 9E 03 8C */	addi r4, r30, 0x38c
