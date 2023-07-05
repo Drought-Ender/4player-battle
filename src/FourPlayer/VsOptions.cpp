@@ -128,6 +128,13 @@ Option gOptions[] = {
         { "Using a spray card will give your team a spray", "Using a spray card will use a spray to no cost", "Card sprays will not be rolled" },
         3,
         0
+    },
+    {
+        "Pellet Posies",
+        { "Normal", "Start Matched" },
+        { "Pellet Posies will iterate through all active colors", "Pellet Posies will start matched with your color" },
+        2,
+        0
     }
 };
 

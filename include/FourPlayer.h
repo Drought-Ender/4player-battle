@@ -93,7 +93,8 @@ enum OptionsEnum {
     VS_Y,
     VS_HIBA,
     PIKI_DIE,
-    SPRAY_CARD
+    SPRAY_CARD,
+    PELLET_POSY
 };
 
 namespace ConfigEnums {

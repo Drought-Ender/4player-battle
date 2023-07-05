@@ -82,4 +82,9 @@ enum ESprayCard {
     SPRAYCARD_OFF
 };
 
+enum EPelletMatching {
+    PELMATCH_OFF,
+    PELMATCH_ON
+};
+
 } // namespace ConfigEnums

@@ -6,6 +6,8 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/Cave/Info.h"
 #include "FourPlayer.h"
+#include "Game/Cave/Node.h"
+#include "Game/Entities/Pelplant.h"
 
 
 int gScoreDelegations[2][2] = { {ONYON_TYPE_RED, ONYON_TYPE_BLUE}, {ONYON_TYPE_WHITE, ONYON_TYPE_PURPLE} };
@@ -38,8 +40,12 @@ enum ScoreDelegations {
 
 namespace Game
 {
+
 namespace Cave
 {
+
+EnemyUnit* gPelplantEnemyUnit;
+int gPelplantsPerBunch;
 
 RandMapScore::RandMapScore(MapUnitGenerator* generator)
 {
@@ -336,6 +342,10 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 	if (!mObjectLayoutInfo) {
 		return;
 	}
+
+	OSReport("Cave::gPelplantsPerBunch %i\n", Cave::gPelplantsPerBunch);
+	const int pelplantColors[4] = { PELCOLOR_RED, PELCOLOR_BLUE, PELCOLOR_WHITE, PELCOLOR_PURPLE };
+
 	for (int nodeType = 0; nodeType < OBJLAYOUT_COUNT; nodeType++) {
 		for (int nodeIdx = 0; nodeIdx < mObjectLayoutInfo->getCount(nodeType); nodeIdx++) {
 			ObjectLayoutNode* node = static_cast<ObjectLayoutNode*>(mObjectLayoutInfo->getNode(nodeType, nodeIdx));
@@ -443,6 +453,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_Enemy: {
+					OSReport("OBJLAYOUT_Enemy\n");
 					Vector3f birthPos;
 					birthPos.y = 0.0f;
 					node->getBirthPosition(birthPos.x, birthPos.z);
@@ -455,8 +466,11 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					birthArg.mTekiBirthType = (EnemyTypeID::EEnemyTypeID)node->getObjectType();
 					node->isFixedBattery();
 
+					Cave::EnemyNode* enemyNode = static_cast<Cave::EnemyNode*>(node);
+
 					bool canSpawnTeki  = true;
 					bool isWaterwraith = false;
+					bool isPelplant = false;
 					EnemyTypeID::EEnemyTypeID enemyType = (EnemyTypeID::EEnemyTypeID)node->getObjectId();
 					if (enemyType == EnemyTypeID::EnemyID_BlackMan) {
 						if (playData->mCaveSaveData.mIsWaterwraithAlive) {
@@ -465,6 +479,9 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 						else {
 							canSpawnTeki = false;
 						}
+					}
+					else if (enemyType == EnemyTypeID::EnemyID_Pelplant) {
+						isPelplant = true;
 					}
 
 					if (canSpawnTeki) {
@@ -476,6 +493,24 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 							BlackMan::Obj* waterwraith = static_cast<BlackMan::Obj*>(enemy);
 							waterwraith->setTimer(floorInfo->mParms.mWaterwraithTimer);
 							static_cast<RoomMapMgr*>(mapMgr)->mBlackMan = waterwraith;
+						}
+						else if (isPelplant && gConfig[PELLET_POSY] == ConfigEnums::PELMATCH_ON) {
+							if (enemyNode->mEnemyUnit == Cave::gPelplantEnemyUnit) {
+								int pelPlantTeam = PELCOLOR_RANDOM;
+								for (int objLayout = OBJLAYOUT_VsRedOnyon; objLayout <= OBJLAYOUT_VsPurpleOnyon; objLayout++) {
+									if (mObjectLayoutInfo->getNode(objLayout, 0)) {
+										pelPlantTeam = reinterpret_cast<int*>(gScoreDelegations)[objLayout - OBJLAYOUT_VsRedOnyon];
+									}
+								}
+								
+								OSReport("PelplantTeam %i\n", pelPlantTeam);
+								if (pelPlantTeam != PELCOLOR_RANDOM) {
+									Pelplant::Obj* pelplant = static_cast<Pelplant::Obj*>(enemy);
+									pelplant->mColor = pelPlantTeam;
+									pelplant->setPelletColor(pelPlantTeam, false);
+								}
+							}
+
 						}
 					}
 					break;
@@ -935,10 +970,12 @@ void RandEnemyUnit::setVersusEasyEnemy()
 		for (int j = gEffectiveTeamCount - 1; j >= 0; j--) {
 			enemyCounts[i][j] = enemyCounts[i][0] / gEffectiveTeamCount;
 		}
+		
 		if (enemyUnits[i]) {
 			for (int j = 0; j < gEffectiveTeamCount; j++) {
 				if (enemyCounts[i][j] != 0) {
 					BaseGen* spawnBaseGen = getVersusEasyEnemyBaseGen(onyonNodes[j], onyonGens[j]);
+					OSReport("Pelplant spawn basegen %p\n", spawnBaseGen);
 					if (spawnBaseGen) {
 						makeSetEnemyTypeA(onyonNodes[j], spawnBaseGen, enemyUnits[i], enemyCounts[i][j]);
 					}
@@ -947,6 +984,8 @@ void RandEnemyUnit::setVersusEasyEnemy()
 
 		}
 	}
+	gPelplantEnemyUnit = enemyUnits[0];
+	gPelplantsPerBunch = enemyCounts[0][0];
 }
 
 void RandEnemyUnit::setSlotEnemyTypeA(int& first, int& second, int third) {
