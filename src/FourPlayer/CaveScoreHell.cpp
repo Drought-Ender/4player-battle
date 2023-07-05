@@ -77,6 +77,20 @@ MapNode* RandMapScore::getRandRoomMapNode()
 	return nullptr;
 }
 
+MapNode* RandMapScore::getVsCenterRoomMapNode()
+{
+	MapNode* closestZero = (MapNode*)mGenerator->mPlacedMapNodes->mChild;
+
+	FOREACH_NODE(MapNode, closestZero->mNext, currNode)
+	{
+		if (absVal(currNode->getVersusScore(FIRST_SCORE)) < absVal(closestZero->getVersusScore(FIRST_SCORE))) {
+			closestZero = currNode;
+		}
+	}
+	return closestZero;
+}
+
+
 void RandMapScore::setVersusOnyon()
 {
 	initScoreDelegations();
@@ -100,6 +114,9 @@ void RandMapScore::setVersusOnyon()
 			subNodeScore(FIRST_SCORE);
 
 			if (gEffectiveTeamCount > 2) {
+				MapNode* centerNode = getVsCenterRoomMapNode();
+				calcNodeScore(centerNode);
+
 				onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
 				JUT_ASSERT(onyonNodes[2], "NO ROOM FOR WHITE ONYON");
 				calcNodeScore(onyonNodes[2]);

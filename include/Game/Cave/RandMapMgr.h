@@ -255,6 +255,7 @@ struct RandMapScore {
 	bool isGoalSetHard();
 	bool isFixObjSet(MapNode*, BaseGen*);
 	MapNode* getRandRoomMapNode();
+	MapNode* getVsCenterRoomMapNode();
 
 	MapUnitGenerator* mGenerator; // _00
 	MapNode** mFixObjNodes;       // _04, array of 5 map nodes, see FixObjNodeTypes enum
