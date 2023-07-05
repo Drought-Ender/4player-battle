@@ -127,12 +127,51 @@ void Navi::incDopeCount(int dope) {
     }
 }
 
+const char* getPikiColorName(int pikiKind) {
+	switch (pikiKind)
+	{
+	case Game::Red:
+		return "Red Pikmin";
+	case Game::Blue:
+		return "Blue Pikmin";
+	case Game::Yellow:
+		return "Yellow Pikmin";
+	case Game::White:
+		return "White Pikmin";
+	case Game::Purple:
+		return "Purple Pikmin";
+	case Game::Bulbmin:
+		return "Bulbmin";
+	case Game::Carrot:
+		return "Carrot";
+	default:
+		return "Unknown";
+	}
+}
+
+const char* getNaviColorName(int teamColor) {
+	switch (teamColor)
+	{
+	case TEAM_RED:
+		return "Red Navi";
+	case TEAM_BLUE:
+		return "Blue Navi";
+	case TEAM_WHITE:
+		return "White Navi";
+	case TEAM_PURPLE:
+		return "Purple Navi";
+	default:
+		return "Unknown Navi";
+	}
+}
+
 
 void PikiMgr::setVsXlu(int p1, bool p2)
 {
 	if (p2) {
 		mFlags[0] &= ~(1 << p1);
 	} else {
+		//OSReport("XLU %s\n", getPikiColorName(p1));
 		mFlags[0] |= 1 << p1;
 	}
 }
@@ -143,15 +182,6 @@ void PikiMgr::doEntry() {
     
     u8 flag = mFlags[1];
     if (gameSystem->isVersusMode()) {
-		u8 vsFlags[4];
-		for (int viewerNavi = 0; viewerNavi < 4; viewerNavi++) {
-			vsFlags[viewerNavi] = 0x0;
-			for (int viewPiki = 0; viewPiki < 4; viewPiki++) {
-				if (getVsPikiColor(viewerNavi) != getPikiFromTeam(viewPiki)) {
-					vsFlags[viewerNavi] |= 0x10 << viewPiki;
-				}
-			}
-   		}
         for (int i = 0; i < mMax; i++) {
             if (mOpenIds[i]) {
                 continue;
@@ -162,9 +192,9 @@ void PikiMgr::doEntry() {
                 piki->mLod.mFlags &= ~0xF4;
             }
 
-            for (int i = 0; i < 4; i++) {
-                if (getTeamFromPiki(piki->mPikiKind) == i && pikiMgr->mFlags[0] & (1 << getVsPikiColor(i))) {
-                    piki->mLod.mFlags &= ~vsFlags[i];
+            for (int vpID = 0; vpID < 4; vpID++) {
+                if (piki->mPikiKind != getVsPikiColor(vpID) && pikiMgr->mFlags[0] & (1 << piki->mPikiKind)) {
+					piki->mLod.mFlags &= ~(0x10 << vpID);
                 }
             }
             piki->doEntry();
@@ -209,9 +239,9 @@ void NaviMgr::doEntry() {
         }
 
         if (gameSystem->isVersusMode()) {
-            for (int i = 0; i < 4; i++) {
-                if (navi->mNaviIndex == i && pikiMgr->mFlags[0] & (1 << getVsPikiColor(i))) {
-                    navi->mLod.mFlags &= ~vsFlags[i];
+            for (int vpID = 0; vpID < 4; vpID++) {
+                if (navi->mNaviIndex == vpID && pikiMgr->mFlags[0] & (1 << getVsPikiColor(vpID))) {
+                    navi->mLod.mFlags &= ~vsFlags[vpID];
                 }
             }
         }

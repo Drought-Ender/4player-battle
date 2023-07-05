@@ -565,17 +565,19 @@ void CardMgr::SlotMachine::start()
 
 	CardSelector selector;
 
-	int pikminCounts[2];
+	int pikminCounts[4];
 	f32 redBlueScoreCount = mCardMgr->mSection->mRedBlueScore[mPlayerIndex];
 
 	int dopeCount0;
 	int dopeCount1;
 
 	f32 scoreCount0 = mCardMgr->mSection->mYellowScore[mPlayerIndex];
-	f32 scoreCount1 = mCardMgr->mSection->mYellowScore[1 - mPlayerIndex];
+	f32 scoreCount1 = mCardMgr->mSection->mYellowScore[mPlayerIndex];
 
-	pikminCounts[0] = GameStat::getMapPikmins(1);
-	pikminCounts[1] = GameStat::getMapPikmins(0);
+	pikminCounts[TEAM_RED] = GameStat::getMapPikmins(Red);
+	pikminCounts[TEAM_BLUE] = GameStat::getMapPikmins(Blue);
+	pikminCounts[TEAM_WHITE] = GameStat::getMapPikmins(White);
+	pikminCounts[TEAM_PURPLE] = GameStat::getMapPikmins(Purple);
 
 	if (pikminCounts[mPlayerIndex] < 4) {
 		selector.mValues[PIKMIN_5]  = 200;
@@ -633,6 +635,11 @@ void CardMgr::SlotMachine::start()
 		selector.mValues[DOPE_RED] = 0;
 		selector.mValues[DOPE_BLACK] = 0;
 	}
+
+	for (int i = 0; i < CARD_ID_COUNT; i++) {
+		selector.mValues[i] = 0;
+	}
+	selector.mValues[PIKMIN_XLU] = 100;
 	
 	mSelectedSlot = selector.selectCard();
 
