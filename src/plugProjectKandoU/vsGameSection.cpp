@@ -1418,8 +1418,8 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	JUT_ASSERTLINE(2163, bedamas <= 50, "oosugi %d\n", bedamas);
 
 	Vector3f positions[50];
-	VsWeights mindists = { 0.45f, 0.45f };
-	VsWeights maxdists = { 0.55f, 0.55f };
+	VsWeights mindists = { 0.1f, 0.1f };
+	VsWeights maxdists = { 0.9f, 0.9f };
 	Cave::randMapMgr->getItemDropPosition(positions, bedamas, mindists, maxdists);
 	for (int i = 0; i < bedamas; i++) {
 		Pellet* pellet = pelletMgr->birth(&pelletArg);

@@ -746,15 +746,10 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 
 	for (int i = 0; i < count; i++) {
 		VsWeights val = { avg[0], avg[1] };
-		if (((i < 0) ? -i : i) != absCount) { // ?? again, what
-			if (i == randVal) {
-				val[FIRST_SCORE] = avg[FIRST_SCORE] + randWeightFloat(weight[FIRST_SCORE]);
-                val[SECOND_SCORE] = avg[SECOND_SCORE] + randWeightFloat(weight[SECOND_SCORE]);
-			} else {
-				val[FIRST_SCORE] = avg[FIRST_SCORE] - randWeightFloat(weight[FIRST_SCORE]);
-                val[SECOND_SCORE] = avg[SECOND_SCORE] - randWeightFloat(weight[SECOND_SCORE]);
-			}
-		}
+		if (i == 0) val[FIRST_SCORE] += weight[FIRST_SCORE];
+		if (i == 1) val[FIRST_SCORE] -= weight[FIRST_SCORE];
+		if (i == 2) val[SECOND_SCORE] += weight[SECOND_SCORE];
+		if (i == 3) val[SECOND_SCORE] -= weight[SECOND_SCORE];
 		mRandItemUnit->getItemDropPosition(positions[i], val, i);
 	}
 }
