@@ -471,6 +471,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					bool canSpawnTeki  = true;
 					bool isWaterwraith = false;
 					bool isPelplant = false;
+					int blowhogIdx = 0;
 					EnemyTypeID::EEnemyTypeID enemyType = (EnemyTypeID::EEnemyTypeID)node->getObjectId();
 					if (enemyType == EnemyTypeID::EnemyID_BlackMan) {
 						if (playData->mCaveSaveData.mIsWaterwraithAlive) {
@@ -483,9 +484,18 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					else if (enemyType == EnemyTypeID::EnemyID_Pelplant) {
 						isPelplant = true;
 					}
+					else if (enemyType == EnemyTypeID::EnemyID_Tank || enemyType == EnemyTypeID::EnemyID_Wtank && gEffectiveTeamCount == 2) {
+						blowhogIdx = enemyType - EnemyTypeID::EnemyID_Tank;
+						int pikiColor = gScoreDelegations[0][blowhogIdx];
+						int teamColor = getTeamFromPiki(pikiColor);
+						EnemyTypeID::EEnemyTypeID enemyIDArr[] = 
+						{ EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Gtank, EnemyTypeID::EnemyID_Mtank };
+
+						enemyType = enemyIDArr[teamColor];
+					}
 
 					if (canSpawnTeki) {
-						EnemyBase* enemy = generalEnemyMgr->birth(node->getObjectId(), birthArg);
+						EnemyBase* enemy = generalEnemyMgr->birth(enemyType, birthArg);
 						if (enemy) {
 							enemy->init(nullptr);
 						}
@@ -510,7 +520,6 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 									pelplant->setPelletColor(pelPlantTeam, false);
 								}
 							}
-
 						}
 					}
 					break;
