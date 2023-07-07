@@ -636,11 +636,6 @@ void CardMgr::SlotMachine::start()
 		selector.mValues[DOPE_BLACK] = 0;
 	}
 
-	for (int i = 0; i < CARD_ID_COUNT; i++) {
-		selector.mValues[i] = 0;
-	}
-	selector.mValues[PIKMIN_XLU] = 100;
-	
 	mSelectedSlot = selector.selectCard();
 
 	mPrevSelected = mSelectedSlot;
