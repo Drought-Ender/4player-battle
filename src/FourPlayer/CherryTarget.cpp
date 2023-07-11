@@ -1,16 +1,16 @@
 #include "CherryTarget.h"
+#include "FourPlayer.h"
 #include "sysMath.h"
 
 namespace CherryTarget
 {
-    int GetTarget(Controller* gamePad) {
+    int GetControllerDirection(Controller* gamePad) {
         f32 x = gamePad->getSubStickX();
         f32 y = gamePad->getSubStickY();
 
 
         f32 radius = _sqrtf(x * x + y * y);
         f32 theta  = JMath::atanTable_.atan2_(x, y);
-        OSReport("Theta %f | Theta / Pi %f\n", theta, theta / PI);
 
         if (radius < 0.5f) return -1;
 
@@ -26,8 +26,15 @@ namespace CherryTarget
             return 2;
         }
         
-        OSReport("Unknown angle %f\n", theta);
         return -1;
+    }
+
+    int GetTarget(Controller* gamePad) {
+        int target = GetControllerDirection(gamePad);
+        if (!gDrawNavi[target] || target >= Game::gNaviNum || Game::getVsPikiColor(gamePad->mPortNum) == Game::getVsPikiColor(target)) {
+            return -1;
+        }
+        return target;
     }
 
 

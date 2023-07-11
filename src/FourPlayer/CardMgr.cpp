@@ -385,11 +385,11 @@ Vector3f CardMgr::getSlotOrigin(int playerIdx)
         case 0:
             return Vector3f(265.0f, 115.0f, 0.0f);
         case 1:
-            return Vector3f(515.0f, 115.0f, 0.0f);
+            return Vector3f(575.0f, 115.0f, 0.0f);
         case 2:
             return Vector3f(265.0f, 315.0f, 0.0f);
         case 3:
-            return Vector3f(515.0f, 315.0f, 0.0f);
+            return Vector3f(575.0f, 315.0f, 0.0f);
         }
     }
 }

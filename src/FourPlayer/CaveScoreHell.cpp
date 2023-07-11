@@ -137,15 +137,13 @@ void RandMapScore::setVersusOnyon()
 
 				onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
 				JUT_ASSERT(onyonNodes[2], "NO ROOM FOR WHITE ONYON");
+				JUT_ASSERT(onyonGens[2], "NO GEN FOR WHITE ONYON");
 				calcNodeScore(onyonNodes[2]);
+				copyNodeScore(SECOND_SCORE);
 				
 				onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[3]);
 				JUT_ASSERT(onyonNodes[3], "NO ROOM FOR PURPLE ONYON");
-				calcNodeScore(onyonNodes[3]);
-				
-				onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
-				calcNodeScore(onyonNodes[2]);
-				copyNodeScore(SECOND_SCORE);
+				JUT_ASSERT(onyonGens[3], "NO GEN FOR WHITE ONYON");
 				calcNodeScore(onyonNodes[3]);
 				subNodeScore(SECOND_SCORE);
 			}
@@ -1163,6 +1161,8 @@ void RandEnemyUnit::setSlotEnemyTypeF(int third) {
 	for (int i = 0; i < 4; i++) {
 		MapNode* onyonNode = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
 		BaseGen* onyonGen = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
+		if (!onyonNode || !onyonGen) JUT_PANIC("NODE/GEN %i MISSING!\n", i);
+		
 		if (onyonNode) {
 			positions[i] = onyonNode->getBaseGenGlobalPosition(onyonGen);
 		}
