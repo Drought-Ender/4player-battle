@@ -12,6 +12,7 @@
 
 extern int gScoreDelegations[2][2];
 extern int gEffectiveTeamCount;
+extern bool gThreePlayer;
 
 struct Controller;
 
@@ -238,7 +239,7 @@ bool isTeamActive(int idx) {
 
 
 bool doesTeamHavePlayers(int idx) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < Game::gNaviNum; i++) {
         if (getVsTeam(i) == idx) {
             return true;
         }

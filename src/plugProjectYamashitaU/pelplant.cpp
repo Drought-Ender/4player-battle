@@ -399,7 +399,7 @@ void Obj::setPelletColor(u16 color, bool check)
 			mPellet->setValidColor(color);
 			break;
 		default:
-			mPellet->mPelletColor = PELCOLOR_RED;
+			mPellet->mPelletColor = gScoreDelegations[0][0];
 			break;
 		}
 	}
@@ -426,7 +426,9 @@ void Obj::changePelletColor()
 			int colorIdx = pelColorIdx[initialColor] + 1;
 			u16 nextColor = pelColorArr[colorIdx];
 			u16 colorCap  = nextColor;
-			while (nextColor != PELCOLOR_YELLOW && !isTeamActive(getTeamFromPelplant(nextColor))) {
+
+			WEIRD_JUMP:
+			while (nextColor != PELCOLOR_YELLOW && !doesTeamHavePlayers(getTeamFromPelplant(nextColor))) {
 
 				nextColor = pelColorArr[++colorIdx];
 				if (nextColor > PELCOLOR_WHITE) {
@@ -436,6 +438,7 @@ void Obj::changePelletColor()
 
 			if (colorIdx > 5) {
 				nextColor = pelColorArr[colorIdx = 0];
+				goto WEIRD_JUMP; // forgive me, c++ gods
 			}
 
 			setPelletColor(nextColor, true);

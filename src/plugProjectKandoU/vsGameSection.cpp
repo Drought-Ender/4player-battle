@@ -798,7 +798,6 @@ void VsGameSection::createVsPikmins()
 		P2ASSERTLINE(1354, whiteOnyon);
 		whiteOnyonPos = whiteOnyon->getPosition();
 
-
 		purpleOnyon = ItemOnyon::mgr->getOnyon(gScoreDelegations[1][1]);
 		P2ASSERTLINE(1354, purpleOnyon);
 		purpleOnyonPos = purpleOnyon->getPosition();
@@ -816,8 +815,12 @@ void VsGameSection::createVsPikmins()
 		int& whites = pikmin->getCount(gScoreDelegations[1][0], Leaf);
 
 		int& purples = pikmin->getCount(gScoreDelegations[1][1], Leaf);
-
 		purples = mPurpleHandicap * 5;
+
+		if (gThreePlayer) {
+			purples = 0;
+		}
+		
 		whites  = mWhiteHandicap * 5;
 	}
 
@@ -1436,7 +1439,8 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 	}
 	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
 	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
-		if (!isTeamActive(i)) {
+		if (!doesTeamHavePlayers(i)) {
+			mMarbleRedBlue[i] = nullptr;
 			continue;
 		}
 		PelletList::cKind kind;

@@ -12,14 +12,26 @@
 
 int gScoreDelegations[2][2] = { {ONYON_TYPE_RED, ONYON_TYPE_BLUE}, {ONYON_TYPE_WHITE, ONYON_TYPE_PURPLE} };
 int gEffectiveTeamCount = 4;
+bool gThreePlayer;
 
 void initScoreDelegations() {
+	gThreePlayer = false;
 	if (Game::getTeamCount() > 2) {
+		int skippedTeam = -1;
+		int currentCount = 0;
+		for (int i = 0; i < 4; i++) {
+			if (!Game::doesTeamHavePlayers(i)) {
+				skippedTeam = Game::getPikiFromTeam(i);
+			}
+			else {
+				reinterpret_cast<int*>(gScoreDelegations)[currentCount++] = Game::getPikiFromTeam(i);
+			}
+		}
 		gEffectiveTeamCount = 4;
-		gScoreDelegations[0][0] = ONYON_TYPE_RED;
-		gScoreDelegations[0][1] = ONYON_TYPE_BLUE;
-		gScoreDelegations[1][0] = ONYON_TYPE_WHITE;
-		gScoreDelegations[1][1] = ONYON_TYPE_PURPLE;
+		if (skippedTeam != -1) {
+			gScoreDelegations[1][1] = skippedTeam;
+			gThreePlayer = true;
+		}
 	}
 	else {
 		gEffectiveTeamCount = 2;
