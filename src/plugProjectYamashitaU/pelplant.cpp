@@ -423,20 +423,19 @@ void Obj::changePelletColor()
 				initialColor = PELCOLOR_RED;
 			}
 
-			u16 nextColor = pelColorArr[pelColorIdx[initialColor] + 1];
+			int colorIdx = pelColorIdx[initialColor] + 1;
+			u16 nextColor = pelColorArr[colorIdx];
 			u16 colorCap  = nextColor;
 			while (nextColor != PELCOLOR_YELLOW && !isTeamActive(getTeamFromPelplant(nextColor))) {
-				if (++nextColor > PELCOLOR_WHITE) {
-					nextColor = PELCOLOR_RED;
-				}
 
-				if (nextColor == colorCap) {
-					nextColor = PELCOLOR_RED;
+				nextColor = pelColorArr[++colorIdx];
+				if (nextColor > PELCOLOR_WHITE) {
+					nextColor = pelColorArr[colorIdx = 0];
 				}
 			}
 
-			if (nextColor > PELCOLOR_WHITE) {
-				nextColor = PELCOLOR_RED;
+			if (colorIdx > 5) {
+				nextColor = pelColorArr[colorIdx = 0];
 			}
 
 			setPelletColor(nextColor, true);

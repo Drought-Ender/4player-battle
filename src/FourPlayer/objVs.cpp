@@ -307,7 +307,7 @@ void FourObjVs::updateCSticks() {
 			mCStick[i]->setOffset(netPos.x, netPos.y);
 		}
 
-		if (static_cast<Game::VsGameSection*>(Game::gameSystem->mSection)->mCardMgr->getSlotMachine(i)->dispCherryTarget()) {
+		if (static_cast<Game::VsGameSection*>(Game::gameSystem->mSection)->mCardMgr->getSlotMachine(Game::getVsTeam(i))->dispCherryTarget()) {
 			mCStick[i]->show();
 			mOutCircle[i]->show();
 			for (int j = 0; j < 4; j++) {
