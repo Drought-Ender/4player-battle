@@ -362,7 +362,7 @@ struct GameState : public State {
 					naviEffect->setFlag(efx::NAVIFX_InWater);
 					naviEffect->updateHamon_();
 
-					if (!(inWater)) { // what is bro doing
+					if (!inWater) { // what is bro doing
 						efx::createSimpleDive(naviEffect->mHamonPosition);
 					}
 				}

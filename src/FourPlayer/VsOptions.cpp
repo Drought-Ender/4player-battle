@@ -135,6 +135,13 @@ Option gOptions[] = {
         { "Pellet Posies will iterate through all active colors", "Pellet Posies will start matched with your color" },
         2,
         0
+    },
+    {
+        "Pikmin Birthing",
+        { "Sprouts", "Pikmin" },
+        { "Pikmin will be born as sprouts", "Pikmin will be born like in Pikmin 4 dandori battles" },
+        2,
+        0
     }
 };
 
@@ -144,9 +151,6 @@ int gConfig[ARRAY_SIZE(gOptions)];
 int GetConfigSize() {
     return ARRAY_SIZE(gConfig);
 }
-
-
-
 
 #define OPTIONS_PER_PAGE (10)
 

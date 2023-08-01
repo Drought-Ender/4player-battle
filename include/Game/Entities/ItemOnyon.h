@@ -130,6 +130,8 @@ struct Onyon : public BaseItem {
 	SysShape::Animator& getPAnimator(int);
 	void update_pmotions();
 
+	void birthByExitPiki();
+
 	void updateSpot();
 	void initTube();
 	void init_pmotions();

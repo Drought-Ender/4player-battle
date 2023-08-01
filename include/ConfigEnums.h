@@ -87,4 +87,9 @@ enum EPelletMatching {
     PELMATCH_ON
 };
 
+enum EDandoriBirthing {
+    BIRTH_SPROUTS,
+    BIRTH_PIKMIN
+};
+
 } // namespace ConfigEnums

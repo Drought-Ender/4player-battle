@@ -7,9 +7,6 @@
 #include "types.h"
 #include "P2JME/P2JME.h"
 
-
-
-
 extern int gScoreDelegations[2][2];
 extern int gEffectiveTeamCount;
 extern bool gThreePlayer;
@@ -17,9 +14,7 @@ extern bool gThreePlayer;
 struct Controller;
 
 extern int mRealWinCounts[4];
-
 extern bool gDrawVsMenu;
-
 extern bool gDrawNavi[4];
 
 JUTFont* getPikminFont() {
@@ -95,7 +90,8 @@ enum OptionsEnum {
     VS_HIBA,
     PIKI_DIE,
     SPRAY_CARD,
-    PELLET_POSY
+    PELLET_POSY,
+    PIKMIN_BIRTH,
 };
 
 namespace ConfigEnums {
@@ -139,8 +135,6 @@ extern PlayCamera* gCameraP3;
 extern PlayCamera* gCameraP4;
 extern Controller* gControllerP3;
 extern Controller* gControllerP4;
-
-
 
 int CalcNaviNum();
 int getVsTeam(int);

@@ -817,6 +817,10 @@ Vector3f Onyon::getGoalPos()
  */
 void Onyon::doAI()
 {
+	if (gConfig[PIKMIN_BIRTH] == ConfigEnums::BIRTH_PIKMIN) {
+		birthByExitPiki();
+	}
+	
 	SysShape::AnimInfo* info = mAnimator.mAnimInfo;
 	int animid;
 	if (!info) {
@@ -2345,5 +2349,32 @@ void ItemOnyon::Mgr::load()
 	mCollFactories[ONYON_OBJECT_SHIP] = CollPartFactory::load(ufotextarc, "coll.txt");
 	closeTextArc(ufotextarc);
 }
+
+void Onyon::birthByExitPiki() {
+	int pikiCount = GameStat::getMapPikmins(mPikminType);
+
+	if (mToBirth + mPikisToWithdraw > 0) {
+		int spawnAmount = mToBirth;
+
+		int excess = 0;
+
+		int maxSpawnAmount = 50 - pikiCount - mPikisToWithdraw;
+
+		if (spawnAmount > maxSpawnAmount) {
+			excess = mToBirth - maxSpawnAmount;
+
+			spawnAmount = maxSpawnAmount;
+		}
+
+		if (spawnAmount) {
+			playData->mPikiContainer.getCount(mPikminType, Leaf) += spawnAmount;
+			
+			exitPikis(spawnAmount, mPikminType);
+		}
+
+		mToBirth = excess;
+	}
+}
+
 
 } // namespace Game
