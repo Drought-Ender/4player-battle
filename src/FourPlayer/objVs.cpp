@@ -778,7 +778,7 @@ union U32Name
 typedef J2DPictureEx* BedamaPaneType[4];
 
 void FourObjVs::setWinBedamaColor(int color, int player) {
-    OSReport("FourObjVs::setWinBedamaColor(int %i, int %i)\n", color, player);
+    DebugReport("FourObjVs::setWinBedamaColor(int %i, int %i)\n", color, player);
     ScreenSet* screens[4] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 }; 
 
     J2DPictureEx** winDamaPanes[] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P };

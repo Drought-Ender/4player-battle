@@ -61,7 +61,7 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     Game::gNaviNum = Game::CalcNaviNum();
     for (int i = 0; i < 4; i++) {
         mNewWinValues[i] = mRealWinCounts[i];
-        OSReport("Win Values %i\n", mNewWinValues[i]);
+        DebugReport("Win Values %i\n", mNewWinValues[i]);
     }
 
     // f32 baseXOffs[2] = {335.0f, 359.0f};
@@ -389,6 +389,10 @@ bool TFourVsSelect::doUpdate() {
 
     for (int i = 0; i < Game::gNaviNum; i++) {
         Game::SetVsTeam(i, (Game::TeamID)mTeamIDs[i]);
+    }
+
+    for (int i = Game::gNaviNum; i < 4; i++) {
+        Game::SetVsTeam(i, Game::TEAM_NULL);
     }
 
     for (int i = 0; i < Game::gNaviNum; i++) {

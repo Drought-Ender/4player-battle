@@ -102,7 +102,7 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 	bool used = true;
 
 	int target = CherryTarget::GetTarget(naviMgr->getAt(gUseCardNavi)->mController2);
-	OSReport("Target is %i\n", target);
+	DebugReport("Target is %i\n", target);
 
 	if (machines[user]->_18) {
 		return false;
@@ -444,7 +444,7 @@ void CardMgr::gotPlayerCard(int user)
         for (int i = 0; i < 4; i++) {
             if (getVsTeam(i) == user) {
                 Vector2f panePos = getLampPos(i, machines[user]->mCherryStock);
-                OSReport("Owner %i\n", i);
+                DebugReport("Owner %i\n", i);
 
                 JUtility::TColor color1(0xff, 0x96, 0x64, 0xff);
                 JUtility::TColor color2(0xff, 0x46, 0x46, 0xff);

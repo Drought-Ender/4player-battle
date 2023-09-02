@@ -64,6 +64,9 @@ int getPikiFromTeam(int idx) {
 	case TEAM_PURPLE:
 		pikiColor = Purple;
 		break;
+	case TEAM_NULL:
+		pikiColor = NullColor;
+		break;
     }
 	return pikiColor;
 }
@@ -144,6 +147,8 @@ const char* getPikiColorName(int pikiKind) {
 		return "Bulbmin";
 	case Game::Carrot:
 		return "Carrot";
+	case -1:
+		return "Null";
 	default:
 		return "Unknown";
 	}
@@ -160,6 +165,8 @@ const char* getNaviColorName(int teamColor) {
 		return "White Navi";
 	case TEAM_PURPLE:
 		return "Purple Navi";
+	case TEAM_NULL:
+		return "Null Navi";
 	default:
 		return "Unknown Navi";
 	}

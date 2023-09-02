@@ -115,7 +115,7 @@ VsGameSection::VsGameSection(JKRHeap* heap, bool gameMode)
 		mVsFifo->becomeCurrent();
 		GXSetGPFifo(mVsFifo->mFifo);
 	}
-	OSReport("Memory Size %p\n", *(int*)(0x80000028));
+	DebugReport("Memory Size %p\n", *(int*)(0x80000028));
 }
 
 /*
@@ -688,7 +688,7 @@ void VsGameSection::onMovieStart(MovieConfig* movie, u32 param_2, u32 playerMode
 {
 	movie->is("s03_orimadown");
 	if (gameSystem->isMultiplayerMode()) {
-		OSReport("PlayedMode %i\n", playerMode);
+		DebugReport("PlayedMode %i\n", playerMode);
 		switch (playerMode)
 		{
 		case 0:
@@ -949,7 +949,7 @@ bool GameMessageVsRedOrSuckStart::actVs(VsGameSection* section)
 {
 	
 	VsGame::gBedamaColor = mBedamaColor;
-	OSReport("Bedama Color %i\n", VsGame::gBedamaColor);
+	DebugReport("Bedama Color %i\n", VsGame::gBedamaColor);
 	if (section->mState) {
 		section->mState->onRedOrBlueSuckStart(section, mColor, mIsYellow);
 	}
@@ -1403,7 +1403,7 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		}
 	}
 
-	OSReport("Bedamas %i\n", bedamas);
+	DebugReport("Bedamas %i\n", bedamas);
 
 	PelletList::cKind kind;
 	char* name = const_cast<char*>(VsOtakaraName::cBedamaYellow);
@@ -1804,7 +1804,7 @@ namespace Game
 	void VsGameSection::updateFancyCam() {
 		gFancyTimer -= sys->mDeltaTime;
 		if (gFancyTimer <= 0.0f) {
-			OSReport("Update but fancy\n");
+			DebugReport("Update but fancy\n");
 			gFancyTimer = cTimerInterval;
 			gFancyTarget = fancyCamLookForTarget();
 		}

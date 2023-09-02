@@ -17,6 +17,18 @@ extern int mRealWinCounts[4];
 extern bool gDrawVsMenu;
 extern bool gDrawNavi[4];
 
+static bool gDebugPrint = true;
+
+inline void DebugReport(const char* msg, ...) {
+    if (gDebugPrint) {
+        va_list marker;
+
+        va_start(marker, msg);
+        vprintf(msg, marker);
+        va_end(marker);
+    }
+}
+
 JUTFont* getPikminFont() {
     return gP2JMEMgr->mFont;
 }
@@ -112,6 +124,7 @@ namespace Game
 {
 
 enum TeamID {
+    TEAM_NULL = -1,
     TEAM_RED = 0,
     TEAM_BLUE = 1,
     TEAM_WHITE,
@@ -125,6 +138,7 @@ enum TeamID {
 #define PIKI_COLOR_WHITE 4
 #define PIKI_COLOR_BULBMIN 5
 #define PIKI_COLOR_CARROT 6
+#define PIKI_COLOR_NULL -1
     
 extern int gNaviNum;
 extern int gVsNaviIndexArray[4];
@@ -155,6 +169,9 @@ void SetVsTeam(int idx, TeamID teamID) {
 	case TEAM_PURPLE:
 		pikiColor = PIKI_COLOR_PURPLE;
 		break;
+    case TEAM_NULL:
+        pikiColor = -1;
+        break;
     }
     gVsNaviIndexArray[idx] = pikiColor;
 }
@@ -173,7 +190,9 @@ int getTeamFromPiki(int pikiColor) {
 	case PIKI_COLOR_WHITE: // white
 		return TEAM_WHITE;
 	case PIKI_COLOR_PURPLE: // purple
-		return TEAM_PURPLE; 
+		return TEAM_PURPLE;
+    case PIKI_COLOR_NULL:
+        return TEAM_NULL;
     }
     JUT_PANIC("GET PIKI %i\n", pikiColor);
 }
@@ -190,7 +209,7 @@ int getTeamFromPelplant(int pikiColor) {
 	case PIKI_COLOR_PURPLE: // purple
 		return TEAM_PURPLE; 
     }
-    return -1;
+    return TEAM_NULL;
 }
 
 int getPikiFromTeam(int);
@@ -201,7 +220,7 @@ int getTeamCount() {
 
     for (int i = 0; i < 4; i++) {
         int teamIdx = getVsTeam(i);
-        if (!active[teamIdx]) {
+        if (teamIdx != TEAM_NULL && !active[teamIdx]) {
             count++;
             active[teamIdx] = true;
         }

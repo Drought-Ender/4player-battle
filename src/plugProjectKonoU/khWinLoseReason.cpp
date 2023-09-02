@@ -50,12 +50,16 @@ void ObjWinLoseReason::doDraw(Graphics& gfx) { }
  */
 SceneWinLoseReason::SceneWinLoseReason()
 {
+	mScreenObj[3] = nullptr;
+	mScreenObj[2] = nullptr;
 	mScreenObj[1] = nullptr;
 	mScreenObj[0] = nullptr;
 	mOutcome[3]   = -1;
 	mOutcome[2]   = -1;
 	mOutcome[1]   = -1;
 	mOutcome[0]   = -1;
+	mDone[3] 	  = false;
+	mDone[2]	  = false;
 	mDone[1]      = false;
 	mDone[0]      = false;
 	mCounter      = 0;
@@ -73,10 +77,11 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 	}
 
 	DispWinLoseReason* disp = static_cast<DispWinLoseReason*>(mDispMember);
-	for (int i = 0; i < Game::gNaviNum; i++) {
+	for (int i = 0; i < 4; i++) {
 		mOutcome[i]             = disp->mOutcomeNavis[i];
 		f32 posY = (i < 2) ? ObjWinLoseReason::msVal.mYOffsetP1 : ObjWinLoseReason::msVal.mYOffsetP2;
-		f32 posX = (i & 1) ? 160.0f : -160.0f;
+		f32 posX = 0.0f;
+		if (Game::gNaviNum > 2) posX = (i & 1) ? 160.0f : -160.0f;
 		switch (mOutcome[i]) {
 		case 1: // captain down
 		{
@@ -85,7 +90,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 			Morimura::TOrimaDown2D* screen = static_cast<Morimura::TOrimaDown2D*>(mScreenObj[i]);
 			P2ASSERTLINE(149, screen);
 			screen->mGameOverScreen->setPosXY(posX, posY);
-			screen->mGameOverScreen->mScreen->scaleScreen(0.5f);
+			if (Game::gNaviNum > 2) screen->mGameOverScreen->mScreen->scaleScreen(0.5f);
 			screen->mType      = i + 1;
 			screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
 			break;
@@ -97,7 +102,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 			Morimura::TPikminDown2D* screen = static_cast<Morimura::TPikminDown2D*>(mScreenObj[i]);
 			P2ASSERTLINE(159, screen);
 			screen->mGameOverScreen->setPosXY(posX, posY);
-			screen->mGameOverScreen->mScreen->scaleScreen(0.5f);
+			if (Game::gNaviNum > 2) screen->mGameOverScreen->mScreen->scaleScreen(0.5f);
 			screen->mType      = i + 1;
 			screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
 			break;
@@ -109,7 +114,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 			break;
 		}
 		default:
-			mDone[i] = 1;
+			mDone[i] = true;
 			break;
 		}
 	}

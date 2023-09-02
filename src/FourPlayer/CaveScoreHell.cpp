@@ -353,7 +353,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 		return;
 	}
 
-	OSReport("Cave::gPelplantsPerBunch %i\n", Cave::gPelplantsPerBunch);
+	DebugReport("Cave::gPelplantsPerBunch %i\n", Cave::gPelplantsPerBunch);
 	const int pelplantColors[4] = { PELCOLOR_RED, PELCOLOR_BLUE, PELCOLOR_WHITE, PELCOLOR_PURPLE };
 
 	for (int nodeType = 0; nodeType < OBJLAYOUT_COUNT; nodeType++) {
@@ -463,7 +463,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_Enemy: {
-					OSReport("OBJLAYOUT_Enemy\n");
+					DebugReport("OBJLAYOUT_Enemy\n");
 					Vector3f birthPos;
 					birthPos.y = 0.0f;
 					node->getBirthPosition(birthPos.x, birthPos.z);
@@ -523,7 +523,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 									}
 								}
 								
-								OSReport("PelplantTeam %i\n", pelPlantTeam);
+								DebugReport("PelplantTeam %i\n", pelPlantTeam);
 								if (pelPlantTeam != PELCOLOR_RANDOM) {
 									Pelplant::Obj* pelplant = static_cast<Pelplant::Obj*>(enemy);
 									pelplant->mColor = pelPlantTeam;
@@ -890,15 +890,15 @@ int RandMapScore::getVersusHighScore(int color) {
 
 void RandEnemyUnit::setEnemySlot()
 {
-	OSReport("RandEnemyUnit::setEnemySlot()\n");
+	DebugReport("RandEnemyUnit::setEnemySlot()\n");
 	if (mTotalCount < mMaxEnemies) {
-		OSReport("RandEnemyUnit::setEnemyTypeC()\n");
+		DebugReport("RandEnemyUnit::setEnemyTypeC()\n");
 		setEnemyTypeC();
-		OSReport("RandEnemyUnit::setEnemyTypeF()\n");
+		DebugReport("RandEnemyUnit::setEnemyTypeF()\n");
 		setEnemyTypeF();
-		OSReport("RandEnemyUnit::setEnemyTypeB()\n");
+		DebugReport("RandEnemyUnit::setEnemyTypeB()\n");
 		setEnemyTypeB();
-		OSReport("RandEnemyUnit::setEnemyTypeA()\n");
+		DebugReport("RandEnemyUnit::setEnemyTypeA()\n");
 		setEnemyTypeA();
 	}
 }
@@ -966,7 +966,7 @@ void RandEnemyUnit::setVersusEasyEnemy()
 			}
 			else if (currInfo->mEnemyID == vsEasyIDs[1]) {
 				enemyCounts[1][0] += currInfo->mWeight / 10;
-				OSReport("Enemy Count 2 %i\n", enemyCounts[1][0]);
+				DebugReport("Enemy Count 2 %i\n", enemyCounts[1][0]);
 				enemyUnits[1] = unit;
 				currNode->del();
 				mainNode->addHead(currNode);
@@ -977,7 +977,7 @@ void RandEnemyUnit::setVersusEasyEnemy()
 
 	
 	for (int i = 0; i < 2; i++) {
-		OSReport("enemyCounts[%i][0] %i\n", i, enemyCounts[i][0]);
+		DebugReport("enemyCounts[%i][0] %i\n", i, enemyCounts[i][0]);
 		if (enemyCounts[i][0] == 0) continue;
 
 
@@ -989,7 +989,7 @@ void RandEnemyUnit::setVersusEasyEnemy()
 			for (int j = 0; j < gEffectiveTeamCount; j++) {
 				if (enemyCounts[i][j] != 0) {
 					BaseGen* spawnBaseGen = getVersusEasyEnemyBaseGen(onyonNodes[j], onyonGens[j]);
-					OSReport("Pelplant spawn basegen %p\n", spawnBaseGen);
+					DebugReport("Pelplant spawn basegen %p\n", spawnBaseGen);
 					if (spawnBaseGen) {
 						makeSetEnemyTypeA(onyonNodes[j], spawnBaseGen, enemyUnits[i], enemyCounts[i][j]);
 					}
@@ -1161,7 +1161,6 @@ void RandEnemyUnit::setSlotEnemyTypeF(int third) {
 	for (int i = 0; i < 4; i++) {
 		MapNode* onyonNode = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
 		BaseGen* onyonGen = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
-		if (!onyonNode || !onyonGen) JUT_PANIC("NODE/GEN %i MISSING!\n", i);
 		
 		if (onyonNode) {
 			positions[i] = onyonNode->getBaseGenGlobalPosition(onyonGen);

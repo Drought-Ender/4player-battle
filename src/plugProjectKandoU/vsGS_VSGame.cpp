@@ -30,7 +30,7 @@ void VSState::do_init(VsGameSection* gameSection)
 {
 	gameSystem->mMode = GSM_VERSUS_MODE;
 
-	OSReport("VSState::do_init(VsGameSection* %p)\n", gameSection);
+	DebugReport("VSState::do_init(VsGameSection* %p)\n", gameSection);
 	gameSection->setPlayerMode(gNaviNum);
 	gameSection->setCamController();
 

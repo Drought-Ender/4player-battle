@@ -63,7 +63,7 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 	}
 
 	if (gameSystem->isVersusMode()) {
-		OSReport("Set mode %i\n", gNaviNum);
+		DebugReport("Set mode %i\n", gNaviNum);
 		section->setPlayerMode(gNaviNum);
 		section->setCamController();
 		clearLoseCauses();
@@ -87,7 +87,9 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		mExtinctions[i] = false;
 		if (!doesTeamHavePlayers(i)) {
 			mExtinctions[i] = true;
+			
 		}
+		DebugReport("mExtinctions[%i] = %i\n", i, mExtinctions[i]);
 		mOrimaDownState[i] = 0;
 	}
 	section->mGhostIconTimers[1]    = 0.0f;
@@ -234,6 +236,7 @@ void GameState::checkVsPikminZero(VsGameSection* section) {
 					mOrimaDownState[i] = 3;
 				}
 				if (getVsPikiColor(i) == pikiColor && !mExtinctions[teamID]) {
+					
 					mExtinctions[teamID] = true;
 					naviMgr->getAt(i)->movie_begin(true);
 					if (isWinExtinction()) {
@@ -319,7 +322,14 @@ void GameState::exec(VsGameSection* section)
 				u8 whiteLost  = getLoseCauses(VSPlayer_White);
 				u8 purpleLost = getLoseCauses(VSPlayer_Purple);
 
-				OSReport("Loss %i, %i, %i, %i\n", redLost, blueLost, whiteLost, purpleLost);
+				DebugReport("Loss %i, %i, %i, %i\n", redLost, blueLost, whiteLost, purpleLost);
+
+				if (!isTeamActive(VSPlayer_White)) {
+					whiteLost = 3;
+				}
+				if (!isTeamActive(VSPlayer_Purple)) {
+					whiteLost = 3;
+				}
 
 
 				if (!redLost && !blueLost && !whiteLost && !purpleLost) { // neither player lost
@@ -330,11 +340,11 @@ void GameState::exec(VsGameSection* section)
 					outcome = 1;       // red win
 					VsGameSection::mRedWinCount += 1;
 					section->mVsWinner = 0;
-					OSReport("Red Won\n");
+					DebugReport("Red Won\n");
 					for (int i = 0; i < 4; i++) {
-						OSReport("Checking %i\n", i);
+						DebugReport("Checking %i\n", i);
 						if (getVsPikiColor(i) == Red) {
-							OSReport("Red Team Member %i\n", i);
+							DebugReport("Red Team Member %i\n", i);
 							mRealWinCounts[i]++;
 							outcomes[i] = 1;
 						}
@@ -344,10 +354,10 @@ void GameState::exec(VsGameSection* section)
 					outcome = 2;        // blue win
 					VsGameSection::mBlueWinCount += 1;
 					section->mVsWinner = 1;
-					OSReport("Blue Won\n");
+					DebugReport("Blue Won\n");
 					for (int i = 0; i < 4; i++) {
 						if (getVsPikiColor(i) == Blue) {
-							OSReport("Blue Team Member %i\n", i);
+							DebugReport("Blue Team Member %i\n", i);
 							mRealWinCounts[i]++;
 							outcomes[i] = 1;
 						}
@@ -356,7 +366,7 @@ void GameState::exec(VsGameSection* section)
 					outcome = 1;        // blue win
 					VsGameSection::mWhiteWinCount += 1;
 					section->mVsWinner = 2;
-					OSReport("White Won\n");
+					DebugReport("White Won\n");
 					for (int i = 0; i < 4; i++) {
 						if (getVsPikiColor(i) == White) {
 							mRealWinCounts[i]++;
@@ -367,7 +377,7 @@ void GameState::exec(VsGameSection* section)
 					outcome = 1;        // blue win
 					VsGameSection::mPurpleWinCount += 1;
 					section->mVsWinner = 3;
-					OSReport("Purple Won\n");
+					DebugReport("Purple Won\n");
 					for (int i = 0; i < 4; i++) {
 						if (getVsPikiColor(i) == Purple) {
 							mRealWinCounts[i]++;
@@ -376,7 +386,7 @@ void GameState::exec(VsGameSection* section)
 					}
 				}
 				else {         // both lost/something wacky happened
-					OSReport("Draw!\n");
+					DebugReport("Draw!\n");
 					outcome = 3; // draw
 					VsGameSection::mDrawCount += 1;
 				}
@@ -526,6 +536,7 @@ void GameState::exec(VsGameSection* section)
 			winLoseReason.mOutcomeBlue = -1;
 
 			for (int i = 0; i < 4; i++) {
+				DebugReport("Outcome for %i: %i\n", i, mNaviStatus[i]);
 				winLoseReason.mOutcomeNavis[i] = mNaviStatus[i];
 			}
 
@@ -759,7 +770,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 	}
 
 	mWinColors[player] = gBedamaColor;
-	OSReport("Win color %i %i\n", player, gBedamaColor);
+	DebugReport("Win color %i %i\n", player, gBedamaColor);
 
 
 	Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeam(player));
@@ -1087,20 +1098,23 @@ void GameState::onOrimaDown(VsGameSection* section, int idx)
 			mNaviStatus[idx] = VSLOSE_OrimaDown;
 			bool naviTeamExinct = true;
 			for (int i = 0; i < 4; i++) {
-				if (mNaviStatus[i] == -1 && getVsPikiColor(idx) == getVsPikiColor(i)) {
+				DebugReport("mNaviStatus[%i] = %i\n", i, mNaviStatus[i]);
+				if (mNaviStatus[i] != -1 && i != idx && getVsPikiColor(idx) == getVsPikiColor(i)) {
 					naviTeamExinct = false;
 				}
 			}
 			if (naviTeamExinct) {
-				mExtinctions[getVsTeam(idx)] = true;
+				mExtinctions[teamIdx] = true;
+				DebugReport("mExtinctions[%i] = %i\n", teamIdx, mExtinctions[teamIdx]);
 				if (isWinExtinction()) {
+					mOrimaDownState[idx] = 3;
 					setDeathLose();
 				}
 			}
 		}
 	}
 
-	OSReport("Downed Navi %i\n", idx);
+	DebugReport("Downed Navi %i\n", idx);
 
 
 }
@@ -1125,7 +1139,7 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 			}
 		}
 		setDeathLose();
-		OSReport("DRAW!\n");
+		DebugReport("DRAW!\n");
 		return;
 	}
 
@@ -1141,7 +1155,7 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 			if (naviTeamExinct) {
 				mExtinctions[getVsTeam(idx)] = true;
 				if (isWinExtinction()) {
-					OSReport("Set death lose\n");
+					DebugReport("Set death lose\n");
 					setDeathLose();
 				}
 			}
