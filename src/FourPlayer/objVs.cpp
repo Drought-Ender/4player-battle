@@ -246,9 +246,11 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	J2DPane* roots[4] = { root, root2, root3, root4 };
 	J2DPictureEx* naviIcons[4] = { olimarPicture, louiePicture, presidentPicture, wifePicture };
 
+	const float xoff = (Game::gNaviNum > 2) ? 125.0f : 425.0f;
+
 	for (int i = 0; i < 4; i++) {
-		mOutCircle[i] = og::Screen::CopyPictureToPane(paneOutStick, roots[i], msVal.mRouletteXOffs + 125.0f, msVal.mRouletteP1YOffs + 150.0f, 'CtrlBb00' + i);
-		mCStick[i]    = og::Screen::CopyPictureToPane(paneCtick, roots[i], msVal.mRouletteXOffs + 125.0f, msVal.mRouletteP1YOffs + 150.0f, 'CStick00' + i);
+		mOutCircle[i] = og::Screen::CopyPictureToPane(paneOutStick, roots[i], msVal.mRouletteXOffs + xoff, msVal.mRouletteP1YOffs + 150.0f, 'CtrlBb00' + i);
+		mCStick[i]    = og::Screen::CopyPictureToPane(paneCtick, roots[i], msVal.mRouletteXOffs + xoff, msVal.mRouletteP1YOffs + 150.0f, 'CStick00' + i);
 		mCStickBasePos[i] = Vector2f(mCStick[i]->mOffset.x, mCStick[i]->mOffset.y);
 		for (int j = 0; j < 4; j++) {
 			mExtraIcons[i][j] = og::Screen::CopyPictureToPane(naviIcons[j], roots[i], 
