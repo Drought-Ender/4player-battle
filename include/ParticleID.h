@@ -340,12 +340,10 @@
 #define PID_OrimaLightAct_Loozy_2 (0x0E0) // louie light whistle 2
 #define PID_OrimaLight_Loozy_2    (0x0E1) // louie light (trail/base)
 
-
 #define PID_OrimaLight_White_1    (0x2BC) // louie light (star shape)
 #define PID_OrimaLightAct_White_1 (0x2BD) // louie light whistle 1
 #define PID_OrimaLightAct_White_2 (0x2BE) // louie light whistle 2
 #define PID_OrimaLight_White_2    (0x2BF) // louie light (trail/base)
-
 
 #define PID_OrimaLight_Purple_1    (0x2C1) // louie light (star shape)
 #define PID_OrimaLightAct_Purple_1 (0x2C2) // louie light whistle 1
@@ -929,5 +927,19 @@
 #define PID_WMap_NewMap2       (6)
 #define PID_WMap_ShootingStar1 (7)
 #define PID_WMap_ShootingStar  (8)
+
+#define PID_TankGas_1  (0x2ce) // gas blowhog fire 1
+#define PID_TankGas_2  (0x2cf) // fiery blowhog fire 2
+#define PID_TankGas_3  (0x2d0) // fiery blowhog fire 3
+#define PID_TankGasHit    (0x2d1) // fiery blowhog fire hit
+#define PID_TankGasIND    (0x2d2) // fiery blowhog fire IND ?
+#define PID_TankGasYodare (0x2d3) // fiery blowhog drooling ?
+
+#define PID_TankSpore_1 (0x2c8)
+#define PID_TankSpore_2 (0x2c9)
+#define PID_TankSpore_3 (0x2ca)
+#define PID_TankSpore_4 (0x2cb)
+#define PID_TankSporeHit (0x2cc)
+#define PID_TankSporeYodare (0x2cd)
 
 #endif

@@ -401,7 +401,7 @@ struct Obj : public Tank::Obj {
 
 	// _00 		= VTBL
 	// _00-_308	= Tank::Obj
-	efx::TTankEffect* mTankEffect; // _308
+	efx::TGtankEffect* mTankEffect; // _308
 	                                 // _30C = PelletView
 };
 
@@ -455,7 +455,7 @@ struct Obj : public Tank::Obj {
 
 	// _00 		= VTBL
 	// _00-_308	= Tank::Obj
-	efx::TTankEffect* mTankEffect; // _308
+	efx::TMtankEffect* mTankEffect; // _308
 	                                 // _30C = PelletView
 };
 

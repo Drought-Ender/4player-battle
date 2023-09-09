@@ -47,7 +47,7 @@ void Obj::changeMaterial()
  * Address:	8029E6CC
  * Size:	000048
  */
-void Obj::createEffect() { mTankEffect = new efx::TTankEffect(nullptr); }
+void Obj::createEffect() { mTankEffect = new efx::TMtankEffect(nullptr); }
 
 /*
  * --INFO--
@@ -56,13 +56,12 @@ void Obj::createEffect() { mTankEffect = new efx::TTankEffect(nullptr); }
  */
 void Obj::setupEffect()
 {
-	efx::TTankEffect* effect;
+	efx::TMtankEffect* effect;
 	Matrixf* mtx = mJoint->getWorldMatrix();
 	effect       = mTankEffect;
 
-	effect->mEfxFire.mEfxABC.setMtxptr(mtx->mMatrix.mtxView);
-	effect->mEfxFire.mEfxIND.mMtx = mtx;
-	effect->mEfxFireYodare.mMtx   = mtx;
+	effect->mEfxSpore.setMtxptr(mtx->mMatrix.mtxView);
+	effect->mEfxSporeYodare.mMtx = mtx;
 }
 
 /*
@@ -70,7 +69,7 @@ void Obj::setupEffect()
  * Address:	8029EB44
  * Size:	000034
  */
-void Obj::startEffect() { mTankEffect->mEfxFire.create(nullptr); }
+void Obj::startEffect() { mTankEffect->mEfxSpore.create(nullptr); }
 
 /*
  * --INFO--
@@ -79,9 +78,9 @@ void Obj::startEffect() { mTankEffect->mEfxFire.create(nullptr); }
  */
 void Obj::startYodare()
 {
-	efx::TTankEffect* tankEffect = mTankEffect;
-	tankEffect->mEfxFire.fade();
-	tankEffect->mEfxFireYodare.create(nullptr);
+	efx::TMtankEffect* tankEffect = mTankEffect;
+	tankEffect->mEfxSpore.fade();
+	tankEffect->mEfxSporeYodare.create(nullptr);
 }
 
 /*
@@ -91,9 +90,9 @@ void Obj::startYodare()
  */
 void Obj::finishEffect()
 {
-	efx::TTankEffect* effect = mTankEffect;
-	effect->mEfxFire.fade();
-	effect->mEfxFireYodare.fade();
+	efx::TMtankEffect* effect = mTankEffect;
+	effect->mEfxSpore.fade();
+	effect->mEfxSporeYodare.fade();
 }
 
 /*
@@ -103,10 +102,9 @@ void Obj::finishEffect()
  */
 void Obj::effectDrawOn()
 {
-	efx::TTankEffect* effect = mTankEffect;
-	effect->mEfxFire.mEfxABC.endDemoDrawOn();
-	effect->mEfxFire.mEfxIND.endDemoDrawOn();
-	effect->mEfxFireYodare.endDemoDrawOn();
+	efx::TMtankEffect* effect = mTankEffect;
+	effect->mEfxSpore.endDemoDrawOn();
+	effect->mEfxSporeYodare.endDemoDrawOn();
 }
 
 /*
@@ -116,10 +114,9 @@ void Obj::effectDrawOn()
  */
 void Obj::effectDrawOff()
 {
-	efx::TTankEffect* effect = mTankEffect;
-	effect->mEfxFire.mEfxABC.startDemoDrawOff();
-	effect->mEfxFire.mEfxIND.startDemoDrawOff();
-	effect->mEfxFireYodare.startDemoDrawOff();
+	efx::TMtankEffect* effect = mTankEffect;
+	effect->mEfxSpore.startDemoDrawOff();
+	effect->mEfxSporeYodare.startDemoDrawOff();
 }
 
 /*
@@ -140,9 +137,8 @@ void Obj::interactCreature(Creature* creature)
  */
 void Obj::stopEffectRadius(f32 radius)
 {
-	efx::TTankEffect* effect                       = mTankEffect;
-	effect->mEfxFire.mEfxABC.mParticleCallBack._04 = radius;
-	effect->mEfxFire.mEfxIND.mParticleCallBack._04 = radius;
+	efx::TMtankEffect* effect               = mTankEffect;
+	effect->mEfxSpore.mParticleCallBack._04 = radius;
 }
 
 /*

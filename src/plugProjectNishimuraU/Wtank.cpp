@@ -61,7 +61,6 @@ void Obj::setupEffect()
 	effect       = mTankEffect;
 
 	effect->mEfxWat.setMtxptr(mtx->mMatrix.mtxView);
-	// effect->mEfxWat.mEfxIND.mMtx = mtx;
 	effect->mEfxWatYodare.mMtx = mtx;
 }
 
