@@ -345,6 +345,9 @@ struct GameState : public State {
 
 	inline void updateNavi(VsGameSection* section, int naviIndex)
 	{
+		if (naviIndex < Game::gNaviNum) {
+			return;
+		}
 		if (section->mGhostIconTimers[naviIndex] > 0.0f) {
 			section->mGhostIconTimers[naviIndex] -= sys->mDeltaTime;
 

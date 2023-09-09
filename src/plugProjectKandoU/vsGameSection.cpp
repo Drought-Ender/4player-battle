@@ -524,6 +524,8 @@ void VsGameSection::gmPikminZero() { }
  */
 void VsGameSection::goNextFloor(ItemHole::Item* hole) { mState->onNextFloor(this, hole); }
 
+//0x8413f78
+
 /*
  * --INFO--
  * Address:	801C1C9C
@@ -779,6 +781,8 @@ void VsGameSection::createFallPikmins(PikiContainer& setPikmin, int param_2)
  */
 void VsGameSection::createVsPikmins()
 {
+	DebugReport("Team Count %i\n", gEffectiveTeamCount);
+	DebugReport("Team Delegations %s %s %s %s\n", getPikiColorName(gScoreDelegations[0][0]), getPikiColorName(gScoreDelegations[0][1]), getPikiColorName(gScoreDelegations[1][0]), getPikiColorName(gScoreDelegations[1][1]));
 	Onyon* redOnyon = ItemOnyon::mgr->getOnyon(gScoreDelegations[0][0]);
 	P2ASSERTLINE(1349, redOnyon);
 	Vector3f redOnyonPos = redOnyon->getPosition();
@@ -806,23 +810,22 @@ void VsGameSection::createVsPikmins()
 	PikiContainer* pikmin = &mContainer1;
 	pikmin->clear();
 
-	int& reds  = pikmin->getCount(gScoreDelegations[0][0], Leaf);
+	int& reds  = pikmin->getCount(Red, Leaf);
 	reds       = mOlimarHandicap * 5;
-	int& blues = pikmin->getCount(gScoreDelegations[0][1], Leaf);
+	int& blues = pikmin->getCount(Blue, Leaf);
 	blues      = mLouieHandicap * 5;
 
-	if (gEffectiveTeamCount > 2) { 
-		int& whites = pikmin->getCount(gScoreDelegations[1][0], Leaf);
+	int& whites = pikmin->getCount(White, Leaf);
 
-		int& purples = pikmin->getCount(gScoreDelegations[1][1], Leaf);
-		purples = mPurpleHandicap * 5;
+	whites = mWhiteHandicap * 5;
 
-		if (gThreePlayer) {
-			purples = 0;
-		}
-		
-		whites  = mWhiteHandicap * 5;
-	}
+	OSReport("Whites %i\n", whites);
+
+	int& purples = pikmin->getCount(Purple, Leaf);
+	purples = mPurpleHandicap * 5;
+
+	OSReport("Purpels %i\n", whites);
+	
 
 
 	Vector3f spawnOnyonPos;
@@ -836,7 +839,7 @@ void VsGameSection::createVsPikmins()
 		else if (color == gScoreDelegations[1][0] && gEffectiveTeamCount > 2) {
 			spawnOnyonPos = whiteOnyonPos;
 		}
-		else if (color == gScoreDelegations[1][1] && gEffectiveTeamCount > 2) {
+		else if (!gThreePlayer && color == gScoreDelegations[1][1] && gEffectiveTeamCount > 2) {
 			spawnOnyonPos = purpleOnyonPos;
 		} else {
 			continue;
@@ -865,7 +868,7 @@ void VsGameSection::createVsPikmins()
 	
 	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
 	for (int onyonType = 0; onyonType < ARRAY_SIZE(marbles); onyonType++) {
-		Onyon* currentOnyon = ItemOnyon::mgr->getOnyon(getPikiFromTeam(onyonType));
+		Onyon* currentOnyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(onyonType));
 		if (!currentOnyon) continue;
 		PelletIterator pelletIter;
 		pelletIter.first();

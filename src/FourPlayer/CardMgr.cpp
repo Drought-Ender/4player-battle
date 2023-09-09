@@ -115,7 +115,7 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 		break;
 	}
 	case PIKMIN_5: {
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(getPikiFromTeam(user));
+		Onyon* onyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(user));
 		if (onyon) {
 			ItemOnyon::gVsChargeOkay = true;
 			for (int i = 0; i < 5; i++) {
@@ -126,7 +126,7 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 		break;
 	}
 	case PIKMIN_10: {
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(getPikiFromTeam(user));
+		Onyon* onyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(user));
 		if (onyon) {
 			ItemOnyon::gVsChargeOkay = true;
 			for (int i = 0; i < 10; i++) {
@@ -199,7 +199,7 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 		CI_LOOP(IPiki)
 		{
 			Piki* piki = *IPiki;
-			if (piki->getKind() == getPikiFromTeam(user) && piki->isAlive() && (int)piki->getHappa() != Flower) {
+			if (piki->getKind() == getPikiFromTeamEnum(user) && piki->isAlive() && (int)piki->getHappa() != Flower) {
 				piki->changeHappa(Flower);
 				Vector3f vec = piki->_25C;
 				efx::TPkGlow2 particle;
@@ -211,7 +211,7 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 		break;
 	}
 	case RESET_BEDAMA: {
-		int color      = getPikiFromTeam(user);
+		int color      = getPikiFromTeamEnum(user);
 		Onyon* onyon   = ItemOnyon::mgr->getOnyon(color);
 		Pellet* bedama = nullptr;
 		PelletIterator IPellet;
@@ -417,7 +417,7 @@ void CardMgr::draw(Graphics& gfx) {
             if (machines[getVsTeam(2)]->mSpinState) {
                 drawSlot(gfx, p3SlotPos, *machines[getVsTeam(2)]);
             }
-            if (machines[getVsTeam(3)]->mSpinState && gNaviNum == 4) {
+            if (gNaviNum == 4 && machines[getVsTeam(3)]->mSpinState) {
                 drawSlot(gfx, p4SlotPos, *machines[getVsTeam(3)]);
             }
         }

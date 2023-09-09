@@ -299,7 +299,7 @@ bool FourObjVs::checkUpdateWinColor() {
 }
 
 void FourObjVs::updateCSticks() {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < Game::gNaviNum; i++) {
 		Game::Navi* navi = Game::naviMgr->getAt(i);
 		if (navi && navi->isAlive() && navi->mController1) {
 			Vector2f pos = CherryTarget::GetXY(navi->mController1) * 10.0f;

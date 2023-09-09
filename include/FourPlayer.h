@@ -152,7 +152,10 @@ extern Controller* gControllerP4;
 
 int CalcNaviNum();
 int getVsTeam(int);
+int getVsTeam_s(int);
 int getVsPikiColor(int); // Gets the piki color of an index
+const char* getPikiColorName(int);
+const char* getNaviColorName(int);
 void SetVsTeam(int idx, TeamID teamID) {
     int pikiColor = (int)teamID;
     switch (teamID)
@@ -212,7 +215,7 @@ int getTeamFromPelplant(int pikiColor) {
     return TEAM_NULL;
 }
 
-int getPikiFromTeam(int);
+int getPikiFromTeamEnum(int);
 
 int getTeamCount() {
     bool active[4] = { false, false, false, false };

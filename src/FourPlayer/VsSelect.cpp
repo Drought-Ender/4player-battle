@@ -213,10 +213,7 @@ void TFourVsSelect::doUpdateFadeoutFinish() {
     TVsSelect::doUpdateFadeoutFinish();
     _1F8->mWhiteHandicap  = mWhitePikiNum;
     _1F8->mPurpleHandicap = mPurplePikiNum;
-    if (Game::gNaviNum == 2) {
-        Game::gVsNaviIndexArray[2] = Game::gVsNaviIndexArray[0];
-        Game::gVsNaviIndexArray[3] = Game::gVsNaviIndexArray[1];
-    }
+    DebugReport("Handicaps:\n Red %i\n Blue %i\n White %i\n Purple %i\n", _1F8->mOlimarHandicap, _1F8->mLouieHandicap, _1F8->mWhiteHandicap, _1F8->mPurpleHandicap);
 }
 
 bool TFourVsSelect::doUpdate() {

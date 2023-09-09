@@ -21,10 +21,10 @@ void initScoreDelegations() {
 		int currentCount = 0;
 		for (int i = 0; i < 4; i++) {
 			if (!Game::doesTeamHavePlayers(i)) {
-				skippedTeam = Game::getPikiFromTeam(i);
+				skippedTeam = Game::getPikiFromTeamEnum(i);
 			}
 			else {
-				reinterpret_cast<int*>(gScoreDelegations)[currentCount++] = Game::getPikiFromTeam(i);
+				reinterpret_cast<int*>(gScoreDelegations)[currentCount++] = Game::getPikiFromTeamEnum(i);
 			}
 		}
 		gEffectiveTeamCount = 4;
@@ -38,7 +38,7 @@ void initScoreDelegations() {
 		int deleID = 0;
 		for (int i = 0; i < 4; i++) {
 			if (Game::isTeamActive(i)) {
-				gScoreDelegations[0][deleID++] = (OnyonTypes)Game::getPikiFromTeam(i);
+				gScoreDelegations[0][deleID++] = (OnyonTypes)Game::getPikiFromTeamEnum(i);
 			}
 		}
 	}

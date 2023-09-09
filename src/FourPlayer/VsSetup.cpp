@@ -48,7 +48,15 @@ int getVsTeam(int idx) {
     return getTeamFromPiki((EPikiKind)gVsNaviIndexArray[idx]);
 }
 
-int getPikiFromTeam(int idx) {
+int getVsTeam_s(int idx) {
+    int team = getTeamFromPiki((EPikiKind)gVsNaviIndexArray[idx]);
+	if (team == -1) {
+		return 0;
+	}
+	return team;
+}
+
+int getPikiFromTeamEnum(int idx) {
 	EPikiKind pikiColor = (EPikiKind)idx;
 	switch (idx)
     {

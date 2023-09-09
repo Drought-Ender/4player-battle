@@ -209,7 +209,7 @@ void pikminZeroFunc(int idx) {
  */
 
 void GameState::setDeathLose() {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < Game::gNaviNum; i++) {
 		if (mNaviStatus[i] != -1 && mExtinctions[getVsTeam(i)]) {
 			setLoseCause(getVsTeam(i), mNaviStatus[i]);
 		}
@@ -228,7 +228,7 @@ bool GameState::isWinExtinction() {
 
 void GameState::checkVsPikminZero(VsGameSection* section) {
 	for (int teamID = 0; teamID < 4; teamID++) {
-		int pikiColor = getPikiFromTeam(teamID);
+		int pikiColor = getPikiFromTeamEnum(teamID);
 		if (isTeamActive(teamID) && GameStat::getAllPikmins(pikiColor) == 0 && ItemOnyon::mgr->getOnyon(pikiColor)->mToBirth == 0) {
 			for (int i = 0; i < 4; i++) {
 				if (getVsPikiColor(i) == pikiColor && mNaviStatus[i] == -1) {
@@ -269,9 +269,9 @@ void GameState::exec(VsGameSection* section)
 		}
 	}
 
-	if (gFancyCamera) {
-		section->updateFancyCam();
-	}
+	// if (gFancyCamera) {
+	// 	section->updateFancyCam();
+	// }
 
 	if (section->mState->mId != VGS_Game) {
 		return;
@@ -297,8 +297,8 @@ void GameState::exec(VsGameSection* section)
 	} else if (!gameSystem->paused_soft() && gameSystem->isVersusMode()) {
 		updateNavi(section, VSPLAYER_Red);
 		updateNavi(section, VSPLAYER_Blue);
-		updateNavi(section, 2);
-		updateNavi(section, 3);
+		updateNavi(section, VSPlayer_Purple);
+		updateNavi(section, VSPlayer_White);
 	}
 
 	checkPikminZero(section);
@@ -773,7 +773,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 	DebugReport("Win color %i %i\n", player, gBedamaColor);
 
 
-	Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeam(player));
+	Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(player));
 	BaseGameSection* baseSection = gameSystem->mSection;
 
 	MoviePlayArg movieArgs("x19_vs_bedama", nullptr, baseSection->mMovieFinishCallback, 0);
@@ -1365,13 +1365,20 @@ void GameState::update_GameChallenge(VsGameSection* section)
 			marbleCountP4--;
 		}
 
+
 		disp.mMarbleCountP1 = marbleCountP1;
 		disp.mMarbleCountP2 = marbleCountP2;
-		disp.mMarbleCountP3 = marbleCountP3;
-		disp.mMarbleCountP4 = marbleCountP4;
+		if (Game::gNaviNum >= 3) {
+			disp.mMarbleCountP3 = marbleCountP3;
+			if (Game::gNaviNum == 4) disp.mMarbleCountP4 = marbleCountP4;
+			else disp.mMarbleCountP4 = 0;
+		}
+		else {
+			disp.mMarbleCountP3 = 0;
+		}
 
 		for (int i = 0; i < 4; i++) {
-			disp.mWinMarbleColors[i] = mWinColors[getVsTeam(i)];
+			disp.mWinMarbleColors[i] = mWinColors[getVsTeam_s(i)];
 
 			disp.mNaviInactiveFlags[i] = mNaviStatus[i] != -1;
 		}
