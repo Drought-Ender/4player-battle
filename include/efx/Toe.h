@@ -107,6 +107,16 @@ struct ToeWater {
 
 	ContextChasePos mContexts[2];
 };
+
+struct ToeSpore {
+	void create(Vector3f*);
+	void kill();
+
+	ContextChasePos mContext;
+};
+
+int size = sizeof(ToeSpore);
+
 } // namespace efx
 
 #endif

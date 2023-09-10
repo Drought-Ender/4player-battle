@@ -14,6 +14,7 @@
 #define PKEFF_Gas   (0x8)
 #define PKEFF_Water (0x10)
 #define PKEFF_Drown (0x20)
+#define PKEFF_Spore (0x80000000)
 
 namespace efx {
 void createSimplePkAp(Vector3f&);
@@ -148,7 +149,6 @@ struct TPkNageBlur : public TChaseMtx {
 	// _00-_14 = TChaseMtx
 };
 
-
 // Needed for dtor
 struct PtrlistContext : public JSUPtrList {};
 
@@ -207,19 +207,19 @@ struct TPkEffectTane {
 };
 
 struct TPkEffect {
-	TPkEffect()
-	    : mPikiColor(-1)
-	    , _0C(nullptr)
-	    , mHamonPosPtr(nullptr)
-	    , _14(nullptr)
-	    , _18(nullptr)
-	    , _1C(nullptr)
-	    , mHeight(nullptr)
-	    , mMoeSmokeTimer(0)
-	{
-		mFlags.clear();
-		mBackupFlags.clear();
-	}
+	TPkEffect();
+	//     : mPikiColor(-1)
+	//     , _0C(nullptr)
+	//     , mHamonPosPtr(nullptr)
+	//     , _14(nullptr)
+	//     , _18(nullptr)
+	//     , _1C(nullptr)
+	//     , mHeight(nullptr)
+	//     , mMoeSmokeTimer(0)
+	// {
+	// 	mFlags.clear();
+	// 	mBackupFlags.clear();
+	// }
 
 	void init();
 	void update();
@@ -246,6 +246,8 @@ struct TPkEffect {
 	void killHamonA_();
 	void createHamonB_(Vector3f*);
 	void killHamonB_();
+	void createSpore_(Vector3f*);
+	void killSpore_();
 
 	inline void setFlag(int flagID) { mFlags.typeView |= flagID; }
 
@@ -265,6 +267,7 @@ struct TPkEffect {
 		killMoeSmoke_();
 		killBlackDown_();
 		killWater_();
+		killSpore_();
 		killHamonA_();
 		killHamonB_();
 	}
@@ -346,6 +349,7 @@ struct TPkEffect {
 	ToeHamonA mOeHamonA;       // _154
 	ToeHamonB mOeHamonB;       // _170
 	ToeMoeSmoke mOeMoeSmoke;   // _18C
+	ToeSpore mOeSpore;
 };
 
 struct TPkEffectMgr : public JKRDisposer {
@@ -377,6 +381,7 @@ struct TPkEffectMgr : public JKRDisposer {
 	void createS_Attack(Vector3f&);
 	void createS_AttackDp(Vector3f&);
 	void createS_Kanden(Vector3f&);
+	void createS_SporeOff(Vector3f&);
 
 	static TPkEffectMgr* _instance;
 
@@ -384,7 +389,7 @@ struct TPkEffectMgr : public JKRDisposer {
 	// _04-_18	= JKRDisposer
 	union
 	{
-		struct {
+		struct NonArray {
 			TOneEmitterChasePos* mToeKourinBlue;   // _18
 			TOneEmitterChasePos* mToeKourinRed;    // _1C
 			TOneEmitterChasePos* mToeKourinYellow; // _20
@@ -402,13 +407,14 @@ struct TPkEffectMgr : public JKRDisposer {
 			TOneEmitterChasePos* mToeHamonB;       // _50
 			TOneEmitterChasePos* mToeMoeSmoke;     // _54
 			TOneEmitterChasePos* mToeTaneKira;    // _58
+			TOneEmitterChasePos* mToeSpore;
 		} mTOneEmitters;
-		TOneEmitterChasePos* mTOneEmitterArray[17];
+		TOneEmitterChasePos* mTOneEmitterArray[sizeof(NonArray) / sizeof(TOneEmitterChasePos*)];
 	};
 	
 	union
 	{
-		struct {
+		struct NonArray {
 			TPkOneEmitterSimple* mPikiDeadBlue;    // _5C
 			TPkOneEmitterSimple* mPikiDeadRed;     // _60
 			TPkOneEmitterSimple* mPikiDeadYellow;  // _64
@@ -436,8 +442,10 @@ struct TPkEffectMgr : public JKRDisposer {
 			TPkOneEmitterSimple* mGate3Attack;     // _BC
 			TPkOneEmitterSimple* mWalkWater1;      // _C0
 			TPkOneEmitterSimple* mWalkWater2;      // _C4
+			TPkOneEmitterSimple* mSporeOff1;
+			TPkOneEmitterSimple* mSporeOff2;
 		} mTPkOneEmitters;
-		TPkOneEmitterSimple* mTPkOneEmitterArray[27];
+		TPkOneEmitterSimple* mTPkOneEmitterArray[sizeof(NonArray) / sizeof(TOneEmitterChasePos*)];
 	};
 	/* end of TPkOneEmitterSimple  */
 	TOEContextS mTOEContextArray[50];      // _C8

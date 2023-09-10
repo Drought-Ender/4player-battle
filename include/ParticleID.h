@@ -942,4 +942,8 @@
 #define PID_TankSporeHit (0x2cc)
 #define PID_TankSporeYodare (0x2cd)
 
+#define PID_PkToeSpore (0x2c5)
+#define PID_PKS_SporeOff_1 (0x2c6)
+#define PID_PKS_SporeOff_2 (0x2c7)
+
 #endif

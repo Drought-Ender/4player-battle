@@ -184,6 +184,11 @@ TPkEffectMgr::TPkEffectMgr()
 	mTPkOneEmitters.mWalkWater1 = new TPkOneEmitterSimple(PID_PkS_Walkwater_1);
 	mTPkOneEmitters.mWalkWater2 = new TPkOneEmitterSimple(PID_PkS_Walkwater_2);
 
+	mTOneEmitters.mToeSpore = new TOneEmitterChasePos(PID_PkToeSpore);
+
+	mTPkOneEmitters.mSporeOff1 = new TPkOneEmitterSimple(PID_PKS_SporeOff_1);
+	mTPkOneEmitters.mSporeOff2 = new TPkOneEmitterSimple(PID_PKS_SporeOff_2);
+
 	mNextOpenContext = 0;
 }
 
@@ -194,11 +199,11 @@ TPkEffectMgr::TPkEffectMgr()
  */
 TPkEffectMgr::~TPkEffectMgr()
 {
-	for (int i = 0; i < 17; i++) {
+	for (int i = 0; i < ARRAY_SIZE(mTOneEmitterArray); i++) {
  		delete mTOneEmitterArray[i];
 	}
 
-	for (int i = 0; i < 27; i++) {
+	for (int i = 0; i < ARRAY_SIZE(mTPkOneEmitterArray); i++) {
 		delete mTPkOneEmitterArray[i];
 	}
 
@@ -213,10 +218,10 @@ TPkEffectMgr::~TPkEffectMgr()
  */
 void TPkEffectMgr::startMgr()
 {
-	for (int i = 0; i < 17; i++) {
+	for (int i = 0; i < ARRAY_SIZE(mTOneEmitterArray); i++) {
 		mTOneEmitterArray[i]->create(nullptr);
 	}
-	for (int i = 0; i < 27; i++) {
+	for (int i = 0; i < ARRAY_SIZE(mTPkOneEmitterArray); i++) {
 		mTPkOneEmitterArray[i]->create(nullptr);
 	}
 }
@@ -228,10 +233,10 @@ void TPkEffectMgr::startMgr()
  */
 void TPkEffectMgr::exitMgr()
 {
-	for (int i = 0; i < 17; i++) {
+	for (int i = 0; i < ARRAY_SIZE(mTOneEmitterArray); i++) {
 		mTOneEmitterArray[i]->forceKill();
 	}
-	for (int i = 0; i < 27; i++) {
+	for (int i = 0; i < ARRAY_SIZE(mTPkOneEmitterArray); i++) {
 		mTPkOneEmitterArray[i]->forceKill();
 	}
 }
@@ -424,6 +429,10 @@ void TPkEffectMgr::createS_Walkwater(Vector3f& position)
 	pkEffectMgr->mTPkOneEmitters.mWalkWater2->add(position);
 }
 
+void TPkEffectMgr::createS_SporeOff(Vector3f& position) {
+	pkEffectMgr->mTPkOneEmitters.mSporeOff1->add(position);
+	pkEffectMgr->mTPkOneEmitters.mSporeOff2->add(position);
+}
 
 /*
  * --INFO--
@@ -531,7 +540,7 @@ void ToeNagekira::create(Vector3f* chasePos)
 {
 	P2ASSERTLINE(399, chasePos);
 	mContext.mPosition = chasePos;
-	pkEffectMgr->mTOneEmitters.mToeNageKira->add(&mContext);
+	pkEffectMgr->mTOneEmitters.mToeNageKira->TOneEmitterChasePos::add(&mContext);
 }
 
 /*
@@ -708,6 +717,16 @@ void ToeTanekira::create(Vector3f* chasePos)
 void ToeTanekira::kill()
 {
 	pkEffectMgr->mTOneEmitters.mToeTaneKira->del(&mContext);
+}
+
+void ToeSpore::create(Vector3f* chasePos) {
+	P2ASSERT(chasePos);
+	mContext.mPosition = chasePos;
+	pkEffectMgr->mTOneEmitters.mToeSpore->add(&mContext);
+}
+
+void ToeSpore::kill() {
+	pkEffectMgr->mTOneEmitters.mToeSpore->del(&mContext);
 }
 
 } // namespace efx

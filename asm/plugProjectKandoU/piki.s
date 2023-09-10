@@ -421,7 +421,7 @@ lbl_constructor:
 /* 801477B8 001446F8  90 1F 02 90 */	stw r0, 0x290(r31)
 /* 801477BC 001446FC  80 6D 9A EC */	lwz r3, sys@sda21(r13)
 /* 801477C0 00144700  48 2D BB 9D */	bl heapStatusStart__6SystemFPcP7JKRHeap
-/* 801477C4 00144704  38 60 01 A8 */	li r3, 0x1a8
+/* 801477C4 00144704  38 60 01 A8 */	li r3, 0x1C4
 /* 801477C8 00144708  4B ED C6 DD */	bl __nw__FUl
 /* 801477CC 0014470C  7C 60 1B 79 */	or. r0, r3, r3
 /* 801477D0 00144710  41 82 00 0C */	beq .L_801477DC
@@ -634,6 +634,14 @@ lbl_constructor:
 /* 80147AF4 00144A34  38 A5 FF FC */	addi r5, r5, __dt__Q23efx15ContextChasePosFv@l
 /* 80147AF8 00144A38  38 E0 00 01 */	li r7, 1
 /* 80147AFC 00144A3C  4B F7 9D 41 */	bl __construct_array
+lis r3, __ct__Q23efx15ContextChasePosFv@ha
+lis r5, __dt__Q23efx15ContextChasePosFv@ha
+addi r4, r3, __ct__Q23efx15ContextChasePosFv@l
+li r6, 0x1c
+addi r3, r31, 0x1a8
+addi r5, r5, __dt__Q23efx15ContextChasePosFv@l
+li r7, 1
+bl __construct_array
 /* 80147B00 00144A40  38 00 00 00 */	li r0, 0
 /* 80147B04 00144A44  7F E3 FB 78 */	mr r3, r31
 /* 80147B08 00144A48  98 1F 00 00 */	stb r0, 0(r31)
@@ -1128,6 +1136,8 @@ lbl_constructor:
 /* 801481D8 00145118  48 27 0B E1 */	bl killHamonA___Q23efx9TPkEffectFv
 /* 801481DC 0014511C  7F C3 F3 78 */	mr r3, r30
 /* 801481E0 00145120  48 27 0C 5D */	bl killHamonB___Q23efx9TPkEffectFv
+mr r3, r30
+bl killSpore___Q23efx9TPkEffectFv
 /* 801481E4 00145124  28 1D 00 00 */	cmplwi r29, 0
 /* 801481E8 00145128  41 82 00 10 */	beq .L_801481F8
 /* 801481EC 0014512C  80 1D 00 04 */	lwz r0, 4(r29)
@@ -1205,6 +1215,8 @@ lbl_constructor:
 /* 801482FC 0014523C  48 27 0A BD */	bl killHamonA___Q23efx9TPkEffectFv
 /* 80148300 00145240  7F C3 F3 78 */	mr r3, r30
 /* 80148304 00145244  48 27 0B 39 */	bl killHamonB___Q23efx9TPkEffectFv
+mr r3, r30
+bl killSpore___Q23efx9TPkEffectFv
 /* 80148308 00145248  80 7E 00 10 */	lwz r3, 0x10(r30)
 /* 8014830C 0014524C  80 9E 00 08 */	lwz r4, 8(r30)
 /* 80148310 00145250  48 26 F1 B5 */	bl "createSimpleDead__3efxFR10Vector3<f>l"

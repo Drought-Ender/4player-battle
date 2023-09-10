@@ -19,6 +19,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/Mtank.o\
 	$(BUILD_DIR)/src/FourPlayer/MtankMgr.o\
 	$(BUILD_DIR)/src/FourPlayer/efxEnemyDought.o\
+	$(BUILD_DIR)/src/FourPlayer/efxPikminDrought.o\
 
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)

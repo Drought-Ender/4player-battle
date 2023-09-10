@@ -3397,6 +3397,8 @@ setMovieDraw__Q24Game7PikiMgrFb:
 /* 8015F1CC 0015C10C  48 25 9B ED */	bl killHamonA___Q23efx9TPkEffectFv
 /* 8015F1D0 0015C110  7F E3 FB 78 */	mr r3, r31
 /* 8015F1D4 0015C114  48 25 9C 69 */	bl killHamonB___Q23efx9TPkEffectFv
+mr r3, r31
+bl killSpore___Q23efx9TPkEffectFv
 .L_8015F1D8:
 /* 8015F1D8 0015C118  3B DE 02 C8 */	addi r30, r30, 0x2c8
 /* 8015F1DC 0015C11C  3B BD 00 01 */	addi r29, r29, 1
