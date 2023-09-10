@@ -191,6 +191,10 @@ void PikiMgr::setVsXlu(int p1, bool p2)
 	}
 }
 
+bool PikiMgr::isVersusXlu(int piki) {
+	return mFlags[0] & (1 << piki);
+}
+
 
 void PikiMgr::doEntry() {
 
@@ -208,7 +212,7 @@ void PikiMgr::doEntry() {
             }
 
             for (int vpID = 0; vpID < 4; vpID++) {
-                if (piki->mPikiKind != getVsPikiColor(vpID) && pikiMgr->mFlags[0] & (1 << piki->mPikiKind)) {
+                if (pikiMgr->isVersusXlu(piki->mPikiKind) && getVsPikiColor(vpID) != piki->mPikiKind) {
 					piki->mLod.mFlags &= ~(0x10 << vpID);
                 }
             }
@@ -230,15 +234,6 @@ void PikiMgr::doEntry() {
 }
 
 void NaviMgr::doEntry() {
-    u8 vsFlags[4];
-    for (int viewerNavi = 0; viewerNavi < 4; viewerNavi++) {
-        vsFlags[viewerNavi] = 0x0;
-        for (int viewNavi = 0; viewNavi < 4; viewNavi++) {
-            if (getVsPikiColor(viewerNavi) != getVsPikiColor(viewNavi)) {
-                vsFlags[viewerNavi] |= 0x10 << viewNavi;
-            }
-        }
-    }
     u8 flag = _5C;
     for (int i = 0; i < mMax; i++) {
         if (mOpenIds[i]) {
@@ -255,8 +250,8 @@ void NaviMgr::doEntry() {
 
         if (gameSystem->isVersusMode()) {
             for (int vpID = 0; vpID < 4; vpID++) {
-                if (navi->mNaviIndex == vpID && pikiMgr->mFlags[0] & (1 << getVsPikiColor(vpID))) {
-                    navi->mLod.mFlags &= ~vsFlags[vpID];
+                if (pikiMgr->isVersusXlu(navi->getVsPikiColor()) && getVsPikiColor(vpID) != navi->getVsPikiColor()) {
+                    navi->mLod.mFlags &= ~(0x10 << vpID);
                 }
             }
         }

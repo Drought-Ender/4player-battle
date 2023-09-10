@@ -63,6 +63,8 @@ struct PikiMgr : public MonoObjectMgr<Piki> {
 	void saveFormationPikmins(PikiContainer&);
 	void saveAllPikmins(PikiContainer&);
 
+	bool isVersusXlu(int);
+
 	static int mBirthMode;
 	static bool throwPikiDebug;
 
