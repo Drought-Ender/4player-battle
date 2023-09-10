@@ -1,6 +1,7 @@
 #include "CherryTarget.h"
 #include "FourPlayer.h"
 #include "sysMath.h"
+#include "Dolphin/rand.h"
 
 namespace CherryTarget
 {
@@ -12,7 +13,9 @@ namespace CherryTarget
         f32 radius = _sqrtf(x * x + y * y);
         f32 theta  = JMath::atanTable_.atan2_(x, y);
 
-        if (radius < 0.5f) return -1;
+        DebugReport("radius %f\n", radius);
+
+        if (radius < 0.5f) return 4;
 
         if (theta < -PI / 2) {
             return 2;
@@ -31,6 +34,16 @@ namespace CherryTarget
 
     int GetTarget(Controller* gamePad) {
         int target = GetControllerDirection(gamePad);
+        if (target == 4) {
+            int count = 0;
+            int array[4];
+            for (int i = 0; i < ARRAY_SIZE(gDrawNavi); i++) {
+                if (gDrawNavi[i] && i < Game::gNaviNum && Game::getVsPikiColor(gamePad->mPortNum) != Game::getVsPikiColor(i)) {
+                    array[count++] = i;
+                }
+            }
+            return array[(int)(randFloat() * count)];
+        }
         if (!gDrawNavi[target] || target >= Game::gNaviNum || Game::getVsPikiColor(gamePad->mPortNum) == Game::getVsPikiColor(target)) {
             return -1;
         }
