@@ -20,7 +20,7 @@ namespace ElecHiba {
 struct FSM;
 struct Obj;
 
-typedef enum EVersusHibaType { VHT_Neutral = 0, VHT_Red = 1, VHT_Blue = 2 } EVersusHibaType;
+typedef enum EVersusHibaType { VHT_Neutral = 0, VHT_Red = 1, VHT_Blue = 2, VHT_White = 3, VHT_Purple = 4 } EVersusHibaType;
 
 struct InitialParam : public EnemyInitialParamBase {
 	f32 _00; // _00
@@ -89,6 +89,14 @@ struct Obj : public EnemyBase {
 	bool isWaitFinish();
 	bool isAttackFinish();
 
+	bool isVsHibaDraw();
+	bool isVsHibaDraw(EVersusHibaType);
+	bool isVsHibaWinning(EVersusHibaType);
+	s16& getVsHibaHighest();
+	EVersusHibaType getVsHibaHighestColor();
+
+	void doDenkiEffect(Creature*, f32, Vector3f, Creature*);
+
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
 	FSM* mFsm;                            // _2BC
@@ -99,8 +107,7 @@ struct Obj : public EnemyBase {
 	efx::TDenkiHibaMgr* mEfxDenkiHibaMgr; // _2F0
 	bool _2F4;                            // _2F4, might be a bool?
 	EVersusHibaType mVersusHibaType;      // _2F8
-	int mRedAttrAttackCount;              // _2FC
-	int mBlueAttrAttackCount;             // _300
+	s16 mAttrAttackCount[4];
 	                                      // _304 = PelletView
 };
 

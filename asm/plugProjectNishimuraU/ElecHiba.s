@@ -1164,8 +1164,7 @@
 /* 8026FEA0 0026CDE0  FC 01 00 40 */	fcmpo cr0, f1, f0
 /* 8026FEA4 0026CDE4  40 80 01 28 */	bge .L_8026FFCC
 /* 8026FEA8 0026CDE8  80 1E 02 F8 */	lwz r0, 0x2f8(r30)
-/* 8026FEAC 0026CDEC  2C 00 00 00 */	cmpwi r0, 0
-/* 8026FEB0 0026CDF0  40 82 00 90 */	bne .L_8026FF40
+
 /* 8026FEB4 0026CDF4  EC 05 30 24 */	fdivs f0, f5, f6
 /* 8026FEB8 0026CDF8  7F E3 FB 78 */	mr r3, r31
 /* 8026FEBC 0026CDFC  81 9F 00 00 */	lwz r12, 0(r31)
@@ -1180,27 +1179,25 @@
 /* 8026FEE0 0026CE20  FE 00 D0 90 */	fmr f16, f26
 .L_8026FEE4:
 /* 8026FEE4 0026CE24  80 DE 00 C0 */	lwz r6, 0xc0(r30)
-/* 8026FEE8 0026CE28  3C A0 80 4B */	lis r5, __vt__Q24Game11Interaction@ha
-/* 8026FEEC 0026CE2C  3C 80 80 4B */	lis r4, __vt__Q24Game12InteractWind@ha
-/* 8026FEF0 0026CE30  3C 60 80 4B */	lis r3, __vt__Q24Game13InteractDenki@ha
 /* 8026FEF4 0026CE34  C0 06 06 04 */	lfs f0, 0x604(r6)
-/* 8026FEF8 0026CE38  38 C5 A3 00 */	addi r6, r5, __vt__Q24Game11Interaction@l
-/* 8026FEFC 0026CE3C  38 A4 49 74 */	addi r5, r4, __vt__Q24Game12InteractWind@l
-/* 8026FF00 0026CE40  38 03 49 08 */	addi r0, r3, __vt__Q24Game13InteractDenki@l
-/* 8026FF04 0026CE44  90 C1 00 3C */	stw r6, 0x3c(r1)
-/* 8026FF08 0026CE48  7F E3 FB 78 */	mr r3, r31
-/* 8026FF0C 0026CE4C  38 81 00 3C */	addi r4, r1, 0x3c
-/* 8026FF10 0026CE50  90 A1 00 3C */	stw r5, 0x3c(r1)
-/* 8026FF14 0026CE54  93 C1 00 40 */	stw r30, 0x40(r1)
-/* 8026FF18 0026CE58  D0 01 00 44 */	stfs f0, 0x44(r1)
-/* 8026FF1C 0026CE5C  D1 E1 00 48 */	stfs f15, 0x48(r1)
-/* 8026FF20 0026CE60  D2 01 00 4C */	stfs f16, 0x4c(r1)
-/* 8026FF24 0026CE64  D1 C1 00 50 */	stfs f14, 0x50(r1)
-/* 8026FF28 0026CE68  90 01 00 3C */	stw r0, 0x3c(r1)
-/* 8026FF2C 0026CE6C  81 9F 00 00 */	lwz r12, 0(r31)
-/* 8026FF30 0026CE70  81 8C 01 A4 */	lwz r12, 0x1a4(r12)
-/* 8026FF34 0026CE74  7D 89 03 A6 */	mtctr r12
-/* 8026FF38 0026CE78  4E 80 04 21 */	bctrl 
+
+# allocate the vector3f to the stack
+stfs f15, 0x3c(r1)
+stfs f16, 0x40(r1)
+stfs f14, 0x44(r1)
+
+
+mr r3, r30
+mr r4, r30
+fmr f1, f0
+
+# refrence to the stack
+addi r5, r1, 0x3c
+
+mr r6, r31
+
+
+bl "doDenkiEffect__Q34Game8ElecHiba3ObjFPQ24Game8Creaturef10Vector3<f>PQ24Game8Creature"
 /* 8026FF3C 0026CE7C  48 00 00 90 */	b .L_8026FFCC
 .L_8026FF40:
 /* 8026FF40 0026CE80  2C 00 00 01 */	cmpwi r0, 1
@@ -1645,40 +1642,6 @@
 /* 8027055C 0026D49C  4E 80 00 20 */	blr 
 .endfn finishChargeEffect__Q34Game8ElecHiba3ObjFv
 
-.fn startDisChargeEffect__Q34Game8ElecHiba3ObjFv, global
-/* 80270560 0026D4A0  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 80270564 0026D4A4  7C 08 02 A6 */	mflr r0
-/* 80270568 0026D4A8  90 01 00 14 */	stw r0, 0x14(r1)
-/* 8027056C 0026D4AC  80 03 02 F0 */	lwz r0, 0x2f0(r3)
-/* 80270570 0026D4B0  28 00 00 00 */	cmplwi r0, 0
-/* 80270574 0026D4B4  41 82 00 4C */	beq .L_802705C0
-/* 80270578 0026D4B8  80 63 02 F8 */	lwz r3, 0x2f8(r3)
-/* 8027057C 0026D4BC  2C 03 00 00 */	cmpwi r3, 0
-/* 80270580 0026D4C0  40 82 00 14 */	bne .L_80270594
-/* 80270584 0026D4C4  7C 03 03 78 */	mr r3, r0
-/* 80270588 0026D4C8  38 80 00 00 */	li r4, 0
-/* 8027058C 0026D4CC  48 14 49 79 */	bl createHiba__Q23efx13TDenkiHibaMgrFi
-/* 80270590 0026D4D0  48 00 00 30 */	b .L_802705C0
-.L_80270594:
-/* 80270594 0026D4D4  2C 03 00 01 */	cmpwi r3, 1
-/* 80270598 0026D4D8  40 82 00 14 */	bne .L_802705AC
-/* 8027059C 0026D4DC  7C 03 03 78 */	mr r3, r0
-/* 802705A0 0026D4E0  38 80 00 01 */	li r4, 1
-/* 802705A4 0026D4E4  48 14 49 61 */	bl createHiba__Q23efx13TDenkiHibaMgrFi
-/* 802705A8 0026D4E8  48 00 00 18 */	b .L_802705C0
-.L_802705AC:
-/* 802705AC 0026D4EC  2C 03 00 02 */	cmpwi r3, 2
-/* 802705B0 0026D4F0  40 82 00 10 */	bne .L_802705C0
-/* 802705B4 0026D4F4  7C 03 03 78 */	mr r3, r0
-/* 802705B8 0026D4F8  38 80 00 02 */	li r4, 2
-/* 802705BC 0026D4FC  48 14 49 49 */	bl createHiba__Q23efx13TDenkiHibaMgrFi
-.L_802705C0:
-/* 802705C0 0026D500  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 802705C4 0026D504  7C 08 03 A6 */	mtlr r0
-/* 802705C8 0026D508  38 21 00 10 */	addi r1, r1, 0x10
-/* 802705CC 0026D50C  4E 80 00 20 */	blr 
-.endfn startDisChargeEffect__Q34Game8ElecHiba3ObjFv
-
 .fn finishDisChargeEffect__Q34Game8ElecHiba3ObjFv, global
 /* 802705D0 0026D510  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 802705D4 0026D514  7C 08 02 A6 */	mflr r0
@@ -1749,111 +1712,6 @@
 /* 802706B0 0026D5F0  38 21 00 10 */	addi r1, r1, 0x10
 /* 802706B4 0026D5F4  4E 80 00 20 */	blr 
 .endfn setVersusHibaOnOff__Q34Game8ElecHiba3ObjFv
-
-.fn setVersusHibaType__Q34Game8ElecHiba3ObjFv, global
-/* 802706B8 0026D5F8  80 83 02 FC */	lwz r4, 0x2fc(r3)
-/* 802706BC 0026D5FC  80 03 03 00 */	lwz r0, 0x300(r3)
-/* 802706C0 0026D600  7C 04 00 00 */	cmpw r4, r0
-/* 802706C4 0026D604  4D 82 00 20 */	beqlr 
-/* 802706C8 0026D608  40 81 00 10 */	ble .L_802706D8
-/* 802706CC 0026D60C  38 00 00 01 */	li r0, 1
-/* 802706D0 0026D610  90 03 02 F8 */	stw r0, 0x2f8(r3)
-/* 802706D4 0026D614  4E 80 00 20 */	blr 
-.L_802706D8:
-/* 802706D8 0026D618  38 00 00 02 */	li r0, 2
-/* 802706DC 0026D61C  90 03 02 F8 */	stw r0, 0x2f8(r3)
-/* 802706E0 0026D620  4E 80 00 20 */	blr 
-.endfn setVersusHibaType__Q34Game8ElecHiba3ObjFv
-
-.fn resetAttrHitCount__Q34Game8ElecHiba3ObjFv, global
-/* 802706E4 0026D624  38 00 00 00 */	li r0, 0
-/* 802706E8 0026D628  90 03 02 FC */	stw r0, 0x2fc(r3)
-/* 802706EC 0026D62C  90 03 03 00 */	stw r0, 0x300(r3)
-/* 802706F0 0026D630  4E 80 00 20 */	blr 
-.endfn resetAttrHitCount__Q34Game8ElecHiba3ObjFv
-
-.fn addAttrAttackCount__Q34Game8ElecHiba3ObjFPQ24Game4Piki, global
-/* 802706F4 0026D634  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 802706F8 0026D638  7C 08 02 A6 */	mflr r0
-/* 802706FC 0026D63C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 80270700 0026D640  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 80270704 0026D644  7C 7F 1B 78 */	mr r31, r3
-/* 80270708 0026D648  88 04 02 B8 */	lbz r0, 0x2b8(r4)
-/* 8027070C 0026D64C  2C 00 00 01 */	cmpwi r0, 1
-/* 80270710 0026D650  40 82 00 14 */	bne .L_80270724
-/* 80270714 0026D654  80 7F 02 FC */	lwz r3, 0x2fc(r31)
-/* 80270718 0026D658  38 03 00 01 */	addi r0, r3, 1
-/* 8027071C 0026D65C  90 1F 02 FC */	stw r0, 0x2fc(r31)
-/* 80270720 0026D660  48 00 00 18 */	b .L_80270738
-.L_80270724:
-/* 80270724 0026D664  2C 00 00 00 */	cmpwi r0, 0
-/* 80270728 0026D668  40 82 00 10 */	bne .L_80270738
-/* 8027072C 0026D66C  80 7F 03 00 */	lwz r3, 0x300(r31)
-/* 80270730 0026D670  38 03 00 01 */	addi r0, r3, 1
-/* 80270734 0026D674  90 1F 03 00 */	stw r0, 0x300(r31)
-.L_80270738:
-/* 80270738 0026D678  7F E3 FB 78 */	mr r3, r31
-/* 8027073C 0026D67C  4B E9 6C B9 */	bl getStateID__Q24Game9EnemyBaseFv
-/* 80270740 0026D680  2C 03 00 03 */	cmpwi r3, 3
-/* 80270744 0026D684  40 82 00 0C */	bne .L_80270750
-/* 80270748 0026D688  C0 02 CD 80 */	lfs f0, lbl_8051B0E0@sda21(r2)
-/* 8027074C 0026D68C  D0 1F 02 C4 */	stfs f0, 0x2c4(r31)
-.L_80270750:
-/* 80270750 0026D690  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 80270754 0026D694  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 80270758 0026D698  7C 08 03 A6 */	mtlr r0
-/* 8027075C 0026D69C  38 21 00 10 */	addi r1, r1, 0x10
-/* 80270760 0026D6A0  4E 80 00 20 */	blr 
-.endfn addAttrAttackCount__Q34Game8ElecHiba3ObjFPQ24Game4Piki
-
-.fn isWaitFinish__Q34Game8ElecHiba3ObjFv, global
-/* 80270764 0026D6A4  80 83 00 C0 */	lwz r4, 0xc0(r3)
-/* 80270768 0026D6A8  C0 23 02 C4 */	lfs f1, 0x2c4(r3)
-/* 8027076C 0026D6AC  C0 04 08 6C */	lfs f0, 0x86c(r4)
-/* 80270770 0026D6B0  FC 01 00 40 */	fcmpo cr0, f1, f0
-/* 80270774 0026D6B4  40 81 00 28 */	ble .L_8027079C
-/* 80270778 0026D6B8  80 03 02 F8 */	lwz r0, 0x2f8(r3)
-/* 8027077C 0026D6BC  2C 00 00 00 */	cmpwi r0, 0
-/* 80270780 0026D6C0  40 82 00 14 */	bne .L_80270794
-/* 80270784 0026D6C4  80 83 02 FC */	lwz r4, 0x2fc(r3)
-/* 80270788 0026D6C8  80 03 03 00 */	lwz r0, 0x300(r3)
-/* 8027078C 0026D6CC  7C 04 00 00 */	cmpw r4, r0
-/* 80270790 0026D6D0  41 82 00 0C */	beq .L_8027079C
-.L_80270794:
-/* 80270794 0026D6D4  38 60 00 01 */	li r3, 1
-/* 80270798 0026D6D8  4E 80 00 20 */	blr 
-.L_8027079C:
-/* 8027079C 0026D6DC  38 60 00 00 */	li r3, 0
-/* 802707A0 0026D6E0  4E 80 00 20 */	blr 
-.endfn isWaitFinish__Q34Game8ElecHiba3ObjFv
-
-.fn isAttackFinish__Q34Game8ElecHiba3ObjFv, global
-/* 802707A4 0026D6E4  80 83 00 C0 */	lwz r4, 0xc0(r3)
-/* 802707A8 0026D6E8  C0 23 02 C4 */	lfs f1, 0x2c4(r3)
-/* 802707AC 0026D6EC  C0 04 08 6C */	lfs f0, 0x86c(r4)
-/* 802707B0 0026D6F0  FC 01 00 40 */	fcmpo cr0, f1, f0
-/* 802707B4 0026D6F4  41 81 00 38 */	bgt .L_802707EC
-/* 802707B8 0026D6F8  80 A3 02 F8 */	lwz r5, 0x2f8(r3)
-/* 802707BC 0026D6FC  2C 05 00 01 */	cmpwi r5, 1
-/* 802707C0 0026D700  40 82 00 14 */	bne .L_802707D4
-/* 802707C4 0026D704  80 83 03 00 */	lwz r4, 0x300(r3)
-/* 802707C8 0026D708  80 03 02 FC */	lwz r0, 0x2fc(r3)
-/* 802707CC 0026D70C  7C 04 00 00 */	cmpw r4, r0
-/* 802707D0 0026D710  41 81 00 1C */	bgt .L_802707EC
-.L_802707D4:
-/* 802707D4 0026D714  2C 05 00 02 */	cmpwi r5, 2
-/* 802707D8 0026D718  40 82 00 1C */	bne .L_802707F4
-/* 802707DC 0026D71C  80 83 02 FC */	lwz r4, 0x2fc(r3)
-/* 802707E0 0026D720  80 03 03 00 */	lwz r0, 0x300(r3)
-/* 802707E4 0026D724  7C 04 00 00 */	cmpw r4, r0
-/* 802707E8 0026D728  40 81 00 0C */	ble .L_802707F4
-.L_802707EC:
-/* 802707EC 0026D72C  38 60 00 01 */	li r3, 1
-/* 802707F0 0026D730  4E 80 00 20 */	blr 
-.L_802707F4:
-/* 802707F4 0026D734  38 60 00 00 */	li r3, 0
-/* 802707F8 0026D738  4E 80 00 20 */	blr 
-.endfn isAttackFinish__Q34Game8ElecHiba3ObjFv
 
 .fn getName__Q23efx12ArgDenkiHibaFv, weak
 /* 802707FC 0026D73C  3C 60 80 48 */	lis r3, lbl_80486868@ha

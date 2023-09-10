@@ -926,8 +926,8 @@ void Obj::setVersusHibaOnOff()
  */
 void Obj::setVersusHibaType()
 {
-	if (mRedAttrAttackCount != mBlueAttrAttackCount) {
-		if (mRedAttrAttackCount > mBlueAttrAttackCount) {
+	if (mAttrAttackCount[0] != mAttrAttackCount[1]) {
+		if (mAttrAttackCount[0] > mAttrAttackCount[1]) {
 			mVersusHibaType = VHT_Red;
 			return;
 		}
@@ -942,8 +942,8 @@ void Obj::setVersusHibaType()
  */
 void Obj::resetAttrHitCount()
 {
-	mRedAttrAttackCount  = 0;
-	mBlueAttrAttackCount = 0;
+	mAttrAttackCount[0]  = 0;
+	mAttrAttackCount[1] = 0;
 }
 
 /*
@@ -955,9 +955,9 @@ void Obj::addAttrAttackCount(Piki* piki)
 {
 	int type = piki->mPikiKind;
 	if (type == Red) {
-		mRedAttrAttackCount++;
+		mAttrAttackCount[0]++;
 	} else if (type == Blue) {
-		mBlueAttrAttackCount++;
+		mAttrAttackCount[1]++;
 	}
 	if (getStateID() == ELECHIBA_Attack) {
 		mWaitTimer = 0.0f;
@@ -971,7 +971,7 @@ void Obj::addAttrAttackCount(Piki* piki)
  */
 bool Obj::isWaitFinish()
 {
-	if ((mWaitTimer > C_PROPERPARMS.mActiveTime.mValue) && (mVersusHibaType || (mRedAttrAttackCount != mBlueAttrAttackCount))) {
+	if ((mWaitTimer > C_PROPERPARMS.mActiveTime.mValue) && (mVersusHibaType || (mAttrAttackCount[0] != mAttrAttackCount[1]))) {
 		return true;
 	}
 	return false;
@@ -984,8 +984,8 @@ bool Obj::isWaitFinish()
  */
 bool Obj::isAttackFinish()
 {
-	if (mWaitTimer > C_PROPERPARMS.mActiveTime.mValue || (mVersusHibaType == VHT_Red && (mBlueAttrAttackCount > mRedAttrAttackCount))
-	    || (mVersusHibaType == VHT_Blue && (mRedAttrAttackCount > mBlueAttrAttackCount))) {
+	if (mWaitTimer > C_PROPERPARMS.mActiveTime.mValue || (mVersusHibaType == VHT_Red && (mAttrAttackCount[1] > mAttrAttackCount[0]))
+	    || (mVersusHibaType == VHT_Blue && (mAttrAttackCount[0] > mAttrAttackCount[1]))) {
 		return true;
 	}
 	return false;

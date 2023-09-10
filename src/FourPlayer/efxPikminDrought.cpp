@@ -72,7 +72,7 @@ void PikiPanicState::init(Piki* piki, StateArg* stateArg)
 		efx::TPkEffect* effectsObjGas = piki->mEffectsObj;
 		effectsObjGas->setFlag(PKEFF_Gas);
 		effectsObjGas->createChudoku_(effectsObjGas->_0C);
-		piki->startMotion(IPikiAnims::GASDEAD, IPikiAnims::GASDEAD, nullptr, nullptr);
+		piki->startMotion(IPikiAnims::WALK, IPikiAnims::WALK, nullptr, nullptr);
 		piki->setMoveRotation(false);
 		break;
 
