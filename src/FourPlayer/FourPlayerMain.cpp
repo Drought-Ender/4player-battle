@@ -636,6 +636,35 @@ void CameraMgr::loadResource() {
 	
 }
 
+void BaseGameSection::drawParticle(Graphics& gfx, int viewport)
+{
+	if (BaseHIOParms::sDrawParticle) {
+		Viewport* port = gfx.getViewport(viewport);
+		if (port->viewable()) {
+			port->setProjection();
+			port->setViewport();
+			if (!gameSystem->isMultiplayerMode() && mPrevNaviIdx != 2) {
+				mLightMgr->mFogMgr->off(gfx);
+				particleMgr->draw(port, 0);
+				mLightMgr->mFogMgr->set(gfx);
+			}
+			if (moviePlayer && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
+				for (int i = 3; i < 6; i++) {
+					particleMgr->draw(port, i);
+				}
+			}
+			particleMgr->draw(port, 1);
+			mLightMgr->mFogMgr->off(gfx);
+			if (moviePlayer && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
+				for (int i = 6; i < 9; i++) {
+					particleMgr->draw(port, i);
+				}
+			}
+			particleMgr->draw(port, 2);
+		}
+	}
+}
+
 void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback) {
     switch (mode)
     {

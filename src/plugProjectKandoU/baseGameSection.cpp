@@ -1580,20 +1580,20 @@ inline void j3dStuff(Sys::DrawBuffers*& buffer, Sys::DrawBuffer::CreateArg& draw
 
 void BaseGameSection::initJ3D()
 {
-	_12C = new Sys::DrawBuffers;
-	_130 = new Sys::DrawBuffers;
+	mDrawBuffer1 = new Sys::DrawBuffers;
+	mDrawBuffer2 = new Sys::DrawBuffers;
 
-	_12C->allocate(10);
-	_12C->mName = "OPA";
+	mDrawBuffer1->allocate(10);
+	mDrawBuffer1->mName = "OPA";
 	{
 		Sys::DrawBuffer::CreateArg drawArg;
 		drawArg.mSortType = J3DDrawBuffer::J3DSORT_Mat;
 		drawArg.mDrawType = J3DDrawBuffer::J3DDRAW_Head;
-		j3dStuff(_12C, drawArg, true);
+		j3dStuff(mDrawBuffer1, drawArg, true);
 	}
 
-	_130->allocate(10);
-	_130->mName = "XLU";
+	mDrawBuffer2->allocate(10);
+	mDrawBuffer2->mName = "XLU";
 
 	{
 		Sys::DrawBuffer::CreateArg drawArg;
@@ -1603,14 +1603,14 @@ void BaseGameSection::initJ3D()
 
 		drawArg.mFlags.typeView |= 1;
 
-		j3dStuff(_130, drawArg, false);
+		j3dStuff(mDrawBuffer2, drawArg, false);
 	}
 
-	addGenNode(_12C);
-	addGenNode(_130);
+	addGenNode(mDrawBuffer1);
+	addGenNode(mDrawBuffer2);
 
-	j3dSys.mDrawBuffer[0] = _12C->get(0)->mBuffer;
-	j3dSys.mDrawBuffer[1] = _130->get(0)->mBuffer;
+	j3dSys.mDrawBuffer[0] = mDrawBuffer1->get(0)->mBuffer;
+	j3dSys.mDrawBuffer[1] = mDrawBuffer2->get(0)->mBuffer;
 
 	System::FragmentationChecker frag("poyol", false);
 }
@@ -4934,8 +4934,8 @@ namespace Game {
 void BaseGameSection::setDrawBuffer(int index)
 {
 	P2ASSERTBOUNDSLINE(5295, 1, index, 10);
-	j3dSys.mDrawBuffer[0] = _12C->get(index)->mBuffer;
-	j3dSys.mDrawBuffer[1] = _130->get(index)->mBuffer;
+	j3dSys.mDrawBuffer[0] = mDrawBuffer1->get(index)->mBuffer;
+	j3dSys.mDrawBuffer[1] = mDrawBuffer2->get(index)->mBuffer;
 	/*
 	stwu     r1, -0x10(r1)
 	mflr     r0

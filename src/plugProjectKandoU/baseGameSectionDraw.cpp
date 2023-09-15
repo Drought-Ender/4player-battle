@@ -35,8 +35,8 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	gfx.mapViewport(&vpDelegate);
 
 	// Initialise both draw buffers for the frame
-	_12C->frameInitAll();
-	_130->frameInitAll();
+	mDrawBuffer1->frameInitAll();
+	mDrawBuffer2->frameInitAll();
 
 	if (!gameSystem->isMultiplayerMode()) {
 		particleMgr->setXfb(mXfbImage->mTexInfo);
@@ -44,11 +44,8 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 
 	// Draw particles for both viewports
 	sys->mTimers->_start("part-draw", true);
-	for (int i = 0; i < gNaviNum; i++) {
-		if (gDrawNavi[i] || (i == 0 && moviePlayer->mFlags & moviePlayer->IS_ACTIVE)) {
-			drawParticle(gfx, i);
-		}
-	}
+	drawParticle(gfx, 0);
+	drawParticle(gfx, 1);
 	sys->mTimers->_stop("part-draw");
 
 	// Draw counters for both viewports
@@ -56,22 +53,36 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	sys->mTimers->_start("drct-post", true);
 	mLightMgr->set(gfx);
 	Viewport* vp = gfx.getViewport(0);
-	if (vp && vp->viewable() && gDrawNavi[0] || moviePlayer->mFlags & moviePlayer->IS_ACTIVE) {
+	if (vp && vp->viewable()) {
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
 	}
 
 	mLightMgr->set(gfx);
-	for (int i = 1; i < gNaviNum; i++) {
-		vp = gfx.getViewport(i);
-		if (vp && vp->viewable() && gDrawNavi[i]) {
+	vp = gfx.getViewport(1);
+	if (vp && vp->viewable()) {
+		gfx.mCurrentViewport = vp;
+		directDrawPost(gfx, vp);
+	}
+	sys->mTimers->_stop("drct-post");
+
+	if (gNaviNum > 2) {
+		drawParticle(gfx, 2);
+		vp = gfx.getViewport(2);
+		if (vp && vp->viewable()) {
 			gfx.mCurrentViewport = vp;
 			directDrawPost(gfx, vp);
 		}
 	}
-	sys->mTimers->_stop("drct-post");
+	if (gNaviNum > 3) {
+		drawParticle(gfx, 3);
+		vp = gfx.getViewport(3);
+		if (vp && vp->viewable()) {
+			gfx.mCurrentViewport = vp;
+			directDrawPost(gfx, vp);
+		}
+	}
 }
-
 /*
  * --INFO--
  * Address:	80239ACC
@@ -96,18 +107,18 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 
 	sys->mTimers->_start("jdraw", true);
 	mLightMgr->set(gfx);
-	_12C->get(6)->draw();
-	_12C->get(2)->draw();
-	_12C->get(9)->draw();
-	_12C->get(3)->draw();
-	_12C->get(0)->draw();
+	mDrawBuffer1->get(6)->draw();
+	mDrawBuffer1->get(2)->draw();
+	mDrawBuffer1->get(9)->draw();
+	mDrawBuffer1->get(3)->draw();
+	mDrawBuffer1->get(0)->draw();
 	doSimpleDraw(vp);
 	mLightMgr->set(gfx);
-	_130->get(3)->draw();
-	_130->get(0)->draw();
+	mDrawBuffer2->get(3)->draw();
+	mDrawBuffer2->get(0)->draw();
 	mLightMgr->mFogMgr->off(gfx);
-	_12C->get(1)->draw();
-	_130->get(1)->draw();
+	mDrawBuffer1->get(1)->draw();
+	mDrawBuffer2->get(1)->draw();
 	mLightMgr->mFogMgr->set(gfx);
 	sys->mTimers->_stop("jdraw");
 
@@ -123,8 +134,8 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 	vp->setProjection();
 
 	sys->mTimers->_start("j3d-etc", true);
-	_12C->get(7)->draw();
-	_130->get(7)->draw();
+	mDrawBuffer1->get(7)->draw();
+	mDrawBuffer2->get(7)->draw();
 
 	if (!_168 && (mXfbFlags & 3) == 0) {
 		mXfbImage->capture(mXfbTexture1, mXfbTexture2, GX_TF_RGB565, true, 0);
@@ -132,18 +143,18 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 	mLightMgr->set(gfx);
 	mLightMgr->mFogMgr->off(gfx);
 
-	_12C->get(8)->draw();
-	_130->get(8)->draw();
+	mDrawBuffer1->get(8)->draw();
+	mDrawBuffer2->get(8)->draw();
 
 	vp->setJ3DViewMtx(true);
 
 	mLightMgr->mFogMgr->off(gfx);
-	_12C->get(4)->draw();
-	_130->get(4)->draw();
+	mDrawBuffer1->get(4)->draw();
+	mDrawBuffer2->get(4)->draw();
 	mLightMgr->mFogMgr->set(gfx);
 	vp->setJ3DViewMtx(true);
 
-	_130->get(2)->draw();
+	mDrawBuffer2->get(2)->draw();
 	vp->setJ3DViewMtx(false);
 	sys->mTimers->_stop("j3d-etc");
 }
