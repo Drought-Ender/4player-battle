@@ -46,28 +46,27 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	sys->mTimers->_start("part-draw", true);
 	drawParticle(gfx, 0);
 	drawParticle(gfx, 1);
+	if (gNaviNum > 2) drawParticle(gfx, 2);
+	if (gNaviNum > 3) drawParticle(gfx, 3);
 	sys->mTimers->_stop("part-draw");
 
 	// Draw counters for both viewports
 	// (Life gauge & Carry info)
 	sys->mTimers->_start("drct-post", true);
-	mLightMgr->set(gfx);
 	Viewport* vp = gfx.getViewport(0);
 	if (vp && vp->viewable()) {
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
 	}
 
-	mLightMgr->set(gfx);
 	vp = gfx.getViewport(1);
 	if (vp && vp->viewable()) {
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
 	}
 	sys->mTimers->_stop("drct-post");
-
+	
 	if (gNaviNum > 2) {
-		drawParticle(gfx, 2);
 		vp = gfx.getViewport(2);
 		if (vp && vp->viewable()) {
 			gfx.mCurrentViewport = vp;
@@ -75,7 +74,6 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		}
 	}
 	if (gNaviNum > 3) {
-		drawParticle(gfx, 3);
 		vp = gfx.getViewport(3);
 		if (vp && vp->viewable()) {
 			gfx.mCurrentViewport = vp;

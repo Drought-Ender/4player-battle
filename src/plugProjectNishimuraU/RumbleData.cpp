@@ -29,6 +29,7 @@ RumbleDataMgr::RumbleDataMgr()
  */
 RumbleData* RumbleDataMgr::getRumbleData(int idx)
 {
+	idx = 0;
 	if (idx >= 0 && idx < mDataCnt) {
 		return &mDataArr[idx];
 	}

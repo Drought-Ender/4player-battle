@@ -238,7 +238,7 @@ struct CameraMgr : public CNode {
 	bool isChangePlayer();
 	void setZukanCamera(LookAtCamera*);
 	bool isCameraUpdateOn();
-	void isStartAndEnd(int*, int);
+	bool isStartAndEnd(int*, int);
 	bool isVibrationStart(int, int);
 	void readCameraParms(char*);
 	void readParameter(Stream&);

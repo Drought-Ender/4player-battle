@@ -636,6 +636,30 @@ void CameraMgr::loadResource() {
 	
 }
 
+bool CameraMgr::isStartAndEnd(int* shakeArray, int id)
+{
+	switch (id)
+	{
+	case 3:
+		shakeArray[0] = 3;
+		shakeArray[1] = 4;
+		return true;
+	case 2:
+		shakeArray[0] = 2;
+		shakeArray[1] = 3;
+		return true;
+	case 1:
+		shakeArray[0] = 1;
+		shakeArray[1] = 2;
+		return true;
+	case 0:
+		shakeArray[0] = 0;
+		shakeArray[1] = 1;
+		return true;
+	}
+	return false;
+}
+
 void BaseGameSection::drawParticle(Graphics& gfx, int viewport)
 {
 	if (BaseHIOParms::sDrawParticle) {
