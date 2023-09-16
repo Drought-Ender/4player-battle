@@ -3,6 +3,7 @@
 #include "FourPlayer.h"
 #include "Game/VsGameSection.h"
 #include "PSSystem/PSSystemIF.h"
+#include "VsOptions.h"
 #include "Controller.h"
 
 int mRealWinCounts[4];
@@ -37,7 +38,7 @@ const JUtility::TColor vsTeamColors[] = { 0xff5050ff, 0x5050ffff, 0xffffffff, 0x
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
 
-    gOptionMenu = new VsOptionsMenu;
+    gOptionMenu = new VsOptionsMenuMgr;
     gOptionMenu->init();
 
     for (int i = 0; i < GetConfigSize(); i++) {

@@ -71,9 +71,7 @@ struct AddPikminCard : public VsSlotMachineCard
     }
 
     virtual const char* getDescription() {
-        char charArr[64];
-        sprintf(charArr, "Births %i pikmin from your onion", mPikiCount);
-        return charArr;
+        return "Grows Pikmin";
     }
     
     const int mPikiCount;
@@ -264,7 +262,9 @@ struct DopeCard : public VsSlotMachineCard
     }
 
     virtual const char* getDescription() {
-        return "Increases your spray count";
+        if (!mUseDope) return "Increases your spray count";
+
+        return "Uses a spray at no cost";
     }
 };
 
@@ -305,6 +305,8 @@ struct TekiCard : public VsSlotMachineCard {
     void birth(TekiMgr* tekiMgr, Vector3f& position, float timer) {
         tekiMgr->birth(mTekiMgrID, position, timer);
     }
+
+    virtual bool useTarget() { return true; }
 };
 
 struct OnyonTekiCard : public TekiCard

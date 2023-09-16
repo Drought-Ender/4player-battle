@@ -7,6 +7,8 @@
 #include "types.h"
 #include "P2JME/P2JME.h"
 
+typedef f32 VsWeights[2]; // delegations
+
 extern int gScoreDelegations[2][2];
 extern int gEffectiveTeamCount;
 extern bool gThreePlayer;
@@ -33,55 +35,9 @@ JUTFont* getPikminFont() {
     return gP2JMEMgr->mFont;
 }
 
-typedef f32 VsWeights[2]; // delegations
+struct VsOptionsMenuMgr;
 
-
-
-struct VsCardMenu
-{
-    /* data */
-};
-
-struct IMenu;
-
-struct VsOptionsMenu {
-    VsOptionsMenu();
-    void init();
-    bool update();
-    void draw(Graphics&);
-
-    Controller* mController;
-    IMenu* mActiveMenu;
-};
-
-struct IMenu {
-    virtual void init(VsOptionsMenu*) = 0;
-    virtual bool update(VsOptionsMenu*) = 0;
-    virtual void draw(VsOptionsMenu*, Graphics&) = 0;
-};
-
-struct VsConfigMenu : public IMenu
-{
-    VsConfigMenu() {
-        mPageNumber = 0;
-        mSelectedOption = 0;
-        mCursorOptionIndex = 0;
-        mTooltipMessage = nullptr;
-    }
-
-    virtual void init(VsOptionsMenu*);
-    virtual bool update(VsOptionsMenu*);
-    virtual void draw(VsOptionsMenu*, Graphics&);
-
-    int mPageNumber;
-    int mSelectedOption;
-    int mCursorOptionIndex;
-    const char* mTooltipMessage;
-};
-
-
-
-typedef void OptionFunction(VsOptionsMenu*);
+typedef void OptionFunction(VsOptionsMenuMgr*);
 
 struct Option {
     const char* name;
@@ -155,7 +111,7 @@ namespace ConfigEnums {
     }
 };
 
-extern VsOptionsMenu* gOptionMenu;
+extern VsOptionsMenuMgr* gOptionMenu;
 
 namespace Game
 {
@@ -314,8 +270,6 @@ f32 oddSqrt(f32 x) {
         return -sqrtf(x);
     }
 }
-
-void StartCardOptionsMenu(VsOptionsMenu* menu);
 
 
 #endif

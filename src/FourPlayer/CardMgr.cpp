@@ -116,17 +116,9 @@ CardMgr::SlotMachine* CardMgr::getSlotMachine(int idx) {
 }
 
 bool CardMgr::SlotMachine::dispCherryTarget() {
-	switch (mSlotID)
-	{
-	case TEKI_HANACHIRASHI:
-	case TEKI_SARAI:
-	case TEKI_BOMBOTAKRA:
-	case TEKI_ROCK:
-	case TEKI_TANK:
-		return true;
-	default:
-		return false;
-	};
+	if (mSlotID != UNRESOLVED) return vsSlotCardMgr->mUsingCards[mSlotID]->useTarget();
+
+	return false;
 }
 
 bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)

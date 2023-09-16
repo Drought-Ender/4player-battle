@@ -7,8 +7,10 @@
 #include "PSSystem/PSSystemIF.h"
 #include "Game/VsGameSection.h"
 #include "Game/GameConfig.h"
+#include "VsSlotCard.h"
+#include "VsOptions.h"
 
-VsOptionsMenu* gOptionMenu;
+VsOptionsMenuMgr* gOptionMenu;
 
 Option gOptions[] = {
     {
@@ -157,36 +159,49 @@ int GetConfigSize() {
 
 #define PAGE_COUNT (ARRAY_SIZE(gOptions) / OPTIONS_PER_PAGE)
 
-void VsOptionsMenu::init() {
+void VsOptionsMenuMgr::init() {
     mController = new Controller(JUTGamePad::PORT_0);
-    mActiveMenu = new VsConfigMenu;
-    mActiveMenu->init(this);
+    StartCardMenu<VsConfigMenu>();
 }
 
-bool VsOptionsMenu::update() {
+bool VsOptionsMenuMgr::update() {
     if (!mActiveMenu) return true;
 
-    return mActiveMenu->update(this);
+    bool isDone = mActiveMenu->update(this);
+    if (isDone) {
+        mActiveMenu->cleanup();
+        return true;
+    }
+    return false;
 }
 
-void VsOptionsMenu::draw(Graphics& gfx) {
+void VsOptionsMenuMgr::draw(Graphics& gfx) {
     if (mActiveMenu) mActiveMenu->draw(this, gfx);
 }
 
 
-void VsConfigMenu::init(VsOptionsMenu* menu) {
+void VsConfigMenu::init(VsOptionsMenuMgr* menu) {
     mPageNumber = 0;
     mTooltipMessage = "";
     mSelectedOption = 0;
 }
 
-bool VsConfigMenu::update(VsOptionsMenu* menu) {
+void VsConfigMenu::cleanup() {
+    for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
+        gConfig[i] = gOptions[i].getValue();        
+    }
+    Game::gGameConfig.mParms.mVsHiba.mData = gConfig[VS_HIBA];
+    Game::gGameConfig.mParms.mVsY.mData    = gConfig[VS_Y];
+}
+
+bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {
     int startIdx = OPTIONS_PER_PAGE * mPageNumber;
     int endIdx = OPTIONS_PER_PAGE * (mPageNumber + 1);
     endIdx = MIN(endIdx, ARRAY_SIZE(gOptions));
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
-        StartCardOptionsMenu(menu);
+        menu->StartCardMenu<VsCardMenu>();
+        return false;
     }
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_A)) {
@@ -196,14 +211,7 @@ bool VsConfigMenu::update(VsOptionsMenu* menu) {
     }
 
     if ((menu->mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == endIdx) || menu->mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
-        for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
-            gConfig[i] = gOptions[i].getValue();        
-        }
-        Game::gGameConfig.mParms.mVsHiba.mData = gConfig[VS_HIBA];
-        Game::gGameConfig.mParms.mVsY.mData    = gConfig[VS_Y];
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CLOSE, 0);
-
-        
         return true;
     }
     else if (menu->mController->isButtonDown(JUTGamePad::PRESS_DOWN | JUTGamePad::PRESS_A) && mCursorOptionIndex < endIdx) {
@@ -247,7 +255,7 @@ const JUtility::TColor gRedPrintBase = 0xffffffff;
 
 
 
-void VsConfigMenu::draw(VsOptionsMenu* menu, Graphics& gfx) {
+void VsConfigMenu::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
     J2DPrint print (getPikminFont(), 0.0f);
     J2DPrint printInfo (getPikminFont(), 0.0f);
     printInfo.mGlyphHeight /= 2;
@@ -298,10 +306,175 @@ void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx) {
 
 // NOTE: Screen size is 640x480
 
-VsOptionsMenu::VsOptionsMenu() {
+VsOptionsMenuMgr::VsOptionsMenuMgr() {
     mActiveMenu = nullptr;
 }
 
-void StartCardOptionsMenu(VsOptionsMenu* menu) {
+template <typename T>
+void VsOptionsMenuMgr::StartCardMenu() {
+    if (mActiveMenu) {
+        mActiveMenu->cleanup();
+        delete mActiveMenu;
+        mActiveMenu = nullptr;
+    }
+
+    mActiveMenu = new T;
+    mActiveMenu->init(this);
+}
+
+void CardImage::loadImage(JKRArchive* archive) {
+    const char* texname = mCardPtr->GetTexName();
+
+    ResTIMG* img = (ResTIMG*)archive->getResource(texname);
+    if (img) {
+        mPicture = new J2DPictureEx(img, 0);
+    } else {
+        JUT_PANIC("%s not found !\n", texname);
+    }
+}
+
+static JUtility::TColor activeWhite (0xff, 0xff, 0xff, 0xff);
+static JUtility::TColor inactiveWhite (0x00, 0x00, 0x00, 0xff);
+
+void CardImage::draw(Vector2f& position, Vector2f& size) {
+    if (!mIsCardActive) {
+        mPicture->setAlpha(0xA0);
+    }
+    else {
+        mPicture->setAlpha(0xFF);
+    }
+    Vector2f corner2 = position + size;
+    JGeometry::TBox2f box (position.x, position.y, corner2.x, corner2.y);
+    if (mPicture) {
+        mPicture->drawOut(box, box);
+    }
+}
+
+void CardImage::actionLeft(VsCardMenu* menu) {
+    if (mCardPtr->varibleBackward()) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
+        delete mPicture;
+        loadImage(menu->mCardArchive);
+    }
+}
+
+void CardImage::actionRight(VsCardMenu* menu) {
+    if (mCardPtr->varibleForward()) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
+        delete mPicture;
+        loadImage(menu->mCardArchive);
+    }
+}
+
+
+void VsCardMenu::init(VsOptionsMenuMgr* menu) {
+    mCursorAt = 0;
+    mCardCount = Game::VsGame::VsSlotCardMgr::sTotalCardCount;
+    mCards = new CardImage[mCardCount];
+
+    mCardArchive = JKRArchive::mount("user/Kando/vstex/arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+
+    Vector2f startOffset(50.0f, 150.0f);
+
+    Vector2f cardSize (60.0f);
+    Vector2f spaceBetween (20.0f);
+
+    for (int i = 0; i < mCardCount; i++) {
+        mCards[i].SetCardPtr(Game::VsGame::VsSlotCardMgr::sAllCards[i]);
+        mCards[i].loadImage(mCardArchive);
+
+        int x = i % 6;
+        int y = i / 6;
+
+        mCards[i].mPosition.x = startOffset.x + (spaceBetween.x + cardSize.x) * x;
+        mCards[i].mPosition.y = startOffset.y + (spaceBetween.y + cardSize.y) * y;
+        mCards[i].mSize = cardSize;
+    }
+}
+
+bool VsCardMenu::update(VsOptionsMenuMgr* menu) {
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_RIGHT) && mCursorAt + 1 < mCardCount) {
+        mCursorAt++;
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+    }
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_LEFT) && mCursorAt - 1 >= 0) {
+        mCursorAt--;
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+    }
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_DOWN) && mCursorAt + 6 < mCardCount) {
+        mCursorAt += 6;
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+    }
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_UP) && mCursorAt - 6 >= 0) {
+        mCursorAt -= 6;
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+    }
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_A)) {
+        bool& isCardActive = mCards[mCursorAt].mIsCardActive;
+        if (isCardActive) {
+            isCardActive = false;
+            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
+        }
+        else {
+            isCardActive = true;
+            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+        }
+        
+    }
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_Y)) {
+        mCards[mCursorAt].actionRight(this);
+    }
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_X)) {
+        mCards[mCursorAt].actionLeft(this);
+    }
+
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
+        menu->StartCardMenu<VsConfigMenu>();
+        return false;
+    }
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CLOSE, 0);
+        return true;
+    }
+    return false;
+}
+
+void VsCardMenu::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
+    J2DPrint print (getPikminFont(), 0.0f);
+    J2DPrint printCursor (getPikminFont(), 0.0f);
+
+    printCursor.mGlyphHeight *= 3.75f;
+    printCursor.mGlyphWidth  *= 2.75f;
+
+    J2DPrint printInfo (getPikminFont(), 0.0f);
+    printInfo.mGlyphHeight /= 2;
+    printInfo.mGlyphWidth  /= 2;
+
+    Game::gNaviNum = Game::CalcNaviNum();
+    print.print(10.0f, 30.0f, "4P-Battle Card Menu | Players: %i\n", Game::gNaviNum);
+
+    if (mCursorAt < mCardCount) {
     
+        Vector2f cursorPosition = mCards[mCursorAt].mPosition;
+
+        printCursor.print(cursorPosition.x - (printCursor.mGlyphWidth / 3) / 2, cursorPosition.y + mCards[mCursorAt].mSize.y, "[ ]");
+
+        printInfo.print(20.0f, 440.0f, "%s", mCards[mCursorAt].mCardPtr->getDescription());
+    }
+
+    for (int i = 0; i < mCardCount; i++) {
+        mCards[i].draw();
+    }
+
+    
+
+    
+}
+
+void VsCardMenu::cleanup() {
+
 }

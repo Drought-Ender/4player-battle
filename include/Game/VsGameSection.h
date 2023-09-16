@@ -6,7 +6,6 @@
 #include "Game/ChallengeGame.h"
 #include "Vector3.h"
 #include "VSFifo.h"
-#include "Game/VsGameSection.h"
 #include "Game/Entities/ItemBigFountain.h"
 #include "Game/Entities/ItemHole.h"
 #include "FourPlayer.h"
@@ -32,6 +31,8 @@ struct StageData;
 struct StageList;
 struct State;
 } // namespace VsGame
+
+typedef f32 VsWeights[2]; // delegations
 
 struct VsGameSection : public BaseGameSection {
 	struct DropCardArg {

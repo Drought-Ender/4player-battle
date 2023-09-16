@@ -1,3 +1,6 @@
+#ifndef _VSSLOTCARD_H_
+#define _VSSLOTCARD_H_
+
 #include "Game/VsGame.h"
 #include "Game/Stickers.h"
 
@@ -54,10 +57,11 @@ class VsSlotMachineCard
     virtual int getWeight(CardMgr* cardMgr, int teamID) { return 100; }
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) { }
     virtual void onUseCard(CardMgr* cardMgr, int user) { }
+    virtual bool useTarget() { return false; }
 
     void updateTexName(const char* texname) { mTexName = texname; }
-    virtual bool varibleForward() { };
-    virtual bool varibleBackward() { };
+    virtual bool varibleForward() { return false; };
+    virtual bool varibleBackward() { return false; };
 
     virtual const char* getDescription() = 0;
 
@@ -91,7 +95,7 @@ struct VsSlotCardMgr
 
 extern VsSlotCardMgr* vsSlotCardMgr;
 
-void calcOnyonDist();
-
 } // namespace VsGame
 } // namespace Game
+
+#endif
