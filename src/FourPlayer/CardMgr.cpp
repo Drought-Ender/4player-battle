@@ -20,6 +20,7 @@
 #include "Game/pelletMgr.h"
 #include "Game/GameConfig.h"
 #include "CherryTarget.h"
+#include "VsSlotCard.h"
 #include "nans.h"
 
 namespace Game
@@ -69,6 +70,41 @@ void VsGame::CardMgr::update()
 	}
 }
 
+void CardMgr::loadResource()
+{
+	JKRArchive* arch = JKRArchive::mount("user/Kando/vstex/arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+
+	JUT_ASSERTLINE(258, arch, "vstex/arc.szs not found !\n");
+
+	mSlotNum      = VsGame::vsSlotCardMgr->getCardCount();
+	mSlotTextures = new JUTTexture*[mSlotNum];
+
+	for (int i = 0; i < mSlotNum; i++) {
+		ResTIMG* img = (ResTIMG*)arch->getResource(VsGame::vsSlotCardMgr->getAt(i)->GetTexName());
+		if (img) {
+			mSlotTextures[i] = new JUTTexture(img);
+		} else {
+			JUT_PANICLINE(269, "%s not found !\n", VsGame::vsSlotCardMgr->getAt(i)->GetTexName());
+		}
+	}
+
+	ResTIMG* pressY = (ResTIMG*)arch->getResource("press_y.bti");
+	JUT_ASSERTLINE(274, pressY, "press_y.bti");
+	mYButtonTexture = new JUTTexture(pressY);
+
+	ResTIMG* lampOn = (ResTIMG*)arch->getResource("lamp_on.bti");
+	JUT_ASSERTLINE(279, lampOn, "lamp_on.bti");
+	mLampOnTexture = new JUTTexture(lampOn);
+
+	ResTIMG* lampOff = (ResTIMG*)arch->getResource("lamp_off.bti");
+	JUT_ASSERTLINE(284, lampOff, "lamp_off.bti");
+	mLampOffTexture = new JUTTexture(lampOff);
+
+	ResTIMG* highlight = (ResTIMG*)arch->getResource("hl.bti");
+	JUT_ASSERTLINE(289, highlight, "hl.bti");
+	mHighlightTexture = new JUTTexture(highlight);
+}
+
 void CardMgr::stopSlot(int idx) {
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 	machines[idx]->startStop(); 
@@ -108,262 +144,25 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 		return false;
 	}
 
-	switch (slotID) {
-	case UNRESOLVED: {
+	if (slotID == UNRESOLVED) {
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
-		used = false;
-		break;
-	}
-	case PIKMIN_5: {
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(user));
-		if (onyon) {
-			ItemOnyon::gVsChargeOkay = true;
-			for (int i = 0; i < 5; i++) {
-				onyon->vsChargePikmin();
-			}
-			ItemOnyon::gVsChargeOkay = false;
-		}
-		break;
-	}
-	case PIKMIN_10: {
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(user));
-		if (onyon) {
-			ItemOnyon::gVsChargeOkay = true;
-			for (int i = 0; i < 10; i++) {
-				onyon->vsChargePikmin();
-			}
-			ItemOnyon::gVsChargeOkay = false;
-		}
-		break;
-	}
-	case DOPE_BLACK: {
-		Navi* navi = naviMgr->getAt(gUseCardNavi);
-		if (navi && navi->isAlive() && navi->onVsTeam(user)) {
-			if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_NORMAL) {
-				navi->incDopeCount(SPRAY_TYPE_BITTER);
-			}
-			else if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_USE) {
-				NaviDopeArg dopearg (SPRAY_TYPE_BITTER);
-				gDopeCountArray[getVsTeam(gUseCardNavi)][SPRAY_TYPE_BITTER]++;
-				navi->transit(NSID_Dope, &dopearg);
-				
-			}
-		}
-		break;
-	}
-	case DOPE_RED: {
-		Navi* navi = naviMgr->getAt(gUseCardNavi);
-		if (navi && navi->isAlive() && navi->onVsTeam(user)) {
-			if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_NORMAL) {
-				navi->incDopeCount(SPRAY_TYPE_SPICY);
-			}
-			else if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_USE) {
-				NaviDopeArg dopearg (SPRAY_TYPE_SPICY);
-				NaviDopeArg::wasteable = true;
-				
-				gDopeCountArray[getVsTeam(gUseCardNavi)][SPRAY_TYPE_SPICY]++;
-				navi->transit(NSID_Dope, &dopearg);
-				NaviDopeArg::wasteable = false;
-			}
-		}
-
-		break;
-	}
-	case PIKMIN_XLU: {
-        for (int i = 0; i < 4; i++) {
-            Navi* navi = naviMgr->getAt(i);
-            if (navi && navi->isAlive() && navi->onVsTeam(user)) {
-                if (mSection->mGhostIconTimers[i] <= 0.0f) {
-                    efx::TNaviEffect* naviEffect = navi->mEffectsObj;
-                    if (!naviEffect->isFlag(efx::NAVIFX_IsSaved)) {
-                        naviEffect->saveFlags();
-                    }
-                    naviEffect->mLight.forceKill();
-                    naviEffect->mLightAct.forceKill();
-                    naviEffect->mDamage.forceKill();
-                    naviEffect->killHamonA_();
-                    naviEffect->killHamonB_();
-                    naviEffect->killLight_();
-                    naviEffect->killLightAct_();
-                    naviEffect->killCursor_();
-                    naviEffect->killFueact_();
-                }
-                mSection->mGhostIconTimers[i] = 60.0f;
-            }
-        }
-
-		break;
-	}
-	case ALL_FLOWER: {
-		Iterator<Piki> IPiki = pikiMgr;
-		CI_LOOP(IPiki)
-		{
-			Piki* piki = *IPiki;
-			if (piki->getKind() == getPikiFromTeamEnum(user) && piki->isAlive() && (int)piki->getHappa() != Flower) {
-				piki->changeHappa(Flower);
-				Vector3f vec = piki->_25C;
-				efx::TPkGlow2 particle;
-				efx::Arg arg = vec;
-				particle.create(&arg);
-				piki->startSound(PSSE_PK_FLOWER_VOICE, true);
-			}
-		}
-		break;
-	}
-	case RESET_BEDAMA: {
-		int color      = getPikiFromTeamEnum(user);
-		Onyon* onyon   = ItemOnyon::mgr->getOnyon(color);
-		Pellet* bedama = nullptr;
-		PelletIterator IPellet;
-
-		CI_LOOP(IPellet)
-		{
-			Pellet* pellet = *IPellet;
-			if (color == pellet->getBedamaPikiColor()) {
-				bedama = pellet;
-				break;
-			}
-		}
-		if (bedama && bedama->isAlive()) {
-			{
-			Stickers stickers            = bedama;
-			Iterator<Creature> ICreature = &stickers;
-			CI_LOOP(ICreature) { (*ICreature)->endStick(); }
-			}
-			Vector3f onyonPos  = onyon->getFlagSetPos();
-			Vector3f bedamaPos = bedama->getPosition();
-			if (_distanceXZflag(bedamaPos, onyonPos) > 30.0f && gConfig[MARBLE_RETURN] == ConfigEnums::RETURN_NORMAL) {
-				onyonPos.y += bedama->getCylinderHeight() * 0.5f;
-				PelletReturnArg end = onyonPos;
-
-				bedama->mPelletSM->transit(bedama, PELSTATE_Return, &end);
-			}
-			else if (gConfig[MARBLE_RETURN] == ConfigEnums::RETURN_BURY) {
-				BounceBuryStateArg arg;
-				Stickers stickers = bedama;
-				arg.mIsBuried = bedama->isBuried();
-				arg.mHeldPikis = &stickers;
-
-				bedama->mPelletSM->transit(bedama, PELSTATE_BounceBury, &arg);
-			}
-			
-		}
-		break;
-	}
-	case TEKI_HANACHIRASHI:
-	case TEKI_SARAI: {
-		if (target == -1) {
-			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
-			used = false;
-			break;
-		}
-		int tekiID   = slotID - 7;
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(getVsPikiColor(target));
-		Vector3f onyonPos;
-		if (onyon) {
-			onyonPos = onyon->getPosition();
-
-			float faceDir = onyon->getFaceDir();
-
-			float radius = randFloat() * 150.0f + 50.0f;
-			float angle  = randFloat() * TAU;
-			float height = 0.0f;
-
-			Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
-
-			onyonPos += spawnOffset;
-		}
-		tekiMgr->birth(tekiID, onyonPos, true);
-		break;
-	}
-	case TEKI_ROCK:
-	case TEKI_BOMBOTAKRA: {
-		if (target == -1) {
-			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
-			used = false;
-			break;
-		}
-
-		float radiusVariance = 150.0f;
-		float enemyHeight    = 0.0f;
-		int num;
-		if (slotID == TEKI_ROCK) {
-			num = 8;
-		} else {
-			num            = 1;
-			radiusVariance = 0.0f;
-			enemyHeight    = 1.0f;
-		}
-
-		int tekiID = slotID - 7;
-
-
-		Navi* navi = naviMgr->getAt(target);
-		for (int i = 0; i < num; i++) {
-			Vector3f spawnNaviPos;
-			if (navi) {
-				spawnNaviPos = navi->getPosition();
-
-				float faceDir = navi->getFaceDir();
-				float radius  = randFloat() * radiusVariance;
-
-				float angle  = randFloat() * TAU;
-				float height = enemyHeight;
-
-				Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
-
-				spawnNaviPos += spawnOffset;
-			}
-			tekiMgr->birth(tekiID, spawnNaviPos, true);
-		}
-		
-		break;
-	}
-	case TEKI_TANK: {
-		if (target == -1) {
-			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
-			used = false;
-			break;
-		}
-		u32 TekiID = 4 + user;
-
-		Onyon* onyon = ItemOnyon::mgr->getOnyon(getVsPikiColor(target));
-		Vector3f onyonPos;
-		if (onyon) {
-
-			onyonPos = onyon->getPosition();
-
-			float faceDir = onyon->getFaceDir();
-
-			float radius = randFloat() * 150.0f + 50.0f;
-			float angle  = randFloat() * TAU;
-			float height = 0.0f;
-
-			angle = faceDir;
-
-			Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
-
-			onyonPos += spawnOffset;
-		}
-		tekiMgr->birth(TekiID, onyonPos, true);
-		break;
-	}
+        return false;
 	}
 
-	if (used) {
-		PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_GO, 0);
-		if (machines[user]->mCherryStock > 0) {
-			machines[user]->mCherryStock--;
-			machines[user]->start();
-			machines[user]->_18 = 0;
-		} else {
-			machines[user]->mSpinSpeed   = 0.0f;
-			machines[user]->mSpinAccel   = 0.0f;
-			machines[user]->mAppearState = 2;
-			machines[user]->mSlotID      = UNRESOLVED;
-			machines[user]->startZoomUse();
-			machines[user]->_18 = 1;
-		}
+	vsSlotCardMgr->mUsingCards[slotID]->useCard(this, user, target);
+
+	PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_GO, 0);
+	if (machines[user]->mCherryStock > 0) {
+		machines[user]->mCherryStock--;
+		machines[user]->start();
+		machines[user]->_18 = 0;
+	} else {
+		machines[user]->mSpinSpeed   = 0.0f;
+		machines[user]->mSpinAccel   = 0.0f;
+		machines[user]->mAppearState = 2;
+		machines[user]->mSlotID      = UNRESOLVED;
+		machines[user]->startZoomUse();
+		machines[user]->_18 = 1;
 	}
 
 	return used;
@@ -511,12 +310,14 @@ void CardMgr::SlotMachine::updateZoomUse()
 	_40 = (pikmin2_cosf(_3C * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
 }
 
-CardSelector::CardSelector()
+CardSelector::CardSelector(int count)
 {
-	for (int i = 0; i < CARD_ID_COUNT; i++) {
+	mCount = count;	
+	mValues = new int[count];
+	mCumulative = new f32[count];
+	for (int i = 0; i < count; i++) {
 		mValues[i] = 100;
 	}
-	mValues[RESET_BEDAMA] = 30;
 }
 
 /*
@@ -527,7 +328,7 @@ CardSelector::CardSelector()
 int CardSelector::getTotalWeight()
 {
 	int sum = 0;
-	for (int i = 0; i < CARD_ID_COUNT; i++) {
+	for (int i = 0; i < mCount; i++) {
 		sum += mValues[i];
 	}
 	return sum;
@@ -542,7 +343,7 @@ int CardSelector::selectCard()
 {
 	f32 fullCumulative = 0.0f;
 	int arraySum       = getTotalWeight();
-	for (int i = 0; i < CARD_ID_COUNT; i++) {
+	for (int i = 0; i < mCount; i++) {
 		fullCumulative += (f32)mValues[i] / arraySum;
 		if (mValues[i] == 0) {
 			mCumulative[i] = -100.0f;
@@ -551,11 +352,11 @@ int CardSelector::selectCard()
 		}
 	}
 	f32 value = randFloat();
-	for (int i = 0; i < CARD_ID_COUNT; i++) {
+	for (int i = 0; i < mCount; i++) {
 		if (value < mCumulative[i])
 			return i;
 	}
-	return (int)(randFloat() * CARD_ID_COUNT);
+	return (int)(randFloat() * mCount);
 }
 
 
@@ -563,101 +364,53 @@ void CardMgr::SlotMachine::start()
 {
 	_51 = false;
 
-	CardSelector selector;
+	int cardCount = vsSlotCardMgr->mCardCount;
 
-	int pikminCounts[4];
-	f32 redBlueScoreCount = mCardMgr->mSection->mRedBlueScore[mPlayerIndex];
+    CardSelector cardSelector(cardCount);
 
-	int dopeCount0;
-	int dopeCount1;
+	
+    
+    int bedamaIdx = -1;
 
-	f32 scoreCount0 = mCardMgr->mSection->mYellowScore[mPlayerIndex];
-	f32 scoreCount1 = mCardMgr->mSection->mYellowScore[mPlayerIndex];
+    for (int i = 0; i < cardCount; i++) {
+        cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getWeight(mCardMgr, mPlayerIndex);
+    }
 
-	pikminCounts[TEAM_RED] = GameStat::getMapPikmins(Red);
-	pikminCounts[TEAM_BLUE] = GameStat::getMapPikmins(Blue);
-	pikminCounts[TEAM_WHITE] = GameStat::getMapPikmins(White);
-	pikminCounts[TEAM_PURPLE] = GameStat::getMapPikmins(Purple);
+    cardSelector.fixBrokenWeights();
 
-	if (pikminCounts[mPlayerIndex] < 4) {
-		selector.mValues[PIKMIN_5]  = 200;
-		selector.mValues[PIKMIN_10] = 150;
-	}
 
-	// dopeCount0 = mCardMgr->mSection->getGetDopeCount(mPlayerIndex, 0);
-	// dopeCount1 = mCardMgr->mSection->getGetDopeCount(1 - mPlayerIndex, 0);
+    int totalMeasure = cardSelector.getTotalWeight();
+    
+    for (int i = 0; i < cardCount; i++) {
+        cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getBedamaWeight(mCardMgr, mPlayerIndex, totalMeasure, cardSelector.mValues[i]);
+    }
 
-	// if (dopeCount0 > dopeCount1 + 2) {
-	// 	selector.mValues[DOPE_RED] /= 2;
-	// }
+    mSelectedSlot = cardSelector.selectCard();
 
-	// dopeCount0 = mCardMgr->mSection->getGetDopeCount(mPlayerIndex, 1);
-	// dopeCount1 = mCardMgr->mSection->getGetDopeCount(1 - mPlayerIndex, 1);
+    if (mPrevSelected != UNRESOLVED) {
+        cardSelector.mValues[mPrevSelected] /= 10;
+    }
+    
 
-	// if (dopeCount0 > dopeCount1 + 2) {
-	// 	selector.mValues[DOPE_BLACK] /= 2;
-	// }
-
-	if (mPrevSelected != UNRESOLVED) {
-		selector.mValues[mPrevSelected] = 10;
-	}
-
-	if (mCardMgr->mSection->mGhostIconTimers[mPlayerIndex] > 5.0f) {
-		selector.mValues[PIKMIN_XLU] = 0;
-	}
-
-	int total = selector.getTotalWeight();
-
-	f32 resetBedamaProb = 0.0f;
-
-	if (redBlueScoreCount < 0.2f) {
-
-	} else if (redBlueScoreCount < 0.4f) {
-		resetBedamaProb = 0.2f;
-	} else if (redBlueScoreCount < 0.7f) {
-		resetBedamaProb = 0.5f;
-	} else {
-		resetBedamaProb = 0.8f;
-	}
-
-	if (scoreCount0 - scoreCount1 >= 0.4f) {
-		resetBedamaProb *= 0.7f;
-	}
-
-	if (resetBedamaProb > 0.0f) {
-		selector.mValues[RESET_BEDAMA] = total * resetBedamaProb;
-	}
-
-	if (gConfig[MARBLE_RETURN] == ConfigEnums::RETURN_REMOVED) {
-		selector.mValues[RESET_BEDAMA] = 0;
-	}
-	if (gConfig[SPRAY_CARD] == ConfigEnums::SPRAYCARD_OFF) {
-		selector.mValues[DOPE_RED] = 0;
-		selector.mValues[DOPE_BLACK] = 0;
-	}
-
-	mSelectedSlot = selector.selectCard();
-
-	mPrevSelected = mSelectedSlot;
-	_28           = randFloat();
-	mSlotID       = UNRESOLVED;
-	mAppearState  = 0;
-
-	PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_APPEAR, 0);
-	switch (mSpinState) {
-	case SPIN_END:
-	case SPIN_UNSTARTED:
-		mSpinSpeed = 72.0f * (PI / 180.0f);
-		mSpinState = SPIN_WAIT_START;
-		mSpinAccel = -TAU;
-		return;
-	case SPIN_WAIT_START:
-	case SPIN_START:
-		break;
-	default:
-		mSpinState = SPIN_START;
-		return;
-	}
+    mPrevSelected = mSelectedSlot;
+    _28 = randFloat();
+    mSlotID = UNRESOLVED;
+    mAppearState = APPEAR_LEAVE;
+    PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_APPEAR, 0);
+    switch (mSpinState) {
+        case SPIN_END:
+        case SPIN_UNSTARTED:
+            mSpinSpeed = 72.0f * DEG2RAD;
+            mSpinState = SPIN_WAIT_START;
+            mSpinAccel = -TAU;
+            return;
+        case SPIN_WAIT_START:
+        case SPIN_START:
+            break;
+        default:
+            mSpinState = SPIN_START;
+            return;
+    }
 }
 
 

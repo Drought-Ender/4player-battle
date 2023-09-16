@@ -29,6 +29,7 @@
 #include "utilityU.h"
 #include "VsOtakaraName.h"
 #include "nans.h"
+#include "VsSlotCard.h"
 
 #include "FourPlayer.h"
 #include "Game/Entities/ItemTreasure.h"
@@ -389,17 +390,15 @@ void VsGameSection::onSetupFloatMemory()
 	Farm::farmMgr = nullptr;
 	mTekiMgr      = new VsGame::TekiMgr();
 
-	mTekiMgr->entry(EnemyTypeID::EnemyID_Hanachirashi, 4);
-	mTekiMgr->entry(EnemyTypeID::EnemyID_Sarai, 4);
-	mTekiMgr->entry(EnemyTypeID::EnemyID_Rock, 12);
-	mTekiMgr->entry(EnemyTypeID::EnemyID_BombOtakara, 2);
-	mTekiMgr->entry(EnemyTypeID::EnemyID_Tank, 2);
-	mTekiMgr->entry(EnemyTypeID::EnemyID_Wtank, 2);
-	mTekiMgr->entry(EnemyTypeID::EnemyID_Gtank, 2);
-	mTekiMgr->entry(EnemyTypeID::EnemyID_Mtank, 2);
-	mTekiMgr->entry(EnemyTypeID::EnemyID_Tobi, 20);
+	
 
 	mCardMgr      = new VsGame::CardMgr(this, mTekiMgr);
+
+	VsGame::vsSlotCardMgr = new VsGame::VsSlotCardMgr;
+	VsGame::vsSlotCardMgr->generateCards(this);
+
+	mTekiMgr->entry(EnemyTypeID::EnemyID_Tobi, 20);
+
 	mCardMgr->loadResource();
 	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaYellow, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite };
 

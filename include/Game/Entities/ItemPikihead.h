@@ -139,6 +139,9 @@ struct WaitState : public State {
 	virtual void cleanup(Item*);                               // _10
 	virtual void onKeyEvent(Item*, const SysShape::KeyEvent&); // _24
 
+	u32 _0C;
+	f32 _10;
+
 	// _00     = VTBL
 	// _00-_0C = State
 };
@@ -168,7 +171,7 @@ struct Item : public FSMItem<Item, FSM, State> {
 	// _00-_1E0 = FSMItem
 	efx::TPkEffectTane* mEfxTane; // _1E0
 	f32 _1E4;                     // _1E4
-	u8 _1E8[0xC];                 // _1E8, unknown
+	Vector3f _1E8;                // _1E8, unknown
 	u16 mColor;                   // _1F4
 	u16 mHeadType;                // _1F6
 };

@@ -3,6 +3,7 @@
 #include "System.h"
 #include "GameFlow.h"
 #include "FourPlayer.h"
+#include "VsSlotCard.h"
 
 /*
  * --INFO--
@@ -23,6 +24,7 @@ MenuSection::MenuSection(JFWDisplay* display, JKRHeap* heap, bool b)
  */
 void MenuSection::run()
 {
+	Game::VsGame::VsSlotCardMgr::initAllCards();
 	_3C = false;
 	do {
 		mIsMainActive = true;		

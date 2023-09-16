@@ -76,6 +76,8 @@ struct TekiMgr {
 	TekiNode* getNode(int); // unused; inlined into birth
 	bool birthable(int);    // unused
 	EnemyBase* birth(int, Vector3f&, bool);
+	EnemyBase* birth(int, Vector3f&, float);
+	int getEnemy(EnemyTypeID::EEnemyTypeID);
 	EnemyTypeID::EEnemyTypeID getID(int); // unused
 
 	// these elements were likely private
@@ -101,12 +103,23 @@ enum eCardType { // official enum name
 };
 
 struct CardSelector {
-	CardSelector();
+	CardSelector(int);
+	~CardSelector() {
+		delete mValues;
+		delete mCumulative;
+	}
 	int getTotalWeight();
 	int selectCard();
 
-	int mValues[CARD_ID_COUNT];
-	f32 mCumulative[CARD_ID_COUNT];
+	inline void fixBrokenWeights() {
+		for (int i = 0; i < mCount; i++) {
+			if (mValues[i] < 0) mValues[i] = 0;
+		}
+	}
+
+	int mCount;
+	int* mValues;
+	f32* mCumulative;
 };
 
 struct CardMgr {

@@ -35,6 +35,15 @@ JUTFont* getPikminFont() {
 
 typedef f32 VsWeights[2]; // delegations
 
+
+
+struct VsCardMenu
+{
+    /* data */
+};
+
+struct IMenu;
+
 struct VsOptionsMenu {
     VsOptionsMenu();
     void init();
@@ -42,11 +51,37 @@ struct VsOptionsMenu {
     void draw(Graphics&);
 
     Controller* mController;
+    IMenu* mActiveMenu;
+};
+
+struct IMenu {
+    virtual void init(VsOptionsMenu*) = 0;
+    virtual bool update(VsOptionsMenu*) = 0;
+    virtual void draw(VsOptionsMenu*, Graphics&) = 0;
+};
+
+struct VsConfigMenu : public IMenu
+{
+    VsConfigMenu() {
+        mPageNumber = 0;
+        mSelectedOption = 0;
+        mCursorOptionIndex = 0;
+        mTooltipMessage = nullptr;
+    }
+
+    virtual void init(VsOptionsMenu*);
+    virtual bool update(VsOptionsMenu*);
+    virtual void draw(VsOptionsMenu*, Graphics&);
+
     int mPageNumber;
     int mSelectedOption;
     int mCursorOptionIndex;
     const char* mTooltipMessage;
 };
+
+
+
+typedef void OptionFunction(VsOptionsMenu*);
 
 struct Option {
     const char* name;
@@ -54,6 +89,8 @@ struct Option {
     const char* toolTipStrings[10];
     const int valueNum;
     int value; // doubles as default value
+    OptionFunction* func;
+    
 
     void print(J2DPrint& printer, J2DPrint& printer2, int idx);
 
@@ -277,6 +314,8 @@ f32 oddSqrt(f32 x) {
         return -sqrtf(x);
     }
 }
+
+void StartCardOptionsMenu(VsOptionsMenu* menu);
 
 
 #endif

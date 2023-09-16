@@ -159,19 +159,43 @@ int GetConfigSize() {
 
 void VsOptionsMenu::init() {
     mController = new Controller(JUTGamePad::PORT_0);
+    mActiveMenu = new VsConfigMenu;
+    mActiveMenu->init(this);
+}
+
+bool VsOptionsMenu::update() {
+    if (!mActiveMenu) return true;
+
+    return mActiveMenu->update(this);
+}
+
+void VsOptionsMenu::draw(Graphics& gfx) {
+    if (mActiveMenu) mActiveMenu->draw(this, gfx);
+}
+
+
+void VsConfigMenu::init(VsOptionsMenu* menu) {
     mPageNumber = 0;
     mTooltipMessage = "";
     mSelectedOption = 0;
 }
 
-
-
-bool VsOptionsMenu::update() {
+bool VsConfigMenu::update(VsOptionsMenu* menu) {
     int startIdx = OPTIONS_PER_PAGE * mPageNumber;
     int endIdx = OPTIONS_PER_PAGE * (mPageNumber + 1);
     endIdx = MIN(endIdx, ARRAY_SIZE(gOptions));
 
-    if ((mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == endIdx) || mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
+        StartCardOptionsMenu(menu);
+    }
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_A)) {
+        if (gOptions[mCursorOptionIndex].func) {
+            gOptions[mCursorOptionIndex].func(menu);
+        }
+    }
+
+    if ((menu->mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == endIdx) || menu->mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
         for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
             gConfig[i] = gOptions[i].getValue();        
         }
@@ -182,23 +206,23 @@ bool VsOptionsMenu::update() {
         
         return true;
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_DOWN | JUTGamePad::PRESS_A) && mCursorOptionIndex < endIdx) {
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_DOWN | JUTGamePad::PRESS_A) && mCursorOptionIndex < endIdx) {
         mCursorOptionIndex++;
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_UP) && mCursorOptionIndex > startIdx) {
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_UP) && mCursorOptionIndex > startIdx) {
         mCursorOptionIndex--;
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_RIGHT)) {
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_RIGHT)) {
         gOptions[mCursorOptionIndex].incOption();
         PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_LEFT)) {
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_LEFT)) {
         gOptions[mCursorOptionIndex].decOption();
         PSSystem::spSysIF->playSystemSe(PSSE_SY_SOUND_CONFIG, 0);
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_R) && mPageNumber < (PAGE_COUNT)) {
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_R) && mPageNumber < (PAGE_COUNT)) {
         mPageNumber++;
         mCursorOptionIndex += OPTIONS_PER_PAGE;
         if (mCursorOptionIndex > ARRAY_SIZE(gOptions)) {
@@ -206,7 +230,7 @@ bool VsOptionsMenu::update() {
         }
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
     }
-    else if (mController->isButtonDown(JUTGamePad::PRESS_L) && mPageNumber > 0) {
+    else if (menu->mController->isButtonDown(JUTGamePad::PRESS_L) && mPageNumber > 0) {
         mPageNumber--;
         mCursorOptionIndex -= OPTIONS_PER_PAGE;
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
@@ -214,8 +238,6 @@ bool VsOptionsMenu::update() {
 
     return false;
 }
-
-
 
 const JUtility::TColor gBluePrintGrad = 0x2020ffff;
 const JUtility::TColor gBluePrintBase = 0xffffffff;
@@ -225,9 +247,7 @@ const JUtility::TColor gRedPrintBase = 0xffffffff;
 
 
 
-// NOTE: Screen size is 640x480
-
-void VsOptionsMenu::draw(Graphics& gfx) {
+void VsConfigMenu::draw(VsOptionsMenu* menu, Graphics& gfx) {
     J2DPrint print (getPikminFont(), 0.0f);
     J2DPrint printInfo (getPikminFont(), 0.0f);
     printInfo.mGlyphHeight /= 2;
@@ -261,16 +281,27 @@ void VsOptionsMenu::draw(Graphics& gfx) {
 }
 
 void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx) {
-    printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
-    printer.print(300.0f, 70.0f + 30.0f * idx, "-");
-    printer2.print(300.0f, 70.0f + 30.0f * idx, "  %s",  valueStrings[value]);
+    if (!func) {
+        printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
+        printer.print(300.0f, 70.0f + 30.0f * idx, "-");
+        printer2.print(300.0f, 70.0f + 30.0f * idx, "  %s",  valueStrings[value]);
+    }
+    else {
+        printer2.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
+    }
     
     //printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
 }
 
+
+
+
+// NOTE: Screen size is 640x480
+
 VsOptionsMenu::VsOptionsMenu() {
-    mPageNumber = 0;
-    mSelectedOption = 0;
-    mCursorOptionIndex = 0;
-    mTooltipMessage = nullptr;
+    mActiveMenu = nullptr;
+}
+
+void StartCardOptionsMenu(VsOptionsMenu* menu) {
+    
 }

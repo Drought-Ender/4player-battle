@@ -57,14 +57,17 @@ bool TekiMgr::birthable(int)
  */
 EnemyBase* TekiMgr::birth(int idx, Vector3f& position, bool check)
 {
+	return birth(idx, position, check ? 50.0f : 0.0f);
+}
+
+EnemyBase* TekiMgr::birth(int idx, Vector3f& position, float timer)
+{
 	TekiNode* node = getNode(idx);
 	if (node) {
 		EnemyBirthArg birthArg;
 		birthArg.mFaceDir  = TAU * randFloat();
 		birthArg.mPosition = position;
-		if (check) {
-			birthArg.mExistenceLength = 50.0f;
-		}
+		birthArg.mExistenceLength = timer;
 		EnemyBase* teki = generalEnemyMgr->birth(node->mId, birthArg);
 		if (teki) {
 			teki->init(nullptr);
@@ -72,6 +75,15 @@ EnemyBase* TekiMgr::birth(int idx, Vector3f& position, bool check)
 		return teki;
 	}
 	return nullptr;
+}
+
+int TekiMgr::getEnemy(EnemyTypeID::EEnemyTypeID id) {
+	for (int i = 0; i < mNodeCount; i++) {
+		if (getNode(i)->mId == id) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 /*
