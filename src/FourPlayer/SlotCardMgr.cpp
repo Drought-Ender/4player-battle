@@ -120,7 +120,7 @@ struct FlowerCard : public VsSlotMachineCard
         mFlowerSprouts = !mFlowerSprouts;
 
         if (mFlowerSprouts) {
-            updateTexName("all_flower.bti");
+            updateTexName("all_flower_sprout.bti");
         }
         else {
             updateTexName("all_flower.bti");
@@ -572,9 +572,9 @@ void VsSlotCardMgr::initAllCards() {
     sAllCards[PIKMIN_10] = new AddPikminCard(10, "pikmin_10.bti");
     sAllCards[ALL_FLOWER] = new FlowerCard;
     sAllCards[PIKMIN_XLU] = new XLUCard;
-    sAllCards[DOPE_BLACK] = new DopeCard(SPRAY_TYPE_BITTER, "dope_black.bti", "dope_black.bti");
-    sAllCards[DOPE_RED] = new DopeCard(SPRAY_TYPE_SPICY, "dope_red.bti", "dope_red.bti");
-    sAllCards[RESET_BEDAMA] = new BedamaCard("reset_bedama.bti", "reset_bedama.bti");
+    sAllCards[DOPE_BLACK] = new DopeCard(SPRAY_TYPE_BITTER, "dope_black.bti", "use_bitter.bti");
+    sAllCards[DOPE_RED] = new DopeCard(SPRAY_TYPE_SPICY, "dope_red.bti", "use_spicy.bti");
+    sAllCards[RESET_BEDAMA] = new BedamaCard("reset_bedama.bti", "bedama_fall.bti");
     sAllCards[TEKI_HANACHIRASHI] = new OnyonTekiCard(EnemyTypeID::EnemyID_Hanachirashi, "teki_hanachirashi.bti");
     sAllCards[TEKI_SARAI] = new OnyonTekiCard(EnemyTypeID::EnemyID_Sarai, "teki_sarai.bti");
     sAllCards[TEKI_ROCK] = new NaviTekiCard(EnemyTypeID::EnemyID_Rock, NaviTekiParams(8, 90.0f, 0.0f), "teki_rock.bti");
