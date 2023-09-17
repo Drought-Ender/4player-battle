@@ -28,6 +28,9 @@ struct MovieConfig;
 struct Challenge2D_ResultInfo;
 
 namespace VsGame {
+
+extern int CardCount;
+
 enum StateID {
 	VGS_Title  = 0,
 	VGS_Load   = 1,
@@ -139,7 +142,7 @@ struct CardMgr {
 		bool dispCherryTarget();
 
 		bool equalTo(int);
-		bool goodPlace();
+		bool canJumpToCard(int card);
 
 		int getNextCard(int);
 		int getPrevCard(int);

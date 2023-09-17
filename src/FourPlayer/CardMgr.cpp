@@ -21,6 +21,7 @@
 #include "Game/GameConfig.h"
 #include "CherryTarget.h"
 #include "VsSlotCard.h"
+#include "VsOptions.h"
 #include "nans.h"
 
 namespace Game
@@ -31,6 +32,15 @@ bool NaviDopeArg::wasteable = false;
 
 namespace VsGame
 {
+
+int CardCount = 12;
+
+const f32 WheelSize = 240.0f;
+
+f32 CardSize = WheelSize / CardCount;
+
+f32 CardBounce = CardSize + 10.0f;
+
 
 VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* tekiMgr)
 {
@@ -46,7 +56,7 @@ VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* te
 	mSlotMachines[1].mCardMgr     = this;
 	mNewSlotMachines[0].mCardMgr = this;
 	mNewSlotMachines[1].mCardMgr = this;
-	_104                          = 40.0f;
+	_104                          = 12 / CardCount * 40.0f;
 
 	initDraw();
 
@@ -80,6 +90,7 @@ void CardMgr::loadResource()
 	mSlotTextures = new JUTTexture*[mSlotNum];
 
 	for (int i = 0; i < mSlotNum; i++) {
+		OSReport("Tex %i %s\n", i, VsGame::vsSlotCardMgr->getAt(i)->GetTexName());
 		ResTIMG* img = (ResTIMG*)arch->getResource(VsGame::vsSlotCardMgr->getAt(i)->GetTexName());
 		if (img) {
 			mSlotTextures[i] = new JUTTexture(img);
@@ -136,7 +147,7 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
 		return false;
 	}
 
-	if (slotID == UNRESOLVED) {
+	if (slotID == UNRESOLVED || (vsSlotCardMgr->mUsingCards[slotID]->useTarget() && target == -1)) {
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
         return false;
 	}
@@ -309,6 +320,7 @@ CardSelector::CardSelector(int count)
 	mCumulative = new f32[count];
 	for (int i = 0; i < count; i++) {
 		mValues[i] = 100;
+		mCumulative[i] = 0.0f;
 	}
 }
 
@@ -354,21 +366,28 @@ int CardSelector::selectCard()
 
 void CardMgr::SlotMachine::start()
 {
+	OSReport("CardMgr::SlotMachine::start()\n");
 	_51 = false;
 
 	int cardCount = vsSlotCardMgr->mCardCount;
+	OSReport("Card Count %i\n", cardCount);
 
     CardSelector cardSelector(cardCount);
 
+	OSReport("ctor\n");
+
 	
     
-    int bedamaIdx = -1;
-
     for (int i = 0; i < cardCount; i++) {
+		OSReport("Card %i: %p\n", i, vsSlotCardMgr->mUsingCards[i]);
         cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getWeight(mCardMgr, mPlayerIndex);
     }
 
+	OSReport("Weights done\n");
+
+	
     cardSelector.fixBrokenWeights();
+	OSReport("fixBrokenWeights()\n");
 
 
     int totalMeasure = cardSelector.getTotalWeight();
@@ -379,10 +398,12 @@ void CardMgr::SlotMachine::start()
 
     mSelectedSlot = cardSelector.selectCard();
 
-    if (mPrevSelected != UNRESOLVED) {
+	OSReport("Selection done\n");
+
+    if (mPrevSelected < cardCount) {
         cardSelector.mValues[mPrevSelected] /= 10;
     }
-    
+    OSReport("return;\n");
 
     mPrevSelected = mSelectedSlot;
     _28 = randFloat();
@@ -403,7 +424,240 @@ void CardMgr::SlotMachine::start()
             mSpinState = SPIN_START;
             return;
     }
+	
 }
+
+inline int CardMgr::SlotMachine::getNextCard(int card) { return (CardCount + card + 1) % CardCount; }
+
+inline int CardMgr::SlotMachine::getPrevCard(int card) { return (CardCount + card - 1) % CardCount; }
+
+inline f32 GetMaxJump() {
+    return 0.07f;
+}
+
+inline f32 GetMinSpeed() {
+    return 0.44f;
+}
+
+inline f32 GetAccel() {
+    return TAU;
+}
+
+bool CardMgr::SlotMachine::canJumpToCard(int card)
+{
+	int nextCardBottom = getNextCard(card);
+
+	float distanceToBottom = FABS(nextCardBottom - mSpinProgress);
+
+	int nextCardTop = nextCardBottom + CardCount;
+
+	float distanceToTop = FABS(nextCardTop - mSpinProgress);
+
+	float distance = distanceToBottom;
+	if (distanceToTop < distanceToBottom) {
+		distance = distanceToTop;
+	}
+
+	return (distance < GetMaxJump() && distance >= 0.0f);
+	return true;
+}
+
+void VsGame::CardMgr::SlotMachine::update()
+{
+	updateAppear();
+	float deltaTime = sys->mDeltaTime;
+	switch (mSpinState) { // await spin stop
+	case SPIN_WAIT_START:
+		mSpinAccel = -GetAccel();
+		if (mSpinSpeed < 0.0f) {
+			mSpinState = SPIN_START;
+			mSpinTimer = 1.0f;
+		}
+		break;
+	case SPIN_START:
+		if (CardCount == 1) {
+			mSpinState = SPIN_DECELERATE_END;
+		}
+		if (mCherryStock >= 1) { // start spin
+			mSpinAccel = -GetAccel();
+		} else {
+			mSpinAccel = -GetAccel();
+		}
+		if (gGameConfig.mParms.mVsY.mData == 1) {
+			mSpinAccel *= 3.0f;
+		}
+		if (mSpinSpeed < -GetAccel()) {
+			mSpinSpeed = -GetAccel();
+			mSpinState = SPIN_WAIT_MAX_SPEED;
+			if (gGameConfig.mParms.mVsY.mData == 0) {
+				mSpinTimer = randFloat() * 0.4f + 0.7f;
+				if (mCherryStock >= 1) {
+					mSpinTimer = 0.0f;
+				}
+			} else if (mSpinTimer > 0.0f) {
+				mSpinTimer = randFloat() * 0.4f + 0.7f;
+			}
+		}
+		break;
+	case SPIN_WAIT_MAX_SPEED: // await spining max speed
+		mSpinSpeed = -GetAccel();
+		mSpinAccel = 0.0f;
+		mSpinTimer -= deltaTime;
+		if (mSpinTimer <= 0.0f) {
+			if (getNextCard(mSelectedSlot) == mCurrCardIndex) {
+				mSpinState = SPIN_DECELERATE;
+				mSpinAccel = GetAccel(); // nice
+			}
+		}
+		break;
+	case SPIN_DECELERATE: // begin decelerate
+		mSpinAccel = TAU;
+		if (mCherryStock >= 1) {
+			if (mSpinSpeed > -GetMinSpeed() * PI) {
+				mSpinAccel = 0.0f;
+				mSpinState = SPIN_DECELERATE_END;
+				_2C        = 0.0f;
+			}
+		} else {
+			if (mSpinSpeed > -GetMinSpeed() * PI) {
+				mSpinAccel = 0.0f;
+				mSpinState = SPIN_DECELERATE_END;
+				_2C        = 0.0f;
+			}
+		}
+		break;
+	case SPIN_DECELERATE_END:                                              // on decelerate end
+		_2C += deltaTime;                                                  // wait 3 seconds
+		if (_2C >= 3.0f && FABS(mSpinProgress - mCurrCardIndex) < GetMaxJump()) { // can jump to previous card
+			_6C           = 0.0f;
+			_68           = 0.0f;
+			mSelectedSlot = (CardCount + mCurrCardIndex - 1) % CardCount;
+			_2C           = 0.0f;
+			mSpinAccel    = 0.0f;
+			mSpinSpeed    = 0.0f;
+			mSpinState    = SPIN_END;
+			_4C           = mSelectedSlot;
+			mSpinTimer    = 0.8f;
+			startZoomIn();
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+		} else if (canJumpToCard(mSelectedSlot)) { // can jump to this card
+			_6C        = 0.0f;
+			_68        = 0.0f;
+			mSpinSpeed = 0.0f;
+			mSpinAccel = 0.0f;
+			mSpinState = SPIN_END;
+			_4C        = mSelectedSlot;
+			mSpinTimer = 0.8f;
+			startZoomIn();
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+		}
+		break;
+	case SPIN_DOWN_TO_CARD:
+		mSpinTimer -= deltaTime;
+		if (mSpinTimer <= 0.0f) {
+			mSpinSpeed = 0.0f;
+			mSpinAccel = -TAU;
+			mSpinState = SPIN_WAIT_CARD_ROLL;
+		}
+		break;
+	case SPIN_WAIT_CARD_STOP:
+		if (canJumpToCard(mSelectedSlot)) {
+			mSpinSpeed = 0.0f;
+			mSpinAccel = 0.0f;
+			mSpinState = SPIN_END;
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+		}
+		break;
+	case SPIN_UP_TO_CARD:
+		mSpinTimer -= deltaTime;
+		if (mSpinTimer <= 0.0f) {
+			mSpinSpeed = 0.0f;
+			mSpinAccel = TAU;
+			mSpinState = SPIN_WAIT_CARD_STOP;
+		}
+		break;
+	case SPIN_WAIT_CARD_ROLL:
+		if (canJumpToCard(mSelectedSlot)) {
+			mSpinSpeed = 0.0f;
+			mSpinAccel = 0.0f;
+			mSpinState = SPIN_END;
+			mSpinTimer = 1.2f;
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+		}
+		break;
+	case SPIN_END: // on roll end
+		_51        = true;
+		mSlotID    = mSelectedSlot;
+		mSpinSpeed = 0.0f;
+		mSpinAccel = 0.0f;
+		if (gGameConfig.mParms.mVsY.mData == 1) {
+			mSpinTimer -= sys->mDeltaTime;
+			if (mSpinTimer <= 0.0f) {
+				mCardMgr->usePlayerCard(mPlayerIndex, nullptr); // nice tekimgr dumbass
+			}
+		}
+		break;
+	}
+	mSpinAngle += mSpinSpeed * deltaTime;
+	if (mSpinAngle > TAU) {
+		mSpinAngle -= TAU;
+	}
+	if (mSpinAngle < 0.0f) {
+		mSpinAngle += TAU;
+	}
+	mSpinSpeed += mSpinAccel * deltaTime;
+	int previousValue = mCurrCardIndex;
+	mPrevCardIndex    = mCurrCardIndex;
+	float loopValue   = TAU / CardCount;
+	mSpinProgress     = roundAng(mSpinAngle + loopValue) / loopValue;
+	mCurrCardIndex    = (int)mSpinProgress;
+	if (mSpinState != SPIN_END && mSpinState != SPIN_UNSTARTED) {
+		if (mSpinSpeed > mCardMgr->_104) {
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_ROLL, 0);
+		} else if (mCurrCardIndex != previousValue) {
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+		}
+	}
+}
+
+void VsGame::CardMgr::initDraw()
+{
+	int CardCount = 0;
+    for (int i = 0; i < VsSlotCardMgr::sTotalCardCount; i++) {
+        if (VsSlotCardMgr::sUsingCards[i]) {
+            CardCount++;
+        }
+    }
+
+
+	OSReport("CardCount %i\n", CardCount);
+	int countA = CardCount;
+	int countB = 32;
+	_F8        = countA * countB * 2;
+	_FC        = new Vector3f[_F8];
+	_100       = new Vector3f[_F8];
+	float phi  = TAU / countA;
+	float s    = pikmin2_sinf(phi / 2.0f);
+	float x, y, z;
+
+	CardSize = WheelSize / countA;
+
+	x = 20.0f;
+
+	for (int i = 0; i < countA * countB; i++) {
+		float theta = i * TAU / countA / countB;
+
+		z = x / s * pikmin2_cosf(theta);
+		y = x / s * pikmin2_sinf(theta);
+
+		_FC[2 * i]  = Vector3f(-x, y, z);
+		_100[2 * i] = Vector3f(0.0f, pikmin2_sinf(theta), pikmin2_cosf(theta));
+
+		_FC[2 * i + 1]  = Vector3f(x, y, z);
+		_100[2 * i + 1] = Vector3f(0.0f, pikmin2_sinf(theta), pikmin2_cosf(theta));
+	}
+}
+
 
 
 } // namespace VsGame

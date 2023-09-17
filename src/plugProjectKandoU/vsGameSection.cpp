@@ -1225,6 +1225,10 @@ void VsGameSection::initCardGeneration()
  */
 void VsGameSection::updateCardGeneration()
 {
+	if (VsGame::CardCount == 0) {
+		return;
+	}
+
 	int maxSpawnCherries[2] = { 0, 0 };
 	f32 spawnFactor[2];
 	for (int i = 0; i < 2; i++) {

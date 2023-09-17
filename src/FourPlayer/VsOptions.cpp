@@ -9,12 +9,14 @@
 #include "Game/GameConfig.h"
 #include "VsSlotCard.h"
 #include "VsOptions.h"
+#include "Game/VsGame.h"
 
 VsOptionsMenuMgr* gOptionMenu;
 
+
 Option gOptions[] = {
     {
-        "Maps", 
+        "Maps",
         { "Reworked", "Vanilla" },
         { "Use remade maps that are better balenced then the Vanilla game", "Use Vanilla 2p-battle maps" },
         2,
@@ -97,13 +99,6 @@ Option gOptions[] = {
         1
     },
     {
-        "Marble Return",
-        { "Vanilla", "Bury", "Disabled" },
-        { "Marble return will work like vanilla", "Marble return will instead bury your marble", "You will not be able to roll marble return" },
-        3,
-        0
-    },
-    {
         "Card Use",
         { "Manual", "Automatic" },
         { "Slot machine cards will be used with Y", "Slot machine cards will be automatically used" },
@@ -125,13 +120,6 @@ Option gOptions[] = {
         0
     },
     {
-        "Card Sprays",
-        { "Gain Spray", "Use Spray", "Disabled" },
-        { "Using a spray card will give your team a spray", "Using a spray card will use a spray to no cost", "Card sprays will not be rolled" },
-        3,
-        0
-    },
-    {
         "Pellet Posies",
         { "Normal", "Start Matched" },
         { "Pellet Posies will iterate through all active colors", "Pellet Posies will start matched with your color" },
@@ -147,6 +135,7 @@ Option gOptions[] = {
     }
 };
 
+
 // gConfig
 int gConfig[ARRAY_SIZE(gOptions)];
 
@@ -161,7 +150,7 @@ int GetConfigSize() {
 
 void VsOptionsMenuMgr::init() {
     mController = new Controller(JUTGamePad::PORT_0);
-    StartCardMenu<VsConfigMenu>();
+    StartMenu<VsConfigMenu>();
 }
 
 bool VsOptionsMenuMgr::update() {
@@ -192,6 +181,9 @@ void VsConfigMenu::cleanup() {
     }
     Game::gGameConfig.mParms.mVsHiba.mData = gConfig[VS_HIBA];
     Game::gGameConfig.mParms.mVsY.mData    = gConfig[VS_Y];
+    if (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_NOTHING) {
+        Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::RESET_BEDAMA] = false;
+    }
 }
 
 bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {
@@ -200,7 +192,7 @@ bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {
     endIdx = MIN(endIdx, ARRAY_SIZE(gOptions));
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
-        menu->StartCardMenu<VsCardMenu>();
+        menu->StartMenu<VsCardMenu>();
         return false;
     }
 
@@ -311,7 +303,7 @@ VsOptionsMenuMgr::VsOptionsMenuMgr() {
 }
 
 template <typename T>
-void VsOptionsMenuMgr::StartCardMenu() {
+void VsOptionsMenuMgr::StartMenu() {
     if (mActiveMenu) {
         mActiveMenu->cleanup();
         delete mActiveMenu;
@@ -389,6 +381,7 @@ void VsCardMenu::init(VsOptionsMenuMgr* menu) {
         mCards[i].mPosition.x = startOffset.x + (spaceBetween.x + cardSize.x) * x;
         mCards[i].mPosition.y = startOffset.y + (spaceBetween.y + cardSize.y) * y;
         mCards[i].mSize = cardSize;
+        mCards[i].mIsCardActive = Game::VsGame::VsSlotCardMgr::sUsingCards[i];
     }
 }
 
@@ -433,7 +426,7 @@ bool VsCardMenu::update(VsOptionsMenuMgr* menu) {
 
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
-        menu->StartCardMenu<VsConfigMenu>();
+        menu->StartMenu<VsConfigMenu>();
         return false;
     }
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
@@ -476,5 +469,7 @@ void VsCardMenu::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
 }
 
 void VsCardMenu::cleanup() {
-
+    for (int i = 0; i < mCardCount; i++) {
+        Game::VsGame::VsSlotCardMgr::sUsingCards[i] = mCards[i].mIsCardActive;
+    }
 }

@@ -3,7 +3,6 @@
 
 struct IMenu;
 
-
 struct VsOptionsMenuMgr {
     VsOptionsMenuMgr();
     void init();
@@ -11,7 +10,7 @@ struct VsOptionsMenuMgr {
     void draw(Graphics&);
     
     template <typename T>
-    void StartCardMenu();
+    void StartMenu();
 
     Controller* mController;
     IMenu* mActiveMenu;

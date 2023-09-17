@@ -4,6 +4,7 @@
 #include "Game/NaviState.h"
 #include "Game/generalEnemyMgr.h"
 #include "Dolphin/rand.h"
+#include "VsOptions.h"
 #include "DroughtLib.h"
 
 
@@ -442,18 +443,25 @@ struct TankOnyonTeki : public OnyonTekiCard
 struct BedamaCard : public VsSlotMachineCard
 {
 
-    BedamaCard(const char* texName) : VsSlotMachineCard(texName) {
+    BedamaCard(const char* texName, const char* texName2) : mTexName(texName), mBuryTexname(texName2), VsSlotMachineCard(texName) {
 
     };
 
+    const char* mTexName;
+    const char* mBuryTexname;
 
+    bool mBuryBedama;
     
 
     void onUseCard(CardMgr* cardMgr, int user) {
+        if (mBuryBedama) {
+            BuryBedama(cardMgr, user);
+            return;
+        }
         int color = getVsPikiColor(user);
         int teamID = getVsTeam(user);
         Onyon* onyon = ItemOnyon::mgr->getOnyon(color);
-        Pellet* bedama = cardMgr->mSection->mMarbleRedBlue[user];
+        Pellet* bedama = cardMgr->mSection->mMarbleRedBlue[teamID];
 
         if (bedama && bedama->isAlive()) {
             Vector3f pos = onyon->getFlagSetPos();
@@ -467,6 +475,38 @@ struct BedamaCard : public VsSlotMachineCard
             updateMarbleEffectiveness(bedama);
             bedama->mPelletSM->transit(bedama, PELSTATE_Return, &arg);
         }
+    }
+
+    void BuryBedama(CardMgr* cardMgr, int user) {
+        int color = getVsPikiColor(user);
+        int teamID = getVsTeam(user);
+        Pellet* bedama = cardMgr->mSection->mMarbleRedBlue[teamID];
+        if (bedama->isAlive()) {
+            BounceBuryStateArg arg;
+            Stickers stickers = bedama;
+            arg.mHeldPikis = &stickers;
+            bedama->mPelletSM->transit(bedama, PELSTATE_BounceBury, &arg);
+        }
+    }
+
+    bool ToggleBedama() {
+        mBuryBedama = !mBuryBedama;
+
+        if (mBuryBedama) {
+            updateTexName(mBuryTexname);
+        }
+        else {
+            updateTexName(mTexName);
+        }
+        return true;
+    }
+
+    virtual bool varibleForward() {
+        return ToggleBedama();
+    }
+
+    virtual bool varibleBackward() {
+        return ToggleBedama();
     }
 
     float calcMarbleDist(Vector3f& marbleLocation, int user) {
@@ -503,18 +543,30 @@ struct BedamaCard : public VsSlotMachineCard
     }
 
     virtual const char* getDescription() {
-        return "Returns your marble";
+        if (!mBuryBedama) return "Returns your marble";
+
+        return "Buries your marble";
     }
 };
 
 
 VsSlotMachineCard** VsSlotCardMgr::sAllCards = nullptr;
 int VsSlotCardMgr::sTotalCardCount = 0;
+bool* VsSlotCardMgr::sUsingCards;
 
 void VsSlotCardMgr::initAllCards() {
     VsSlotCardMgr::sTotalCardCount = CARD_ID_COUNT;
 
     VsSlotCardMgr::sAllCards = new VsSlotMachineCard*[VsSlotCardMgr::sTotalCardCount];
+
+    VsSlotCardMgr::sUsingCards = new bool[VsSlotCardMgr::sTotalCardCount];
+
+    for (int i = 0; i < 12; i++) {
+        VsSlotCardMgr::sUsingCards[i] = true;
+    }
+    for (int i = 12; i < VsSlotCardMgr::sTotalCardCount; i++) {
+        VsSlotCardMgr::sUsingCards[i] = false;
+    }
 
     sAllCards[PIKMIN_5] = new AddPikminCard(5, "pikmin_5.bti");
     sAllCards[PIKMIN_10] = new AddPikminCard(10, "pikmin_10.bti");
@@ -522,7 +574,7 @@ void VsSlotCardMgr::initAllCards() {
     sAllCards[PIKMIN_XLU] = new XLUCard;
     sAllCards[DOPE_BLACK] = new DopeCard(SPRAY_TYPE_BITTER, "dope_black.bti", "dope_black.bti");
     sAllCards[DOPE_RED] = new DopeCard(SPRAY_TYPE_SPICY, "dope_red.bti", "dope_red.bti");
-    sAllCards[RESET_BEDAMA] = new BedamaCard("reset_bedama.bti");
+    sAllCards[RESET_BEDAMA] = new BedamaCard("reset_bedama.bti", "reset_bedama.bti");
     sAllCards[TEKI_HANACHIRASHI] = new OnyonTekiCard(EnemyTypeID::EnemyID_Hanachirashi, "teki_hanachirashi.bti");
     sAllCards[TEKI_SARAI] = new OnyonTekiCard(EnemyTypeID::EnemyID_Sarai, "teki_sarai.bti");
     sAllCards[TEKI_ROCK] = new NaviTekiCard(EnemyTypeID::EnemyID_Rock, NaviTekiParams(8, 90.0f, 0.0f), "teki_rock.bti");
@@ -541,14 +593,30 @@ VsSlotCardMgr::VsSlotCardMgr() {
 }
 
 void VsSlotCardMgr::generateCards(VsGameSection* section) {
-    mCardCount  = sTotalCardCount;
+
+    int cardCount = 0;
+    for (int i = 0; i < sTotalCardCount; i++) {
+        if (VsSlotCardMgr::sUsingCards[i]) {
+            cardCount++;
+        }
+    }
+
+    CardCount   = cardCount;
+    mCardCount  = cardCount;
+    
     mUsingCards = new VsSlotMachineCard*[sTotalCardCount];
 
-    for (int i = 0; i < mCardCount; i++) {
+    int currCard = 0;
+    for (int i = 0; i < sTotalCardCount; i++) {
         
-        mUsingCards[i] = sAllCards[i];
-        OSReport("mUsingCards[%i] %p\n", i, mUsingCards[i]);
-        mUsingCards[i]->allocate(section);
+        if (VsSlotCardMgr::sUsingCards[i]) {
+
+            mUsingCards[currCard] = sAllCards[i];
+            OSReport("mUsingCards[%i] %p\n", currCard, mUsingCards[currCard]);
+            mUsingCards[currCard]->allocate(section);
+
+            currCard++;
+        }
     }
 }
 

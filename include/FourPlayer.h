@@ -90,11 +90,9 @@ enum OptionsEnum {
     SPAWN_SHEARWIG,
     EGG_DROPS,
     AUTOPLUCK,
-    MARBLE_RETURN,
     VS_Y,
     VS_HIBA,
     PIKI_DIE,
-    SPRAY_CARD,
     PELLET_POSY,
     PIKMIN_BIRTH,
 };

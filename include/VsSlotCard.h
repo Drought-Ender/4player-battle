@@ -60,8 +60,8 @@ class VsSlotMachineCard
     virtual bool useTarget() { return false; }
 
     void updateTexName(const char* texname) { mTexName = texname; }
-    virtual bool varibleForward() { return false; };
-    virtual bool varibleBackward() { return false; };
+    virtual bool varibleForward() { return false; }
+    virtual bool varibleBackward() { return false; }
 
     virtual const char* getDescription() = 0;
 
@@ -80,6 +80,7 @@ struct VsSlotCardMgr
     
     static int sTotalCardCount;
     static VsSlotMachineCard** sAllCards;
+    static bool* sUsingCards;
     static void initAllCards();
 
     void generateCards(VsGameSection*);
@@ -89,6 +90,7 @@ struct VsSlotCardMgr
 
 
     int mCardCount;
+    
     VsSlotMachineCard** mUsingCards;
 };
 

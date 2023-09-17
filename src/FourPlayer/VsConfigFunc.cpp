@@ -50,7 +50,7 @@ namespace Game {
     bool canAttackBedama(Piki* piki, Game::ItemTreasure::Item* treasure) {
         // int pelletColor = 1 - (treasure->m_pellet->m_pelletFlag - Pellet::FLAG_VS_BEDAMA_RED);
         // return pelletColor != piki->m_pikiKind;
-        return true;
+        return gConfig[MARBLE_CARRY] || treasure->mPellet->getBedamaPikiColor() != piki->mPikiKind;
     } 
 
     bool canAttackBedamaIdle(Piki* piki, Game::ItemTreasure::Item* treasure) {

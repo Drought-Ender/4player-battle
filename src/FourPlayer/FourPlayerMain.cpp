@@ -662,7 +662,7 @@ bool CameraMgr::isStartAndEnd(int* shakeArray, int id)
 
 void BaseGameSection::drawParticle(Graphics& gfx, int viewport)
 {
-	if (BaseHIOParms::sDrawParticle) {
+	if (BaseHIOParms::sDrawParticle && gDrawNavi[viewport]) {
 		Viewport* port = gfx.getViewport(viewport);
 		if (port->viewable()) {
 			port->setProjection();

@@ -353,7 +353,6 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 		return;
 	}
 
-	DebugReport("Cave::gPelplantsPerBunch %i\n", Cave::gPelplantsPerBunch);
 	const int pelplantColors[4] = { PELCOLOR_RED, PELCOLOR_BLUE, PELCOLOR_WHITE, PELCOLOR_PURPLE };
 
 	for (int nodeType = 0; nodeType < OBJLAYOUT_COUNT; nodeType++) {
@@ -463,7 +462,6 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_Enemy: {
-					DebugReport("OBJLAYOUT_Enemy\n");
 					Vector3f birthPos;
 					birthPos.y = 0.0f;
 					node->getBirthPosition(birthPos.x, birthPos.z);
