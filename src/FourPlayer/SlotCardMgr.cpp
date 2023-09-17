@@ -228,7 +228,7 @@ struct DopeCard : public VsSlotMachineCard
 
     void onUseCard(CardMgr* cardMgr, int user) {
         Navi* navi = naviMgr->getAt(user);
-		if (navi && navi->isAlive() && navi->onVsTeam(user)) {
+		if (navi && navi->isAlive()) {
 			if (!mUseDope) {
 				navi->incDopeCount(mDopeType);
 			}
