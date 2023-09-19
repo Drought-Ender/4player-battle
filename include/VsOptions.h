@@ -3,6 +3,8 @@
 
 struct IMenu;
 
+static const char* cBackgroundName = "/background.bti";
+
 struct VsOptionsMenuMgr {
     VsOptionsMenuMgr();
     void init();
@@ -14,6 +16,7 @@ struct VsOptionsMenuMgr {
 
     Controller* mController;
     IMenu* mActiveMenu;
+    J2DPictureEx* mBackground;
 };
 
 struct IMenu {

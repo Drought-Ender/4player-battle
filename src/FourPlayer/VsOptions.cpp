@@ -10,6 +10,7 @@
 #include "VsSlotCard.h"
 #include "VsOptions.h"
 #include "Game/VsGame.h"
+#include "LoadResource.h"
 
 VsOptionsMenuMgr* gOptionMenu;
 
@@ -149,6 +150,14 @@ int GetConfigSize() {
 #define PAGE_COUNT (ARRAY_SIZE(gOptions) / OPTIONS_PER_PAGE)
 
 void VsOptionsMenuMgr::init() {
+    mBackground = nullptr;
+    LoadResource::Arg loadArg(cBackgroundName);
+	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
+	if (resource) {
+		ResTIMG* starImg = static_cast<ResTIMG*>(resource->mFile);
+        mBackground = new J2DPictureEx(starImg, 0);
+	}
+
     mController = new Controller(JUTGamePad::PORT_0);
     StartMenu<VsConfigMenu>();
 }
@@ -164,7 +173,13 @@ bool VsOptionsMenuMgr::update() {
     return false;
 }
 
+
 void VsOptionsMenuMgr::draw(Graphics& gfx) {
+    if (mBackground) {
+        JGeometry::TBox2f screenSize (0.0f, 0.0f, getScreenSize().x, getScreenSize().y);
+        mBackground->drawOut(screenSize, screenSize);
+    }
+    
     if (mActiveMenu) mActiveMenu->draw(this, gfx);
 }
 
@@ -192,6 +207,7 @@ bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {
     endIdx = MIN(endIdx, ARRAY_SIZE(gOptions));
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
         menu->StartMenu<VsCardMenu>();
         return false;
     }
@@ -426,6 +442,7 @@ bool VsCardMenu::update(VsOptionsMenuMgr* menu) {
 
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
         menu->StartMenu<VsConfigMenu>();
         return false;
     }
