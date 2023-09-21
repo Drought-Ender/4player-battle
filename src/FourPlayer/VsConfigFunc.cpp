@@ -10,6 +10,7 @@
 #include "Game/PikiState.h"
 #include "PikiAI.h"
 #include "Game/NaviState.h"
+#include "VsOptions.h"
 
 namespace Game {
     float Pellet::buryBedamaVs() {
@@ -70,22 +71,37 @@ namespace Game {
         dargs.mAnimIdx = -1;
         dargs._04 = true;
 
-        if (attacker->doped() && gConfig[SPICY_TYPE] == ConfigEnums::SPICY_NERF) {
-            attacker->clearDope();
+        if (!defender->doped()) {
+            defender->mFsm->transit(defender, Game::PIKISTATE_Dying, &dargs);
+        }
+        else {
+            defender->clearDope();
         }
 
-
-        defender->mFsm->transit(defender, Game::PIKISTATE_Dying, &dargs);
+        if (!attacker->doped()) {
+            attacker->mFsm->transit(attacker, Game::PIKISTATE_Dying, &dargs);
+        }
+        else {
+            attacker->clearDope();
+        }
         
     }
 
     // pikiFightEndDope__4GameFPQ24Game4Piki
     void pikiFightEndDope(Piki* attacker) {
-        if (attacker->doped() && gConfig[SPICY_TYPE] == ConfigEnums::SPICY_NERF) {
+        if (!gTournamentMode && attacker->doped() && gConfig[SPICY_TYPE] == ConfigEnums::SPICY_NERF) {
             attacker->clearDope();
         }
     }
 
+    // pikiFightShouldKillTarget__4GameFPQ24Game4PikiPQ24Game4Piki
+    bool pikiFightShouldKillTarget(Piki* attacker, Piki* defender) {
+        if (gTournamentMode) {
+            pikiFight(attacker, defender);
+            return false;
+        }
+        return true;
+    }
     
     
 

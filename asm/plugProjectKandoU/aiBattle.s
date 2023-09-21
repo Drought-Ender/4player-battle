@@ -689,6 +689,7 @@
 /* 8022F518 0022C458  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 8022F51C 0022C45C  41 82 00 08 */	beq .L_8022F524
 /* 8022F520 0022C460  C3 E2 BF FC */	lfs f31, lbl_8051A35C@sda21(r2)
+
 lwz r3, 0x10(r31)
 bl pikiFightEndDope__4GameFPQ24Game4Piki
 .L_8022F524:
@@ -715,6 +716,11 @@ bl pikiFightEndDope__4GameFPQ24Game4Piki
 /* 8022F568 0022C4A8  FC 01 00 40 */	fcmpo cr0, f1, f0
 /* 8022F56C 0022C4AC  4C 40 13 82 */	cror 2, 0, 2
 /* 8022F570 0022C4B0  40 82 00 40 */	bne .L_8022F5B0
+lwz r3, 4(r31)
+lwz r4, 0x10(r31)
+bl pikiFightShouldKillTarget__4GameFPQ24Game4PikiPQ24Game4Piki
+cmpwi r3, 0
+beq .L_8022F608
 /* 8022F574 0022C4B4  38 00 00 00 */	li r0, 0
 /* 8022F578 0022C4B8  38 60 FF FF */	li r3, -1
 /* 8022F57C 0022C4BC  98 01 00 14 */	stb r0, 0x14(r1)
@@ -731,6 +737,11 @@ bl pikiFightEndDope__4GameFPQ24Game4Piki
 /* 8022F5A8 0022C4E8  4E 80 04 21 */	bctrl 
 /* 8022F5AC 0022C4EC  48 00 00 5C */	b .L_8022F608
 .L_8022F5B0:
+lwz r3, 4(r31)
+lwz r4, 0x10(r31)
+bl pikiFightShouldKillTarget__4GameFPQ24Game4PikiPQ24Game4Piki
+cmpwi r3, 0
+beq .L_8022F608
 /* 8022F5B0 0022C4F0  38 00 00 00 */	li r0, 0
 /* 8022F5B4 0022C4F4  38 60 FF FF */	li r3, -1
 /* 8022F5B8 0022C4F8  98 01 00 0C */	stb r0, 0xc(r1)

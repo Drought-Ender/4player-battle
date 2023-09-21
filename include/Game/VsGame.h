@@ -19,6 +19,8 @@
 struct JUTTexture;
 struct LightObj;
 
+static bool gTournamentMode = false;
+
 namespace Game {
 namespace ItemHole {
 struct Item;

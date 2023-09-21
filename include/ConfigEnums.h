@@ -13,6 +13,11 @@ enum EPlaceMarbleConfig {
     PLACE_NOTHING
 };
 
+enum ECarryMarbleConfig {
+    CARRY_OFF,
+    CARRY_ON
+};
+
 enum ECherryRateConfig {
     RATE_FRENZY,
     RATE_FREQUENT,

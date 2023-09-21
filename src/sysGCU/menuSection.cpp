@@ -25,6 +25,7 @@ MenuSection::MenuSection(JFWDisplay* display, JKRHeap* heap, bool b)
 void MenuSection::run()
 {
 	Game::VsGame::VsSlotCardMgr::initAllCards();
+	Option::readOptions();
 	_3C = false;
 	do {
 		mIsMainActive = true;		

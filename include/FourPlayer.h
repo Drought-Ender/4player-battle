@@ -45,6 +45,7 @@ struct Option {
     const char* toolTipStrings[10];
     const int valueNum;
     int value; // doubles as default value
+    bool hide;
     OptionFunction* func;
     
 
@@ -71,6 +72,8 @@ struct Option {
     const char* getTooltipString() {
         return toolTipStrings[value];
     }
+
+    static void readOptions();
 };
 
 int GetConfigSize();

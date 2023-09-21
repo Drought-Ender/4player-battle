@@ -14,6 +14,36 @@
 
 VsOptionsMenuMgr* gOptionMenu;
 
+void Option::readOptions() {
+    OSReport("Tournament Mode Ptr %p\n", &gTournamentMode);
+    if (gTournamentMode) {
+        gOptions[MAP_TYPE].value = ConfigEnums::MAP_NEW;
+        gOptions[MAP_TYPE].hide = true;
+        gConfig[MAP_TYPE] = ConfigEnums::MAP_NEW;
+
+        gOptions[MARBLE_BURY].value = ConfigEnums::PLACE_BURY;
+        gConfig[MARBLE_BURY] = ConfigEnums::PLACE_BURY;
+
+        gOptions[MARBLE_CARRY].value = ConfigEnums::CARRY_ON;
+        gConfig[MARBLE_CARRY] = ConfigEnums::CARRY_ON;
+
+        gOptions[SPICY_TYPE].hide = true;
+        gOptions[SPICY_TYPE].value = ConfigEnums::SPICY_NERF;
+        gConfig[SPICY_TYPE] = ConfigEnums::SPICY_NERF;
+
+        gOptions[EGG_DROPS].hide = true;
+        gOptions[EGG_DROPS].value = ConfigEnums::EGG_NECTAR;
+        gConfig[EGG_DROPS] = ConfigEnums::EGG_NECTAR;
+
+        gOptions[PELLET_POSY].hide = true;
+        gOptions[PELLET_POSY].value = ConfigEnums::PELMATCH_ON;
+        gConfig[PELLET_POSY] = ConfigEnums::PELMATCH_ON;
+
+
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::ALL_FLOWER]->varibleForward();
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::RESET_BEDAMA]->varibleForward();
+    }
+}
 
 Option gOptions[] = {
     {
@@ -181,6 +211,13 @@ void VsOptionsMenuMgr::draw(Graphics& gfx) {
     }
     
     if (mActiveMenu) mActiveMenu->draw(this, gfx);
+
+    if (gTournamentMode) {
+        J2DPrint print (getPikminFont(), 0.0f);
+        print.mGlyphHeight /= 3;
+        print.mGlyphWidth  /= 3;
+        print.print(10.0f, 60.0f, "Tournament Mode");
+    }
 }
 
 
@@ -188,6 +225,10 @@ void VsConfigMenu::init(VsOptionsMenuMgr* menu) {
     mPageNumber = 0;
     mTooltipMessage = "";
     mSelectedOption = 0;
+    if (gTournamentMode) {
+        mSelectedOption    = 1;
+        mCursorOptionIndex = 1;
+    }
 }
 
 void VsConfigMenu::cleanup() {
@@ -224,11 +265,26 @@ bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {
     }
     else if (menu->mController->isButtonDown(JUTGamePad::PRESS_DOWN | JUTGamePad::PRESS_A) && mCursorOptionIndex < endIdx) {
         mCursorOptionIndex++;
+
+        while (gOptions[mCursorOptionIndex].hide && mCursorOptionIndex < ARRAY_SIZE(gOptions)) {
+            mCursorOptionIndex++;
+        }
+
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
     }
     else if (menu->mController->isButtonDown(JUTGamePad::PRESS_UP) && mCursorOptionIndex > startIdx) {
+        int prevIdx = mCursorOptionIndex;
         mCursorOptionIndex--;
-        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+        while (gOptions[mCursorOptionIndex].hide) {
+            
+            if (mCursorOptionIndex % OPTIONS_PER_PAGE == 0 && gOptions[mCursorOptionIndex].hide) {
+                while (gOptions[mCursorOptionIndex].hide) mCursorOptionIndex++;
+            }
+            else {
+                mCursorOptionIndex--;
+            }
+        }
+        if (prevIdx != mCursorOptionIndex) PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
     }
     else if (menu->mController->isButtonDown(JUTGamePad::PRESS_RIGHT)) {
         gOptions[mCursorOptionIndex].incOption();
@@ -241,6 +297,9 @@ bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {
     else if (menu->mController->isButtonDown(JUTGamePad::PRESS_R) && mPageNumber < (PAGE_COUNT)) {
         mPageNumber++;
         mCursorOptionIndex += OPTIONS_PER_PAGE;
+        while (gOptions[mCursorOptionIndex].hide) {
+            mCursorOptionIndex++;
+        }
         if (mCursorOptionIndex > ARRAY_SIZE(gOptions)) {
             mCursorOptionIndex = ARRAY_SIZE(gOptions);
         }
@@ -248,10 +307,13 @@ bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {
     }
     else if (menu->mController->isButtonDown(JUTGamePad::PRESS_L) && mPageNumber > 0) {
         mPageNumber--;
+        
         mCursorOptionIndex -= OPTIONS_PER_PAGE;
+        while (gOptions[mCursorOptionIndex].hide) {
+            mCursorOptionIndex++;
+        }
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
     }
-
     return false;
 }
 
@@ -297,6 +359,9 @@ void VsConfigMenu::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
 }
 
 void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx) {
+    if (hide) {
+        return;
+    }
     if (!func) {
         printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
         printer.print(300.0f, 70.0f + 30.0f * idx, "-");
