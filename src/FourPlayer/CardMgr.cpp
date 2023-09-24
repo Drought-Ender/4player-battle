@@ -132,18 +132,18 @@ bool CardMgr::SlotMachine::dispCherryTarget() {
 	return false;
 }
 
-bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
+bool CardMgr::usePlayerCard(int teamUser, TekiMgr* tekiMgr)
 {
 	tekiMgr    = mTekiMgr;
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
-	int slotID = machines[user]->mSlotID;
+	int slotID = machines[teamUser]->mSlotID;
 
 	bool used = true;
 
 	int target = CherryTarget::GetTarget(naviMgr->getAt(gUseCardNavi)->mController2);
 	DebugReport("Target is %i\n", target);
 
-	if (machines[user]->_18) {
+	if (machines[teamUser]->_18) {
 		return false;
 	}
 
@@ -152,20 +152,20 @@ bool CardMgr::usePlayerCard(int user, TekiMgr* tekiMgr)
         return false;
 	}
 
-	vsSlotCardMgr->mUsingCards[slotID]->useCard(this, user, target);
+	vsSlotCardMgr->mUsingCards[slotID]->useCard(this, gUseCardNavi, target);
 
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_GO, 0);
-	if (machines[user]->mCherryStock > 0) {
-		machines[user]->mCherryStock--;
-		machines[user]->start();
-		machines[user]->_18 = 0;
+	if (machines[teamUser]->mCherryStock > 0) {
+		machines[teamUser]->mCherryStock--;
+		machines[teamUser]->start();
+		machines[teamUser]->_18 = 0;
 	} else {
-		machines[user]->mSpinSpeed   = 0.0f;
-		machines[user]->mSpinAccel   = 0.0f;
-		machines[user]->mAppearState = 2;
-		machines[user]->mSlotID      = UNRESOLVED;
-		machines[user]->startZoomUse();
-		machines[user]->_18 = 1;
+		machines[teamUser]->mSpinSpeed   = 0.0f;
+		machines[teamUser]->mSpinAccel   = 0.0f;
+		machines[teamUser]->mAppearState = 2;
+		machines[teamUser]->mSlotID      = UNRESOLVED;
+		machines[teamUser]->startZoomUse();
+		machines[teamUser]->_18 = 1;
 	}
 
 	return used;

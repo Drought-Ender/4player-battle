@@ -403,6 +403,7 @@ struct TankOnyonTeki : public OnyonTekiCard
     EnemyTypeID::EEnemyTypeID mGTankTeki;
     EnemyTypeID::EEnemyTypeID mMTankTeki;
     
+    int mFTankId;
     int mWTankId;
     int mGTankId;
     int mMTankId;
@@ -416,22 +417,20 @@ struct TankOnyonTeki : public OnyonTekiCard
 
     virtual void allocate(VsGameSection* section) {
         TekiMgr* tekiMgr = section->mCardMgr->mTekiMgr;
-        mTekiMgrID = allocateTeki(tekiMgr, mEnemyID);
+        mFTankId   = allocateTeki(tekiMgr, mEnemyID);
         mWTankId   = allocateTeki(tekiMgr, mWTankTeki);
         mGTankId   = allocateTeki(tekiMgr, mGTankTeki);
         mMTankId   = allocateTeki(tekiMgr, mMTankTeki);
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {
-        int FTankId = mTekiMgrID;
+        OSReport("TankOnyonTeki::onUseCard(CardMgr* %p, int %i, int %i)\n", cardMgr, user, target);
         
-        int tekiMgrIds[4] = { FTankId, mWTankId, mGTankId, mMTankId };
+        int tekiMgrIds[4] = { mFTankId, mWTankId, mGTankId, mMTankId };
 
         mTekiMgrID = tekiMgrIds[getVsTeam(user)];
 
         OnyonTekiCard::onUseCard(cardMgr, user, target);
-
-        mTekiMgrID = FTankId;
     }
 
     virtual const char* getDescription() {
