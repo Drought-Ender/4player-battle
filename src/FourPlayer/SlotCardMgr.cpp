@@ -294,6 +294,13 @@ struct TekiCard : public VsSlotMachineCard {
         }
     }
 
+    virtual int getWeight(CardMgr* cardMgr, int teamID) {
+        if (checkAllocLeft() == 0) {
+            return 0;
+        }
+        return VsSlotMachineCard::getWeight(cardMgr, teamID);
+    }
+
     virtual void allocate(VsGameSection* section) {
         mTekiMgrID = allocateTeki(section->mCardMgr->mTekiMgr, mEnemyID);
     }
@@ -403,7 +410,6 @@ struct TankOnyonTeki : public OnyonTekiCard
     EnemyTypeID::EEnemyTypeID mGTankTeki;
     EnemyTypeID::EEnemyTypeID mMTankTeki;
     
-    int mFTankId;
     int mWTankId;
     int mGTankId;
     int mMTankId;
@@ -417,7 +423,7 @@ struct TankOnyonTeki : public OnyonTekiCard
 
     virtual void allocate(VsGameSection* section) {
         TekiMgr* tekiMgr = section->mCardMgr->mTekiMgr;
-        mFTankId   = allocateTeki(tekiMgr, mEnemyID);
+        mTekiMgrID = allocateTeki(tekiMgr, mEnemyID);
         mWTankId   = allocateTeki(tekiMgr, mWTankTeki);
         mGTankId   = allocateTeki(tekiMgr, mGTankTeki);
         mMTankId   = allocateTeki(tekiMgr, mMTankTeki);
@@ -426,11 +432,15 @@ struct TankOnyonTeki : public OnyonTekiCard
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {
         OSReport("TankOnyonTeki::onUseCard(CardMgr* %p, int %i, int %i)\n", cardMgr, user, target);
         
-        int tekiMgrIds[4] = { mFTankId, mWTankId, mGTankId, mMTankId };
+        int FTankId = mTekiMgrID;
+
+        int tekiMgrIds[4] = { FTankId, mWTankId, mGTankId, mMTankId };
 
         mTekiMgrID = tekiMgrIds[getVsTeam(user)];
 
         OnyonTekiCard::onUseCard(cardMgr, user, target);
+
+        mTekiMgrID = FTankId;
     }
 
     virtual const char* getDescription() {
