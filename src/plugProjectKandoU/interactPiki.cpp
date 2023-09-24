@@ -293,9 +293,6 @@ bool InteractWind::actPiki(Game::Piki* piki)
 		return false;
 	}
 	int pikiKind = piki->mPikiKind;
-	if (pikiKind == Purple) {
-		return false;
-	}
 	if (piki->mCurrentState->mId == PIKISTATE_KokeDamage) {
 		return false;
 	}
@@ -315,16 +312,6 @@ bool InteractWind::actPiki(Game::Piki* piki)
 bool InteractHanaChirashi::actPiki(Game::Piki* piki)
 {
 	if (piki->mCurrentState->invincible(piki)) {
-		return false;
-	}
-	int pikiKind = piki->mPikiKind;
-	if (pikiKind == Purple) {
-		int pikiHappa = piki->mHappaKind;
-		if (pikiHappa >= Bud) {
-			efx::createSimpleChiru(*piki->mEffectsObj->_0C, piki->mEffectsObj->mPikiColor);
-			piki->startSound(PSSE_PK_FLOWER_FALL_VOICE, true);
-			piki->mHappaKind = Leaf;
-		}
 		return false;
 	}
 	if (piki->mCurrentState->dead()) {
@@ -519,19 +506,16 @@ bool InteractAstonish::actPiki(Game::Piki* piki)
 	}
 	PikiState* currState = piki->mCurrentState;
 	if (currState && currState->transittable(PIKISTATE_Panic)) {
-		int pikiKind = piki->mPikiKind;
-		if (pikiKind != Purple) {
-			PanicStateArg panicAstonish;
-			panicAstonish.mPanicType = PIKIPANIC_Panic; // should probably get renamed to astonish
-			if (mCreature && mCreature->isTeki()) {
-				EnemyBase* teki = static_cast<EnemyBase*>(mCreature);
-				piki->setTekiKillID(teki->getEnemyTypeID());
-			} else {
-				piki->mTekiKillID = -1;
-			}
-			piki->mFsm->transit(piki, PIKISTATE_Panic, &panicAstonish);
-			return true;
+		PanicStateArg panicAstonish;
+		panicAstonish.mPanicType = PIKIPANIC_Panic; // should probably get renamed to astonish
+		if (mCreature && mCreature->isTeki()) {
+			EnemyBase* teki = static_cast<EnemyBase*>(mCreature);
+			piki->setTekiKillID(teki->getEnemyTypeID());
+		} else {
+			piki->mTekiKillID = -1;
 		}
+		piki->mFsm->transit(piki, PIKISTATE_Panic, &panicAstonish);
+		return true;
 	}
 	currState->transittable(PIKISTATE_Panic); // ???????
 	return false;
