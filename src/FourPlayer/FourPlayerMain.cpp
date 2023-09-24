@@ -14,6 +14,7 @@
 #include "Game/GameLight.h"
 #include "Game/PikiMgr.h"
 #include "JSystem/J3D/J3DModelLoader.h"
+#include "VsOptions.h"
 
 f32 gFirstViewportHeight = 0.5f;
 f32 gOtherViewportHeight = 0.5f;
@@ -117,12 +118,13 @@ Navi* NaviMgr::getAliveOrima(int idx) {
 
 void NaviMgr::loadResources_float() {
 	JKRArchive* pikiArc = JKRArchive::mount("user/Kando/piki/pikis.szs", JKRArchive::EMM_Mem, sys->mSysHeap, JKRArchive::EMD_Head);
-	void* models[3];
-	models[0] = pikiArc->getResource("orima_model/orima3.bmd");
-	models[1] = pikiArc->getResource("orima_model/syatyou.bmd");
-	models[2] = pikiArc->getResource("orima_model/wife.bmd");
-	J3DModelData* modelData[3];
-	for (int i = 0; i < 3; i++) {
+	void* models[4];
+	models[0] = sCharacters[0].loadModel();
+	models[1] = sCharacters[1].loadModel();
+	models[2] = sCharacters[2].loadModel();
+	models[3] = sCharacters[3].loadModel();
+	J3DModelData* modelData[4];
+	for (int i = 0; i < 4; i++) {
 		modelData[i] = J3DModelLoaderDataBase::load(models[i], 0x20000030);
 		for (int j = 0; j < modelData[i]->mShapeTable.mCount; j++) {
 			u32& bitfield = modelData[i]->mShapeTable.mItems[j]->mFlags;
@@ -130,9 +132,10 @@ void NaviMgr::loadResources_float() {
 			bitfield |=  0x2000;
 		}
 	}
-	mLouieModel = modelData[0];
-	mPresidentModel = modelData[1];
-	mWifeModel = modelData[2];
+	mOlimarModel = modelData[0];
+	mLouieModel = modelData[1];
+	mPresidentModel = modelData[2];
+	mWifeModel = modelData[3];
 	
 }
 

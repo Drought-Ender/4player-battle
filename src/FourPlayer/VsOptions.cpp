@@ -187,17 +187,31 @@ void VsOptionsMenuMgr::init() {
 		ResTIMG* starImg = static_cast<ResTIMG*>(resource->mFile);
         mBackground = new J2DPictureEx(starImg, 0);
 	}
-
+    mMenuCooldown = true;
     mController = new Controller(JUTGamePad::PORT_0);
+    for (int i = 0; i < ARRAY_SIZE(mMenus); i++) {
+        mMenus[i] = nullptr;
+        mMenuIDs[i] = 0;
+    }
     StartMenu<VsConfigMenu>();
 }
 
 bool VsOptionsMenuMgr::update() {
     if (!mActiveMenu) return true;
 
+    if (mMenuCooldown) {
+        OSReport("Menu Cooldown %i\n", mMenuCooldown);
+        mMenuCooldown = false;
+        return false;
+    }
+
     bool isDone = mActiveMenu->update(this);
     if (isDone) {
-        mActiveMenu->cleanup();
+        for (int i = 0; i < ARRAY_SIZE(mMenus); i++) {
+            if (mMenus[i]) {
+                mMenus[i]->cleanup();
+            }
+        }
         return true;
     }
     return false;
@@ -380,19 +394,32 @@ void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx) {
 // NOTE: Screen size is 640x480
 
 VsOptionsMenuMgr::VsOptionsMenuMgr() {
-    mActiveMenu = nullptr;
+    mActiveMenu   = nullptr;
+    mMenuCooldown = true;
+    for (int i = 0; i < ARRAY_SIZE(mMenus); i++) {
+        mMenus[i] = nullptr;
+        mMenuIDs[i] = 0;
+    }
 }
 
 template <typename T>
 void VsOptionsMenuMgr::StartMenu() {
-    if (mActiveMenu) {
-        mActiveMenu->cleanup();
-        delete mActiveMenu;
-        mActiveMenu = nullptr;
+    mMenuCooldown = true;
+
+    for (int i = 0; i < ARRAY_SIZE(mMenus); i++) {
+        if (!mMenus[i]) {
+            mMenus[i] = new T;
+            mMenuIDs[i] = T::sMenuID;
+            mActiveMenu = mMenus[i];
+            mActiveMenu->init(this);
+            break;
+        }
+        else if (mMenuIDs[i] == T::sMenuID) {
+            mActiveMenu = mMenus[i];
+        }
     }
 
-    mActiveMenu = new T;
-    mActiveMenu->init(this);
+    JUT_ASSERT(mActiveMenu, "NO ACTIVE MENU!");
 }
 
 void CardImage::loadImage(JKRArchive* archive) {
@@ -508,7 +535,7 @@ bool VsCardMenu::update(VsOptionsMenuMgr* menu) {
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
-        menu->StartMenu<VsConfigMenu>();
+        menu->StartMenu<CharacterSelect>();
         return false;
     }
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
@@ -558,77 +585,69 @@ void VsCardMenu::cleanup() {
 
 
 void CharacterSelect::load() {
-    
-    LoadResource::Arg loadArg("/select.bti");
-	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
-
-    if (resource) {
-        ResTIMG* icon = static_cast<ResTIMG*>(resource->mFile);
-        mSelectImg[0] = new J2DPictureEx(icon, 0);
-        mSelectImg[1] = new J2DPictureEx(icon, 0);
-        mSelectImg[2] = new J2DPictureEx(icon, 0);
-        mSelectImg[3] = new J2DPictureEx(icon, 0);
-    
-        mSelectImg[0]->setWhite(0xff0000ff);
-            
-        mSelectImg[1]->rotate(90.0f);
-        mSelectImg[1]->setWhite(0x0000ffff);
-        
-        mSelectImg[2]->rotate(180.0f);
-        mSelectImg[2]->setWhite(0xffff00ff);
-        
-        mSelectImg[3]->rotate(270.0f);
-        mSelectImg[3]->setWhite(0x00ff00ff);
-        
-    }
-    else {
-        JUT_PANIC("select.bti MISSING!");
-    }
-
     loadAndRead(this, "/player/names.txt");
     for (int i = 0; i < mCharacterCount; i++) {
-        mCharacters[i].mPicture = mCharacters[i].loadImage();
+        mCharacters[i].mPicture = new J2DPictureEx(mCharacters[i].loadImage(), 0);
     }
 }
 
-J2DPictureEx* CharacterImage::loadImage() {
+ResTIMG* CharacterImage::loadImage() {
     char buffer[256];
     sprintf(buffer, "/player/%s/icon.bti", mCharacterName);
 
     LoadResource::Arg loadArg(buffer);
 	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
 
-    J2DPictureEx* picture = nullptr;
 
     if (resource) {
 		ResTIMG* characterIcon = static_cast<ResTIMG*>(resource->mFile);
-        picture = new J2DPictureEx(characterIcon, 0);
+        return characterIcon;
 	}
     
-    return picture;
+    return nullptr;
 }
 
-
-
-J3DModelData* CharacterImage::loadModel() {
+ResTIMG* CharacterData::loadImage() {
     char buffer[256];
-    sprintf(buffer, "/player/%s/model.bmd", mCharacterName);
+    sprintf(buffer, "/player/%s/icon.bti", mName);
 
     LoadResource::Arg loadArg(buffer);
 	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
 
-    J3DModelData* model = nullptr;
 
     if (resource) {
-		model = static_cast<J3DModelData*>(resource->mFile);
+		ResTIMG* characterIcon = static_cast<ResTIMG*>(resource->mFile);
+        return characterIcon;
 	}
     
-    return model;
+    return nullptr;
 }
 
-void* CharacterImage::loadAST() {
+CharacterData sCharacters[4];
+
+void* CharacterData::loadModel() {
     char buffer[256];
-    sprintf(buffer, "/player/%s/theme.ast", mCharacterName);
+    OSReport("Name %s\n", mName);
+    sprintf(buffer, "/player/%s/model.bmd", mName);
+
+    LoadResource::Arg loadArg(buffer);
+	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
+
+    void* model = nullptr;
+
+    if (resource) {
+		model = (resource->mFile);
+        if (model) return model;
+	}
+
+    JUT_ASSERT("%s Missing!\n", buffer);
+    
+    
+}
+
+void* CharacterData::loadAST() {
+    char buffer[256];
+    sprintf(buffer, "/player/%s/theme.ast", mName);
 
     LoadResource::Arg loadArg(buffer);
 	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
@@ -640,6 +659,11 @@ void* CharacterImage::loadAST() {
 	}
     
     return file;
+}
+
+VsCardMenu::~VsCardMenu() {
+    delete mCardArchive;
+    delete[] mCards;
 }
 
 void CharacterImage::draw(Vector2f& position, Vector2f& size) {
@@ -674,7 +698,7 @@ void CharacterSelect::init(VsOptionsMenuMgr* menu) {
     }
 
     for (int i = 0; i < 4; i++) {
-        mCursors[i] = 0;
+        mCursors[i] = sCharacters[i].mCharaterID;
     }
 
     Vector2f startOffset(50.0f, 50.0f);
@@ -685,8 +709,8 @@ void CharacterSelect::init(VsOptionsMenuMgr* menu) {
     for (int i = 0; i < mCharacterCount; i++) {
         
 
-        int x = i % 10;
-        int y = i / 10;
+        int x = i % sRowSize;
+        int y = i / sRowSize;
 
         mCharacters[i].mPosition.x = startOffset.x + (spaceBetween.x + cardSize.x) * x;
         mCharacters[i].mPosition.y = startOffset.y + (spaceBetween.y + cardSize.y) * y;
@@ -694,43 +718,141 @@ void CharacterSelect::init(VsOptionsMenuMgr* menu) {
     }
 }
 
+char* CharacterImage::getDisplayName() {
+    return mCharacterName; 
+}
+
 void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
     for (int i = 0; i < mCharacterCount; i++) {
         mCharacters[i].draw();
     }
 
+    static JUtility::TColor colors[4] =
+    {
+        0xff0000ff,
+        0x0000ffff,
+        0xffff00ff,
+        0x00ff00ff
+    };
 
     for (int i = 0; i < Game::gNaviNum; i++) {
         Vector2f position = mCharacters[mCursors[i]].mPosition;
         Vector2f size = mCharacters[mCursors[i]].mSize;
-        mSelectImg[i]->setOffset(position.x, position.y);
-        mSelectImg[i]->drawSelf(size.x, size.y, &mSelectImg[i]->mGlobalMtx);
+
+        J2DPrint printer (getPikminFont(), colors[i], activeWhite);
+
+        printer.mGlyphHeight /= 2;
+        printer.mGlyphWidth  /= 2;
+
+        f32 offsetX = (i & 1) ? size.x - printer.mGlyphWidth : 0.0f;
+        f32 offsetY = (i > 1) ? size.y - printer.mGlyphHeight : 0.0f;
+
+        offsetY += 10.0f;
+
+        printer.print(position.x + offsetX, position.y + offsetY, "P%i", i + 1);
+
+
+        // Vector2f size = mCharacters[mCursors[i]].mSize;
+
+        // JGeometry::TBox2f box (position, position + size);
+
+        // mSelectImg[i]->drawOut(box, box);
     }
 
     
 }
 
 bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
+        menu->StartMenu<VsConfigMenu>();
+        return false;
+    }
+    for (int i = 0; i < ARRAY_SIZE(mControllers); i++) {
+        Controller* controller = mControllers[i];
+        if (controller->isButtonDown(JUTGamePad::PRESS_RIGHT) && mCursors[i] + 1 < mCharacterCount) {
+            mCursors[i]++;
+            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+        }
+        else if (controller->isButtonDown(JUTGamePad::PRESS_LEFT) && mCursors[i] - 1 >= 0) {
+            mCursors[i]--;
+            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+        }
+        else if (controller->isButtonDown(JUTGamePad::PRESS_DOWN) && mCursors[i] + sRowSize < mCharacterCount) {
+            mCursors[i] += sRowSize;
+            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+        }
+        else if (controller->isButtonDown(JUTGamePad::PRESS_UP) && mCursors[i] - sRowSize >= 0) {
+            mCursors[i] -= sRowSize;
+            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+        }
+    }
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CLOSE, 0);
+        return true;
+    }
     return false;
 }
 
 CharacterImage::~CharacterImage() {
-     
-}
-
-void CharacterImage::delMembers() {
     delete[] mCharacterName;
     delete mPicture;
 }
 
-void CharacterSelect::cleanup() {
-    for (int i = 0; i < mCharacterCount; i++) {
-        mCharacters[i].delMembers();
-    }
+void CharacterImage::delMembers() {
+    
+}
 
+void CharacterSelect::cleanup() {
+
+    for (int i = 0; i < 4; i++) {
+        sCharacters[i].mCharaterID = mCursors[i];
+        strcpy(sCharacters[i].mName, mCharacters[mCursors[i]].mCharacterName);
+        OSReport("Name %s\n", sCharacters[i].mName);
+        sCharacters[i].makeDisplayName();
+        sCharacters[i].mImage = sCharacters[i].loadImage();
+    }
+}
+
+void CharacterData::makeDisplayName() {
+    return;
+    strncpy(mDispName, mName, MIN(ARRAY_SIZE(mName), ARRAY_SIZE(mDispName)));
+
+    for (int i = 0; mDispName[i]; i++) {
+        if (mDispName[i] == '_') {
+            mDispName[i] = ' ';
+        }
+    }
+}
+
+void CharacterData::initDefaults() {
+    void* handle = JKRDvdRipper::loadToMainRAM("/player/names.txt", 0, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, 0, 0);
+	if (!handle) {
+		JUT_PANIC("/player/names.txt missing!");
+	}
+
+	RamStream stream(handle, -1);
+	stream.resetPosition(true, 1);
+
+    JUT_ASSERT(stream.readInt() > 4, "NOT ENOUGH ENTRIES IN NAMES");
+
+    CharacterImage images[4];
+
+    for (int i = 0; i < 4; i++) {
+        char* string = stream.readString(nullptr, 0);
+        strcpy(sCharacters[i].mName, string);
+        OSReport("Name %i %s %s\n", i, string, sCharacters[i].mName);
+        sCharacters[i].makeDisplayName();
+        sCharacters[i].mImage = sCharacters[i].loadImage();
+        sCharacters[i].mCharaterID = i;
+    }
+}
+
+CharacterSelect::~CharacterSelect() {
     delete[] mCharacters;
 
-    for (int i = 0; i < ARRAY_SIZE(mControllers); i++) {
-        delete mControllers[i];
+    for (int i = 1; i < ARRAY_SIZE(mControllers); i++) {
+        delete mControllers[i];    
     }
+    
 }

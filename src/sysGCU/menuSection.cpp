@@ -4,6 +4,7 @@
 #include "GameFlow.h"
 #include "FourPlayer.h"
 #include "VsSlotCard.h"
+#include "VsOptions.h"
 
 /*
  * --INFO--
@@ -26,6 +27,7 @@ void MenuSection::run()
 {
 	Game::VsGame::VsSlotCardMgr::initAllCards();
 	Option::readOptions();
+	CharacterData::initDefaults();
 	_3C = false;
 	do {
 		mIsMainActive = true;		

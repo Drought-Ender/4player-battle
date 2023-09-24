@@ -15,8 +15,11 @@ struct VsOptionsMenuMgr {
     template <typename T>
     void StartMenu();
 
+    bool mMenuCooldown;
     Controller* mController;
     IMenu* mActiveMenu;
+    IMenu* mMenus[3];
+    int mMenuIDs[3];
     J2DPictureEx* mBackground;
 };
 
@@ -68,10 +71,14 @@ struct VsCardMenu : public IMenu
 
     JKRArchive* mCardArchive;
 
+    const static int sMenuID = 1;
+
     virtual void init(VsOptionsMenuMgr*);
     virtual bool update(VsOptionsMenuMgr*);
     virtual void draw(VsOptionsMenuMgr*, Graphics&);
     virtual void cleanup();
+
+    ~VsCardMenu();
 };
 
 
@@ -84,6 +91,8 @@ struct VsConfigMenu : public IMenu
         mTooltipMessage = nullptr;
     }
 
+    const static int sMenuID = 0;
+
     virtual void init(VsOptionsMenuMgr*);
     virtual bool update(VsOptionsMenuMgr*);
     virtual void cleanup();
@@ -93,12 +102,32 @@ struct VsConfigMenu : public IMenu
     int mSelectedOption;
     int mCursorOptionIndex;
     const char* mTooltipMessage;
+
+    ~VsConfigMenu() { }
 };
 
-J2DPictureEx* mCharacterImages[4];
-char* mCharacterNames[4];
-J3DModelData* mCharacterModels[4];
-void* mSoundFiles[4];
+struct CharacterData
+{
+
+    static void initDefaults();
+
+    void makeDisplayName();
+
+    void* loadModel();
+    void* loadAST();
+    ResTIMG* loadImage();
+    
+    int mCharaterID;
+    char mName[64];
+    char mDispName[64];
+    ResTIMG* mImage;
+
+};
+
+
+extern CharacterData sCharacters[4];
+
+
 
 
 struct CharacterImage
@@ -113,15 +142,15 @@ struct CharacterImage
         mCharacterID = id;
     }
 
-    J3DModelData* loadModel();
-    void* loadAST();
 
     
-    J2DPictureEx* loadImage();
+    ResTIMG* loadImage();
 
     void draw(Vector2f& position, Vector2f& size);
 
     void read(Stream&);
+
+    char* getDisplayName();
 
     void draw() {
         draw(mPosition, mSize);
@@ -146,6 +175,10 @@ struct CharacterSelect : public IMenu
         mControllers[3] = nullptr;
     }
 
+    const static int sRowSize = 10;
+
+    const static int sMenuID = 2;
+
     void load();
     void read(Stream&);
 
@@ -154,11 +187,10 @@ struct CharacterSelect : public IMenu
     virtual void draw(VsOptionsMenuMgr*, Graphics&);
     virtual void cleanup();
 
+    ~CharacterSelect();
+
     int mCharacterCount;
     CharacterImage* mCharacters;
-
-    J2DPictureEx* mSelectImg[4];
-
     Controller* mControllers[4];
     int mCursors[4];
 };

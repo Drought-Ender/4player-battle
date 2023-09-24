@@ -103,6 +103,7 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     mNaviNames[2] = static_cast<J2DTextBoxEx*>(mMainScreen->mScreenObj->search('PresName'));
     mNaviNames[3] = static_cast<J2DTextBoxEx*>(mMainScreen->mScreenObj->search('WifeName'));
 
+
     mNewWinCallbacks[0] = new og::Screen::CallBack_CounterRV(const_cast<char**>(og::Screen::SujiTex32), 2, 4,  mArchive);
     mNewWinCallbacks[0]->init(mMainScreen->mScreenObj, 'Pori2_r', 'Pori2_l', 'Pori2_c', &mNewWinValues[0], true);
 
@@ -222,6 +223,14 @@ bool TFourVsSelect::doUpdate() {
         gDrawVsMenu = gOptionMenu->update();
         return false;
     }
+
+    
+    for (int i = 0; i < 4; i++) {
+        mNaviNames[i]->setString(sCharacters[i].mDispName);
+        mNaviNames[i]->update();
+        mNaviImages[i]->changeTexture(sCharacters[i].mImage, 0);
+    }
+
     Game::gNaviNum = Game::CalcNaviNum();
     if (Game::gNaviNum == 3) {
 		Game::gFancyCamera = true;
