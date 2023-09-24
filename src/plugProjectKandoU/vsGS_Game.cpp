@@ -637,28 +637,16 @@ void GameState::checkSMenu(VsGameSection* section)
 	}
 
 	if (moviePlayer->mDemoState == 0 && !gameSystem->paused_soft()) {
-		if (section->mControllerP1->isButtonDown(JUTGamePad::PRESS_START)) {
-			og::Screen::DispMemberSMenuAll sMenu;
-			int versus = 2;
-			if (gameSystem->isVersusMode()) {
-				versus = 1;
-			}
-			sMenu.mOpenMode = versus;
-			Screen::gGame2DMgr->setGamePad(section->mControllerP1);
-			if (Screen::gGame2DMgr->open_SMenu(sMenu)) {
-				gameSystem->setPause(true, "open-sm", 3);
-				gameSystem->setMoviePause(true, "open-sm");
-			}
-
-		} else if (gameSystem->isMultiplayerMode()) {
-			if ((section->mControllerP2->isButtonDown(JUTGamePad::PRESS_START))) {
+		Controller* controllers[4] = { section->mControllerP1, section->mControllerP2, gControllerP3, gControllerP4 };
+		for (int i = 0; i < ARRAY_SIZE(controllers); i++) {
+			if (controllers[i]->isButtonDown(JUTGamePad::PRESS_START)) {
 				og::Screen::DispMemberSMenuAll sMenu;
 				int versus = 2;
 				if (gameSystem->isVersusMode()) {
 					versus = 1;
 				}
 				sMenu.mOpenMode = versus;
-				Screen::gGame2DMgr->setGamePad(section->mControllerP2);
+				Screen::gGame2DMgr->setGamePad(controllers[i]);
 				if (Screen::gGame2DMgr->open_SMenu(sMenu)) {
 					gameSystem->setPause(true, "open-sm", 3);
 					gameSystem->setMoviePause(true, "open-sm");
