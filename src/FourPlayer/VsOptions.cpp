@@ -555,3 +555,182 @@ void VsCardMenu::cleanup() {
         Game::VsGame::VsSlotCardMgr::sUsingCards[i] = mCards[i].mIsCardActive;
     }
 }
+
+
+void CharacterSelect::load() {
+    
+    LoadResource::Arg loadArg("/select.bti");
+	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
+
+    if (resource) {
+        ResTIMG* icon = static_cast<ResTIMG*>(resource->mFile);
+        mSelectImg[0] = new J2DPictureEx(icon, 0);
+        mSelectImg[1] = new J2DPictureEx(icon, 0);
+        mSelectImg[2] = new J2DPictureEx(icon, 0);
+        mSelectImg[3] = new J2DPictureEx(icon, 0);
+    
+        mSelectImg[0]->setWhite(0xff0000ff);
+            
+        mSelectImg[1]->rotate(90.0f);
+        mSelectImg[1]->setWhite(0x0000ffff);
+        
+        mSelectImg[2]->rotate(180.0f);
+        mSelectImg[2]->setWhite(0xffff00ff);
+        
+        mSelectImg[3]->rotate(270.0f);
+        mSelectImg[3]->setWhite(0x00ff00ff);
+        
+    }
+    else {
+        JUT_PANIC("select.bti MISSING!");
+    }
+
+    loadAndRead(this, "/player/names.txt");
+    for (int i = 0; i < mCharacterCount; i++) {
+        mCharacters[i].mPicture = mCharacters[i].loadImage();
+    }
+}
+
+J2DPictureEx* CharacterImage::loadImage() {
+    char buffer[256];
+    sprintf(buffer, "/player/%s/icon.bti", mCharacterName);
+
+    LoadResource::Arg loadArg(buffer);
+	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
+
+    J2DPictureEx* picture = nullptr;
+
+    if (resource) {
+		ResTIMG* characterIcon = static_cast<ResTIMG*>(resource->mFile);
+        picture = new J2DPictureEx(characterIcon, 0);
+	}
+    
+    return picture;
+}
+
+
+
+J3DModelData* CharacterImage::loadModel() {
+    char buffer[256];
+    sprintf(buffer, "/player/%s/model.bmd", mCharacterName);
+
+    LoadResource::Arg loadArg(buffer);
+	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
+
+    J3DModelData* model = nullptr;
+
+    if (resource) {
+		model = static_cast<J3DModelData*>(resource->mFile);
+	}
+    
+    return model;
+}
+
+void* CharacterImage::loadAST() {
+    char buffer[256];
+    sprintf(buffer, "/player/%s/theme.ast", mCharacterName);
+
+    LoadResource::Arg loadArg(buffer);
+	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
+
+    void* file = nullptr;
+
+    if (resource) {
+		file = resource->mFile;
+	}
+    
+    return file;
+}
+
+void CharacterImage::draw(Vector2f& position, Vector2f& size) {
+    Vector2f corner2 = position + size;
+    JGeometry::TBox2f box (position.x, position.y, corner2.x, corner2.y);
+    if (mPicture) {
+        mPicture->drawOut(box, box);
+    }
+}
+
+
+
+void CharacterImage::read(Stream& stream) {
+    mCharacterName = stream.readString(nullptr, 0);
+}
+
+void CharacterSelect::read(Stream& stream) {
+    mCharacterCount = stream.readInt();
+    mCharacters = new CharacterImage[mCharacterCount];
+    for (int i = 0; i < mCharacterCount; i++) {
+        mCharacters[i].SetID(i);
+        mCharacters[i].read(stream);
+    }
+}
+
+void CharacterSelect::init(VsOptionsMenuMgr* menu) {
+    load();
+
+    mControllers[0] = menu->mController;
+    for (int i = 1; i < 4; i++) {
+        mControllers[i] = new Controller((JUTGamePad::EPadPort)i);
+    }
+
+    for (int i = 0; i < 4; i++) {
+        mCursors[i] = 0;
+    }
+
+    Vector2f startOffset(50.0f, 50.0f);
+
+    Vector2f cardSize (50.0f);
+    Vector2f spaceBetween (0.0f);
+
+    for (int i = 0; i < mCharacterCount; i++) {
+        
+
+        int x = i % 10;
+        int y = i / 10;
+
+        mCharacters[i].mPosition.x = startOffset.x + (spaceBetween.x + cardSize.x) * x;
+        mCharacters[i].mPosition.y = startOffset.y + (spaceBetween.y + cardSize.y) * y;
+        mCharacters[i].mSize = cardSize;
+    }
+}
+
+void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
+    for (int i = 0; i < mCharacterCount; i++) {
+        mCharacters[i].draw();
+    }
+
+
+    for (int i = 0; i < Game::gNaviNum; i++) {
+        Vector2f position = mCharacters[mCursors[i]].mPosition;
+        Vector2f size = mCharacters[mCursors[i]].mSize;
+        mSelectImg[i]->setOffset(position.x, position.y);
+        mSelectImg[i]->drawSelf(size.x, size.y, &mSelectImg[i]->mGlobalMtx);
+    }
+
+    
+}
+
+bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
+    return false;
+}
+
+CharacterImage::~CharacterImage() {
+     
+}
+
+void CharacterImage::delMembers() {
+    delete[] mCharacterName;
+    delete mPicture;
+}
+
+void CharacterSelect::cleanup() {
+    for (int i = 0; i < mCharacterCount; i++) {
+        mCharacters[i].delMembers();
+    }
+
+    delete[] mCharacters;
+
+    for (int i = 0; i < ARRAY_SIZE(mControllers); i++) {
+        delete mControllers[i];
+    }
+}

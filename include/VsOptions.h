@@ -1,5 +1,6 @@
 #include "FourPlayer.h"
 #include "VsSlotCard.h"
+#include "PSGame/Rappa.h"
 
 struct IMenu;
 
@@ -93,6 +94,75 @@ struct VsConfigMenu : public IMenu
     int mCursorOptionIndex;
     const char* mTooltipMessage;
 };
+
+J2DPictureEx* mCharacterImages[4];
+char* mCharacterNames[4];
+J3DModelData* mCharacterModels[4];
+void* mSoundFiles[4];
+
+
+struct CharacterImage
+{
+    CharacterImage() {
+        mPicture      = nullptr;        
+    }
+
+    ~CharacterImage();
+
+    void SetID(int id) {
+        mCharacterID = id;
+    }
+
+    J3DModelData* loadModel();
+    void* loadAST();
+
+    
+    J2DPictureEx* loadImage();
+
+    void draw(Vector2f& position, Vector2f& size);
+
+    void read(Stream&);
+
+    void draw() {
+        draw(mPosition, mSize);
+    }
+
+    void delMembers();
+
+    Vector2f mPosition;
+    Vector2f mSize;
+    int mCharacterID;
+    char* mCharacterName;
+    J2DPictureEx* mPicture;
+};
+
+
+struct CharacterSelect : public IMenu
+{
+    CharacterSelect() {
+        mControllers[0] = nullptr;
+        mControllers[1] = nullptr;
+        mControllers[2] = nullptr;
+        mControllers[3] = nullptr;
+    }
+
+    void load();
+    void read(Stream&);
+
+    virtual void init(VsOptionsMenuMgr*);
+    virtual bool update(VsOptionsMenuMgr*);
+    virtual void draw(VsOptionsMenuMgr*, Graphics&);
+    virtual void cleanup();
+
+    int mCharacterCount;
+    CharacterImage* mCharacters;
+
+    J2DPictureEx* mSelectImg[4];
+
+    Controller* mControllers[4];
+    int mCursors[4];
+};
+
 
 
 
