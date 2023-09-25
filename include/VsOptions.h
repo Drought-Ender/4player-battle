@@ -109,7 +109,12 @@ struct VsConfigMenu : public IMenu
 struct CharacterData
 {
 
+    const static int sMaxNameSize = 20;
+
     static void initDefaults();
+
+    static void MakeDisplayName(int size, char* name);
+    static void CleanDisplayName(int size, char* name);
 
     void makeDisplayName();
 
@@ -118,8 +123,8 @@ struct CharacterData
     ResTIMG* loadImage();
     
     int mCharaterID;
-    char mName[64];
-    char mDispName[64];
+    char mName[sMaxNameSize];
+    char mDispName[sMaxNameSize];
     ResTIMG* mImage;
 
 };
@@ -193,8 +198,63 @@ struct CharacterSelect : public IMenu
     CharacterImage* mCharacters;
     Controller* mControllers[4];
     int mCursors[4];
+    int mNameCursors[4];
+
+    char mPlayerNames[4][CharacterData::sMaxNameSize];
+    bool mSelectingCharactor[4];
 };
 
+bool isUpper(const char c) {
+    return c >= 'A' && c <= 'Z';
+}
 
+bool isLower(const char c) {
+    return c >= 'a' && c <= 'z';
+}
 
+char NextChar(const char c) {
+
+    switch (c) {
+    case 'Z': 
+        return ' ';
+    case 'z':
+        return '_';
+    case ' ':
+        return 'A';
+    case '_':
+        return 'a';
+    }
+    return c + 1;
+}
+
+char PrevChar(const char c) {
+    switch (c)
+    {
+    case 'A':
+        return ' ';
+    case 'a':
+        return '_';
+    case ' ':
+        return 'Z';
+    case '_':
+        return 'z';
+    }
+    return c - 1;
+}
+
+char ToggleUpper(const char c) {
+    if (isUpper(c)) {
+        return c + 0x20;
+    }
+    else if (isLower(c)) {
+        return c - 0x20;
+    }
+    else if (c == '_') {
+        return ' ';
+    }
+    else if (c == ' ') {
+        return '_';
+    }
+    return c;
+}
 

@@ -699,6 +699,9 @@ void CharacterSelect::init(VsOptionsMenuMgr* menu) {
 
     for (int i = 0; i < 4; i++) {
         mCursors[i] = sCharacters[i].mCharaterID;
+        mNameCursors[i] = 0;
+        strcpy(mPlayerNames[i], sCharacters[i].mDispName);
+        mSelectingCharactor[i] = false;
     }
 
     Vector2f startOffset(50.0f, 50.0f);
@@ -722,6 +725,13 @@ char* CharacterImage::getDisplayName() {
     return mCharacterName; 
 }
 
+static Vector2f sNamePositions[4] = {
+    Vector2f(0.0f,   350.0f),
+    Vector2f(320.0f, 350.0f),
+    Vector2f(0.0f,   400.0f),
+    Vector2f(320.0f, 400.0f),
+};
+
 void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
     for (int i = 0; i < mCharacterCount; i++) {
         mCharacters[i].draw();
@@ -736,20 +746,63 @@ void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
     };
 
     for (int i = 0; i < Game::gNaviNum; i++) {
+
+
+        mCharacters[mCursors[i]].draw(sNamePositions[i], mCharacters[mCursors[i]].mSize);
+
         Vector2f position = mCharacters[mCursors[i]].mPosition;
         Vector2f size = mCharacters[mCursors[i]].mSize;
 
         J2DPrint printer (getPikminFont(), colors[i], activeWhite);
 
-        printer.mGlyphHeight /= 2;
-        printer.mGlyphWidth  /= 2;
+        J2DPrint printer2 (getPikminFont(), colors[i], activeWhite);
+        Vector2f textPosition = sNamePositions[i];
+        textPosition.x += mCharacters[mCursors[i]].mSize.x;
+        textPosition.y += mCharacters[mCursors[i]].mSize.y / 2;
 
-        f32 offsetX = (i & 1) ? size.x - printer.mGlyphWidth : 0.0f;
-        f32 offsetY = (i > 1) ? size.y - printer.mGlyphHeight : 0.0f;
+        printer2.print(textPosition.x, textPosition.y, "%s", mPlayerNames[i]);
 
-        offsetY += 10.0f;
+        f32 width;
 
-        printer.print(position.x + offsetX, position.y + offsetY, "P%i", i + 1);
+        {
+            J2DPrint testPrinter (getPikminFont(), colors[i], activeWhite);
+
+            const char saveChar = mPlayerNames[i][mNameCursors[i]];
+
+            char& saveCharRef = mPlayerNames[i][mNameCursors[i]];
+
+            saveCharRef = 0;
+
+            width = testPrinter.getWidth("%s", mPlayerNames[i]);
+
+            saveCharRef = saveChar;
+        }
+
+
+        
+
+        if (mSelectingCharactor[i]) {
+
+            printer.mGlyphHeight /= 2;
+            printer.mGlyphWidth  /= 2;
+
+            f32 offsetX = (i & 1) ? size.x - printer.mGlyphWidth : 0.0f;
+            f32 offsetY = (i > 1) ? size.y - printer.mGlyphHeight : 0.0f;
+
+            offsetY += 10.0f;
+            
+            printer.print(position.x + offsetX, position.y + offsetY, "P%i", i + 1);
+        }
+        else {
+            Vector2f textPosition = sNamePositions[i];
+            textPosition.x += mCharacters[mCursors[i]].mSize.x + width;
+            textPosition.y += mCharacters[mCursors[i]].mSize.y;
+
+            printer.print(textPosition.x, textPosition.y, "^");
+
+        }
+
+        
 
 
         // Vector2f size = mCharacters[mCursors[i]].mSize;
@@ -769,28 +822,63 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
         return false;
     }
     for (int i = 0; i < ARRAY_SIZE(mControllers); i++) {
+
+        
+
         Controller* controller = mControllers[i];
-        if (controller->isButtonDown(JUTGamePad::PRESS_RIGHT) && mCursors[i] + 1 < mCharacterCount) {
-            mCursors[i]++;
-            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+        if (mSelectingCharactor[i]) {
+            strncpy(mPlayerNames[i], mCharacters[mCursors[i]].mCharacterName, ARRAY_SIZE(mPlayerNames[i]) - 1);
+            CharacterData::MakeDisplayName(ARRAY_SIZE(mPlayerNames[i]), mPlayerNames[i]);
+            if (controller->isButtonDown(JUTGamePad::PRESS_RIGHT) && mCursors[i] + 1 < mCharacterCount) {
+                mCursors[i]++;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_LEFT) && mCursors[i] - 1 >= 0) {
+                mCursors[i]--;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_DOWN) && mCursors[i] + sRowSize < mCharacterCount) {
+                mCursors[i] += sRowSize;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_UP) && mCursors[i] - sRowSize >= 0) {
+                mCursors[i] -= sRowSize;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_A)) {
+                mSelectingCharactor[i] = false;
+
+            }
         }
-        else if (controller->isButtonDown(JUTGamePad::PRESS_LEFT) && mCursors[i] - 1 >= 0) {
-            mCursors[i]--;
-            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
-        }
-        else if (controller->isButtonDown(JUTGamePad::PRESS_DOWN) && mCursors[i] + sRowSize < mCharacterCount) {
-            mCursors[i] += sRowSize;
-            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
-        }
-        else if (controller->isButtonDown(JUTGamePad::PRESS_UP) && mCursors[i] - sRowSize >= 0) {
-            mCursors[i] -= sRowSize;
-            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+        else {
+            if (controller->isButtonDown(JUTGamePad::PRESS_B)) {
+                mSelectingCharactor[i] = true;
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_RIGHT) && mNameCursors[i] < CharacterData::sMaxNameSize - 2) {
+                mNameCursors[i]++;
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_LEFT) && mNameCursors[i] > 0) {
+                mNameCursors[i]--;
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_UP)) {
+                char& refChar = mPlayerNames[i][mNameCursors[i]];
+                refChar = NextChar(refChar);
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_DOWN)) {
+                char& refChar = mPlayerNames[i][mNameCursors[i]];
+                refChar = PrevChar(refChar);
+            }
+            else if (controller->isButtonDown(JUTGamePad::PRESS_A)) {
+                char& refChar = mPlayerNames[i][mNameCursors[i]];
+                refChar = ToggleUpper(refChar);
+            }
         }
     }
-    if (menu->mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_START)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CLOSE, 0);
         return true;
     }
+    
     return false;
 }
 
@@ -809,13 +897,14 @@ void CharacterSelect::cleanup() {
         sCharacters[i].mCharaterID = mCursors[i];
         strcpy(sCharacters[i].mName, mCharacters[mCursors[i]].mCharacterName);
         OSReport("Name %s\n", sCharacters[i].mName);
-        sCharacters[i].makeDisplayName();
+        strcpy(sCharacters[i].mDispName, mPlayerNames[i]);
+        CharacterData::CleanDisplayName(ARRAY_SIZE(sCharacters[i].mDispName), sCharacters[i].mDispName);
+        
         sCharacters[i].mImage = sCharacters[i].loadImage();
     }
 }
 
 void CharacterData::makeDisplayName() {
-    return;
     strncpy(mDispName, mName, MIN(ARRAY_SIZE(mName), ARRAY_SIZE(mDispName)));
 
     for (int i = 0; mDispName[i]; i++) {
@@ -823,6 +912,27 @@ void CharacterData::makeDisplayName() {
             mDispName[i] = ' ';
         }
     }
+}
+
+void CharacterData::MakeDisplayName(int size, char* chr) {
+    for (int i = 0; i < size - 1; i++) {
+        if (chr[i] == '_' || chr[i] == '\0') {
+            chr[i] = ' ';
+        }
+    }
+
+    chr[size - 1] = '\0'; 
+}
+
+void CharacterData::CleanDisplayName(int size, char* chr) {
+    int i;
+    for (i = size - 2; chr[i] == ' '; i--) {
+        if (i == 0) return;
+    }
+
+    chr[i + 1] = '\0';
+
+    OSReport("Name %s %i\n", chr, i);
 }
 
 void CharacterData::initDefaults() {

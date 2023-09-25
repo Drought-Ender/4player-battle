@@ -220,15 +220,15 @@ void TFourVsSelect::doUpdateFadeoutFinish() {
 
 bool TFourVsSelect::doUpdate() {
     if (!gDrawVsMenu) {
-        gDrawVsMenu = gOptionMenu->update();
-        return false;
-    }
+        gDrawVsMenu = gOptionMenu->update();            
+        
+        if (gDrawVsMenu) {
+            for (int i = 0; i < 4; i++) {
+                mNaviImages[i]->changeTexture(sCharacters[i].mImage, 0);
+            }
+        }
 
-    
-    for (int i = 0; i < 4; i++) {
-        mNaviNames[i]->setString(sCharacters[i].mDispName);
-        mNaviNames[i]->update();
-        mNaviImages[i]->changeTexture(sCharacters[i].mImage, 0);
+        return false;
     }
 
     Game::gNaviNum = Game::CalcNaviNum();
@@ -429,7 +429,49 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
         gOptionMenu->draw(gfx);
         return;
     }
+
+    bool visable[4];
+
+    for (int i = 0; i < 4; i++) {
+        visable[i] = false;
+        if (mNaviNames[i]->isVisible()) {
+            visable[i] = true;
+            mNaviNames[i]->hide();
+        }
+    }
+
     TVsSelect::doDraw(gfx);
+
+    for (int i = 0; i < 4; i++) {
+
+        if (visable[i]) {
+            mNaviNames[i]->show();
+            
+            J2DTextBoxEx* text = mNaviNames[i];
+            JUTFont* font = nullptr;
+            if (text->mMaterial && text->mMaterial->getTevBlock()) {
+                font = text->mMaterial->getTevBlock()->getFont();
+            }
+
+            if (!font) {
+                font = getPikminFont();
+            }
+
+			text->makeMatrix(mNaviNames[i]->getGlbVtx(2).x - 15.0f, mNaviNames[i]->getGlbVtx(2).y + 0.5f, 0.0f, 0.0f);
+
+            
+            J2DPrint print(font, JUtility::TColor(0xffffffff), JUtility::TColor(0x807700ff));
+            size_t size = strlen(sCharacters[i].mDispName);
+            float sizeX = 15.0f;
+            if (size > 6) {
+                sizeX = 85.0f / size;
+            }
+            print.setFontSize(sizeX, 15.0f);
+
+            print.print(mNaviNames[i]->getGlbVtx(2).x - 15.0f, mNaviNames[i]->getGlbVtx(2).y + 0.5f, 255, "%s", sCharacters[i].mDispName);
+			
+        }
+    }
 
     J2DPrint printWhite(getPikminFont(), vsTeamColors[2], vsTeamColors[2]);
     J2DPrint printPurple(getPikminFont(), vsTeamColors[3], vsTeamColors[3]);

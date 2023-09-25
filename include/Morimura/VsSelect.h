@@ -301,6 +301,8 @@ struct TFourVsSelect : public TVsSelect
 	JUtility::TColor mLerpColors[4];
 	int mWhitePikiNum;
 	int mPurplePikiNum;
+	
+	J2DPrint* printers[4];
 };
 
 
