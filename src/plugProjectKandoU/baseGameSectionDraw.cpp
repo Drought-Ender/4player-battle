@@ -16,12 +16,53 @@
 #include "Light.h"
 #include "nans.h"
 #include "Game/MoviePlayer.h"
+#include "VsOptions.h"
+#include "Game/Navi.h"
 
 const char* message = "drct-post";
 
 bool gDrawNavi[4];
 
+bool gDrawNames = true;
+
+
+static Color4 vsTeamColorsColor4[] = { 
+    Color4(0xff, 0x50, 0x50, 0xff),
+    Color4(0x50, 0x50, 0xff, 0xff), 
+    Color4(0xff, 0xff, 0xff, 0xff),
+    Color4(0x78, 0x00, 0xff, 0xff)
+};
+
 namespace Game {
+
+
+void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
+	vp->setViewport();
+	vp->setProjection();
+	gfx.initPerspPrintf(vp);
+	for (int i = 0; i < Game::gNaviNum; i++) {
+		if (i == vp->mVpId) continue;
+
+		if (gDrawNavi[i]) {
+			PerspPrintfInfo info;
+			info.mFont = getPikminFont();
+			info._04 = 0;
+			info._08 = 0;
+			info._0C = 0;
+			info._10 = 0.3f;
+			info._14 = vsTeamColorsColor4[getVsTeam_s(i)];
+			info._18 = vsTeamColorsColor4[getVsTeam_s(i)];
+
+			Vector3f position = naviMgr->getAt(i)->getPosition();
+			position.y += 25.0f;
+
+			gfx.mCurrentViewport = vp;
+			gfx.perspPrintf(info, position, "%s", sCharacters[i].mDispName);
+		}
+	}
+	
+}
+
 /*
  * --INFO--
  * Address:	802398D8
@@ -45,9 +86,17 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	// Draw particles for both viewports
 	sys->mTimers->_start("part-draw", true);
 	drawParticle(gfx, 0);
+	renderNames(gfx, gfx.getViewport(0));
 	drawParticle(gfx, 1);
-	if (gNaviNum > 2) drawParticle(gfx, 2);
-	if (gNaviNum > 3) drawParticle(gfx, 3);
+	renderNames(gfx, gfx.getViewport(1));
+	if (gNaviNum > 2) {
+		drawParticle(gfx, 2);
+		renderNames(gfx, gfx.getViewport(2));
+	}
+	if (gNaviNum > 3) {
+		drawParticle(gfx, 3);
+		renderNames(gfx, gfx.getViewport(3));
+	}
 	sys->mTimers->_stop("part-draw");
 
 	// Draw counters for both viewports

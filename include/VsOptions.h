@@ -114,6 +114,7 @@ struct CharacterData
     static void initDefaults();
 
     static void MakeDisplayName(int size, char* name);
+    static void PrepareDisplayName(int size, char* name);
     static void CleanDisplayName(int size, char* name);
 
     void makeDisplayName();

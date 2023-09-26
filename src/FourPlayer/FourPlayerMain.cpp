@@ -737,9 +737,12 @@ void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback) {
 
 // hacky as all ass solution
 void BaseGameSection::updateSplitter2() {
-	BaseGameSection::updateSplitter();
+	
 	if (mSplitter && gSplit4) {
-		mSplitter->split4(mSecondViewportHeight, gOtherViewportHeight);
+		//mSplitter->split4(0.5f, 0.5f);
+	}
+	else {
+		BaseGameSection::updateSplitter();
 	}
 }
 

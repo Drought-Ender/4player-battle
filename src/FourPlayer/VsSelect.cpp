@@ -33,7 +33,6 @@ const f32 baseYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f}; // increments of 20
 const f32 boxXOffs[2] = {381.0f, 515.0f};
 const f32 boxYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f};
 
-const JUtility::TColor vsTeamColors[] = { 0xff5050ff, 0x5050ffff, 0xffffffff, 0x7800ffff };
 
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
@@ -151,7 +150,7 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         root, baseX, baseY, 'Ph_or');
         
         mNaviImages[i]->updateScale(0.5f);
-        mNaviImages[i]->changeTexture(iconPaths[i], 0);
+        mNaviImages[i]->changeTexture(sCharacters[i].mImage, 0);
 
         mNaviNames[i]->mOffset = JGeometry::TVec2f(baseX + 35.0f, baseY);
         mNaviNames[i]->updateScale(0.6f, 0.7f);

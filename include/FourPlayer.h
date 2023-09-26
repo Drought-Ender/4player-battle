@@ -19,7 +19,13 @@ extern int mRealWinCounts[4];
 extern bool gDrawVsMenu;
 extern bool gDrawNavi[4];
 
+extern bool gDrawNames;
+
 static bool gDebugPrint = true;
+
+static const JUtility::TColor vsTeamColors[] = { 0xff5050ff, 0x5050ffff, 0xffffffff, 0x7800ffff };
+
+
 
 inline void DebugReport(const char* msg, ...) {
     if (gDebugPrint) {

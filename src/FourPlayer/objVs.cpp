@@ -9,6 +9,7 @@
 #include "CherryTarget.h"
 #include "Game/VsGameSection.h"
 #include "Game/VsGame.h"
+#include "VsOptions.h"
 
 namespace og
 {
@@ -111,9 +112,10 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	J2DPictureEx* presidentPicture = static_cast<J2DPictureEx*>(mScreenP3->mScreen->search('navi'));
 	J2DPictureEx* wifePicture = static_cast<J2DPictureEx*>(mScreenP4->mScreen->search('navi'));
 	
-	louiePicture->changeTexture("loozy_pk2.bti", 0);
-	presidentPicture->changeTexture("president.bti", 0);
-	wifePicture->changeTexture("wife.bti", 0);
+	olimarPicture->changeTexture(sCharacters[0].mImage, 0);
+	louiePicture->changeTexture(sCharacters[1].mImage, 0);
+	presidentPicture->changeTexture(sCharacters[2].mImage, 0);
+	wifePicture->changeTexture(sCharacters[3].mImage, 0);
 
 	JUtility::TColor teamColors[4] = {
 		JUtility::TColor(0xff, 0x00, 0x00, 0xff),

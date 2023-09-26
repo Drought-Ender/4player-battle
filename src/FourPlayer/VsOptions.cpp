@@ -701,6 +701,7 @@ void CharacterSelect::init(VsOptionsMenuMgr* menu) {
         mCursors[i] = sCharacters[i].mCharaterID;
         mNameCursors[i] = 0;
         strcpy(mPlayerNames[i], sCharacters[i].mDispName);
+        CharacterData::PrepareDisplayName(CharacterData::sMaxNameSize, mPlayerNames[i]);
         mSelectingCharactor[i] = false;
     }
 
@@ -747,6 +748,8 @@ void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
 
     for (int i = 0; i < Game::gNaviNum; i++) {
 
+        J2DPrint print (getPikminFont(), 0.0f);
+        print.print(10.0f, 30.0f, "4P-Battle Character Select | Players: %i\n", Game::gNaviNum);
 
         mCharacters[mCursors[i]].draw(sNamePositions[i], mCharacters[mCursors[i]].mSize);
 
@@ -847,30 +850,37 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
             }
             else if (controller->isButtonDown(JUTGamePad::PRESS_A)) {
                 mSelectingCharactor[i] = false;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
 
             }
         }
         else {
             if (controller->isButtonDown(JUTGamePad::PRESS_B)) {
                 mSelectingCharactor[i] = true;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
             }
             else if (controller->isButtonDown(JUTGamePad::PRESS_RIGHT) && mNameCursors[i] < CharacterData::sMaxNameSize - 2) {
                 mNameCursors[i]++;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
             }
             else if (controller->isButtonDown(JUTGamePad::PRESS_LEFT) && mNameCursors[i] > 0) {
                 mNameCursors[i]--;
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
             }
             else if (controller->isButtonDown(JUTGamePad::PRESS_UP)) {
                 char& refChar = mPlayerNames[i][mNameCursors[i]];
                 refChar = NextChar(refChar);
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
             }
             else if (controller->isButtonDown(JUTGamePad::PRESS_DOWN)) {
                 char& refChar = mPlayerNames[i][mNameCursors[i]];
                 refChar = PrevChar(refChar);
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
             }
             else if (controller->isButtonDown(JUTGamePad::PRESS_A)) {
                 char& refChar = mPlayerNames[i][mNameCursors[i]];
                 refChar = ToggleUpper(refChar);
+                PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
             }
         }
     }
@@ -918,6 +928,18 @@ void CharacterData::MakeDisplayName(int size, char* chr) {
     for (int i = 0; i < size - 1; i++) {
         if (chr[i] == '_' || chr[i] == '\0') {
             chr[i] = ' ';
+        }
+    }
+
+    chr[size - 1] = '\0'; 
+}
+
+void CharacterData::PrepareDisplayName(int size, char* chr) {
+    bool setSpace = false;
+    for (int i = 0; i < size - 1; i++) {
+        if (setSpace || chr[i] == '\0') {
+            chr[i] = ' ';
+            setSpace = true;
         }
     }
 
