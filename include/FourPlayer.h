@@ -104,6 +104,8 @@ enum OptionsEnum {
     PIKI_DIE,
     PELLET_POSY,
     PIKMIN_BIRTH,
+    FRIEND_BITTER,
+    FRIENDLY_FIRE,
 };
 
 namespace ConfigEnums {

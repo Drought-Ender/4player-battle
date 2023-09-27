@@ -38,6 +38,7 @@ enum EBitterType {
     BITTER_BURY,
     BITTER_DEPSPICY,
     BITTER_KILL,
+    BITTER_ZAP,
     BITTER_ELEMENT,
     BITTER_DEFLOWER
 };
@@ -95,6 +96,16 @@ enum EPelletMatching {
 enum EDandoriBirthing {
     BIRTH_SPROUTS,
     BIRTH_PIKMIN
+};
+
+enum EFriendBitter {
+    FRIENDBITTER_OFF,
+    FRIENDBITTER_ON
+};
+
+enum EFriendlyFire {
+    FRIENDCHERRY_OFF,
+    FRIENDCHERRY_ON
 };
 
 } // namespace ConfigEnums

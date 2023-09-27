@@ -91,15 +91,16 @@ Option gOptions[] = {
     },
     {
         "Bitter Spray",
-        { "Bury", "Despicy", "Kill", "Element", "Deflower" },
+        { "Bury", "Despicy", "Kill", "Zap", "Element", "Deflower" },
         { 
             "Bitter sprays will bury afflicted pikmin for 10 seconds", 
             "Bitter sprays will remove the spicy effect from afflicted pikmin or bury them if they are not spicy",
             "Bitter sprays will kill afflicted pikmin (they will be rebirthed at base)",
+            "Bitter sprays will zap afflicted pikmin",
             "Bitter sprays will apply a fire/water effect to the afflicted pikmin",
             "Bitter sprays will deflower afflicted pikmin"
         },
-        5,
+        6,
         0
     },
     {
@@ -161,6 +162,20 @@ Option gOptions[] = {
         "Pikmin Birthing",
         { "Sprouts", "Pikmin" },
         { "Pikmin will be born as sprouts", "Pikmin will be born like in Pikmin 4 dandori battles" },
+        2,
+        0
+    },
+    {
+        "Friendly Bitters",
+        { "Off", "On" },
+        { "Pikmin cannot be afflicted by their Captain's bitters", "Pikmin will be afflicted by their Captains's bitters" },
+        2,
+        0
+    },
+    {
+        "Friendly Fire",
+        { "Off", "On" },
+        { "Cherries can target you and your teammates", "Cherries cannot target you or your teammates" },
         2,
         0
     }

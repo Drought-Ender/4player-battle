@@ -239,7 +239,7 @@ bool InteractDope::actPiki(Game::Piki* piki)
 	if (gameSystem->isVersusMode() && mSprayType == SPRAY_TYPE_BITTER) {
 		if (mCreature->isNavi()) {
 			Navi* navi = static_cast<Navi*>(mCreature);
-			if (!navi->onTeam(piki->mPikiKind) && !currState->dead()) {
+			if ((!navi->onTeam(piki->mPikiKind) || gConfig[FRIEND_BITTER] == ConfigEnums::FRIENDBITTER_ON) && !currState->dead()) {
 				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_BURY || (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_DEPSPICY && !piki->doped())) {
 					FallMeckStateArg bitterArg;
 					bitterArg._00 = true;
@@ -258,7 +258,11 @@ bool InteractDope::actPiki(Game::Piki* piki)
 					piki->mFsm->transit(piki, PIKISTATE_Dying, &dargs);
 					return true;
 				}
-				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_ELEMENT) {
+				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_ZAP) {
+					InteractDenki denki (mCreature, 0.0f, &Vector3f::zero);
+					piki->stimulate(denki);
+				}
+				if (gConfig[BITTER_TYPE] == ConfigEnums::BITTER_ELEMENT && !navi->onTeam(piki->mPikiKind)) {
 					PanicStateArg pargs;
 					pargs.mPanicType = navi->getVsTeam();
 					if (pargs.mPanicType == PIKIPANIC_Panic) pargs.mPanicType = PIKIPANIC_Spore;

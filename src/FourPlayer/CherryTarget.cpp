@@ -44,7 +44,8 @@ namespace CherryTarget
             }
             return array[(int)(randFloat() * count)];
         }
-        if (!gDrawNavi[target] || target >= Game::gNaviNum || Game::getVsPikiColor(gamePad->mPortNum) == Game::getVsPikiColor(target)) {
+        if (!gDrawNavi[target] || target >= Game::gNaviNum ||
+        (Game::getVsPikiColor(gamePad->mPortNum) == Game::getVsPikiColor(target) && gConfig[FRIENDLY_FIRE] == ConfigEnums::FRIENDCHERRY_OFF)) {
             return -1;
         }
         return target;

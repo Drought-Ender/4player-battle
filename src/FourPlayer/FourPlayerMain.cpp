@@ -739,7 +739,7 @@ void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback) {
 void BaseGameSection::updateSplitter2() {
 	
 	if (mSplitter && gSplit4) {
-		//mSplitter->split4(0.5f, 0.5f);
+		mSplitter->split4(mSecondViewportHeight, gOtherViewportHeight);
 	}
 	else {
 		BaseGameSection::updateSplitter();
