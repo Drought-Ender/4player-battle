@@ -92,10 +92,10 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		DebugReport("mExtinctions[%i] = %i\n", i, mExtinctions[i]);
 		mOrimaDownState[i] = 0;
 	}
-	section->mGhostIconTimers[1]    = 0.0f;
 	section->mGhostIconTimers[0]    = 0.0f;
+	section->mGhostIconTimers[1]    = 0.0f;
+	section->mGhostIconTimers[2]    = 0.0f;
 	section->mGhostIconTimers[3]    = 0.0f;
-	section->mGhostIconTimers[4]    = 0.0f;
 }
 
 /*
