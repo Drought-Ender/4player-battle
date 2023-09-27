@@ -3687,7 +3687,7 @@ initGenerators__Q24Game15BaseGameSectionFv:
 /* 8014C770 001496B0  80 03 00 0C */	lwz r0, 0xc(r3)
 /* 8014C774 001496B4  28 00 00 00 */	cmplwi r0, 0
 /* 8014C778 001496B8  41 82 07 40 */	beq .L_8014CEB8
-/* 8014C77C 001496BC  48 0F 0C A1 */	bl clear__Q24Game17PelletBirthBufferFv
+/* 8014C77C 001496BC  48 0F 0C A1 */	# bl clear__Q24Game17PelletBirthBufferFv
 /* 8014C780 001496C0  80 8D 93 08 */	lwz r4, mapMgr__4Game@sda21(r13)
 /* 8014C784 001496C4  80 6D 94 C0 */	lwz r3, generatorCache__4Game@sda21(r13)
 /* 8014C788 001496C8  80 84 00 0C */	lwz r4, 0xc(r4)
@@ -4844,7 +4844,7 @@ initGenerators__Q24Game15BaseGameSectionFv:
 /* 8014C770 001496B0  80 03 00 0C */	lwz r0, 0xc(r3)
 /* 8014C774 001496B4  28 00 00 00 */	cmplwi r0, 0
 /* 8014C778 001496B8  41 82 07 40 */	beq .L_8014CEB8
-/* 8014C77C 001496BC  48 0F 0C A1 */	bl clear__Q24Game17PelletBirthBufferFv
+/* 8014C77C 001496BC  48 0F 0C A1 */	# bl clear__Q24Game17PelletBirthBufferFv
 /* 8014C780 001496C0  80 8D 93 08 */	lwz r4, mapMgr__4Game@sda21(r13)
 /* 8014C784 001496C4  80 6D 94 C0 */	lwz r3, generatorCache__4Game@sda21(r13)
 /* 8014C788 001496C8  80 84 00 0C */	lwz r4, 0xc(r4)
@@ -5297,8 +5297,8 @@ initGenerators__Q24Game15BaseGameSectionFv:
 /* 8014CE38 00149D78  4B FC 07 C1 */	bl allocateEnemys__Q24Game15GeneralEnemyMgrFUci
 /* 8014CE3C 00149D7C  80 6D 91 E0 */	lwz r3, generalEnemyMgr__4Game@sda21(r13)
 /* 8014CE40 00149D80  4B FC 01 75 */	bl setupSoundViewerAndBas__Q24Game15GeneralEnemyMgrFv
-/* 8014CE44 00149D84  80 6D 93 20 */	lwz r3, pelletMgr__4Game@sda21(r13)
-/* 8014CE48 00149D88  48 02 05 61 */	bl setupResources__Q24Game9PelletMgrFv
+/* 8014CE44 00149D84  80 6D 93 20 */	# lwz r3, pelletMgr__4Game@sda21(r13)
+/* 8014CE48 00149D88  48 02 05 61 */	# bl setupResources__Q24Game9PelletMgrFv
 /* 8014CE4C 00149D8C  3A 9D FF FF */	addi r20, r29, -1
 /* 8014CE50 00149D90  3A 61 01 98 */	addi r19, r1, 0x198
 /* 8014CE54 00149D94  56 80 10 3A */	slwi r0, r20, 2

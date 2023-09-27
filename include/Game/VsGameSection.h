@@ -89,6 +89,8 @@ struct VsGameSection : public BaseGameSection {
 	bool updateCaveMenus();
 	void useCard();
 
+	void SetupCourseinfo();
+
 	void updateFancyCam();
 	Creature* fancyCamLookForTarget();
 	f32 fancyCamCalcIntrest(Creature*);

@@ -21,6 +21,8 @@
 
 const char* message = "drct-post";
 
+bool sDebugMode = true;
+
 bool gDrawNavi[4];
 
 bool gDrawNames = true;
@@ -41,9 +43,23 @@ void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
 	vp->setProjection();
 	gfx.initPerspPrintf(vp);
 	for (int i = 0; i < Game::gNaviNum; i++) {
-		if (i == vp->mVpId) continue;
+		if (i == vp->mVpId && sDebugMode) {
+			PerspPrintfInfo info;
+			info.mFont = getPikminFont();
+			info._04 = 0;
+			info._08 = 0;
+			info._0C = 0;
+			info._10 = 0.3f;
+			info._14 = vsTeamColorsColor4[getVsTeam_s(i)];
+			info._18 = vsTeamColorsColor4[getVsTeam_s(i)];
 
-		if (gDrawNavi[i]) {
+			Vector3f position = naviMgr->getAt(i)->getPosition();
+			position.y += 25.0f;
+			gfx.mCurrentViewport = vp;
+
+			gfx.perspPrintf(info, position, "%f, %f, %f | %f", position.x, position.y - 25.0f, position.z, naviMgr->getAt(i)->getFaceDir());
+		}
+		else if (gDrawNavi[i]) {
 			PerspPrintfInfo info;
 			info.mFont = getPikminFont();
 			info._04 = 0;

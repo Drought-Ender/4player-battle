@@ -36,6 +36,8 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/gamePlayData.h"
 
+static int sEditNum;
+
 namespace Game {
 namespace VsGame {
 
@@ -416,6 +418,9 @@ void VsGameSection::onSetupFloatMemory()
 		initArg.mPelletType     = cKind;
 		pelletMgr->setUse(&initArg);
 	}
+
+
+
 }
 
 /*
@@ -442,6 +447,32 @@ void VsGameSection::postSetupFloatMemory()
 	}
 
 	BaseGameSection::postSetupFloatMemory();
+}
+
+namespace
+{
+	char filepath[64];
+} // namespace name
+
+
+
+void VsGameSection::SetupCourseinfo() {
+	
+	int lastChar = strlen(mEditFilename);
+
+	char properCaveName[32];
+	int editID = mEditNumber;
+
+	strncpy(properCaveName, mEditFilename, lastChar - 4);
+	properCaveName[lastChar - 4] = nullptr;
+
+	mapMgr->mCourseInfo = new CourseInfo();
+	mapMgr->mCourseInfo->mCourseIndex = 0;
+	
+	sprintf(filepath, "/user/drought/cave/%s/%i", properCaveName, sEditNum);
+	OSReport("%s", filepath);
+	mapMgr->mCourseInfo->mFolder = filepath;
+	mapMgr->mCourseInfo->mAbeFolder = filepath;
 }
 
 /*
@@ -1888,3 +1919,9 @@ namespace Game
 		return 0.0f;
 	}
 } // namespace Game
+
+
+int SaveEditNum(int i) {
+    sEditNum = i;
+    return sEditNum;
+}

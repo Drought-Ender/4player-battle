@@ -611,6 +611,10 @@ void BaseGameSection::initViewports(Graphics& gfx)
 	mTreasureGetViewport->setRect(rect);
 	mTreasureGetViewport->mCamera = mTreasureZoomCamera;
 	mTreasureGetViewport->updateCameraAspect();
+
+	if (gameSystem->isVersusMode()) {
+		static_cast<VsGameSection*>(this)->SetupCourseinfo();
+	}
 }
 
 void CameraMgr::loadResource() {
