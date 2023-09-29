@@ -357,6 +357,7 @@ struct GameState : public State {
 	void checkVsPikminZero(VsGameSection*);
 	void checkOrimaDown(VsGameSection*);
 	void setDeathLose();
+	void setPikminLose();
 
 	bool isWinExtinction();
 	void onOrimaDownDone(int idx);

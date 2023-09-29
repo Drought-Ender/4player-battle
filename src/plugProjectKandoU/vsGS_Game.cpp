@@ -235,15 +235,18 @@ void GameState::checkVsPikminZero(VsGameSection* section) {
 					mNaviStatus[i] = VSLOSE_Extinction;
 					mOrimaDownState[i] = 3;
 				}
+			}
+			for (int i = 0; i < 4; i++) {
 				if (getVsPikiColor(i) == pikiColor && !mExtinctions[teamID]) {
 					
 					mExtinctions[teamID] = true;
 					naviMgr->getAt(i)->movie_begin(true);
 					if (isWinExtinction()) {
 						setDeathLose();
-						return;
 					}
-					pikminZeroFunc(i);
+					else {
+						pikminZeroFunc(i);
+					}
 				}
 			}
 
@@ -324,11 +327,19 @@ void GameState::exec(VsGameSection* section)
 
 				DebugReport("Loss %i, %i, %i, %i\n", redLost, blueLost, whiteLost, purpleLost);
 
+				if (!isTeamActive(VSPLAYER_Red)) {
+					redLost = 3;
+				}
+
+				if (!isTeamActive(VSPLAYER_Blue)) {
+					blueLost = 3;
+				}
+
 				if (!isTeamActive(VSPlayer_White)) {
 					whiteLost = 3;
 				}
 				if (!isTeamActive(VSPlayer_Purple)) {
-					whiteLost = 3;
+					purpleLost = 3;
 				}
 
 
@@ -1086,11 +1097,13 @@ void GameState::onOrimaDown(VsGameSection* section, int idx)
 			mNaviStatus[idx] = VSLOSE_OrimaDown;
 			bool naviTeamExinct = true;
 			for (int i = 0; i < 4; i++) {
+				if (i == idx) continue;
 				DebugReport("mNaviStatus[%i] = %i\n", i, mNaviStatus[i]);
-				if (mNaviStatus[i] != -1 && i != idx && getVsPikiColor(idx) == getVsPikiColor(i)) {
+				if (mNaviStatus[i] == -1 && getVsPikiColor(idx) == getVsPikiColor(i)) {
 					naviTeamExinct = false;
 				}
 			}
+			DebugReport("naviTeamExtict %i\n", naviTeamExinct);
 			if (naviTeamExinct) {
 				mExtinctions[teamIdx] = true;
 				DebugReport("mExtinctions[%i] = %i\n", teamIdx, mExtinctions[teamIdx]);
