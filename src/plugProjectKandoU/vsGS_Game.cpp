@@ -226,6 +226,16 @@ bool GameState::isWinExtinction() {
 	return count >= 3;
 }
 
+
+int GameState::getExtinctionWinner() {
+	for (int i = 0; i < 4; i++) {
+		if (!mExtinctions[i]) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 void GameState::checkVsPikminZero(VsGameSection* section) {
 	for (int teamID = 0; teamID < 4; teamID++) {
 		int pikiColor = getPikiFromTeamEnum(teamID);
@@ -743,44 +753,104 @@ void GameState::setWinMarbleColor(int teamID, int color) {
  */
 void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool isYellow)
 {
+	if (!isYellow && gConfig[CAPTURE_MARBLE] == ConfigEnums::CAPTURE_STEALMARBLE) {
+		section->mRealMarbleCounts[player] += section->mRealMarbleCounts[gBedamaColor];
+		section->mDispMarbleCounts[player] += section->mRealMarbleCounts[gBedamaColor];
+		section->mRealMarbleCounts[gBedamaColor] = 0;
+		section->mDispMarbleCounts[gBedamaColor] = 0;
+		if (section->mRealMarbleCounts[player] >= 4) {
+			isYellow = true;
+			section->mRealMarbleCounts[player] = 3;
+		}
+	}
+
 	if (isYellow) {
 		section->mRealMarbleCounts[player]++;
-		if (isYellow && section->mRealMarbleCounts[player] < 4) {
-			return;
+		if (isYellow && section->mRealMarbleCounts[player] >= 4) {
+			_16 = 1;
+
+			u8 loseReason = VSLOSE_ColoredMarble;
+			if (!isYellow) {
+				loseReason |= VSLOSE_Marble;
+			}
+
+			for (int i = 0; i < 4; i++) {
+				if (i != player) {
+					BitFlag<u8>& loseCauses = mLoseCauses[i];
+					setLoseCause(loseCauses, loseReason);
+				}
+			}
+
+			mWinColors[player] = gBedamaColor;
+			DebugReport("Win color %i %i\n", player, gBedamaColor);
+			Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(player));
+			BaseGameSection* baseSection = gameSystem->mSection;
+
+			MoviePlayArg movieArgs("x19_vs_bedama", nullptr, baseSection->mMovieFinishCallback, 0);
+			movieArgs.mPelletName    = const_cast<char*>(VsOtakaraName::cBedamaRed);
+			movieArgs.mDelegateStart = baseSection->mMovieStartCallback;
+			movieArgs.setTarget(onyon);
+
+			moviePlayer->play(movieArgs);
 		}
+		return;
+		
+	}
+
+	switch (gConfig[CAPTURE_MARBLE])
+	{
+	case ConfigEnums::CAPTURE_VICTORY: {
+		_16 = 1;
+
+		u8 loseReason = VSLOSE_ColoredMarble;
+		if (!isYellow) {
+			loseReason |= VSLOSE_Marble;
+		}
+
+		for (int i = 0; i < 4; i++) {
+			if (i != player) {
+				BitFlag<u8>& loseCauses = mLoseCauses[i];
+				setLoseCause(loseCauses, loseReason);
+			}
+		}
+
+		mWinColors[player] = gBedamaColor;
+		DebugReport("Win color %i %i\n", player, gBedamaColor);
+		Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(player));
+		BaseGameSection* baseSection = gameSystem->mSection;
+
+		MoviePlayArg movieArgs("x19_vs_bedama", nullptr, baseSection->mMovieFinishCallback, 0);
+		movieArgs.mPelletName    = const_cast<char*>(VsOtakaraName::cBedamaRed);
+		movieArgs.mDelegateStart = baseSection->mMovieStartCallback;
+		movieArgs.setTarget(onyon);
+
+		moviePlayer->play(movieArgs);
+		break;
+	}
+	case ConfigEnums::CAPTURE_STEALSPRAY:
+			
+		gDopeCountArray[player][0] += gDopeCountArray[gBedamaColor][0];
+		gDopeCountArray[player][1] += gDopeCountArray[gBedamaColor][1];			
+	
+	case ConfigEnums::CAPTURE_STEALMARBLE:
+	
+	case ConfigEnums::CAPTURE_ELIMINATE: 
+		Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(player));
+		BaseGameSection* baseSection = gameSystem->mSection;
+
+		MoviePlayArg movieArgs("x19_vs_bedama", nullptr, baseSection->mMovieFinishCallback, 0);
+		movieArgs.mPelletName    = const_cast<char*>(VsOtakaraName::cBedamaRed);
+		movieArgs.mDelegateStart = baseSection->mMovieStartCallback;
+		movieArgs.setTarget(onyon);
+
+		moviePlayer->play(movieArgs);
 	}
 
 	if (_16) {
 		return;
 	}
 
-	_16 = 1;
-
-	u8 loseReason = VSLOSE_ColoredMarble;
-	if (!isYellow) {
-		loseReason |= VSLOSE_Marble;
-	}
-
-	for (int i = 0; i < 4; i++) {
-		if (i != player) {
-			BitFlag<u8>& loseCauses = mLoseCauses[i];
-			setLoseCause(loseCauses, loseReason);
-		}
-	}
-
-	mWinColors[player] = gBedamaColor;
-	DebugReport("Win color %i %i\n", player, gBedamaColor);
-
-
-	Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(player));
-	BaseGameSection* baseSection = gameSystem->mSection;
-
-	MoviePlayArg movieArgs("x19_vs_bedama", nullptr, baseSection->mMovieFinishCallback, 0);
-	movieArgs.mPelletName    = const_cast<char*>(VsOtakaraName::cBedamaRed);
-	movieArgs.mDelegateStart = baseSection->mMovieStartCallback;
-	movieArgs.setTarget(onyon);
-
-	moviePlayer->play(movieArgs);
+	
 }
 
 
@@ -909,7 +979,7 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		}
 	}
 
-	if (config->is("x19_vs_bedama") && (isLoseCause(VSPLAYER_Red, VSLOSE_Marble) || isLoseCause(VSPLAYER_Blue, VSLOSE_Marble))) {
+	if (config->is("x19_vs_bedama") && _16) {
 		PSSystem::SceneMgr* sceneMgr = PSSystem::getSceneMgr();
 		checkSceneMgr(sceneMgr);
 		PSM::SceneBase* scene = static_cast<PSM::SceneBase*>(sceneMgr->getChildScene());
@@ -917,6 +987,41 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		scene = (scene->isGameScene()) ? scene : nullptr;
 
 		scene->_10.stopAllSound(15);
+	}
+	else if (config->is("x19_vs_bedama")) {
+		for (int i = 0; i < 4; i++) {
+			if (getVsTeam(i) == gBedamaColor && mNaviStatus[i] == -1) {
+				mNaviStatus[i] = VSLOSE_ColoredMarble;
+				naviMgr->getAt(i)->kill(nullptr);
+				naviMgr->informOrimaDead(i);
+				naviMgr->getAt(i)->setDeadLaydown();
+				gDrawNavi[i] = false;
+			}
+		}
+		mExtinctions[gBedamaColor] = true;
+		
+
+		if (isWinExtinction()) {
+			int winner = getExtinctionWinner();
+			mWinColors[winner] = gBedamaColor;
+			for (int i = 0; i < 4; i++) {
+				if (i != winner) {
+					setLoseCause(i, VSLOSE_Marble);
+				}
+			}
+			onBattleFinished(section, winner, true);
+			PSSystem::SceneMgr* sceneMgr = PSSystem::getSceneMgr();
+			checkSceneMgr(sceneMgr);
+			PSM::SceneBase* scene = static_cast<PSM::SceneBase*>(sceneMgr->getChildScene());
+
+			scene = (scene->isGameScene()) ? scene : nullptr;
+
+			scene->_10.stopAllSound(15);
+			
+		}
+		else {
+			section->startMainBgm();
+		}
 	}
 
 	if (config->is("e00_E3_cavestart")) {

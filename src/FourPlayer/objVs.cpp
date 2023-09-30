@@ -333,6 +333,10 @@ void FourObjVs::doUpdateCommon() {
     setOnOffBdama4P(!mSetBedamaFlag);
     checkObake();
 	updateCSticks();
+	mScreenP1->update(mDisp->mOlimarData);
+	mScreenP2->update(mDisp->mLouieData);
+	mScreenP3->update(mDisp->mP3Data);
+	mScreenP4->update(mDisp->mP4Data);
 	if (mDoneState == 1) {
 		if (mFinishTimer <= 0.0f)
 			mDoneState = 2;

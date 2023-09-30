@@ -490,7 +490,7 @@ struct BedamaCard : public VsSlotMachineCard
         int color = getVsPikiColor(user);
         int teamID = getVsTeam(user);
         Pellet* bedama = cardMgr->mSection->mMarbleRedBlue[teamID];
-        if (bedama->isAlive()) {
+        if (bedama && bedama->isAlive()) {
             BounceBuryStateArg arg;
             Stickers stickers = bedama;
             arg.mHeldPikis = &stickers;

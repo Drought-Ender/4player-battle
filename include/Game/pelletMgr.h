@@ -618,9 +618,9 @@ struct PelletNormalState : public PelletState {
 };
 
 struct PelletReturnArg : StateArg {
-	inline PelletReturnArg(Vector3f& vec) { m_endPos = vec; }
+	inline PelletReturnArg(Vector3f& vec) { mEndPos = vec; }
 
-	Vector3f m_endPos;
+	Vector3f mEndPos;
 };
 
 struct PelletReturnState : public PelletState {

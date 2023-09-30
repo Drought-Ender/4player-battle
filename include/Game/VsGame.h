@@ -357,9 +357,9 @@ struct GameState : public State {
 	void checkVsPikminZero(VsGameSection*);
 	void checkOrimaDown(VsGameSection*);
 	void setDeathLose();
-	void setPikminLose();
 
 	bool isWinExtinction();
+	int getExtinctionWinner();
 	void onOrimaDownDone(int idx);
 
 	inline void updateNavi(VsGameSection* section, int naviIndex)

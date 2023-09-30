@@ -43,7 +43,8 @@ void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
 	vp->setProjection();
 	gfx.initPerspPrintf(vp);
 	for (int i = 0; i < Game::gNaviNum; i++) {
-		if (i == vp->mVpId && sDebugMode) {
+		if (i == vp->mVpId) {
+			if (!sDebugMode) continue;
 			PerspPrintfInfo info;
 			info.mFont = getPikminFont();
 			info._04 = 0;
@@ -101,15 +102,19 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 
 	// Draw particles for both viewports
 	sys->mTimers->_start("part-draw", true);
-	drawParticle(gfx, 0);
-	renderNames(gfx, gfx.getViewport(0));
-	drawParticle(gfx, 1);
-	renderNames(gfx, gfx.getViewport(1));
-	if (gNaviNum > 2) {
+	if (gDrawNavi[0]) {
+		drawParticle(gfx, 0);
+		renderNames(gfx, gfx.getViewport(0));
+	}
+	if (gDrawNavi[1]) {
+		drawParticle(gfx, 1);
+		renderNames(gfx, gfx.getViewport(1));
+	}
+	if (gNaviNum > 2 && gDrawNavi[2]) {
 		drawParticle(gfx, 2);
 		renderNames(gfx, gfx.getViewport(2));
 	}
-	if (gNaviNum > 3) {
+	if (gNaviNum > 3 && gDrawNavi[3]) {
 		drawParticle(gfx, 3);
 		renderNames(gfx, gfx.getViewport(3));
 	}
@@ -119,13 +124,13 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	// (Life gauge & Carry info)
 	sys->mTimers->_start("drct-post", true);
 	Viewport* vp = gfx.getViewport(0);
-	if (vp && vp->viewable()) {
+	if (vp && vp->viewable() && gDrawNavi[0]) {
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
 	}
 
 	vp = gfx.getViewport(1);
-	if (vp && vp->viewable()) {
+	if (vp && vp->viewable() && gDrawNavi[1]) {
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
 	}
@@ -133,14 +138,14 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	
 	if (gNaviNum > 2) {
 		vp = gfx.getViewport(2);
-		if (vp && vp->viewable()) {
+		if (vp && vp->viewable() && gDrawNavi[2]) {
 			gfx.mCurrentViewport = vp;
 			directDrawPost(gfx, vp);
 		}
 	}
 	if (gNaviNum > 3) {
 		vp = gfx.getViewport(3);
-		if (vp && vp->viewable()) {
+		if (vp && vp->viewable() && gDrawNavi[3]) {
 			gfx.mCurrentViewport = vp;
 			directDrawPost(gfx, vp);
 		}

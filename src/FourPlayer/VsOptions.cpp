@@ -178,6 +178,18 @@ Option gOptions[] = {
         { "Cherries can target you and your teammates", "Cherries cannot target you or your teammates" },
         2,
         0
+    },
+    {
+        "Marble Capture",
+        { "Victory", "Eliminate", "Steal Marbles", "Steal Sprays" },
+        { 
+            "The Player who captures a marble wins", 
+            "The player who's marble was captured is eliminated", 
+            "Eliminates the player and gives the capturer their marbles", 
+            "Eliminates the player and gives the capturer their sprays" 
+        },
+        4,
+        0
     }
 };
 

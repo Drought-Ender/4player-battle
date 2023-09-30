@@ -230,6 +230,8 @@ void VsGameSection::onInit()
 	mMinCherryScore[0]     = 0.0f;
 	mRedBlueScore[1]       = 0.0f;
 	mRedBlueScore[0]       = 0.0f;
+	mMarbleRedBlue[3]      = nullptr;
+    mMarbleRedBlue[2]      = nullptr;
 	mMarbleRedBlue[1]      = nullptr;
 	mMarbleRedBlue[0]      = nullptr;
 
@@ -433,6 +435,8 @@ void VsGameSection::postSetupFloatMemory()
 	if (gameSystem->isVersusMode()) {
 		mRedBlueYellowScore[1] = 0.0f;
 		mRedBlueYellowScore[0] = 0.0f;
+        mMarbleRedBlue[3]      = nullptr;
+        mMarbleRedBlue[2]      = nullptr;
 		mMarbleRedBlue[1]      = nullptr;
 		mMarbleRedBlue[0]      = nullptr;
 		Vector3f position      = Vector3f(0.0f);
@@ -965,6 +969,18 @@ bool GameMessageVsGetDoping::actVs(VsGameSection* section)
  */
 bool GameMessageVsBattleFinished::actVs(VsGameSection* section)
 {
+    switch (gConfig[CAPTURE_MARBLE])
+    {
+    case ConfigEnums::CAPTURE_ELIMINATE:
+    case ConfigEnums::CAPTURE_STEALMARBLE:
+    case ConfigEnums::CAPTURE_STEALSPRAY:
+        return false;
+    case ConfigEnums::CAPTURE_VICTORY:
+        break;
+    
+    default:
+        break;
+    }
 	if (section->mState) {
 		section->mState->onBattleFinished(section, mWinningSide, false);
 	}

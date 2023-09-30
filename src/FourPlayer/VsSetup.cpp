@@ -120,6 +120,7 @@ bool Navi::hasDope(int dope) {
 
 void Navi::useDope(int dope) {
     if (gameSystem->isVersusMode()) {
+		mSprayCounts[dope]--;
         gDopeCountArray[getVsTeam()][dope]--; 
     }
     else {
@@ -129,9 +130,10 @@ void Navi::useDope(int dope) {
 
 void Navi::incDopeCount(int dope) {
     if (gameSystem->isVersusMode()) {
+		mSprayCounts[dope]++;
         GameMessageVsGetDoping dopeMsg (mNaviIndex, dope);
         gameSystem->mSection->sendMessage(dopeMsg);
-        gDopeCountArray[getVsTeam()][dope]++; 
+        gDopeCountArray[getVsTeam()][dope]++;
     }
     else {
         playData->incDopeCount(dope);

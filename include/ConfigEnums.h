@@ -108,4 +108,11 @@ enum EFriendlyFire {
     FRIENDCHERRY_ON
 };
 
+enum ECaptureMarble {
+    CAPTURE_VICTORY,
+    CAPTURE_ELIMINATE,
+    CAPTURE_STEALMARBLE,
+    CAPTURE_STEALSPRAY
+};
+
 } // namespace ConfigEnums
