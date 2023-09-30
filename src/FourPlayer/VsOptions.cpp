@@ -720,7 +720,7 @@ void CharacterSelect::init(VsOptionsMenuMgr* menu) {
         mSelectingCharactor[i] = false;
     }
 
-    Vector2f startOffset(50.0f, 50.0f);
+    Vector2f startOffset(0.0f, 50.0f);
 
     Vector2f cardSize (50.0f);
     Vector2f spaceBetween (0.0f);

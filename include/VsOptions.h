@@ -181,7 +181,7 @@ struct CharacterSelect : public IMenu
         mControllers[3] = nullptr;
     }
 
-    const static int sRowSize = 10;
+    const static int sRowSize = 12;
 
     const static int sMenuID = 2;
 
