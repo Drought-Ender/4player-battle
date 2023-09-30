@@ -246,6 +246,7 @@ struct RandMapScore {
 	void setVersusOnyon();
 	MapNode* getMaxScoreRoomMapNode(MapNode*, BaseGen**);
 	MapNode* getMaxScoreRoomMapNode(int count, MapNode** mapNode, BaseGen** maxScoreGen);
+	MapNode* getMaxVsScoreRoomMapNode(int count, MapNode** mapNode, BaseGen** maxScoreGen, bool);
 	void calcNodeScore(MapNode*);
 	void copyNodeScore(int color);
 	void subNodeScore(int color);

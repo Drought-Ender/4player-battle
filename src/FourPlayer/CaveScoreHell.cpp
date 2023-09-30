@@ -135,13 +135,15 @@ void RandMapScore::setVersusOnyon()
 				MapNode* centerNode = getVsCenterRoomMapNode();
 				calcNodeScore(centerNode);
 
-				onyonNodes[2] = getMaxScoreRoomMapNode(2, onyonNodes, &onyonGens[2]);
+				onyonNodes[2] = getMaxVsScoreRoomMapNode(2, onyonNodes, &onyonGens[2], false);
 				JUT_ASSERT(onyonNodes[2], "NO ROOM FOR WHITE ONYON");
 				JUT_ASSERT(onyonGens[2], "NO GEN FOR WHITE ONYON");
 				calcNodeScore(onyonNodes[2]);
 				copyNodeScore(SECOND_SCORE);
+
+				calcNodeScore(centerNode);
 				
-				onyonNodes[3] = getMaxScoreRoomMapNode(3, onyonNodes, &onyonGens[3]);
+				onyonNodes[3] = getMaxVsScoreRoomMapNode(3, onyonNodes, &onyonGens[3], true);
 				JUT_ASSERT(onyonNodes[3], "NO ROOM FOR PURPLE ONYON");
 				JUT_ASSERT(onyonGens[3], "NO GEN FOR WHITE ONYON");
 				calcNodeScore(onyonNodes[3]);
@@ -244,6 +246,42 @@ MapNode* RandMapScore::getMaxScoreRoomMapNode(int count, MapNode** mapNode, Base
 	}
 	return maxScoreNode;
 }
+
+MapNode* RandMapScore::getMaxVsScoreRoomMapNode(int count, MapNode** mapNode, BaseGen** maxScoreGen, bool second)
+{
+	MapNode* maxScoreNode = nullptr;
+	int minScore          = 1000000;
+	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode)
+	{
+		bool doSkip = false;
+        for (int i = 0; i < count; i++) {
+            if (currNode == mapNode[i]) {
+                doSkip = true;
+            }
+        }
+		if (!doSkip && currNode->mUnitInfo->getUnitKind() == UNITKIND_Room) {
+			DebugReport("Second Score %i\n", currNode->getNodeScore());
+			int secondScore = (second) ? absVal(currNode->getVersusScore(SECOND_SCORE)) : currNode->getNodeScore();
+			int nodeScore = -secondScore + absVal(currNode->getVersusScore(FIRST_SCORE)) + 10;
+			BaseGen* gen  = currNode->mUnitInfo->getBaseGen();
+			if (gen) {
+				FOREACH_NODE(BaseGen, gen->mChild, currGen)
+				{
+					if (currGen->mSpawnType == BaseGen::Start) {
+						if (nodeScore < minScore || (nodeScore == minScore && randWeightFloat(1.0f) < 0.5f)) {
+							*maxScoreGen = currGen;
+							maxScoreNode = currNode;
+							minScore     = nodeScore;
+						}
+					}
+				}
+			}
+		}
+	}
+	DebugReport("next\n");
+	return maxScoreNode;
+}
+
 
 void RandMapScore::clearRoomAndDoorScore()
 {

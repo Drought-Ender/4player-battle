@@ -1461,7 +1461,7 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	
 	VsWeights mindists;
 	VsWeights maxdists;
-	if (getTeamCount() == 2) {
+	if (true) {
 		mindists[0] = mindists[1] = 0.45f;
 		maxdists[0] = maxdists[1] = 0.55f;
 	} 
