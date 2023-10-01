@@ -5,6 +5,8 @@
 #include "PSSystem/PSSystemIF.h"
 #include "VsOptions.h"
 #include "Controller.h"
+#include "PS.h"
+
 
 int mRealWinCounts[4];
 bool gDrawVsMenu = true;
@@ -212,6 +214,7 @@ bool TFourVsSelect::doUpdateFadein() {
 
 void TFourVsSelect::doUpdateFadeoutFinish() {
     TVsSelect::doUpdateFadeoutFinish();
+    PSStop2DStream();
     _1F8->mWhiteHandicap  = mWhitePikiNum;
     _1F8->mPurpleHandicap = mPurplePikiNum;
     DebugReport("Handicaps:\n Red %i\n Blue %i\n White %i\n Purple %i\n", _1F8->mOlimarHandicap, _1F8->mLouieHandicap, _1F8->mWhiteHandicap, _1F8->mPurpleHandicap);
@@ -222,9 +225,12 @@ bool TFourVsSelect::doUpdate() {
         gDrawVsMenu = gOptionMenu->update();            
         
         if (gDrawVsMenu) {
+            PSStop2DStream();
+            PSStart2DStream(0xc001100f);
             for (int i = 0; i < 4; i++) {
                 mNaviImages[i]->changeTexture(sCharacters[i].mImage, 0);
             }
+            
         }
 
         return false;
@@ -244,6 +250,8 @@ bool TFourVsSelect::doUpdate() {
     if (_D4->mState == 0) {
         if (mController->isButtonDown(JUTGamePad::PRESS_START) && !mCanCancel) {
             PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_OPEN, 0);
+            PSStop2DStream();
+            PSStart2DStream(0xc0011024);
             gDrawVsMenu = false;
             return false;
         }
