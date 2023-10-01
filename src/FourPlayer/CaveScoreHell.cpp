@@ -665,6 +665,7 @@ void RandItemUnit::getItemDropPosition(Vector3f& position, f32 weight, int floor
 	}
 }
 
+
 void RandMapMgr::getItemDropPosition(Vector3f& position, VsWeights minDists, VsWeights maxDists)
 {
     VsWeights weight;
@@ -782,6 +783,8 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode* node, int scores[2])
 	}
 }
 
+int newScore[2]; 
+
 void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p1, VsWeights p2)
 {
     VsWeights avg;
@@ -791,6 +794,9 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 	weight[FIRST_SCORE] = (p2[FIRST_SCORE] - avg[FIRST_SCORE] > 0.0f) ? p2[FIRST_SCORE] - avg[FIRST_SCORE] : -(p2[FIRST_SCORE] - avg[FIRST_SCORE]);
     weight[SECOND_SCORE] = (p2[SECOND_SCORE] - avg[SECOND_SCORE] > 0.0f) ? p2[SECOND_SCORE] - avg[SECOND_SCORE] : -(p2[SECOND_SCORE] - avg[SECOND_SCORE]);
 
+	newScore[FIRST_SCORE]  = 0;
+	newScore[SECOND_SCORE] = 0;
+
 
 	MapNode* nodeList[16];
 	BaseGen* genList[16];
@@ -798,14 +804,29 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 	int randVal  = 2.0f * randFloat();
 	int absCount = ((count < 0) ? -count : count) - 1; // ?? what even is this
 	mRandItemUnit->setItemDropPositionList(nodeList, genList);
-
+	
 	for (int i = 0; i < count; i++) {
 		VsWeights val = { avg[0], avg[1] };
-		if (i == 0) val[FIRST_SCORE] += weight[FIRST_SCORE];
-		if (i == 1) val[FIRST_SCORE] -= weight[FIRST_SCORE];
-		if (i == 2) val[SECOND_SCORE] += weight[SECOND_SCORE];
-		if (i == 3) val[SECOND_SCORE] -= weight[SECOND_SCORE];
+		OSReport("FIRST SCORE %f\n", val[FIRST_SCORE]);
+		
+		// if (i == 0) val[FIRST_SCORE] += weight[FIRST_SCORE];
+		// if (i == 1) val[FIRST_SCORE] -= weight[FIRST_SCORE];
+		
+
+		// if (gEffectiveTeamCount > 2) {
+		// 	if (i == 2) val[SECOND_SCORE] += weight[SECOND_SCORE];
+		// 	if (i == 3) val[SECOND_SCORE] -= weight[SECOND_SCORE];
+		// }
 		mRandItemUnit->getItemDropPosition(positions[i], val, i);
+
+		f32 newFirstAvg = (newScore[FIRST_SCORE] - (f32)mRandItemUnit->mMapScore->mVersusLowScore[FIRST_SCORE]) / 
+		((f32)mRandItemUnit->mMapScore->mVersusHighScore[FIRST_SCORE] - (f32)mRandItemUnit->mMapScore->mVersusLowScore[FIRST_SCORE]);
+
+		f32 newSecondAvg = (newScore[SECOND_SCORE] - (f32)mRandItemUnit->mMapScore->mVersusLowScore[SECOND_SCORE]) / 
+		((f32)mRandItemUnit->mMapScore->mVersusHighScore[SECOND_SCORE] - (f32)mRandItemUnit->mMapScore->mVersusLowScore[SECOND_SCORE]);
+
+		avg[FIRST_SCORE]  = newFirstAvg;
+		avg[SECOND_SCORE] = newSecondAvg;
 	}
 }
 
@@ -854,6 +875,9 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 		} else {
 			int firstDiff = absVal(currNode->getVersusScore(FIRST_SCORE) - scores[FIRST_SCORE]);
 			int secondDiff = absVal(currNode->getVersusScore(SECOND_SCORE) - scores[SECOND_SCORE]);
+			if (gEffectiveTeamCount < 3) {
+				secondDiff = 0;
+			}
 			distScores[i] = firstDiff + secondDiff;
 		}
 	}
@@ -871,6 +895,13 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 		if (check) {
 			mMapTileList[idx] = nodes[i];
 			mSpawnList[idx]   = gens[i];
+
+			OSReport("PLACED AT %i, %i\n", mMapTileList[idx]->getVersusScore(FIRST_SCORE), mMapTileList[idx]->getVersusScore(SECOND_SCORE));
+
+			newScore[FIRST_SCORE]  -= (mMapTileList[idx]->getVersusScore(FIRST_SCORE));
+			newScore[SECOND_SCORE] -= (mMapTileList[idx]->getVersusScore(SECOND_SCORE));
+
+			OSReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
 
 			return mMapTileList[idx]->getBaseGenGlobalPosition(mSpawnList[idx]);
 		}
