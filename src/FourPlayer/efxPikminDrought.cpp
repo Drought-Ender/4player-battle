@@ -136,5 +136,42 @@ void PikiPanicState::cleanup(Piki* piki)
 	}
 }
 
+void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
+{
+	_20 = true;
+	transit(piki, PIKISTATE_Walk, nullptr);
+
+	switch (mPanicType) {
+	case PIKIPANIC_Fire:
+		efx::TPkEffect* effectsObjFire = piki->mEffectsObj;
+		effectsObjFire->killMoe_();
+		if (effectsObjFire->isFlag(PKEFF_Fire)) {
+			effectsObjFire->resetFlag(PKEFF_Fire);
+			effectsObjFire->createMoeSmoke_(effectsObjFire->_0C);
+			effectsObjFire->mMoeSmokeTimer = 60;
+			efx::createSimpleChinka(*effectsObjFire->_0C);
+		}
+		break;
+	case PIKIPANIC_Water:
+		efx::TPkEffect* effectsObjWater = piki->mEffectsObj;
+		effectsObjWater->killWater_();
+		if (effectsObjWater->isFlag(PKEFF_Water)) {
+			effectsObjWater->resetFlag(PKEFF_Water);
+			efx::createSimpleWaterOff(*effectsObjWater->_14);
+		}
+		break;
+	case PIKIPANIC_Gas:
+		//piki->setGasInvincible(90);
+		efx::TPkEffect* effectsObjGas = piki->mEffectsObj;
+		effectsObjGas->killChudoku_();
+		if (effectsObjGas->isFlag(PKEFF_Gas)) {
+			effectsObjGas->resetFlag(PKEFF_Gas);
+			efx::createSimpleGedoku(*effectsObjGas->_0C);
+		}
+		break;
+	}
+}
+
+
 } // namespace Game
 
