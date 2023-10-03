@@ -732,6 +732,9 @@ struct DispMemberVs : public DispMemberBase {
 	f32 mGhostIconTimerP4;
 	bool mFlag2[4];
 	bool mNaviInactiveFlags[4];
+
+	u32 mTimerMinute;
+	u32 mTimerSecond;
 };
 
 // size 0x28

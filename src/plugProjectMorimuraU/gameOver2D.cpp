@@ -180,7 +180,6 @@ void TPresidentDown2D::doCreate(JKRArchive* arc)
 	mGameOverScreen->addAnim("gameover_president.btk");
 	mGameOverScreen->addAnim("gameover_president_02.btk");
 }
-
 /*
  * --INFO--
  * Address:	80348570

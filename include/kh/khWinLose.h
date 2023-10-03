@@ -167,6 +167,16 @@ struct ObjWinLoseReason : public ::Screen::ObjBase {
 	} msVal;
 };
 
+struct ObjWinLoseTimeUp : public ObjWinLoseReason {
+	ObjWinLoseTimeUp(int i) : ObjWinLoseReason(i) 
+	{
+	}
+	
+	virtual void doCreate(JKRArchive*);
+	virtual bool doUpdate();            // _58
+	virtual void doDraw(Graphics& gfx); // _68
+};
+
 struct SceneWinLose : public ::Screen::SceneBase {
 	virtual const char* getResName() const { return "win_lose.szs"; } // _1C (weak)
 	virtual SceneType getSceneType() { return SCENE_WIN_LOSE; }       // _08 (weak)

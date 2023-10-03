@@ -127,6 +127,7 @@ struct TPresidentDown2D : public TGameOverBase {
 	// _00-_90 = TGameOverBase
 };
 
+
 struct TGameOverSceneBase : public THIOScene {
 	virtual bool isUseBackupSceneInfo()
 	{

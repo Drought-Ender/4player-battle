@@ -1014,6 +1014,7 @@ bool GameMessageVsGetOtakara::actVs(VsGameSection* section)
 {
 	if (section->mState) {
 		section->mDispMarbleCounts[_04]++;
+		section->mState->onYellowBedamaGet(section);
 		PSSetLastBeedamaDirection(_04 == 0, section->mDispMarbleCounts[_04] == 3);
 		if (section->mDispMarbleCounts[_04] >= 4) {
 			section->mState->onBattleFinished(section, _04, true);

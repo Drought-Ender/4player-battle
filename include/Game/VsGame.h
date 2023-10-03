@@ -50,10 +50,12 @@ enum VsCaveInfoType {
 };
 
 enum LoseReasonFlags {
-	VSLOSE_OrimaDown       = 0x1,
-	VSLOSE_Extinction = 0x2,
-	VSLOSE_ColoredMarble       = 0x4,
-	VSLOSE_Marble     = 0x80,
+	VSLOSE_OrimaDown     = 0x1,
+	VSLOSE_Extinction    = 0x2,
+	VSLOSE_ColoredMarble = 0x4,
+	VSLOSE_TIMEUP        = 0x10,
+	VSLOSE_Marble        = 0x80,
+	
 };
 
 enum VSPlayerColor {
@@ -317,6 +319,7 @@ struct State : public FSMState<VsGameSection> {
 	virtual void onBattleFinished(VsGameSection*, int, bool) { }          // _40 (weak)
 	virtual void onRedOrBlueSuckStart(VsGameSection*, int, bool) { }      // _44 (weak)
 	virtual bool isCardUsable(VsGameSection*) { return false; }           // _48 (weak)
+	virtual void onYellowBedamaGet(VsGameSection*) { }
 
 	// _00     = VTBL
 	// _00-_0C = FSMState
@@ -346,6 +349,8 @@ struct GameState : public State {
 	virtual bool isCardUsable(VsGameSection*);                    // _48
 	virtual void drawStatus(Graphics&, VsGameSection*);           // _4C
 	virtual void do_init(VsGameSection*);                         // _50
+
+	virtual void onYellowBedamaGet(VsGameSection*);
 
 	void clearLoseCauses();
 	void checkFindKeyDemo(VsGameSection*);
@@ -453,6 +458,8 @@ struct GameState : public State {
 
 	void setWinMarbleColor(int teamId, int color);
 
+	void vsTimeUp(VsGameSection* section);
+
 	// _00     = VTBL
 	// _00-_0C = State
 	u32 _0C;                    // _0C
@@ -468,7 +475,11 @@ struct GameState : public State {
 	int mNaviStatus[4];
 	int mOrimaDownState[4];
 	bool mExtinctions[4];
+	float mTimeLeft;
 };
+
+#define VS_TIMER_START_TIME (480.0f)
+#define VS_TIMER_ADD_TIME (120.0f)
 
 struct VSState : public GameState {
 	VSState();

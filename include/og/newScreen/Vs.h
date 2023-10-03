@@ -219,6 +219,40 @@ struct FourObjVs : public ObjVs {
 
 	f32 mBedamaScale;
 
+	P2DScreen::Mgr_tuning* mTimerScreen;
+
+	struct Clock
+	{
+		Clock() {
+			minuteHidden = false;
+			minute = nullptr;
+			second = nullptr;
+			colon = nullptr;
+			chimeRed = false;
+			chimeOrange = false;
+		}
+
+		bool minuteHidden;
+		bool secondPushed;
+		og::Screen::CallBack_CounterRV* minute;
+		og::Screen::CallBack_CounterRV* second;
+		J2DPicture* colon;
+		J2DPane* base;
+
+		JGeometry::TVec2f secondPos1;
+		JGeometry::TVec2f secondPos2;
+		JGeometry::TVec2f secondPos3;
+
+		bool chimeRed;
+		bool chimeOrange;
+
+		void update();
+		void setColors();
+
+		void init();
+
+	} mClock;
+
 	void doUpdateCommon();
 	void setOnOffBdama4P(bool doEfx);
 	void updateCSticks();

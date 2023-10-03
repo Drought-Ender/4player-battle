@@ -96,6 +96,9 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 	section->mGhostIconTimers[1]    = 0.0f;
 	section->mGhostIconTimers[2]    = 0.0f;
 	section->mGhostIconTimers[3]    = 0.0f;
+
+
+	mTimeLeft = VS_TIMER_START_TIME; // 8 minutes default timer
 }
 
 /*
@@ -312,6 +315,17 @@ void GameState::exec(VsGameSection* section)
 		updateNavi(section, VSPLAYER_Blue);
 		updateNavi(section, VSPlayer_Purple);
 		updateNavi(section, VSPlayer_White);
+
+		if (gTournamentMode && !gameSystem->paused() && mTimeLeft >= 0.0f && !section->mMenuFlags
+		    && !moviePlayer->mDemoState) 
+		{
+
+			mTimeLeft -= sys->mDeltaTime;
+
+			if (mTimeLeft <= 0.0f) {
+				vsTimeUp(section);
+			}
+		}
 	}
 
 	checkPikminZero(section);
@@ -410,6 +424,15 @@ void GameState::exec(VsGameSection* section)
 					DebugReport("Draw!\n");
 					outcome = 3; // draw
 					VsGameSection::mDrawCount += 1;
+				}
+
+				if (mTimeLeft <= 0.0f) {
+					for (int i = 0; i < 4; i++) {
+						if (outcomes[i] == 0 || outcome == 3) {
+							outcomes[i] = -1; // timeup
+						}
+						outcome = Timeup2P;
+					}
 				}
 
 
@@ -1489,8 +1512,8 @@ void GameState::update_GameChallenge(VsGameSection* section)
 			disp.mNaviInactiveFlags[i] = mNaviStatus[i] != -1;
 		}
 
-		
-
+		disp.mTimerSecond = ((u32)mTimeLeft) % 60;
+		disp.mTimerMinute = ((u32)mTimeLeft) / 60;
 
 		bool blueMarble, redMarble, whiteMarble, purpleMarble;
 		getMarbleLoss(redMarble, blueMarble, whiteMarble, purpleMarble);
@@ -1529,12 +1552,48 @@ void GameState::update_GameChallenge(VsGameSection* section)
 	
 }
 
+void GameState::vsTimeUp(VsGameSection* section) {
+	int highestMarbleCount = 0;
+	int highestID = 0;
+	bool marbleDraw = true;
+
+	for (int i = 0; i < ARRAY_SIZE(section->mDispMarbleCounts); i++) {
+		int& marbleCount = section->mDispMarbleCounts[i];
+		if (marbleCount > highestMarbleCount) {
+			highestID = i;
+			highestMarbleCount = marbleCount;
+			marbleDraw = false;
+		}
+		else if (marbleCount == highestMarbleCount) {
+			marbleDraw = true;
+		}
+	}
+
+	if (marbleDraw) {
+		for (int i = 0; i < 4; i++) {
+			setLoseCause(i, VSLOSE_TIMEUP);
+			mNaviStatus[i] = VSLOSE_TIMEUP;
+		}
+	}
+	else {
+		for (int i = 0; i < 4; i++) {
+			if (i == highestID) continue;
+			mNaviStatus[i] = VSLOSE_TIMEUP;
+			setLoseCause(i, VSLOSE_TIMEUP);
+		}
+	}
+}
+
 /*
  * --INFO--
  * Address:	8022C70C
  * Size:	000004
  */
 void GameState::drawStatus(Graphics&, VsGameSection* section) { }
+
+void GameState::onYellowBedamaGet(VsGameSection* section) {
+	mTimeLeft += VS_TIMER_ADD_TIME;
+}
 
 } // namespace VsGame
 } // namespace Game

@@ -79,8 +79,10 @@ void ObjWinLose::doCreate(JKRArchive* arc)
 		mScreenNum = 1;
 		break;
 	case Timeup2P: // time out 2p
-		arg[0] = 2;
-		arg[1] = 2;
+		arg[0] = 1 - disp->mNewOutcomes[0];
+		arg[1] = 1 - disp->mNewOutcomes[1];
+		arg[2] = 1 - disp->mNewOutcomes[2];
+		arg[3] = 1 - disp->mNewOutcomes[3];
 		break;
 	}
 

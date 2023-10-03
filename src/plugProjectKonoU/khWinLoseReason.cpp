@@ -5,6 +5,7 @@
 #include "utilityU.h"
 #include "PSSystem/PSGame.h"
 #include "PSSystem/PSMainSide_Scene.h"
+#include "Game/VsGame.h"
 #include "JSystem/J2D/J2DAnmLoader.h"
 
 static void _Print(char* format, ...) { OSReport(format, __FILE__); }
@@ -83,7 +84,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 		f32 posX = 0.0f;
 		if (Game::gNaviNum > 2) posX = (i & 1) ? 160.0f : -160.0f;
 		switch (mOutcome[i]) {
-		case 1: // captain down
+		case Game::VsGame::VSLOSE_OrimaDown: // captain down
 		{
 			mScreenObj[i] = new Morimura::TOrimaDown2D;
 			registObj(mScreenObj[i], arc);
@@ -95,7 +96,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 			screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
 			break;
 		}
-		case 2: // piki extinct
+		case Game::VsGame::VSLOSE_Extinction: // piki extinct
 		{
 			mScreenObj[i] = new Morimura::TPikminDown2D;
 			registObj(mScreenObj[i], arc);

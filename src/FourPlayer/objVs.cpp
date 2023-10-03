@@ -17,7 +17,7 @@ namespace og
 namespace newScreen
 {
 
-FourObjVs::FourObjVs(const char* name) : ObjVs(name) {
+FourObjVs::FourObjVs(const char* name) : ObjVs(name), mClock() {
     mScreenP3 = nullptr;
     mScreenP4 = nullptr;
 
@@ -58,6 +58,8 @@ FourObjVs::FourObjVs(const char* name) : ObjVs(name) {
 
     mFirstBedamaGetP3 = false;
     mFirstBedamaGetP4 = false; 
+
+	mTimerScreen = nullptr;
 }
 
 typedef JUtility::TColor TColorPair[2];
@@ -265,10 +267,146 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		}
 	}
 
+
+	mTimerScreen = new P2DScreen::Mgr_tuning;
+	mTimerScreen->set("timer.blo", 0x2040000, arc);
+
+
+	mClock.minute = og::Screen::setCallBack_CounterRV(mTimerScreen, 'MTime1', &mDisp->mTimerMinute, 1, false, true, arc);
+    mClock.second = og::Screen::setCallBack_CounterRV(mTimerScreen, 'STime1', &mDisp->mTimerSecond, 2, false, true, arc);
+    mClock.second->setZeroAlpha(255);
+    mClock.colon  = (J2DPicture*)mTimerScreen->search('CTime');
+    mClock.base   = mTimerScreen->search('BaseTime');
+
+    if (!gTournamentMode) {
+        mClock.base->hide();
+    }
+
+    mClock.init();
+
     // for (int i = 0; i < 4; i++) {
     //     setWinBedamaColor(i, mDisp->mWinMarbleColors[i]);
     // }
     setOnOffBdama4P(false);
+}
+
+void FourObjVs::Clock::init() {
+    
+    P2ASSERT(minute);
+    P2ASSERT(second);
+    P2ASSERT(colon);
+    P2ASSERT(base);
+    minuteHidden = false;
+    secondPushed = false;
+    
+    secondPos1 = second->mPane->mOffset;
+    secondPos2 = JGeometry::TVec2f(second->mPane->mBounds.f.x, 0.0f);
+    secondPos3 = JGeometry::TVec2f(0.0f, 0.0f);
+    update();
+}
+
+void FourObjVs::Clock::update() {
+    
+    if (!minute || !second || !colon) return;
+    if (!gTournamentMode) return;
+
+    bool shouldTransitMinute = *(minute->mCountPtr) == 0;
+    bool shouldTransitSecond = *(second->mCountPtr) < 10;
+
+
+    // second->mPane->mOffset = JGeometry::TVec2f(0, 0);
+    // second->mPane->calcMtx();
+
+    if (shouldTransitMinute && shouldTransitSecond && !secondPushed) {
+        secondPushed = true;
+        second->mPane->mOffset = secondPos3;
+    }
+    else if (!shouldTransitSecond && secondPushed) {
+        secondPushed = false;
+        second->mPane->mOffset = secondPos2;
+    }
+    else if (shouldTransitMinute && !minuteHidden) {
+        secondPushed = false;
+        second->mPane->mOffset = secondPos2;
+        second->mPane->calcMtx();
+        second->setZeroAlpha(0);
+        minuteHidden = true;
+        colon->hide();
+        minute->hide();
+        second->mZeroAlpha = 0;
+    }
+    else if (!shouldTransitMinute && minuteHidden) {
+        secondPushed = false;
+        second->mPane->mOffset = secondPos1;
+        second->mPane->calcMtx();
+        minuteHidden = false;
+        second->setZeroAlpha(255);
+        colon->show();
+        minute->show();
+    }
+
+    minute->update();
+    second->update();
+    
+    setColors();
+    
+}
+
+void FourObjVs::Clock::setColors() {
+
+    static const JUtility::TColor HighWhite(0xff, 0xff, 0xff, 0xff);
+    static const JUtility::TColor MidWhite(0xff, 0x80, 0x00, 0xff);
+    static const JUtility::TColor LowWhite(0xff, 0x00, 0x00, 0xff);
+
+    static const JUtility::TColor HighBlack(0x00, 0x00, 0x00, 0x00);
+    static const JUtility::TColor MidBlack(0x40, 0x20, 0x00, 0x00);
+    static const JUtility::TColor LowBlack(0x40, 0x00, 0x00, 0x00);
+
+
+    int time = (*second->mCountPtr) + (*minute->mCountPtr) * 60;
+
+    if (time <= 60) {
+        second->mPic1->setWhite(LowWhite);
+        minute->mPic1->setWhite(LowWhite);
+        colon->setWhite(LowWhite);
+
+        second->mPic1->setBlack(LowBlack);
+        minute->mPic1->setBlack(LowBlack);
+        colon->setBlack(LowBlack);
+		
+		if (!chimeRed) {
+			ogSound->setChime();
+			chimeRed = true;
+		}
+    }
+    else if (time <= 180) {
+		chimeRed = false;
+		
+        second->mPic1->setWhite(MidWhite);
+        minute->mPic1->setWhite(MidWhite);
+        colon->setWhite(MidWhite);
+
+        second->mPic1->setBlack(MidBlack);
+        minute->mPic1->setBlack(MidBlack);
+        colon->setBlack(MidBlack);
+
+		if (!chimeOrange) {
+			ogSound->setChime();
+			chimeOrange = true;
+		}
+    }
+    else {
+		chimeRed = false;
+		chimeOrange = false;
+
+        second->mPic1->setWhite(HighWhite);
+        minute->mPic1->setWhite(HighWhite);
+        colon->setWhite(HighWhite);
+
+        second->mPic1->setBlack(HighBlack);
+        minute->mPic1->setBlack(HighBlack);
+        colon->setBlack(HighBlack);
+    }
 }
 
 // gets inlined normally
@@ -290,6 +428,8 @@ void ObjVs::ScreenSet::update(og::Screen::DataNavi& data)
 	dope->mActiveNaviID           = data.mActiveNaviID;
 	dope->update();
 }
+
+
 
 bool FourObjVs::checkUpdateWinColor() {
     bool updated = false;
@@ -329,6 +469,7 @@ void FourObjVs::updateCSticks() {
 }
 
 void FourObjVs::doUpdateCommon() {
+	mClock.update();
     checkUpdateWinColor();
     setOnOffBdama4P(!mSetBedamaFlag);
     checkObake();
@@ -438,6 +579,7 @@ void FourObjVs::doDraw(Graphics& gfx) {
         graf->fillBox(box);
     }
     ObjVs::doDraw(gfx);
+	mTimerScreen->draw(gfx, gfx.mPerspGraph);
 }
 
 void FourObjVs::setOnOffBdama4P(bool doEfx)
