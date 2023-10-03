@@ -90,7 +90,6 @@ extern int gConfig[];
 
 
 enum OptionsEnum {
-    MAP_TYPE,
     MARBLE_BURY,
     MARBLE_CARRY,
     CHERRY_RATE,

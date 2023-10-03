@@ -359,10 +359,6 @@ void TitleState::execVs(VsGameSection* section)
 				sprintf(section->mCaveInfoFilename, "four/%s", data->mCaveInfoFilename);
 				sprintf(section->mEditFilename, "four/%s", data->mStageLayoutFilePath);
 			}
-			else if (gConfig[MAP_TYPE]) {
-				sprintf(section->mCaveInfoFilename, "old/%s", data->mCaveInfoFilename);
-				sprintf(section->mEditFilename, "old/%s", data->mStageLayoutFilePath);
-			}
 			else {
 				strcpy(section->mCaveInfoFilename, data->mCaveInfoFilename);
 				strcpy(section->mEditFilename, data->mStageLayoutFilePath);

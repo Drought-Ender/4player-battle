@@ -17,10 +17,6 @@ VsOptionsMenuMgr* gOptionMenu;
 void Option::readOptions() {
     OSReport("Tournament Mode Ptr %p\n", &gTournamentMode);
     if (gTournamentMode) {
-        gOptions[MAP_TYPE].value = ConfigEnums::MAP_NEW;
-        gOptions[MAP_TYPE].hide = true;
-        gConfig[MAP_TYPE] = ConfigEnums::MAP_NEW;
-
         gOptions[MARBLE_BURY].value = ConfigEnums::PLACE_BURY;
         gConfig[MARBLE_BURY] = ConfigEnums::PLACE_BURY;
 
@@ -46,13 +42,6 @@ void Option::readOptions() {
 }
 
 Option gOptions[] = {
-    {
-        "Maps",
-        { "Reworked", "Vanilla" },
-        { "Use remade maps that are better balenced then the Vanilla game", "Use Vanilla 2p-battle maps" },
-        2,
-        1
-    },
     {
         "Onion Marbles",
         { "Vanilla", "Buried", "Removed" },
