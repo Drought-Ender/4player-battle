@@ -144,21 +144,8 @@ bool newScreen::ObjFloor::isCHALLENGE()
  */
 inline bool newScreen::ObjFloor::isVS()
 {
-	bool ret = false;
-	switch (mDisp->mCaveID) {
-	case 'vs00':
-	case 'vs01':
-	case 'vs02':
-	case 'vs03':
-	case 'vs04':
-	case 'vs05':
-	case 'vs06':
-	case 'vs07':
-	case 'vs08':
-	case 'vs09':
-		ret = true;
-	}
-	return ret;
+	u16 firstTwoLetters = (mDisp->mCaveID >> (8 * sizeof(u16))) & 0xffff;
+	return firstTwoLetters == 'vs';
 }
 
 /*

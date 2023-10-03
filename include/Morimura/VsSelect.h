@@ -161,6 +161,9 @@ struct TVsSelect : public TScrollList {
 	void changeLouieTexture(int);
 	void changeSlotPage();
 
+	void makeMsgTag();
+	void setSelectTextures();
+
 	static bool mCanCancel;
 
 	// _00     = VTBL1
