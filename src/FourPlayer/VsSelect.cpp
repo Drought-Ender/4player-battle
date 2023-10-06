@@ -547,9 +547,6 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
     
 
     TVsSelect::doDraw(gfx);
-
-    gfx.mOrthoGraph.setPort();
-
     
     // J2DPrint printer(getPikminFont(), 0.0f);
 

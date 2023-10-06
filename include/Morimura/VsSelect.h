@@ -131,18 +131,18 @@ struct TVsSelectScene : public THIOScene {
 
 struct TVsPiki {
 
-	inline TVsPiki(J2DPane* flower, J2DPane* right, J2DPane* left) {
-		mPikminFlower = flower;
-		mPikminRight  = right;
+	inline TVsPiki(J2DPane* left, J2DPane* right, J2DPane* flower) {
 		mPikminLeft   = left;
-		
-		P2ASSERT(mPikminRight);
-		P2ASSERT(mPikminLeft);
+		mPikminRight  = right;
+		mPikminFlower = flower;
 
-		mPikminFlower->setBasePosition(J2DPOS_TopRight);
-		mPikminRight->setBasePosition(J2DPOS_TopLeft);
-		mPikminLeft->setBasePosition(J2DPOS_Center);
+		P2ASSERT(mPikminLeft);
+		P2ASSERT(mPikminRight);
 		P2ASSERT(mPikminFlower);
+
+		mPikminLeft->setBasePosition(J2DPOS_TopRight);
+		mPikminRight->setBasePosition(J2DPOS_TopLeft);
+		mPikminFlower->setBasePosition(J2DPOS_Center);
 	}
 
 	inline void initID32(ID32* ids) {
@@ -171,9 +171,9 @@ struct TVsPiki {
 		Vector2f mPosition;
 	};
 
-	J2DPane* mPikminFlower;
-	J2DPane* mPikminRight;
 	J2DPane* mPikminLeft;
+	J2DPane* mPikminRight;
+	J2DPane* mPikminFlower;
 	posInfo mInfo[10];
 	Vector2f mBounds[2];
 
@@ -371,8 +371,6 @@ struct TFourVsSelect : public TVsSelect
 	u32 mDispWhitePikiNum;
 	int mPurplePikiNum;
 	u32 mDispPurplePikiNum;
-	
-	J2DPrint* printers[4];
 
 	TVsPiki* mWhitePikis;
 	TVsPiki* mPurplePikis;
