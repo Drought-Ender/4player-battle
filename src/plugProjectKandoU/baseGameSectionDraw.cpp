@@ -37,49 +37,6 @@ static Color4 vsTeamColorsColor4[] = {
 
 namespace Game {
 
-
-void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
-	vp->setViewport();
-	vp->setProjection();
-	gfx.initPerspPrintf(vp);
-	for (int i = 0; i < Game::gNaviNum; i++) {
-		if (i == vp->mVpId) {
-			if (!sDebugMode) continue;
-			PerspPrintfInfo info;
-			info.mFont = getPikminFont();
-			info._04 = 0;
-			info._08 = 0;
-			info._0C = 0;
-			info._10 = 0.3f;
-			info._14 = vsTeamColorsColor4[getVsTeam_s(i)];
-			info._18 = vsTeamColorsColor4[getVsTeam_s(i)];
-
-			Vector3f position = naviMgr->getAt(i)->getPosition();
-			position.y += 25.0f;
-			gfx.mCurrentViewport = vp;
-
-			gfx.perspPrintf(info, position, "%f, %f, %f | %f", position.x, position.y - 25.0f, position.z, naviMgr->getAt(i)->getFaceDir());
-		}
-		else if (gDrawNavi[i]) {
-			PerspPrintfInfo info;
-			info.mFont = getPikminFont();
-			info._04 = 0;
-			info._08 = 0;
-			info._0C = 0;
-			info._10 = 0.3f;
-			info._14 = vsTeamColorsColor4[getVsTeam_s(i)];
-			info._18 = vsTeamColorsColor4[getVsTeam_s(i)];
-
-			Vector3f position = naviMgr->getAt(i)->getPosition();
-			position.y += 25.0f;
-
-			gfx.mCurrentViewport = vp;
-			gfx.perspPrintf(info, position, "%s", sCharacters[i].mDispName);
-		}
-	}
-	
-}
-
 /*
  * --INFO--
  * Address:	802398D8
@@ -226,5 +183,61 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 	vp->setJ3DViewMtx(false);
 	sys->mTimers->_stop("j3d-etc");
 }
+
+
+void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
+	
+	if (moviePlayer->isActive()) return;
+
+	vp->setViewport();
+	vp->setProjection();
+	gfx.initPerspPrintf(vp);
+	for (int i = 0; i < Game::gNaviNum; i++) {
+		if (i == vp->mVpId) {
+			if (!sDebugMode) continue;
+			PerspPrintfInfo info;
+			info.mFont = getPikminFont();
+			info._04 = 0;
+			info._08 = 0;
+			info._0C = 0;
+			info._10 = 0.3f;
+			info._14 = vsTeamColorsColor4[getVsTeam_s(i)];
+			info._18 = vsTeamColorsColor4[getVsTeam_s(i)];
+
+			Vector3f position = naviMgr->getAt(i)->getPosition();
+			position.y += 25.0f;
+			gfx.mCurrentViewport = vp;
+
+			gfx.perspPrintf(info, position, "%f, %f, %f | %f", position.x, position.y - 25.0f, position.z, naviMgr->getAt(i)->getFaceDir());
+		}
+		else if (gDrawNavi[i]) {
+			PerspPrintfInfo info;
+			info.mFont = getPikminFont();
+			info._04 = 0;
+			info._08 = 0;
+			info._0C = 0;
+			info._10 = 0.3f;
+			info._14 = vsTeamColorsColor4[getVsTeam_s(i)];
+			info._18 = vsTeamColorsColor4[getVsTeam_s(i)];
+
+			Navi* navi = naviMgr->getAt(i);
+
+			Vector3f position = navi->getPosition();
+			int vpID = vp->mVpId;
+			if (pikiMgr && pikiMgr->isVersusXlu(navi->getVsPikiColor()) && getVsPikiColor(vpID) != navi->getVsPikiColor()) {
+				continue;
+			}
+			if (!navi) {
+				continue;
+			}
+			position.y += 25.0f;
+
+			gfx.mCurrentViewport = vp;
+			gfx.perspPrintf(info, position, "%s", sCharacters[i].mDispName);
+		}
+	}
+	
+}
+
 
 } // namespace Game
