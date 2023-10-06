@@ -14,6 +14,8 @@
 
 VsOptionsMenuMgr* gOptionMenu;
 
+const bool gTournamentMode = false;
+
 void Option::readOptions() {
     OSReport("Tournament Mode Ptr %p\n", &gTournamentMode);
     if (gTournamentMode) {
