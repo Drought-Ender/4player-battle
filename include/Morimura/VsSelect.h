@@ -129,7 +129,59 @@ struct TVsSelectScene : public THIOScene {
 	TConfirmEndWindow* mConfirmEndWindow; // _224
 };
 
-struct TVsPiki;
+struct TVsPiki {
+
+	inline TVsPiki(J2DPane* flower, J2DPane* right, J2DPane* left) {
+		mPikminFlower = flower;
+		mPikminFlower->setBasePosition(J2DPOS_TopRight);
+		mPikminRight  = right;
+		mPikminRight->setBasePosition(J2DPOS_TopLeft);
+		mPikminLeft   = left;
+		mPikminLeft->setBasePosition(J2DPOS_Center);
+		P2ASSERT(mPikminFlower);
+		P2ASSERT(mPikminRight);
+		P2ASSERT(mPikminLeft);
+	}
+
+	inline void initID32(ID32* ids) {
+
+	}
+
+	inline void setupPosinfo(int pikiCount) {
+		for (int i = 0; i < ARRAY_SIZE(mInfo); i++) {
+			mInfo[i].mPosition.x = mPikiOffset.x * i;
+			mInfo[i].mStateTimer = 0.0f;
+			if (i < pikiCount) {
+				mInfo[i].mState = posInfo::Idle;
+				mInfo[i].mPosition.y = 0.0f;
+			}
+			else {
+				mInfo[i].mState = posInfo::Sprout;
+				mInfo[i].mPosition.y = 20.0f;
+			}
+		}
+	}
+
+	struct posInfo {
+		posInfo();
+		enum { Idle, Pluck, Bury, Sprout } mState;
+		float mStateTimer;
+		Vector2f mPosition;
+	};
+
+	J2DPane* mPikminFlower;
+	J2DPane* mPikminRight;
+	J2DPane* mPikminLeft;
+	posInfo mInfo[10];
+	Vector2f mBounds;
+
+	static Vector2f mPikiOffset;
+
+	void draw();
+
+	void update(int);
+
+};
 
 struct TVsSelect : public TScrollList {
 	TVsSelect();
@@ -212,7 +264,7 @@ struct TVsSelect : public TScrollList {
 	J2DPane* _1CC[6];
 	J2DPictureEx* _1E4;
 	unknown* _1E8[2];
-	TVsPiki* _1F0[2];
+	TVsPiki* mVsPiki[2];
 	DispMemberVsSelect* _1F8;
 	TOffsetMsgSet* _1FC;
 	efx2d::T2DCountKira* _200;
@@ -306,6 +358,9 @@ struct TFourVsSelect : public TVsSelect
 	int mPurplePikiNum;
 	
 	J2DPrint* printers[4];
+
+	TVsPiki* mWhitePikis;
+	TVsPiki* mPurplePikis;
 };
 
 

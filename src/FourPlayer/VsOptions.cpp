@@ -38,6 +38,12 @@ void Option::readOptions() {
 
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::ALL_FLOWER]->varibleForward();
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::RESET_BEDAMA]->varibleForward();
+        
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_RED]->varibleForward();
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_BLACK]->varibleForward();
+
+        Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_RED] = false;
+        Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_BLACK] = false;
     }
 }
 

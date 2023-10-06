@@ -66,6 +66,23 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         DebugReport("Win Values %i\n", mNewWinValues[i]);
     }
 
+    J2DPane* pikiRedFlower = mMainScreen->mScreenObj->search('Pwp_f_00');
+    J2DPane* pikiRedRight  = mMainScreen->mScreenObj->search('Pwp_r_00');
+    J2DPane* pikiRedLeft   = mMainScreen->mScreenObj->search('Pwp_l_00');
+    P2ASSERT(pikiRedFlower);
+    P2ASSERT(pikiRedLeft);
+    P2ASSERT(pikiRedRight);
+
+    mWhitePikis = new TVsPiki(pikiRedFlower, pikiRedRight, pikiRedLeft);
+    //mPurplePikis = new TVsPiki(pikiRedFlower, pikiRedRight, pikiRedLeft);
+
+    mWhitePikis->setupPosinfo(mWhitePikiNum);
+
+    pikiRedFlower->hide();
+    pikiRedRight->hide();
+    pikiRedLeft->hide();
+    //mPurplePikis->setupPosinfo(mPurplePikiNum);
+
     // f32 baseXOffs[2] = {335.0f, 359.0f};
     // f32 baseYOffs[2] = {282.0f, 300.0f};
 
@@ -426,6 +443,8 @@ bool TFourVsSelect::doUpdate() {
         mNaviNames[i]->hide();
     }
     
+    mWhitePikis->update(mWhitePikiNum);
+    //mPurplePikis->update(mPurplePikiNum);
 
 
     return check;
@@ -446,8 +465,12 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
             mNaviNames[i]->hide();
         }
     }
+    
 
     TVsSelect::doDraw(gfx);
+
+    
+    //mPurplePikis->draw();
 
     for (int i = 0; i < 4; i++) {
 
@@ -486,6 +509,8 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
     
     printWhite.print(310.0f, 280.0f, "%i", mWhitePikiNum * 5);
     printPurple.print(310.0f, 330.0f, "%i", mPurplePikiNum * 5);   
+    
+    if (mWhitePikis) mWhitePikis->draw();
 }
 
 namespace 
