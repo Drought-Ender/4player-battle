@@ -133,14 +133,16 @@ struct TVsPiki {
 
 	inline TVsPiki(J2DPane* flower, J2DPane* right, J2DPane* left) {
 		mPikminFlower = flower;
-		mPikminFlower->setBasePosition(J2DPOS_TopRight);
 		mPikminRight  = right;
-		mPikminRight->setBasePosition(J2DPOS_TopLeft);
 		mPikminLeft   = left;
-		mPikminLeft->setBasePosition(J2DPOS_Center);
-		P2ASSERT(mPikminFlower);
+		
 		P2ASSERT(mPikminRight);
 		P2ASSERT(mPikminLeft);
+
+		mPikminFlower->setBasePosition(J2DPOS_TopRight);
+		mPikminRight->setBasePosition(J2DPOS_TopLeft);
+		mPikminLeft->setBasePosition(J2DPOS_Center);
+		P2ASSERT(mPikminFlower);
 	}
 
 	inline void initID32(ID32* ids) {
@@ -173,7 +175,7 @@ struct TVsPiki {
 	J2DPane* mPikminRight;
 	J2DPane* mPikminLeft;
 	posInfo mInfo[10];
-	Vector2f mBounds;
+	Vector2f mBounds[2];
 
 	static Vector2f mPikiOffset;
 
@@ -302,8 +304,8 @@ struct TVsSelect : public TScrollList {
 	f32 _270;
 	int mRedPikiNum; // _274
 	int mBluePikiNum; // _278
-	u32 _27C;
-	u32 _280;
+	u32 mDispRedPikiNum;
+	u32 mDispBluePikiNum;
 	u32 _284;
 	u32 _288;
 	u8 _28C;
@@ -333,6 +335,8 @@ struct TFourVsSelect : public TVsSelect
 	virtual bool doUpdateFadein();
 	virtual void doUpdateFadeoutFinish();
 
+	void TVsPikiDraw(Graphics&);
+
 	J2DPictureEx* mNaviImages[4];
 	J2DPictureEx* mNaviBoxes[4];
 
@@ -343,6 +347,15 @@ struct TFourVsSelect : public TVsSelect
 	u32 mNewWinValues[4];
 
 	Vector2f mNaviBasePos[4];
+
+	bool isTeamIDActive(int teamID) {
+		for (int i = 0; i < Game::gNaviNum; i++) {
+			if (mTeamIDs[i] == teamID) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 
 	int mTeamIDs[4];
@@ -355,7 +368,9 @@ struct TFourVsSelect : public TVsSelect
 	int mAnimDir[4];
 	JUtility::TColor mLerpColors[4];
 	int mWhitePikiNum;
+	u32 mDispWhitePikiNum;
 	int mPurplePikiNum;
+	u32 mDispPurplePikiNum;
 	
 	J2DPrint* printers[4];
 

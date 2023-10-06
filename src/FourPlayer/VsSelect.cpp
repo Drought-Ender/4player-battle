@@ -13,6 +13,33 @@ bool gDrawVsMenu = true;
 
 namespace Morimura
 {
+
+// const static u64 newHidePanes[2][10] = {
+//     {
+//         'Nwp_00', 
+//         'Nwp_01', 
+//         'Nwp_02', 
+//         'Nwp_03', 
+//         'Nwp_04', 
+//         'Nwp_05', 
+//         'Nwp_06', 
+//         'Nwp_07', 
+//         'Nwp_08', 
+//         'Nwp_09',
+//     },
+//     {
+//         'Npp_00', 
+//         'Npp_01', 
+//         'Npp_02', 
+//         'Npp_03', 
+//         'Npp_04', 
+//         'Npp_05', 
+//         'Npp_06', 
+//         'Npp_07', 
+//         'Npp_08', 
+//         'Npp_09',
+//     },
+// };
     
 void TVsSelectScene::doCreateObj(JKRArchive* rarc) {
     mObject = new TFourVsSelect;
@@ -66,22 +93,53 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         DebugReport("Win Values %i\n", mNewWinValues[i]);
     }
 
-    J2DPane* pikiRedFlower = mMainScreen->mScreenObj->search('Pwp_f_00');
-    J2DPane* pikiRedRight  = mMainScreen->mScreenObj->search('Pwp_r_00');
-    J2DPane* pikiRedLeft   = mMainScreen->mScreenObj->search('Pwp_l_00');
-    P2ASSERT(pikiRedFlower);
-    P2ASSERT(pikiRedLeft);
-    P2ASSERT(pikiRedRight);
+    J2DPane* pikiWhiteFlower = mMainScreen->mScreenObj->search('Pwp_f_00');
+    J2DPane* pikiWhiteRight  = mMainScreen->mScreenObj->search('Pwp_r_00');
+    J2DPane* pikiWhiteLeft   = mMainScreen->mScreenObj->search('Pwp_l_00');
 
-    mWhitePikis = new TVsPiki(pikiRedFlower, pikiRedRight, pikiRedLeft);
-    //mPurplePikis = new TVsPiki(pikiRedFlower, pikiRedRight, pikiRedLeft);
+    J2DPane* pikiPurpleFlower = mMainScreen->mScreenObj->search('Ppp_f_00');
+    J2DPane* pikiPurpleRight  = mMainScreen->mScreenObj->search('Ppp_r_00');
+    J2DPane* pikiPurpleLeft   = mMainScreen->mScreenObj->search('Ppp_l_00');
 
-    mWhitePikis->setupPosinfo(mWhitePikiNum);
 
-    pikiRedFlower->hide();
-    pikiRedRight->hide();
-    pikiRedLeft->hide();
-    //mPurplePikis->setupPosinfo(mPurplePikiNum);
+    mWhitePikis = new TVsPiki(pikiWhiteLeft, pikiWhiteRight, pikiWhiteFlower);
+
+    mPurplePikis = new TVsPiki(pikiPurpleLeft, pikiPurpleRight, pikiPurpleFlower);
+
+    if (isTeamIDActive(Game::TEAM_WHITE)) {
+        mDispWhitePikiNum  = mWhitePikiNum * 5;
+        mWhitePikis->setupPosinfo(mWhitePikiNum);
+    }
+    else {
+        mDispWhitePikiNum = 0;
+        mWhitePikis->setupPosinfo(0);
+    }
+
+    if (isTeamIDActive(Game::TEAM_PURPLE)) {
+        mDispPurplePikiNum  = mPurplePikiNum * 5;
+        mPurplePikis->setupPosinfo(mPurplePikiNum);
+    }
+    else {
+        mDispPurplePikiNum = 0;
+        mPurplePikis->setupPosinfo(0);
+    }
+    
+    og::Screen::setCallBack_CounterRV(mMainScreen->mScreenObj, 'Pwp_f_r', 'Pwp_f_l', 'Pwp_f_l', &mDispWhitePikiNum, 2, 0, true, mArchive);
+    og::Screen::setCallBack_CounterRV(mMainScreen->mScreenObj, 'Ppp_f_r', 'Ppp_f_l', 'Ppp_f_l', &mDispPurplePikiNum, 2, 0, true, mArchive);
+
+    // for (int paneType = 0; paneType < 2; paneType++) {
+    //     for (int nameID = 0; nameID < 10; nameID++) {
+    //         u64 name = newHidePanes[paneType][nameID];
+    //         J2DPane* pane = mMainScreen->mScreenObj->search(name);
+    //         if (pane) pane->hide();
+    //     }
+    // }
+
+    J2DPane* pikiWhite = mMainScreen->mScreenObj->search('Nwp_00');
+    if (pikiWhite) pikiWhite->hide();
+
+    J2DPane* pikiPurple = mMainScreen->mScreenObj->search('Npp_00');
+    if (pikiPurple) pikiPurple->hide();
 
     // f32 baseXOffs[2] = {335.0f, 359.0f};
     // f32 baseYOffs[2] = {282.0f, 300.0f};
@@ -99,10 +157,6 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     WinNum = (x+77.5, y-5) // 2 digit
     WinBox = (x+77.5, y)
     */
-
-    
-
-    
 
     // f32 addY = 43.0f;
 
@@ -153,6 +207,12 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
     // mWinCounts[0]->hide();
     // mWinCounts[1]->hide();
+
+    J2DPane* redPane = mMainScreen->mScreenObj->search('PICT_RED');
+    J2DPane* bluePane = mMainScreen->mScreenObj->search('PICT_BLU');
+
+    if (redPane)  redPane->move(-200.0f, 0.0f);
+    if (bluePane) bluePane->move(-200.0f, 0.0f);
 
     
     for (int i = 0; i < 4; i++) {        
@@ -442,12 +502,30 @@ bool TFourVsSelect::doUpdate() {
         mNewWinCallbacks[i]->hide();
         mNaviNames[i]->hide();
     }
+
+    TVsPiki* vsPikis[4] = { mVsPiki[0], mVsPiki[1], mWhitePikis, mPurplePikis };
+    u32* dispPikiNumArr[4] = { &mDispRedPikiNum, &mDispBluePikiNum, &mDispWhitePikiNum, &mDispPurplePikiNum };
+
+    for (int i = 0; i < 4; i++) {
     
-    mWhitePikis->update(mWhitePikiNum);
-    //mPurplePikis->update(mPurplePikiNum);
+        if (!isTeamIDActive(i)) {
+            vsPikis[i]->update(0);
+            *dispPikiNumArr[i] = 0;
+        }
+        else {
+            vsPikis[i]->update(*pikiNumArray[i]);
+            *dispPikiNumArr[i] = *pikiNumArray[i] * 5;
+        }
+    }
 
 
     return check;
+}
+
+// TVsPikiDraw__Q28Morimura13TFourVsSelectFR8Graphics
+void TFourVsSelect::TVsPikiDraw(Graphics& gfx) {
+    mWhitePikis->draw();
+    mPurplePikis->draw();
 }
 
 void TFourVsSelect::doDraw(Graphics& gfx) {
@@ -466,11 +544,41 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
         }
     }
     
+    
 
     TVsSelect::doDraw(gfx);
 
+    gfx.mOrthoGraph.setPort();
+
     
-    //mPurplePikis->draw();
+    // J2DPrint printer(getPikminFont(), 0.0f);
+
+    // printer.mGlyphHeight /= 4;
+    // printer.mGlyphWidth /= 4;
+
+
+    // printer.print(0.0f, 0.0f, "%p Piki Anaylis:\n", mVsPiki[1]);
+    // printer.print(0.0f, 5.0f, "Image basePos %i, %i, %i\n", mVsPiki[1]->mPikminFlower->mBasePosition, mVsPiki[1]->mPikminLeft->mBasePosition, mVsPiki[1]->mPikminRight->mBasePosition);
+    // for (int i = 0; i < 10; i++) {
+    //     printer.print(0.0f, 20.0f * i + 10.0f, "posInfo %i:\n", i);
+    //     printer.print(0.0f, 20.0f * i + 15.0f, "Position %f %f\n", mVsPiki[1]->mInfo[i].mPosition.x, mVsPiki[1]->mInfo[i].mPosition.y);
+    //     printer.print(0.0f, 20.0f * i + 20.0f, "State Timer %f\n", mVsPiki[1]->mInfo[i].mStateTimer);
+    //     printer.print(0.0f, 20.0f * i + 25.0f, "State %i\n", mVsPiki[1]->mInfo[i].mState);
+    // }
+    // printer.print(0.0f, 210.0f, "Bounds %f %f | %f %f\n", mVsPiki[1]->mBounds[0].x, mVsPiki[1]->mBounds[0].y, mVsPiki[1]->mBounds[1].x, mVsPiki[1]->mBounds[1].y);
+
+
+
+
+    // printer.print(200.0f, 0.0f, "%p Piki Anaylis:\n", mWhitePikis);
+    // printer.print(200.0f, 5.0f, "Image basePos %i, %i, %i\n", mWhitePikis->mPikminFlower->mBasePosition, mWhitePikis->mPikminLeft->mBasePosition, mWhitePikis->mPikminRight->mBasePosition);
+    // for (int i = 0; i < 10; i++) {
+    //     printer.print(200.0f, 20.0f * i + 10.0f, "posInfo %i:\n", i);
+    //     printer.print(200.0f, 20.0f * i + 15.0f, "Position %f %f\n", mWhitePikis->mInfo[i].mPosition.x, mWhitePikis->mInfo[i].mPosition.y);
+    //     printer.print(200.0f, 20.0f * i + 20.0f, "State Timer %f\n", mWhitePikis->mInfo[i].mStateTimer);
+    //     printer.print(200.0f, 20.0f * i + 25.0f, "State %i\n", mWhitePikis->mInfo[i].mState);
+    // }
+    // printer.print(200.0f, 210.0f, "Bounds %f %f | %f %f\n", mWhitePikis->mBounds[0].x, mWhitePikis->mBounds[0].y, mWhitePikis->mBounds[1].x, mWhitePikis->mBounds[1].y);
 
     for (int i = 0; i < 4; i++) {
 
@@ -503,14 +611,14 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
         }
     }
 
-    J2DPrint printWhite(getPikminFont(), vsTeamColors[2], vsTeamColors[2]);
-    J2DPrint printPurple(getPikminFont(), vsTeamColors[3], vsTeamColors[3]);
+    // J2DPrint printWhite(getPikminFont(), vsTeamColors[2], vsTeamColors[2]);
+    // J2DPrint printPurple(getPikminFont(), vsTeamColors[3], vsTeamColors[3]);
     
     
-    printWhite.print(310.0f, 280.0f, "%i", mWhitePikiNum * 5);
-    printPurple.print(310.0f, 330.0f, "%i", mPurplePikiNum * 5);   
+    // printWhite.print(310.0f, 280.0f, "%i", mWhitePikiNum * 5);
+    // printPurple.print(310.0f, 330.0f, "%i", mPurplePikiNum * 5);   
     
-    if (mWhitePikis) mWhitePikis->draw();
+    
 }
 
 namespace 

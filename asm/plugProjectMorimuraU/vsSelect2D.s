@@ -921,12 +921,12 @@ lbl_constructor:
 .obj lbl_8051F2AC, local
 	.float 180.0
 .endobj lbl_8051F2AC
-.obj lbl_8051F2B0, local
-	.float 12.5
-.endobj lbl_8051F2B0
-.obj lbl_8051F2B4, local
+.obj pikioffset_x, local
+	.float 6.25
+.endobj pikioffset_x
+.obj pikioffset_y, local
 	.float -0.5
-.endobj lbl_8051F2B4
+.endobj pikioffset_y
 .obj lbl_8051F2B8, local
 	.float 8.0
 .endobj lbl_8051F2B8
@@ -5155,10 +5155,10 @@ b .L_8039D46C
 .L_8039D74C:
 /* 8039D74C 0039A68C  80 1E 02 74 */	lwz r0, 0x274(r30)
 /* 8039D750 0039A690  1C 00 00 05 */	mulli r0, r0, 5
-/* 8039D754 0039A694  90 1E 02 7C */	stw r0, 0x27c(r30)
+# /* 8039D754 0039A694  90 1E 02 7C */	stw r0, 0x27c(r30)
 /* 8039D758 0039A698  80 1E 02 78 */	lwz r0, 0x278(r30)
 /* 8039D75C 0039A69C  1C 00 00 05 */	mulli r0, r0, 5
-/* 8039D760 0039A6A0  90 1E 02 80 */	stw r0, 0x280(r30)
+# /* 8039D760 0039A6A0  90 1E 02 80 */	stw r0, 0x280(r30)
 /* 8039D764 0039A6A4  88 7E 02 3D */	lbz r3, 0x23d(r30)
 /* 8039D768 0039A6A8  28 03 00 00 */	cmplwi r3, 0
 /* 8039D76C 0039A6AC  41 82 00 20 */	beq .L_8039D78C
@@ -5807,7 +5807,7 @@ b .L_8039D46C
 .L_8039E108:
 /* 8039E108 0039B048  80 7F 01 F0 */	lwz r3, 0x1f0(r31)
 /* 8039E10C 0039B04C  80 9F 02 74 */	lwz r4, 0x274(r31)
-/* 8039E110 0039B050  4B FF BA 75 */	bl update__Q28Morimura7TVsPikiFi
+# /* 8039E110 0039B050  4B FF BA 75 */	bl update__Q28Morimura7TVsPikiFi
 /* 8039E114 0039B054  80 7F 02 10 */	lwz r3, 0x210(r31)
 /* 8039E118 0039B058  81 83 00 00 */	lwz r12, 0(r3)
 /* 8039E11C 0039B05C  81 8C 00 10 */	lwz r12, 0x10(r12)
@@ -6413,6 +6413,9 @@ b .L_8039D46C
 /* 8039EA18 0039B958  3B 5A 00 04 */	addi r26, r26, 4
 /* 8039EA1C 0039B95C  2C 1D 00 02 */	cmpwi r29, 2
 /* 8039EA20 0039B960  41 80 FF EC */	blt .L_8039EA0C
+mr r3, r27
+mr r4, r28
+bl TVsPikiDraw__Q28Morimura13TFourVsSelectFR8Graphics
 /* 8039EA24 0039B964  80 1B 02 40 */	lwz r0, 0x240(r27)
 /* 8039EA28 0039B968  2C 00 00 03 */	cmpwi r0, 3
 /* 8039EA2C 0039B96C  41 80 01 90 */	blt .L_8039EBBC
@@ -9003,9 +9006,9 @@ b .L_8039D46C
 .fn __sinit_vsSelect2D_cpp, local
 /* 803A0FE0 0039DF20  C0 82 0F 58 */	lfs f4, lbl_8051F2B8@sda21(r2)
 /* 803A0FE4 0039DF24  3C 60 80 51 */	lis r3, mScrollParm__Q28Morimura9TVsSelect@ha
-/* 803A0FE8 0039DF28  C0 C2 0F 50 */	lfs f6, lbl_8051F2B0@sda21(r2)
+/* 803A0FE8 0039DF28  C0 C2 0F 50 */	lfs f6, pikioffset_x@sda21(r2)
 /* 803A0FEC 0039DF2C  38 8D 99 B8 */	addi r4, r13, mPikiOffset__Q28Morimura7TVsPiki@sda21
-/* 803A0FF0 0039DF30  C0 A2 0F 54 */	lfs f5, lbl_8051F2B4@sda21(r2)
+/* 803A0FF0 0039DF30  C0 A2 0F 54 */	lfs f5, pikioffset_y@sda21(r2)
 /* 803A0FF4 0039DF34  C0 62 0F 18 */	lfs f3, lbl_8051F278@sda21(r2)
 /* 803A0FF8 0039DF38  D4 83 40 44 */	stfsu f4, mScrollParm__Q28Morimura9TVsSelect@l(r3)
 /* 803A0FFC 0039DF3C  C0 42 0E FC */	lfs f2, lbl_8051F25C@sda21(r2)
