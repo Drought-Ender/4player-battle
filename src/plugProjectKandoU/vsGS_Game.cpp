@@ -776,7 +776,7 @@ void GameState::setWinMarbleColor(int teamID, int color) {
  */
 void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool isYellow)
 {
-	if (!isYellow && gConfig[CAPTURE_MARBLE] == ConfigEnums::CAPTURE_STEALMARBLE) {
+	if (!isYellow && !_16 && gConfig[CAPTURE_MARBLE] == ConfigEnums::CAPTURE_STEALMARBLE) {
 		section->mRealMarbleCounts[player] += section->mRealMarbleCounts[gBedamaColor];
 		section->mDispMarbleCounts[player] += section->mRealMarbleCounts[gBedamaColor];
 		section->mRealMarbleCounts[gBedamaColor] = 0;
@@ -789,7 +789,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 
 	if (isYellow) {
 		section->mRealMarbleCounts[player]++;
-		if (isYellow && section->mRealMarbleCounts[player] >= 4) {
+		if (isYellow && section->mRealMarbleCounts[player] == 4) {
 			_16 = 1;
 
 			u8 loseReason = VSLOSE_ColoredMarble;
@@ -818,6 +818,11 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 		}
 		return;
 		
+	}
+
+	
+	if (_16) {
+		return;
 	}
 
 	switch (gConfig[CAPTURE_MARBLE])
@@ -869,9 +874,6 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 		moviePlayer->play(movieArgs);
 	}
 
-	if (_16) {
-		return;
-	}
 
 	
 }

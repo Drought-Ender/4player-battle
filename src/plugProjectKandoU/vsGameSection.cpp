@@ -1141,7 +1141,10 @@ bool GameMessageVsBirthTekiTreasure::actVs(VsGameSection* section)
 	if (!(randFloat() > tobiChance)) {
 		int nodes = section->mTekiMgr->mNodeCount - 1;
 		for (int i = 0; i < _10; i++) {
-			section->mTekiMgr->birth(nodes, mPosition, _14);
+			EnemyBase* enemy = section->mTekiMgr->birth(nodes, mPosition, _14);
+			if (enemy) {
+				enemy->setAnimSpeed(30.0f);
+			}
 		}
 		return true;
 	}

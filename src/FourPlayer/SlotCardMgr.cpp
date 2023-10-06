@@ -165,9 +165,10 @@ struct XLUCard : public VsSlotMachineCard
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user) {
+        int vsTeam = getVsTeam(user);
         for (int i = 0; i < 4; i++) {
             Navi* navi = naviMgr->getAt(i);
-            if (navi && navi->isAlive() && navi->onVsTeam(user)) {
+            if (navi && navi->isAlive() && navi->onVsTeam(vsTeam)) {
                 if (cardMgr->mSection->mGhostIconTimers[i] <= 0.0f) {
                     efx::TNaviEffect* naviEffect = navi->mEffectsObj;
                     if (!naviEffect->isFlag(efx::NAVIFX_IsSaved)) {
@@ -306,12 +307,16 @@ struct TekiCard : public VsSlotMachineCard {
     }
 
 
-    void birth(TekiMgr* tekiMgr, Vector3f& position, bool willDespawn) {
-        tekiMgr->birth(mTekiMgrID, position, willDespawn);
+    EnemyBase* birth(TekiMgr* tekiMgr, Vector3f& position, bool willDespawn) {
+        EnemyBase* enemy = tekiMgr->birth(mTekiMgrID, position, willDespawn);
+        enemy->setAnimSpeed(30.0f);
+        return enemy;
     }
 
-    void birth(TekiMgr* tekiMgr, Vector3f& position, float timer) {
-        tekiMgr->birth(mTekiMgrID, position, timer);
+    EnemyBase* birth(TekiMgr* tekiMgr, Vector3f& position, float timer) {
+        EnemyBase* enemy = tekiMgr->birth(mTekiMgrID, position, timer);
+        enemy->setAnimSpeed(30.0f);
+        return enemy;
     }
 
     virtual bool useTarget() { return true; }
