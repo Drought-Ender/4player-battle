@@ -12,6 +12,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 {
 	mMaxCarriers = -1;
 	mMinCarriers = -1;
+	
 	mWallTimer   = 0;
 	_324         = 0;
 	mIsInWater   = false;
@@ -35,6 +36,9 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	P2ASSERTLINE(1632, initArg != nullptr);
 
 	u16 stateType = static_cast<PelletInitArg*>(initArg)->mState;
+
+	PelletMgr::_makeVsCarryMinMax(*static_cast<PelletInitArg*>(initArg), static_cast<PelletInitArg*>(initArg)->mTextIdentifier);
+
 	if (stateType == 0) {
 		mPelletSM->start(this, 0, nullptr);
 		mScale = Vector3f(1.0f);
@@ -93,6 +97,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	}
 
 	if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaYellow) == 0) {
+		OSReport("FLAG_VS_BEDAMA_YELLOW\n");
 		mPelletFlag = FLAG_VS_BEDAMA_YELLOW;
 	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaRed) == 0) {
 		mPelletFlag = FLAG_VS_BEDAMA_RED;
@@ -250,6 +255,31 @@ void PelletMgr::makeVsCarryMinMax(PelletInitArg& arg, char* name)
 	}
 }
 
+void PelletMgr::_makeVsCarryMinMax(PelletInitArg& arg, char* name)
+{
+	if (gameSystem != nullptr && gameSystem->isVersusMode()) {
+		if (strcmp(VsOtakaraName::cBedamaYellow, name) == 0) {
+			arg.mMinCarriers = 1;
+			arg.mMaxCarriers = 8;
+		} else if (strcmp(VsOtakaraName::cBedamaRed, name) == 0) {
+			arg.mMinCarriers = 1;
+			arg.mMaxCarriers = 8;
+		} else if (strcmp(VsOtakaraName::cBedamaBlue, name) == 0) {
+			arg.mMinCarriers = 1;
+			arg.mMaxCarriers = 8;
+		} else if (strcmp(VsOtakaraName::cCoin, name) == 0) {
+			arg.mMinCarriers = 1;
+			arg.mMaxCarriers = 1;
+		} else if (strcmp(VsOtakaraName::cBedamaPurple, name) == 0) {
+			arg.mMinCarriers = 1;
+			arg.mMaxCarriers = 8;
+		} else if (strcmp(VsOtakaraName::cBedamaWhite, name) == 0) {
+			arg.mMinCarriers = 1;
+			arg.mMaxCarriers = 8;
+		}
+	}
+}
+
 /*
  * --INFO--
  * Address:	8016DB90
@@ -297,6 +327,16 @@ bool PelletMgr::makePelletInitArg(PelletInitArg& arg, PelletMgr::OtakaraItemCode
 // setBedamaColor__Q34Game13PelletOtakara6ObjectFv
 bool PelletOtakara::Object::setBedamaColor() {
     PSM::PelletItem* obj = (PSM::PelletItem*)mSoundMgr;
+	if (mPelletFlag == FLAG_VS_BEDAMA_RED) {
+		mBedamaColor = 3;
+        obj->_70 = 4;
+		return true;
+	}
+	if (mPelletFlag == FLAG_VS_BEDAMA_BLUE) {
+		mBedamaColor = 3;
+        obj->_70 = 4;
+		return true;
+	}
     if (mPelletFlag == FLAG_VS_BEDAMA_WHITE) {
         mBedamaColor = 3;
         obj->_70 = 4;
@@ -308,6 +348,34 @@ bool PelletOtakara::Object::setBedamaColor() {
         return true;
     }
     return false;
+}
+
+void Pellet::setupGeneratorBedama() {
+	// if (gameSystem != nullptr && gameSystem->isVersusMode()) {
+	// 	if (strcmp(VsOtakaraName::cBedamaYellow, getCreatureName()) == 0) {
+	// 		mMinCarriers = 1;
+	// 		mMaxCarriers = 8;
+	// 	} else if (strcmp(VsOtakaraName::cBedamaRed, getCreatureName()) == 0) {
+	// 		mMinCarriers = 1;
+	// 		mMaxCarriers = 8;
+	// 	} else if (strcmp(VsOtakaraName::cBedamaBlue, getCreatureName()) == 0) {
+	// 		mMinCarriers = 1;
+	// 		mMaxCarriers = 8;
+	// 	} else if (strcmp(VsOtakaraName::cCoin, getCreatureName()) == 0) {
+	// 		mMinCarriers = 1;
+	// 		mMaxCarriers = 1;
+	// 	} else if (strcmp(VsOtakaraName::cBedamaPurple, getCreatureName()) == 0) {
+	// 		mMinCarriers = 1;
+	// 		mMaxCarriers = 8;
+	// 	} else if (strcmp(VsOtakaraName::cBedamaWhite, getCreatureName()) == 0) {
+	// 		mMinCarriers = 1;
+	// 		mMaxCarriers = 8;
+	// 	}
+	// }
+
+	if (getBedamaColor() != -1) {
+		((PelletOtakara::Object*)this)->setBedamaColor();
+	}
 }
 
 } // namespace Game

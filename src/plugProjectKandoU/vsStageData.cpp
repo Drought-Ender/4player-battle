@@ -165,6 +165,9 @@ void StageData::read(Stream& stream)
 	if (version >= 5) {
 		mStartNumYellowMarblesVsFour = stream.readInt();
 	}
+	if (version >= 6) {
+		mMarbleFlags = (u8)stream.readInt();
+	}
 }
 
 /*

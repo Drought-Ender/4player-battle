@@ -21,7 +21,7 @@
 
 const char* message = "drct-post";
 
-bool sDebugMode = false;
+bool sDebugMode = true;
 
 bool gDrawNavi[4];
 
@@ -207,8 +207,8 @@ void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
 			Vector3f position = naviMgr->getAt(i)->getPosition();
 			position.y += 25.0f;
 			gfx.mCurrentViewport = vp;
-
-			gfx.perspPrintf(info, position, "%f, %f, %f | %f", position.x, position.y - 25.0f, position.z, naviMgr->getAt(i)->getFaceDir());
+			
+			gfx.perspPrintf(info, position, "%i, %i, %i | %f", (int)position.x, (int)(position.y - 25.0f), (int)position.z, naviMgr->getAt(i)->getFaceDir() * 360.0f / TAU);
 		}
 		else if (gDrawNavi[i]) {
 			PerspPrintfInfo info;

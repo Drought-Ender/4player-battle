@@ -102,6 +102,10 @@ struct PelletMgr : public NodeObjectMgr<GenericObjectMgr> {
 	bool setUse(PelletInitArg*);
 	bool makePelletInitArg(PelletInitArg&, char*);
 	void makeVsCarryMinMax(PelletInitArg&, char*);
+	
+	
+	static void _makeVsCarryMinMax(PelletInitArg&, char*);
+	
 	bool makePelletInitArg(PelletInitArg&, PelletMgr::OtakaraItemCode&);
 	void makeOtakaraItemCode(char*, PelletMgr::OtakaraItemCode&);
 	void addMgr(BasePelletMgr*);
@@ -314,6 +318,8 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	virtual void sound_otakaraEventFinish() { }  // _218 (weak)
 
 	float buryBedamaVs();
+
+	void setupGeneratorBedama();
 
 	u8 getWallTimer();
 	void clearClaim();

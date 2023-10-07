@@ -239,6 +239,17 @@ struct CardMgr {
 	SlotMachine mNewSlotMachines[2];
 };
 
+enum EMarbleFlags {
+	MARBLEFLAG_Stage1_RoomOnly = 0x1,
+	MARBLEFLAG_Stage2_RoomOnly = 0x2,
+	MARBLEFLAG_Stage3_RoomOnly = 0x4,
+	MARBLEFLAG_Random_RoomOnly = 0x8,
+	MARBLEFLAG_4P_Stage1_RoomOnly = 0x10,
+	MARBLEFLAG_4P_Stage2_RoomOnly = 0x20,
+	MARBLEFLAG_4P_Stage3_RoomOnly = 0x40,
+	MARBLEFLAG_4P_Random_RoomOnly = 0x80,
+};
+
 struct StageData : public CNode {
 	StageData();
 
@@ -258,6 +269,7 @@ struct StageData : public CNode {
 	char mStageLayoutFilePath[64]; // _70
 	int mStartNumYellowMarbles;    // _B0
 	int mStartNumYellowMarblesVsFour;
+	u8 mMarbleFlags;
 };
 
 struct StageList : public CNode {

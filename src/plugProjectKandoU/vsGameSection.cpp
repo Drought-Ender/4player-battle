@@ -442,9 +442,7 @@ void VsGameSection::postSetupFloatMemory()
 		Vector3f position      = Vector3f(0.0f);
 		createRedBlueBedamas(position);
 
-		for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
-			mMarbleYellow[i] = nullptr;
-		}
+
 
 		createYellowBedamas(7);
 		initCardPellets();
@@ -1445,6 +1443,7 @@ void VsGameSection::dropCard(VsGameSection::DropCardArg& arg)
  */
 void VsGameSection::createYellowBedamas(int bedamas)
 {
+	OSReport("VsGameSection::createYellowBedamas\n");
 	if (mVsStageData) {
 		if (gEffectiveTeamCount == 2) {
 			bedamas = mVsStageData->mStartNumYellowMarbles;
@@ -1452,12 +1451,44 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		else {
 			bedamas = mVsStageData->mStartNumYellowMarblesVsFour;
 		}
-		if (bedamas == 0) {
+
+		int editnum = sEditNum;
+
+		if (sEditNum < 0) editnum = 3;
+
+		int currentFlag = 1 << editnum;
+
+		if (gEffectiveTeamCount > 2) currentFlag *= 0x10;
+
+		OSReport("currentFlag %i\n", currentFlag);
+
+		int flag = mVsStageData->mMarbleFlags;
+
+		OSReport("Our Flag %i\n", flag);
+
+		int flagOut = flag & currentFlag;
+
+		OSReport("FlagOut %i\n", flagOut);
+
+		if (flagOut != 0) {
 			return;
 		}
+
+		if (bedamas == 0) {
+			for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
+				mMarbleYellow[i] = nullptr;
+			}
+			return;
+		}
+
+
 		if (bedamas >= YELLOW_MARBLE_COUNT) {
 			bedamas = YELLOW_MARBLE_COUNT;
 		}
+	}
+
+	for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
+		mMarbleYellow[i] = nullptr;
 	}
 
 	DebugReport("Bedamas %i\n", bedamas);

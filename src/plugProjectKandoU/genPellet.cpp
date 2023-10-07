@@ -206,6 +206,9 @@ Creature* GenPellet::birth(Game::GenArg* arg)
 			JUT_PANICLINE(245, "GENERATOR ERR\n");
 		}
 	}
+	if (pelt) {
+		pelt->setupGeneratorBedama();
+	}
 	return pelt;
 }
 
