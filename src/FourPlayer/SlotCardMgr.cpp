@@ -363,12 +363,32 @@ struct OnyonTekiCard : public TekiCard
     {
     }
 
-    int calcOnyonEnemies(int user) {
+    int calcOnyonEnemies(int teamID) {
         int enemies = 0;
-        Onyon* userOnyon = ItemOnyon::mgr->getOnyon(getVsPikiColor(user));
+        Onyon* userOnyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(teamID));
         Vector3f onyonPos = userOnyon->getPosition();
+
+        Sys::Sphere onyonSphere (onyonPos, 300.0f);
+
+        CellIteratorArg CellArg = onyonSphere;
+        CellIterator iCell (CellArg);
+
+        CI_LOOP(iCell) {
+            CellObject* obj = *iCell;
+            if (obj->getObjType() == OBJTYPE_Teki) {
+                EnemyBase* enemy = static_cast<EnemyBase*>(obj);
+                if (EnemyInfoFunc::getEnemyInfo(enemy->getEnemyTypeID(), 0xFFFF)->mBitterDrops == BDT_Strong) {
+                    enemies++;
+                }
+            }
+        }
+
         
         return enemies;
+    }
+
+    virtual int getWeight(CardMgr* cardMgr, int teamID) {
+        return TekiCard::getWeight(cardMgr, teamID) * (float)calcOnyonEnemies(teamID) / 2.5f;
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {

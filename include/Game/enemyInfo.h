@@ -182,6 +182,19 @@ inline int getEnemyMgrID(int enemyID)
 	 || id == EnemyTypeID::EnemyID_BigFoot || id == EnemyTypeID::EnemyID_SnakeWhole || id == EnemyTypeID::EnemyID_UmiMushi       \
 	 || id == EnemyTypeID::EnemyID_BigTreasure)
 
+
+// unfinished
+bool isEnemyHarmless(int id) {
+    switch (id)
+    {
+    case EnemyTypeID::EnemyID_Pelplant:
+        return true;
+    
+    default:
+        return false;
+    }
+}
+
 } // namespace Game
 
 
