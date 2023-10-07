@@ -219,6 +219,8 @@ struct Navi : public FakePiki, virtual public PelletView {
 	bool onTeam(int color);
 	bool onVsTeam(int color);
 
+	bool isInvisible();
+
 	// _000      = VTBL
 	// _000-_250 = FakePiki
 	// _250      = ptr to PelletView

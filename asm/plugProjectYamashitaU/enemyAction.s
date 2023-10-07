@@ -214,6 +214,10 @@ lbl_constructor:
 /* 80112888 0010F7C8  4E 80 04 21 */	bctrl 
 /* 8011288C 0010F7CC  54 60 06 3F */	clrlwi. r0, r3, 0x18
 /* 80112890 0010F7D0  41 82 01 4C */	beq .L_801129DC
+mr r3, r28
+bl isInvisible__Q24Game4NaviFv
+clrlwi. r0, r3, 0x18
+bne .L_801129DC
 /* 80112894 0010F7D4  7F 84 E3 78 */	mr r4, r28
 /* 80112898 0010F7D8  38 61 00 20 */	addi r3, r1, 0x20
 /* 8011289C 0010F7DC  81 9C 00 00 */	lwz r12, 0(r28)
@@ -542,6 +546,10 @@ lbl_constructor:
 .L_80112D54:
 /* 80112D54 0010FC94  57 80 06 3F */	clrlwi. r0, r28, 0x18
 /* 80112D58 0010FC98  41 82 01 4C */	beq .L_80112EA4
+mr r3, r27
+bl isInvisible__Q24Game4PikiFv
+clrlwi. r0, r3, 0x18
+bne .L_80112EA4
 /* 80112D5C 0010FC9C  7F 64 DB 78 */	mr r4, r27
 /* 80112D60 0010FCA0  38 61 00 20 */	addi r3, r1, 0x20
 /* 80112D64 0010FCA4  81 9B 00 00 */	lwz r12, 0(r27)

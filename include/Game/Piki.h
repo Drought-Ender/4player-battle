@@ -233,6 +233,8 @@ struct Piki : public FakePiki {
 	static Color4 pikiColors[PikiColorCount + 1];
 	static Color4 pikiColorsCursor[PikiColorCount + 1];
 
+	bool isInvisible();
+
 	// _000			 = VTBL
 	// _000-_24C = FakePiki
 	PSM::Piki* mSoundObj;             // _250

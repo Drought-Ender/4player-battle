@@ -136,9 +136,6 @@ struct FlowerCard : public VsSlotMachineCard
         return ToggleSprout();
     }
 
-
-
-
     virtual const char* getDescription() {
         if (mFlowerSprouts) {
             return "Flowers all your pikmin and sprouts";
@@ -146,6 +143,9 @@ struct FlowerCard : public VsSlotMachineCard
         return "Flowers all your pikmin";
     }
 };
+
+// sEnemyXLU__Q24Game6VsGame
+bool sEnemyXLU = false;
 
 struct XLUCard : public VsSlotMachineCard
 {
@@ -189,10 +189,45 @@ struct XLUCard : public VsSlotMachineCard
         }
     }
 
+    bool ToggleEnemyXLU() {
+        sEnemyXLU = !sEnemyXLU;
+
+        if (sEnemyXLU) {
+            updateTexName("pikmin_teki_xlu.bti");
+        }
+        else {
+            updateTexName("pikmin_xlu.bti");
+        }
+        return true;
+    }
+
+
     virtual const char* getDescription() {
+        if (sEnemyXLU) {
+            return "Hides your team from enemy and creature view";
+        }
         return "Hides your team from enemy view";
     }
+
+    virtual bool varibleForward() {
+        return ToggleEnemyXLU();
+    }
+
+    virtual bool varibleBackward() {
+        return ToggleEnemyXLU();
+    }
+
 };
+
+// isInvisible__Q24Game4PikiFv
+bool Piki::isInvisible() {
+    return (gameSystem->isVersusMode() && VsGame::sEnemyXLU && GetVsGameSection()->mGhostIconTimers[getTeamFromPiki(mPikiKind)] > 0.0f && !doped());
+}
+
+// isInvisible__Q24Game4NaviFv
+bool Navi::isInvisible() {
+    return (gameSystem->isVersusMode() && VsGame::sEnemyXLU && GetVsGameSection()->mGhostIconTimers[getVsTeam()] > 0.0f);
+}
 
 struct DopeCard : public VsSlotMachineCard
 {

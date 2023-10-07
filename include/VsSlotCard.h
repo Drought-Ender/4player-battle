@@ -94,6 +94,8 @@ struct VsSlotCardMgr
     VsSlotMachineCard** mUsingCards;
 };
 
+extern bool sEnemyXLU;
+
 
 extern VsSlotCardMgr* vsSlotCardMgr;
 
