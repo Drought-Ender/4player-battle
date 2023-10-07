@@ -388,7 +388,16 @@ struct OnyonTekiCard : public TekiCard
     }
 
     virtual int getWeight(CardMgr* cardMgr, int teamID) {
-        return TekiCard::getWeight(cardMgr, teamID) * (float)calcOnyonEnemies(teamID) / 2.5f;
+        float averageOnionEnemies = 0.0f;
+        int count = 0;
+        for (int i = 0; i < 4; i++) {
+            if (i != teamID && ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(i))) {
+                averageOnionEnemies += calcOnyonEnemies(i);
+                count++;
+            } 
+        }
+        averageOnionEnemies /= count;
+        return TekiCard::getWeight(cardMgr, teamID) * (float)averageOnionEnemies / 3.5f;
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {

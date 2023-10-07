@@ -789,7 +789,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 
 	if (isYellow) {
 		section->mRealMarbleCounts[player]++;
-		if (isYellow && section->mRealMarbleCounts[player] == 4) {
+		if (isYellow && section->mRealMarbleCounts[player] == 4 && !_16) {
 			_16 = 1;
 
 			u8 loseReason = VSLOSE_ColoredMarble;
