@@ -174,6 +174,10 @@ struct FourObjVs : public ObjVs {
 	virtual void doUpdateFadeoutFinish();                 // _64
 	virtual void doDraw(Graphics& gfx);                   // _68
 
+	void CheckWindama(int idx, int player, bool b, bool& isWin);
+	void CheckBedama(int idx, int player, bool doEfx, f32 scale, bool& isWin);
+	void CheckBedamaWin(int player, bool doEfx, bool& isWin);
+
 	ScreenSet* mScreenP3;
 	ScreenSet* mScreenP4;
 

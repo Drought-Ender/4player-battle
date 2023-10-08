@@ -582,6 +582,116 @@ void FourObjVs::doDraw(Graphics& gfx) {
 	mTimerScreen->draw(gfx, gfx.mPerspGraph);
 }
 
+void FourObjVs::CheckWindama(int idx, int playerID, bool doEfx, bool& isWin) {
+	bool flagArr[] = { mDisp->mFlags[0], mDisp->mFlags[1], mDisp->mFlag2[0], mDisp->mFlag2[1] };
+	int marbleCounts[] = { mDisp->mMarbleCountP1, mDisp->mMarbleCountP2, mDisp->mMarbleCountP3, mDisp->mMarbleCountP4 };
+	J2DPictureEx** windamaPanes[] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P };
+	bool* firstBedamaGet[] = { &mFirstBedamaGetP1, &mFirstBedamaGetP2, &mFirstBedamaGetP3, &mFirstBedamaGetP4 };
+
+	og::Screen::ScaleMgr** windamaScaleMgr[] = { mScaleMgrP1_2, mScaleMgrP2_2, mScaleMgrP3_2, mScaleMgrP4_2 };
+
+	if (flagArr[playerID] && marbleCounts[playerID] == idx && mBedamaGetTimers[playerID] > 0.0f) {
+		mBedamaGetTimers[playerID] -= sys->mDeltaTime;
+		if (mBedamaGetTimers[playerID] <= 0.0f) {
+			windamaPanes[playerID][idx]->show();
+			if (!*firstBedamaGet[playerID]) {
+				*firstBedamaGet[playerID] = true;
+				if (doEfx) {
+					Vector2f pos;
+					og::Screen::calcGlbCenter(windamaPanes[playerID][idx], &pos);
+					const TColorPair& colors = gGetMarbleColors[mWinDamaColor[0]];
+					efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
+					efx2d::T2DSprayset_forVS efx;
+					efx.create(&arg);
+					ogSound->setBdamaGet();
+					mDoneState = 1;
+					windamaScaleMgr[playerID][idx]->up();
+					isWin = true;
+				}
+			}
+		}
+	}
+}
+
+void FourObjVs::CheckBedama(int idx, int playerID, bool doEfx, f32 scale, bool& isWin) {
+
+	bool flagArr[] = { mDisp->mFlags[0], mDisp->mFlags[1], mDisp->mFlag2[0], mDisp->mFlag2[1] };
+	
+	int marbleCounts[] = { mDisp->mMarbleCountP1, mDisp->mMarbleCountP2, mDisp->mMarbleCountP3, mDisp->mMarbleCountP4 };
+	
+
+	J2DPictureEx** bedamaPanes[] = { mPane_bedama1P, mPane_bedama2P, mPane_bedama3P, mPane_bedama4P };
+	J2DPictureEx** nodamaPanes[] = { mPane_nodama1P, mPane_nodama2P, mPane_nodama3P, mPane_nodama4P };
+	J2DPictureEx** windamaPanes[] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P };
+	
+	bool* firstBedamaGet[] = { &mFirstBedamaGetP1, &mFirstBedamaGetP2, &mFirstBedamaGetP3, &mFirstBedamaGetP4 };
+
+	bool* bedamaGotFlags[] = { mBedamaGotFlagsP1, mBedamaGotFlagsP2, mBedamaGotFlagsP3, mBedamaGotFlagsP4 };
+	bool* hasAllBedamaFlags[] = { &mHasAllBedamaP1, &mHasAllBedamaP2, &mHasAllBedamaP3, &mHasAllBedamaP4 };
+
+	og::Screen::ScaleMgr** bedamaScaleMgr[] = { mScaleMgrP1_1, mScaleMgrP2_1, mScaleMgrP3_1, mScaleMgrP4_1 };
+
+
+
+
+	if (marbleCounts[playerID] > idx) {
+		nodamaPanes[playerID][idx]->hide();
+		bedamaPanes[playerID][idx]->show();
+		bedamaPanes[playerID][idx]->updateScale(scale);
+		if (!bedamaGotFlags[playerID][idx]) {
+			if (idx == 3) {
+				mDoneState = 1;
+			}
+			*hasAllBedamaFlags[playerID] = (idx == 3);
+			if (doEfx) {
+				if (mDoneState != 1) {
+					ogSound->setBdamaGet();
+					Vector2f pos;
+					og::Screen::calcGlbCenter(bedamaPanes[playerID][idx], &pos);
+
+					efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0xcfcf00ff, 0xe7e757ff);
+					efx2d::T2DSprayset_forVS efx;
+					efx.create(&arg);
+				}
+				bedamaScaleMgr[playerID][idx]->up();
+			}
+		}
+		bedamaGotFlags[playerID][idx] = true;
+	} else {
+		bedamaPanes[playerID][idx]->hide();
+		nodamaPanes[playerID][idx]->show();
+		nodamaPanes[playerID][idx]->updateScale(scale);
+		bedamaGotFlags[playerID][idx] = false;
+	}
+
+}
+
+void FourObjVs::CheckBedamaWin(int playerID, bool doEfx, bool& isWin) {
+
+	J2DPictureEx** bedamaPanes[] = { mPane_bedama1P, mPane_bedama2P, mPane_bedama3P, mPane_bedama4P };
+	og::Screen::ScaleMgr** bedamaScaleMgr[] = { mScaleMgrP1_1, mScaleMgrP2_1, mScaleMgrP3_1, mScaleMgrP4_1 };
+
+	bool hasAllBedamaFlags[] = { mHasAllBedamaP1, mHasAllBedamaP2, mHasAllBedamaP3, mHasAllBedamaP4 };
+
+	if (hasAllBedamaFlags[playerID] && mBedamaGetTimers[playerID] > 0.0f) {
+		mBedamaGetTimers[playerID] -= sys->mDeltaTime;
+		if (mBedamaGetTimers[playerID] < 0.0f && doEfx) {
+			ogSound->setBdamaGet();
+			f32 scale = 0.6f;
+			for (int i = 0; i < 4; i++) {
+				bedamaScaleMgr[playerID][i]->up();
+				Vector2f pos;
+				og::Screen::calcGlbCenter(bedamaPanes[playerID][i], &pos);
+
+				efx2d::ArgScale arg(&pos, scale);
+				efx2d::T2DSensorGet_forVS efx;
+				efx.create(&arg);
+				isWin = true;
+			}
+		}
+	}
+}
+
 void FourObjVs::setOnOffBdama4P(bool doEfx)
 {
     bool P1win = false;
@@ -604,289 +714,25 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 		mPane_windama3P[i]->updateScale(p3ScaleColor);
 		mPane_windama4P[i]->updateScale(p4ScaleColor);
 
-        if (mDisp->mFlags[0] && mDisp->mMarbleCountP1 == i && mBedamaGetTimers[0] > 0.0f) {
-			mBedamaGetTimers[0] -= sys->mDeltaTime;
-			if (mBedamaGetTimers[0] <= 0.0f) {
-				mPane_windama1P[i]->show();
-				if (!mFirstBedamaGetP1) {
-					mFirstBedamaGetP1 = true;
-					if (doEfx) {
-						Vector2f pos;
-						og::Screen::calcGlbCenter(mPane_windama1P[i], &pos);
-						const TColorPair& colors = gGetMarbleColors[mWinDamaColor[0]];
-						efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
-						efx2d::T2DSprayset_forVS efx;
-						efx.create(&arg);
-						ogSound->setBdamaGet();
-						mDoneState = 1;
-						mScaleMgrP1_2[i]->up();
-						P1win = true;
-					}
-				}
-			}
-		}
-
-        if (mDisp->mFlags[1] && mDisp->mMarbleCountP2 == i && mBedamaGetTimers[1] > 0.0f) {
-			mBedamaGetTimers[1] -= sys->mDeltaTime;
-			if (mBedamaGetTimers[1] <= 0.0f) {
-				mPane_windama2P[i]->show();
-				if (!mFirstBedamaGetP2) {
-					mFirstBedamaGetP2 = true;
-					if (doEfx) {
-						Vector2f pos;
-						og::Screen::calcGlbCenter(mPane_windama2P[i], &pos);
-						const TColorPair& colors = gGetMarbleColors[mWinDamaColor[1]];
-						efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
-						efx2d::T2DSprayset_forVS efx;
-						efx.create(&arg);
-						ogSound->setBdamaGet();
-						mDoneState = 1;
-						mScaleMgrP2_2[i]->up();
-						P2win = true;
-					}
-				}
-			}
-		}
-
-		if (mDisp->mFlag2[0] && mDisp->mMarbleCountP3 == i && mBedamaGetTimers[2] > 0.0f) {
-			mBedamaGetTimers[2] -= sys->mDeltaTime;
-			if (mBedamaGetTimers[2] <= 0.0f) {
-				mPane_windama3P[i]->show();
-				if (!mFirstBedamaGetP3) {
-					mFirstBedamaGetP3 = true;
-					if (doEfx) {
-						Vector2f pos;
-						og::Screen::calcGlbCenter(mPane_windama3P[i], &pos);
-						const TColorPair& colors = gGetMarbleColors[mWinDamaColor[2]];
-						efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
-						efx2d::T2DSprayset_forVS efx;
-						efx.create(&arg);
-						ogSound->setBdamaGet();
-						mDoneState = 1;
-						mScaleMgrP3_2[i]->up();
-						P3win = true;
-					}
-				}
-			}
-		}
-
-		if (mDisp->mFlag2[1] && mDisp->mMarbleCountP4 == i && mBedamaGetTimers[3] > 0.0f) {
-			mBedamaGetTimers[3] -= sys->mDeltaTime;
-			if (mBedamaGetTimers[3] <= 0.0f) {
-				mPane_windama4P[i]->show();
-				if (!mFirstBedamaGetP4) {
-					mFirstBedamaGetP4 = true;
-					if (doEfx) {
-						Vector2f pos;
-						og::Screen::calcGlbCenter(mPane_windama4P[i], &pos);
-						const TColorPair& colors = gGetMarbleColors[mWinDamaColor[3]];
-						efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
-						efx2d::T2DSprayset_forVS efx;
-						efx.create(&arg);
-						ogSound->setBdamaGet();
-						mDoneState = 1;
-						mScaleMgrP4_2[i]->up();
-						P4win = true;
-					}
-				}
-			}
-		}
+		CheckWindama(i, 0, doEfx, P1win);
+		CheckWindama(i, 1, doEfx, P2win);
+		CheckWindama(i, 2, doEfx, P3win);
+		CheckWindama(i, 3, doEfx, P4win);
 
 		if (!mFirstBedamaGetP1 && !mFirstBedamaGetP2 && !mFirstBedamaGetP3 && !mFirstBedamaGetP4) {
-            if (mDisp->mMarbleCountP1 > i) {
-				mPane_nodama1P[i]->hide();
-				mPane_bedama1P[i]->show();
-				mPane_bedama1P[i]->updateScale(p1ScaleYellow);
-				if (!mBedamaGotFlagsP1[i]) {
-					if (i == 3) {
-						mDoneState = 1;
-					}
-					mHasAllBedamaP1 = (i == 3);
-					if (doEfx) {
-						if (mDoneState != 1) {
-							ogSound->setBdamaGet();
-							Vector2f pos;
-							og::Screen::calcGlbCenter(mPane_bedama1P[i], &pos);
 
-							efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0xcfcf00ff, 0xe7e757ff);
-							efx2d::T2DSprayset_forVS efx;
-							efx.create(&arg);
-						}
-						mScaleMgrP1_1[i]->up();
-					}
-				}
-				mBedamaGotFlagsP1[i] = true;
-			} else {
-				mPane_bedama1P[i]->hide();
-				mPane_nodama1P[i]->show();
-				mPane_nodama1P[i]->updateScale(p1ScaleYellow);
-				mBedamaGotFlagsP1[i] = false;
-			}
-
-            if (mDisp->mMarbleCountP2 > i) {
-				mPane_nodama2P[i]->hide();
-				mPane_bedama2P[i]->show();
-				mPane_bedama2P[i]->updateScale(p2ScaleYellow);
-				if (!mBedamaGotFlagsP2[i]) {
-					if (i == 3) {
-						mDoneState = 1;
-					}
-					mHasAllBedamaP2 = (i == 3);
-					if (doEfx) {
-						if (mDoneState != 1) {
-							ogSound->setBdamaGet();
-							Vector2f pos;
-							og::Screen::calcGlbCenter(mPane_bedama2P[i], &pos);
-
-							efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0xcfcf00ff, 0xe7e757ff);
-							efx2d::T2DSprayset_forVS efx;
-							efx.create(&arg);
-						}
-						mScaleMgrP3_1[i]->up();
-					}
-				}
-				mBedamaGotFlagsP2[i] = true;
-			} else {
-				mPane_bedama2P[i]->hide();
-				mPane_nodama2P[i]->show();
-				mPane_nodama2P[i]->updateScale(p2ScaleYellow);
-				mBedamaGotFlagsP2[i] = false;
-			}
-
-            if (mDisp->mMarbleCountP3 > i) {
-				mPane_nodama3P[i]->hide();
-				mPane_bedama3P[i]->show();
-				mPane_bedama3P[i]->updateScale(p3ScaleYellow);
-				if (!mBedamaGotFlagsP3[i]) {
-					if (i == 3) {
-						mDoneState = 1;
-					}
-					mHasAllBedamaP3 = (i == 3);
-					if (doEfx) {
-						if (mDoneState != 1) {
-							ogSound->setBdamaGet();
-							Vector2f pos;
-							og::Screen::calcGlbCenter(mPane_bedama3P[i], &pos);
-
-							efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0xcfcf00ff, 0xe7e757ff);
-							efx2d::T2DSprayset_forVS efx;
-							efx.create(&arg);
-						}
-						mScaleMgrP3_1[i]->up();
-					}
-				}
-				mBedamaGotFlagsP3[i] = true;
-			} else {
-				mPane_bedama3P[i]->hide();
-				mPane_nodama3P[i]->show();
-				mPane_nodama3P[i]->updateScale(p3ScaleYellow);
-				mBedamaGotFlagsP3[i] = false;
-			}
-
-
-			if (mDisp->mMarbleCountP4 > i) {
-				mPane_nodama4P[i]->hide();
-				mPane_bedama4P[i]->show();
-				mPane_bedama4P[i]->updateScale(p4ScaleYellow);
-				if (!mBedamaGotFlagsP4[i]) {
-					if (i == 3) {
-						mDoneState = 1;
-					}
-					mHasAllBedamaP4 = (i == 3);
-					if (doEfx) {
-						if (mDoneState != 1) {
-							ogSound->setBdamaGet();
-							Vector2f pos;
-							og::Screen::calcGlbCenter(mPane_bedama4P[i], &pos);
-
-							efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0xcfcf00ff, 0xe7e757ff);
-							efx2d::T2DSprayset_forVS efx;
-							efx.create(&arg);
-						}
-						mScaleMgrP4_1[i]->up();
-					}
-				}
-				mBedamaGotFlagsP4[i] = true;
-			} else {
-				mPane_bedama4P[i]->hide();
-				mPane_nodama4P[i]->show();
-				mPane_nodama4P[i]->updateScale(p4ScaleYellow);
-				mBedamaGotFlagsP4[i] = false;
-			}
+			CheckBedama(i, 0, doEfx, p1ScaleYellow, P1win);
+			CheckBedama(i, 1, doEfx, p2ScaleYellow, P2win);
+			CheckBedama(i, 2, doEfx, p3ScaleYellow, P3win);
+			CheckBedama(i, 3, doEfx, p4ScaleYellow, P4win);
 		}
 	}
 
-    if (mHasAllBedamaP1 && mBedamaGetTimers[0] > 0.0f) {
-		mBedamaGetTimers[0] -= sys->mDeltaTime;
-		if (mBedamaGetTimers[0] < 0.0f && doEfx) {
-			ogSound->setBdamaGet();
-			f32 scale = 0.6f;
-			for (int i = 0; i < 4; i++) {
-				mScaleMgrP1_1[i]->up();
-				Vector2f pos;
-				og::Screen::calcGlbCenter(mPane_bedama1P[i], &pos);
-
-				efx2d::ArgScale arg(&pos, scale);
-				efx2d::T2DSensorGet_forVS efx;
-				efx.create(&arg);
-				P1win = true;
-			}
-		}
-	}
-
-    if (mHasAllBedamaP2 && mBedamaGetTimers[1] > 0.0f) {
-		mBedamaGetTimers[1] -= sys->mDeltaTime;
-		if (mBedamaGetTimers[1] < 0.0f && doEfx) {
-			ogSound->setBdamaGet();
-			f32 scale = 0.6f;
-			for (int i = 0; i < 4; i++) {
-				mScaleMgrP2_1[i]->up();
-				Vector2f pos;
-				og::Screen::calcGlbCenter(mPane_bedama2P[i], &pos);
-
-				efx2d::ArgScale arg(&pos, scale);
-				efx2d::T2DSensorGet_forVS efx;
-				efx.create(&arg);
-				P2win = true;
-			}
-		}
-	}
-
-	if (mHasAllBedamaP3 && mBedamaGetTimers[2] > 0.0f) {
-		mBedamaGetTimers[2] -= sys->mDeltaTime;
-		if (mBedamaGetTimers[2] < 0.0f && doEfx) {
-			ogSound->setBdamaGet();
-			f32 scale = 0.6f;
-			for (int i = 0; i < 4; i++) {
-				mScaleMgrP3_1[i]->up();
-				Vector2f pos;
-				og::Screen::calcGlbCenter(mPane_bedama3P[i], &pos);
-
-				efx2d::ArgScale arg(&pos, scale);
-				efx2d::T2DSensorGet_forVS efx;
-				efx.create(&arg);
-				P3win = true;
-			}
-		}
-	}
-
-	if (mHasAllBedamaP4 && mBedamaGetTimers[3] > 0.0f) {
-		mBedamaGetTimers[3] -= sys->mDeltaTime;
-		if (mBedamaGetTimers[3] < 0.0f && doEfx) {
-			ogSound->setBdamaGet();
-			f32 scale = 0.6f;
-			for (int i = 0; i < 4; i++) {
-				mScaleMgrP4_1[i]->up();
-				Vector2f pos;
-				og::Screen::calcGlbCenter(mPane_bedama4P[i], &pos);
-
-				efx2d::ArgScale arg(&pos, scale);
-				efx2d::T2DSensorGet_forVS efx;
-				efx.create(&arg);
-				P4win = true;
-			}
-		}
-	}
+    CheckBedamaWin(0, doEfx, P1win);
+	CheckBedamaWin(1, doEfx, P2win);
+	CheckBedamaWin(2, doEfx, P3win);
+	CheckBedamaWin(3, doEfx, P4win);
+    
 
 	if (!mPlayWinSound) {
 		if (P1win && P2win && P3win && P4win && Game::gNaviNum == 4) {
