@@ -298,6 +298,8 @@ void FourObjVs::Clock::init() {
     P2ASSERT(base);
     minuteHidden = false;
     secondPushed = false;
+	chimeRed    = true;
+	chimeOrange = true;
     
     secondPos1 = second->mPane->mOffset;
     secondPos2 = JGeometry::TVec2f(second->mPane->mBounds.f.x, 0.0f);
@@ -582,7 +584,7 @@ void FourObjVs::doDraw(Graphics& gfx) {
 	mTimerScreen->draw(gfx, gfx.mPerspGraph);
 }
 
-void FourObjVs::CheckWindama(int idx, int playerID, bool doEfx, bool& isWin) {
+inline void FourObjVs::CheckWindama(int idx, int playerID, bool doEfx, bool& isWin) {
 	bool flagArr[] = { mDisp->mFlags[0], mDisp->mFlags[1], mDisp->mFlag2[0], mDisp->mFlag2[1] };
 	int marbleCounts[] = { mDisp->mMarbleCountP1, mDisp->mMarbleCountP2, mDisp->mMarbleCountP3, mDisp->mMarbleCountP4 };
 	J2DPictureEx** windamaPanes[] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P };
@@ -613,7 +615,7 @@ void FourObjVs::CheckWindama(int idx, int playerID, bool doEfx, bool& isWin) {
 	}
 }
 
-void FourObjVs::CheckBedama(int idx, int playerID, bool doEfx, f32 scale, bool& isWin) {
+inline void FourObjVs::CheckBedama(int idx, int playerID, bool doEfx, f32 scale, bool& isWin) {
 
 	bool flagArr[] = { mDisp->mFlags[0], mDisp->mFlags[1], mDisp->mFlag2[0], mDisp->mFlag2[1] };
 	
@@ -666,7 +668,7 @@ void FourObjVs::CheckBedama(int idx, int playerID, bool doEfx, f32 scale, bool& 
 
 }
 
-void FourObjVs::CheckBedamaWin(int playerID, bool doEfx, bool& isWin) {
+inline void FourObjVs::CheckBedamaWin(int playerID, bool doEfx, bool& isWin) {
 
 	J2DPictureEx** bedamaPanes[] = { mPane_bedama1P, mPane_bedama2P, mPane_bedama3P, mPane_bedama4P };
 	og::Screen::ScaleMgr** bedamaScaleMgr[] = { mScaleMgrP1_1, mScaleMgrP2_1, mScaleMgrP3_1, mScaleMgrP4_1 };
@@ -818,24 +820,6 @@ void FourObjVs::checkObake()
 	}
 
 	if (mObakeEnabledP2) {
-		mAlphaObakeP2 += sys->mDeltaTime;
-		if (mAlphaObakeP2 > 1.0f)
-			mAlphaObakeP2 = 1.0f;
-
-		if (mDisp->mGhostIconTimerP2 <= 0.0f) {
-			mObakeEnabledP2 = false;
-		}
-	} else {
-		mAlphaObakeP2 -= sys->mDeltaTime;
-		if (mAlphaObakeP2 < 0.0f)
-			mAlphaObakeP2 = 0.0f;
-
-		if (mDisp->mFlags[3]) {
-			mObakeEnabledP2 = true;
-		}
-	}
-
-    if (mObakeEnabledP2) {
 		mAlphaObakeP2 += sys->mDeltaTime;
 		if (mAlphaObakeP2 > 1.0f)
 			mAlphaObakeP2 = 1.0f;
