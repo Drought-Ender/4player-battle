@@ -2,7 +2,7 @@
 #include "Game/NaviState.h"
 #include "Game/Interaction.h"
 #include "Game/Entities/Sarai.h"
-
+#include "VsOptions.h"
 #include "PSM/Navi.h"
 
 #include "Dolphin/rand.h"
@@ -178,7 +178,7 @@ bool InteractFire::actNavi(Game::Navi* navi)
 		return false;
 	}
 
-	if (gameSystem && gameSystem->isVersusMode()) {
+	if (gameSystem && gameSystem->isVersusMode() && (gConfig[FLARE_GAURD] == ConfigEnums::GAURD_ON || navi->onTeam(Red))) {
 		return false;
 	}
 
@@ -187,7 +187,7 @@ bool InteractFire::actNavi(Game::Navi* navi)
 	}
 
 	navi->mSoundObj->startSound(PSSE_PL_ORIMA_FIRED, 0);
-	navi->startDamage(mDamage);
+	navi->startDamage(0.0f);
 	return true;
 }
 
@@ -199,7 +199,7 @@ bool InteractFire::actNavi(Game::Navi* navi)
 bool InteractBubble::actNavi(Game::Navi* navi)
 {
 	if (!gameSystem || gameSystem->mFlags & GAMESYS_Unk6) {
-		if (gameSystem && gameSystem->isVersusMode()) {
+		if (gameSystem && gameSystem->isVersusMode() && (gConfig[FLARE_GAURD] == ConfigEnums::GAURD_ON || navi->onTeam(Blue))) {
 			return false;
 		}
 
@@ -207,7 +207,7 @@ bool InteractBubble::actNavi(Game::Navi* navi)
 			return false;
 		}
 
-		navi->startDamage(mDamage);
+		navi->startDamage(0.0f);
 		return true;
 	}
 }
@@ -217,9 +217,36 @@ bool InteractBubble::actNavi(Game::Navi* navi)
  * Address:	801D85F0
  * Size:	000008
  */
-bool InteractGas::actNavi(Game::Navi*) { return false; }
+bool InteractGas::actNavi(Game::Navi* navi) {
+	if (!gameSystem || gameSystem->mFlags & GAMESYS_Unk6) {
+		if (gameSystem && gameSystem->isVersusMode() && (gConfig[FLARE_GAURD] == ConfigEnums::GAURD_ON || navi->onTeam(White))) {
+			return false;
+		}
 
-bool InteractSpore::actNavi(Navi*) { return false; }
+		if (navi->invincible()) {
+			return false;
+		}
+
+		navi->startDamage(0.0f);
+		return true;
+	}
+
+}
+
+bool InteractSpore::actNavi(Navi* navi) {
+	if (!gameSystem || gameSystem->mFlags & GAMESYS_Unk6) {
+		if (gameSystem && gameSystem->isVersusMode() && (gConfig[FLARE_GAURD] == ConfigEnums::GAURD_ON || navi->onTeam(Purple))) {
+			return false;
+		}
+
+		if (navi->invincible()) {
+			return false;
+		}
+
+		navi->startDamage(0.0f);
+		return true;
+	}
+}
 
 /*
  * --INFO--

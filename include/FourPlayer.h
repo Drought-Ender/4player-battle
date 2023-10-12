@@ -106,7 +106,8 @@ enum OptionsEnum {
     PIKMIN_BIRTH,
     FRIEND_BITTER,
     FRIENDLY_FIRE,
-    CAPTURE_MARBLE
+    CAPTURE_MARBLE,
+    FLARE_GAURD
 };
 
 namespace ConfigEnums {

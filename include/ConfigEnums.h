@@ -116,4 +116,9 @@ enum ECaptureMarble {
     CAPTURE_STEALSPRAY
 };
 
+enum EFlareGaurd {
+    GAURD_OFF,
+    GAURD_ON
+};
+
 } // namespace ConfigEnums

@@ -60,7 +60,7 @@ Option gOptions[] = {
     {
         "Display Names",
         { "Off", "On" },
-        { "Player names will not appear in-game", "Play names will appear in game" }
+        { "Player names will not appear in-game", "player names will appear in game" }
     },
     {
         "Onion Marbles",
@@ -199,6 +199,16 @@ Option gOptions[] = {
         },
         4,
         0
+    },
+    {
+        "Flare Gaurd",
+        { "Off", "On" },
+        {
+            "You will be stunned by elemental attacks other than your own",
+            "You will not take damage from elemental attacks"
+        },
+        2,
+        1
     }
 };
 
