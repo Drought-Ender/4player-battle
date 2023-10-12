@@ -85,6 +85,7 @@ struct Obj : public EnemyBase {
 	void setVersusHibaOnOff();
 	void setVersusHibaType();
 	void resetAttrHitCount();
+	void decAttrHitCount(int);
 	void addAttrAttackCount(Piki*);
 	bool isWaitFinish();
 	bool isAttackFinish();

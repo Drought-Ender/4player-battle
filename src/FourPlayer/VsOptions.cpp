@@ -285,7 +285,7 @@ void VsConfigMenu::cleanup() {
     for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
         gConfig[i] = gOptions[i].getValue();        
     }
-    Game::gGameConfig.mParms.mVsHiba.mData = gConfig[VS_HIBA];
+    Game::gGameConfig.mParms.mVsHiba.mData = gConfig[VS_HIBA] != ConfigEnums::VSHIBA_OFF;
     Game::gGameConfig.mParms.mVsY.mData    = gConfig[VS_Y];
     if (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_NOTHING) {
         Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::RESET_BEDAMA] = false;

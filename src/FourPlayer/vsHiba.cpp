@@ -1,4 +1,5 @@
 #include "Game/Entities/ElecHiba.h"
+#include "VsOptions.h"
 
 namespace Game
 {
@@ -50,33 +51,63 @@ void Obj::setVersusHibaType()
 {
 	if (!isVsHibaDraw()) {
 		mVersusHibaType = getVsHibaHighestColor();
-        OSReport("mVersusHibaType %i\n", mVersusHibaType);
 	}
 }
 
 void Obj::resetAttrHitCount()
 {
-	mAttrAttackCount[0] = 0;
-	mAttrAttackCount[1] = 0;
+    mAttrAttackCount[0] = 0;
+    mAttrAttackCount[1] = 0;
     mAttrAttackCount[2] = 0;
     mAttrAttackCount[3] = 0;
+
 }
+
+void Obj::decAttrHitCount(int amount)
+{
+    for (int i = 0; i < 4; i++) {
+    	mAttrAttackCount[i] -= amount;
+
+        if (mAttrAttackCount[i] < 0) {
+            mAttrAttackCount[i] = 0;
+        }
+    }
+
+    
+}
+
 
 void Obj::addAttrAttackCount(Piki* piki)
 {
-	int type = piki->mPikiKind;
-	if (type == Red) {
-		mAttrAttackCount[0]++;
-	} else if (type == Blue) {
-		mAttrAttackCount[1]++;
-	} else if (type == White) {
-        mAttrAttackCount[2]++;
-    } else if (type == Purple) {
-        mAttrAttackCount[3]++;
+    if (gConfig[VS_HIBA] == ConfigEnums::VSHIBA_OLD) {
+        
+        mAttrAttackCount[getTeamFromPiki(piki->mPikiKind)]++;
+
+        if (getStateID() == ELECHIBA_Attack) {
+            mWaitTimer = 0.0f;
+        }
     }
-	if (getStateID() == ELECHIBA_Attack) {
-		mWaitTimer = 0.0f;
-	}
+    else {
+        int teamID = getTeamFromPiki(piki->mPikiKind);
+        s16& attrAttackCount = mAttrAttackCount[teamID];
+        if (attrAttackCount < 10) {
+            attrAttackCount += 2;
+            decAttrHitCount(1);
+        }
+
+        if (getStateID() == ELECHIBA_Attack) {
+            if (isVsHibaWinning((EVersusHibaType)(teamID + 1))) {
+                mWaitTimer -= 0.2f;
+                if (mWaitTimer < 0.0f) {
+                    mWaitTimer = 0.0f;
+                }
+            }
+            else {
+                mWaitTimer += 0.2f;
+            }
+        }
+        
+    }
 }
 
 bool Obj::isWaitFinish()

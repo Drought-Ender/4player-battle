@@ -74,7 +74,8 @@ enum EVsY {
 
 enum EVsHiba {
     VSHIBA_OFF,
-    VSHIBA_ON
+    VSHIBA_ON,
+    VSHIBA_OLD
 };
 
 enum EPikiRevive {

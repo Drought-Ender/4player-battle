@@ -2,6 +2,7 @@
 #include "Game/EnemyAnimKeyEvent.h"
 #include "efx/TEnemyBomb.h"
 #include "PS.h"
+#include "VsOptions.h"
 
 namespace Game {
 namespace ElecHiba {
@@ -271,7 +272,12 @@ void StateAttack::cleanup(EnemyBase* enemy)
 		elecHiba->finishDisChargeEffect();
 	}
 
-	elecHiba->resetAttrHitCount();
+	if (gConfig[VS_HIBA] == ConfigEnums::VSHIBA_OLD) {
+		elecHiba->resetAttrHitCount();
+	}
+	else {
+		elecHiba->decAttrHitCount(2);
+	}
 }
 
 } // namespace ElecHiba
