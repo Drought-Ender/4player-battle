@@ -121,4 +121,9 @@ enum EFlareGaurd {
     GAURD_ON
 };
 
+enum EHazardTimer {
+    HAZARD_OFF,
+    HAZARD_ON
+};
+
 } // namespace ConfigEnums

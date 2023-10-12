@@ -107,7 +107,8 @@ enum OptionsEnum {
     FRIEND_BITTER,
     FRIENDLY_FIRE,
     CAPTURE_MARBLE,
-    FLARE_GAURD
+    FLARE_GAURD,
+    HAZARD_TIMER
 };
 
 namespace ConfigEnums {

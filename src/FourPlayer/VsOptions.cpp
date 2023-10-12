@@ -209,6 +209,16 @@ Option gOptions[] = {
         },
         2,
         1
+    },
+    {
+        "Hazard Cooldown",
+        { "Off", "On" },
+        {
+            "There will not be any delay for when pikmin are afflicted by hazards",
+            "Whistling a panicing pikmin will make them immune to hazards for a short time"
+        },
+        2,
+        0
     }
 };
 

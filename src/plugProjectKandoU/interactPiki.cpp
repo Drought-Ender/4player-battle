@@ -474,6 +474,9 @@ bool InteractSuikomi_Test::actPiki(Game::Piki* piki)
  */
 bool InteractFire::actPiki(Game::Piki* piki)
 {
+	if (piki->gasInvicible()) {
+		return false;
+	}
 	if (piki->mCurrentState->invincible(piki)) {
 		return false;
 	}
@@ -532,6 +535,9 @@ bool InteractAstonish::actPiki(Game::Piki* piki)
  */
 bool InteractBubble::actPiki(Game::Piki* piki)
 {
+	if (piki->gasInvicible()) {
+		return false;
+	}
 	if (piki->mCurrentState->invincible(piki)) {
 		return false;
 	}
@@ -561,7 +567,7 @@ bool InteractBubble::actPiki(Game::Piki* piki)
  */
 bool InteractGas::actPiki(Game::Piki* piki)
 {
-	if (piki->gasInvicible() && !gameSystem->isVersusMode()) {
+	if (piki->gasInvicible()) {
 		return false;
 	}
 	if (piki->mCurrentState->invincible(piki)) {
@@ -588,7 +594,7 @@ bool InteractGas::actPiki(Game::Piki* piki)
 }
 
 bool InteractSpore::actPiki(Piki* piki) {
-	if (piki->gasInvicible() && !gameSystem->isVersusMode()) {
+	if (piki->gasInvicible()) {
 		return false;
 	}
 	if (piki->mCurrentState->invincible(piki)) {

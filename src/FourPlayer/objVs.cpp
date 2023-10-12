@@ -473,7 +473,7 @@ void FourObjVs::updateCSticks() {
 void FourObjVs::doUpdateCommon() {
 	mClock.update();
     checkUpdateWinColor();
-    setOnOffBdama4P(!mSetBedamaFlag);
+    setOnOffBdama4P(!mSetBedamaFlag && !Game::moviePlayer->isActive());
     checkObake();
 	updateCSticks();
 	mScreenP1->update(mDisp->mOlimarData);

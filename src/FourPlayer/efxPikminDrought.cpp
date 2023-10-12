@@ -5,6 +5,7 @@
 #include "Game/Piki.h"
 #include "PikiAI.h"
 #include "System.h"
+#include "VsOptions.h"
 
 namespace efx
 {
@@ -143,6 +144,7 @@ void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
 
 	switch (mPanicType) {
 	case PIKIPANIC_Fire:
+		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON) piki->setGasInvincible(90);
 		efx::TPkEffect* effectsObjFire = piki->mEffectsObj;
 		effectsObjFire->killMoe_();
 		if (effectsObjFire->isFlag(PKEFF_Fire)) {
@@ -153,6 +155,7 @@ void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
 		}
 		break;
 	case PIKIPANIC_Water:
+		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON) piki->setGasInvincible(90);
 		efx::TPkEffect* effectsObjWater = piki->mEffectsObj;
 		effectsObjWater->killWater_();
 		if (effectsObjWater->isFlag(PKEFF_Water)) {
@@ -161,7 +164,7 @@ void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
 		}
 		break;
 	case PIKIPANIC_Gas:
-		//piki->setGasInvincible(90);
+		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON) piki->setGasInvincible(90);
 		efx::TPkEffect* effectsObjGas = piki->mEffectsObj;
 		effectsObjGas->killChudoku_();
 		if (effectsObjGas->isFlag(PKEFF_Gas)) {
@@ -169,7 +172,17 @@ void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
 			efx::createSimpleGedoku(*effectsObjGas->_0C);
 		}
 		break;
+	case PIKIPANIC_Spore:
+		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON) piki->setGasInvincible(90);
+		efx::TPkEffect* effectsObjSpore = piki->mEffectsObj;
+        effectsObjSpore->killSpore_();
+        if (effectsObjSpore->isFlag(PKEFF_Spore)) {
+            effectsObjSpore->resetFlag(PKEFF_Spore);
+            pkEffectMgr->createS_SporeOff(*effectsObjSpore->_0C);
+        }
+		break;
 	}
+
 }
 
 
