@@ -487,6 +487,7 @@ bool TFourVsSelect::doUpdate() {
 
     for (int i = Game::gNaviNum; i < 4; i++) {
         Game::SetVsTeam(i, Game::TEAM_NULL);
+        sNameOverride[i] = false;
     }
 
     for (int i = 0; i < Game::gNaviNum; i++) {

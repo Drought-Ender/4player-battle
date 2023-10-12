@@ -2,6 +2,11 @@
 namespace ConfigEnums
 {
 
+enum EPlayerName {
+    NAME_OFF,
+    NAME_ON
+};
+
 enum EPlaceMarbleConfig {
     PLACE_VANILLA,
     PLACE_BURY,

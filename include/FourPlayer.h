@@ -90,6 +90,7 @@ extern int gConfig[];
 
 
 enum OptionsEnum {
+    PLAYER_NAME,
     MARBLE_BURY,
     MARBLE_CARRY,
     CHERRY_RATE,

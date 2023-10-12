@@ -187,13 +187,15 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 
 void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
 	
+	if (!sDebugMode && gConfig[PLAYER_NAME] == ConfigEnums::NAME_OFF) return;
+
 	if (moviePlayer->isActive()) return;
 
 	vp->setViewport();
 	vp->setProjection();
 	gfx.initPerspPrintf(vp);
 	for (int i = 0; i < Game::gNaviNum; i++) {
-		if (i == vp->mVpId) {
+		if (i == vp->mVpId && !gTournamentMode) {
 			if (!sDebugMode) continue;
 			PerspPrintfInfo info;
 			info.mFont = getPikminFont();

@@ -6,6 +6,8 @@ struct IMenu;
 
 static const char* cBackgroundName = "/background.bti";
 
+extern bool sNameOverride[4];
+
 struct VsOptionsMenuMgr {
     VsOptionsMenuMgr();
     void init();

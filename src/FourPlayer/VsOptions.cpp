@@ -16,9 +16,16 @@ VsOptionsMenuMgr* gOptionMenu;
 
 const bool gTournamentMode = false;
 
+bool sNameOverride[4] = { false, false, false, false };
+
 void Option::readOptions() {
     OSReport("Tournament Mode Ptr %p\n", &gTournamentMode);
     if (gTournamentMode) {
+
+        gOptions[PLAYER_NAME].value = ConfigEnums::NAME_ON;
+        gConfig[PLAYER_NAME] = ConfigEnums::NAME_ON;
+        gOptions[PLAYER_NAME].hide  = true;
+
         gOptions[MARBLE_BURY].value = ConfigEnums::PLACE_BURY;
         gConfig[MARBLE_BURY] = ConfigEnums::PLACE_BURY;
 
@@ -50,6 +57,11 @@ void Option::readOptions() {
 }
 
 Option gOptions[] = {
+    {
+        "Display Names",
+        { "Off", "On" },
+        { "Player names will not appear in-game", "Play names will appear in game" }
+    },
     {
         "Onion Marbles",
         { "Vanilla", "Buried", "Removed" },
@@ -726,7 +738,7 @@ void CharacterSelect::init(VsOptionsMenuMgr* menu) {
         mNameCursors[i] = 0;
         strcpy(mPlayerNames[i], sCharacters[i].mDispName);
         CharacterData::PrepareDisplayName(CharacterData::sMaxNameSize, mPlayerNames[i]);
-        mSelectingCharactor[i] = false;
+        mSelectingCharactor[i] = !sNameOverride[i];
     }
 
     Vector2f startOffset(0.0f, 50.0f);
@@ -854,7 +866,9 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
 
         Controller* controller = mControllers[i];
         if (mSelectingCharactor[i]) {
-            strncpy(mPlayerNames[i], mCharacters[mCursors[i]].mCharacterName, ARRAY_SIZE(mPlayerNames[i]) - 1);
+            if (!sNameOverride[i]) {
+                strncpy(mPlayerNames[i], mCharacters[mCursors[i]].mCharacterName, ARRAY_SIZE(mPlayerNames[i]) - 1);
+            }
             CharacterData::MakeDisplayName(ARRAY_SIZE(mPlayerNames[i]), mPlayerNames[i]);
             if (controller->isButtonDown(JUTGamePad::PRESS_RIGHT) && mCursors[i] + 1 < mCharacterCount) {
                 mCursors[i]++;
@@ -894,16 +908,19 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
             else if (controller->isButtonDown(JUTGamePad::PRESS_UP)) {
                 char& refChar = mPlayerNames[i][mNameCursors[i]];
                 refChar = NextChar(refChar);
+                sNameOverride[i] = true;
                 PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
             }
             else if (controller->isButtonDown(JUTGamePad::PRESS_DOWN)) {
                 char& refChar = mPlayerNames[i][mNameCursors[i]];
                 refChar = PrevChar(refChar);
+                sNameOverride[i] = true;
                 PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
             }
             else if (controller->isButtonDown(JUTGamePad::PRESS_A)) {
                 char& refChar = mPlayerNames[i][mNameCursors[i]];
                 refChar = ToggleUpper(refChar);
+                sNameOverride[i] = true;
                 PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
             }
         }
