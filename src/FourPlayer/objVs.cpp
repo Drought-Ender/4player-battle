@@ -278,7 +278,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     mClock.colon  = (J2DPicture*)mTimerScreen->search('CTime');
     mClock.base   = mTimerScreen->search('BaseTime');
 
-    if (!gTournamentMode) {
+    if (!gConfig[STALEMATE_TIMER]) {
         mClock.base->hide();
     }
 
@@ -288,6 +288,38 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     //     setWinBedamaColor(i, mDisp->mWinMarbleColors[i]);
     // }
     setOnOffBdama4P(false);
+
+	ScreenSet* screens[] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 };
+
+	if (gConfig[SPICY_PASSIVE] == ConfigEnums::SPICYPASSIVE_INF) {
+		OSReport("SPICY OFF!!!!\n");
+		for (int i = 0; i < 4; i++) {
+			screens[i]->mScreen->search('dy_r')->move(-600.0f, 0.0f);
+			screens[i]->mScreen->search('dy_l')->move(-600.0f, 0.0f);
+			J2DPane* pane = screens[i]->mScreen->search('dy_inf');
+			if (pane) pane->show();
+		}
+	}
+	else {
+		for (int i = 0; i < 4; i++) {
+			J2DPane* pane = screens[i]->mScreen->search('dy_inf');
+			if (pane) pane->hide();
+		}
+	}
+	if (gConfig[BITTER_PASSIVE] == ConfigEnums::BITTERPASSIVE_INF) {
+		for (int i = 0; i < 4; i++) {
+			screens[i]->mScreen->search('dr_r')->move(-600.0f, 0.0f);
+			screens[i]->mScreen->search('dr_l')->move(-600.0f, 0.0f);
+			J2DPane* pane = screens[i]->mScreen->search('dr_inf');
+			if (pane) pane->show();
+		}
+	}
+	else {
+		for (int i = 0; i < 4; i++) {
+			J2DPane* pane = screens[i]->mScreen->search('dr_inf');
+			if (pane) pane->hide();
+		}
+	}
 }
 
 void FourObjVs::Clock::init() {
@@ -310,7 +342,7 @@ void FourObjVs::Clock::init() {
 void FourObjVs::Clock::update() {
     
     if (!minute || !second || !colon) return;
-    if (!gTournamentMode) return;
+    if (!gConfig[STALEMATE_TIMER]) return;
 
     bool shouldTransitMinute = *(minute->mCountPtr) == 0;
     bool shouldTransitSecond = *(second->mCountPtr) < 10;
@@ -515,6 +547,7 @@ void FourObjVs::doUpdateCommon() {
 			screens[i]->mScreen->hide();
 		}
 	}
+
     mBloGroup->update();
 }
 
@@ -564,6 +597,7 @@ void FourObjVs::doUpdateFadeoutFinish() {
 }
 
 void FourObjVs::doDraw(Graphics& gfx) {
+
     if (!mDisp->mTwoPlayer) {
         J2DPerspGraph* graf = &gfx.mPerspGraph;
         graf->setPort();

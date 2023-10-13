@@ -126,4 +126,19 @@ enum EHazardTimer {
     HAZARD_ON
 };
 
+enum EStalemateTimer {
+    STALEMATE_OFF,
+    STALEMATE_ON
+};
+
+enum EBitterPassive {
+    BITTERPASSIVE_OFF = 0,
+    BITTERPASSIVE_INF = 5
+};
+
+enum ESpicyPassive {
+    SPICYPASSIVE_OFF = 0,
+    SPICYPASSIVE_INF = 5
+};
+
 } // namespace ConfigEnums

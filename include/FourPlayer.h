@@ -26,7 +26,6 @@ static bool gDebugPrint = true;
 static const JUtility::TColor vsTeamColors[] = { 0xff5050ff, 0x5050ffff, 0xffffffff, 0x7800ffff };
 
 
-
 inline void DebugReport(const char* msg, ...) {
     if (gDebugPrint) {
         va_list marker;
@@ -87,8 +86,6 @@ int GetConfigSize();
 extern Option gOptions[];
 extern int gConfig[];
 
-
-
 enum OptionsEnum {
     PLAYER_NAME,
     MARBLE_BURY,
@@ -108,7 +105,11 @@ enum OptionsEnum {
     FRIENDLY_FIRE,
     CAPTURE_MARBLE,
     FLARE_GAURD,
-    HAZARD_TIMER
+    HAZARD_TIMER,
+    BITTER_PASSIVE,
+    SPICY_PASSIVE,
+    STALEMATE_TIMER,
+    GLOBAL_SPICY
 };
 
 namespace ConfigEnums {
@@ -121,6 +122,12 @@ namespace ConfigEnums {
     bool EggCanDoubleNectar() {
         return gConfig[EGG_DROPS] != EGG_SINGLE;
     }
+    // isGlobalSpicy__11ConfigEnumsFv
+    bool isGlobalSpicy() {
+        return gConfig[GLOBAL_SPICY];
+    }
+
+    void SpicyGlobal(Game::Navi*);
 };
 
 extern VsOptionsMenuMgr* gOptionMenu;
@@ -154,6 +161,13 @@ extern PlayCamera* gCameraP3;
 extern PlayCamera* gCameraP4;
 extern Controller* gControllerP3;
 extern Controller* gControllerP4;
+
+void incAllGlobalDope(int color) {
+    OSReport("incAllGlobalDope(int)\n");
+    for (int i = 0; i < 4; i++) {
+        gDopeCountArray[i][color]++;
+    }
+}
 
 int CalcNaviNum();
 int getVsTeam(int);

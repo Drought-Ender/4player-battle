@@ -21,8 +21,8 @@
 #include "PikiAI.h"
 #include "Radar.h"
 #include "nans.h"
-
 #include "FourPlayer.h"
+#include "VsOptions.h"
 
 namespace Game {
 namespace VsGame {
@@ -97,6 +97,8 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 	section->mGhostIconTimers[2]    = 0.0f;
 	section->mGhostIconTimers[3]    = 0.0f;
 
+	gPassiveBitter = sSprayTimers[gConfig[BITTER_PASSIVE]];
+	gPassiveSpicy  = sSprayTimers[gConfig[SPICY_PASSIVE]];
 
 	mTimeLeft = VS_TIMER_START_TIME; // 8 minutes default timer
 }
@@ -316,14 +318,31 @@ void GameState::exec(VsGameSection* section)
 		updateNavi(section, VSPlayer_Purple);
 		updateNavi(section, VSPlayer_White);
 
-		if (gTournamentMode && !gameSystem->paused() && mTimeLeft >= 0.0f && !section->mMenuFlags
+		if (!gameSystem->paused() && mTimeLeft >= 0.0f && !section->mMenuFlags
 		    && !moviePlayer->mDemoState) 
 		{
+			if (gConfig[SPICY_PASSIVE] != ConfigEnums::SPICYPASSIVE_OFF && gConfig[SPICY_PASSIVE] != ConfigEnums::SPICYPASSIVE_INF) {
+				gPassiveSpicy  -= sys->mDeltaTime;
+				if (gPassiveSpicy <= 0.0f) {
+					OSReport("Inc Spicy Dope\n");
+					gPassiveSpicy += sSprayTimers[gConfig[SPICY_PASSIVE]];
+					incAllGlobalDope(SPRAY_TYPE_SPICY);
+				}
+			}
+			if (gConfig[BITTER_PASSIVE] != ConfigEnums::BITTERPASSIVE_OFF && gConfig[BITTER_PASSIVE] != ConfigEnums::BITTERPASSIVE_INF) {
+				gPassiveBitter -= sys->mDeltaTime;
+				if (gPassiveBitter <= 0.0f) {
+					gPassiveBitter += sSprayTimers[gConfig[BITTER_PASSIVE]];
+					incAllGlobalDope(SPRAY_TYPE_BITTER);
+				}
+			}
 
-			mTimeLeft -= sys->mDeltaTime;
+			if (gConfig[STALEMATE_TIMER]) {
+				mTimeLeft -= sys->mDeltaTime;
 
-			if (mTimeLeft <= 0.0f) {
-				vsTimeUp(section);
+				if (mTimeLeft <= 0.0f) {
+					vsTimeUp(section);
+				}
 			}
 		}
 	}

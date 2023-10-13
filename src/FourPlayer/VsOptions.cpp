@@ -11,12 +11,16 @@
 #include "VsOptions.h"
 #include "Game/VsGame.h"
 #include "LoadResource.h"
+#include "Game/NaviState.h"
 
 VsOptionsMenuMgr* gOptionMenu;
 
 const bool gTournamentMode = false;
 
 bool sNameOverride[4] = { false, false, false, false };
+
+f32 gPassiveSpicy;
+f32 gPassiveBitter;
 
 void Option::readOptions() {
     OSReport("Tournament Mode Ptr %p\n", &gTournamentMode);
@@ -43,6 +47,10 @@ void Option::readOptions() {
         gOptions[PELLET_POSY].hide = true;
         gOptions[PELLET_POSY].value = ConfigEnums::PELMATCH_ON;
         gConfig[PELLET_POSY] = ConfigEnums::PELMATCH_ON;
+        
+        gOptions[STALEMATE_TIMER].hide = true;
+        gOptions[STALEMATE_TIMER].value = ConfigEnums::STALEMATE_ON;
+        gConfig[STALEMATE_TIMER] = ConfigEnums::STALEMATE_ON;
 
 
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::ALL_FLOWER]->varibleForward();
@@ -219,6 +227,54 @@ Option gOptions[] = {
         },
         2,
         0
+    },
+    {
+        "Passive Bitters",
+        { "Off", "5 Minutes", "3 Minutes", "1 Minutes", "30 Seconds", "Infinite" },
+        {
+            "Controls the rate at which all players gain bitters natrually",
+            "Controls the rate at which all players gain bitters natrually",
+            "Controls the rate at which all players gain bitters natrually",
+            "Controls the rate at which all players gain bitters natrually",
+            "Controls the rate at which all players gain bitters natrually",
+            "Controls the rate at which all players gain bitters natrually"
+        },
+        6,
+        0
+    },
+    {
+        "Passive Spicys",
+        { "Off", "5 Minutes", "3 Minutes", "1 Minutes", "30 Seconds", "Infinite" },
+        {
+            "Controls the rate at which all players gain spicys natrually",
+            "Controls the rate at which all players gain spicys natrually",
+            "Controls the rate at which all players gain spicys natrually",
+            "Controls the rate at which all players gain spicys natrually",
+            "Controls the rate at which all players gain spicys natrually",
+            "Controls the rate at which all players gain spicys natrually"
+        },
+        6,
+        0
+    },
+    {
+        "Stalemate Timer",
+        { "Off", "On" },
+        {
+            "There will not be a stalemate timer",
+            "There will be a stalemate timer"
+        },
+        2,
+        0
+    },
+    {
+        "Global Spicy",
+        { "Off", "On" },
+        {
+            "Spicys will affect only your squad",
+            "Spicys will affect the entire field"
+        },
+        2,
+        0
     }
 };
 
@@ -310,6 +366,7 @@ void VsConfigMenu::cleanup() {
     if (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_NOTHING) {
         Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::RESET_BEDAMA] = false;
     }
+    Game::NaviDopeArg::wasteable = ConfigEnums::isGlobalSpicy();
 }
 
 bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {

@@ -269,11 +269,14 @@ struct DopeCard : public VsSlotMachineCard
 				navi->incDopeCount(mDopeType);
 			}
 			else {
+                bool prev = NaviDopeArg::wasteable;
+                
                 NaviDopeArg::wasteable = true;
 				NaviDopeArg dopearg (mDopeType);
 				gDopeCountArray[getVsTeam(user)][mDopeType]++;
 				navi->transit(NSID_Dope, &dopearg);
-                NaviDopeArg::wasteable = false;
+
+                NaviDopeArg::wasteable = prev;
 			}
 		}
     }

@@ -925,9 +925,17 @@ void VsGameSection::createVsPikmins()
 	}
 
 	for (int i = 0; i < 4; i++) {
-		gDopeCountArray[i][0] = mVsStageData->mStartNumSpicy;
-		gDopeCountArray[i][1] = mVsStageData->mStartNumBitter;
+		gDopeCountArray[i][SPRAY_TYPE_SPICY] = mVsStageData->mStartNumSpicy;
+		if (gConfig[SPICY_PASSIVE] == ConfigEnums::SPICYPASSIVE_INF) {
+			gDopeCountArray[i][SPRAY_TYPE_SPICY] = 999; // int max
+		}
+		gDopeCountArray[i][SPRAY_TYPE_BITTER] = mVsStageData->mStartNumBitter;
+		if (gConfig[BITTER_PASSIVE] == ConfigEnums::BITTERPASSIVE_INF) {
+			gDopeCountArray[i][SPRAY_TYPE_BITTER] = 999; // int max
+		}
 	}
+
+	 
 }
 
 /*

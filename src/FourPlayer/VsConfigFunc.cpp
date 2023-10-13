@@ -11,6 +11,7 @@
 #include "PikiAI.h"
 #include "Game/NaviState.h"
 #include "VsOptions.h"
+#include "Game/CPlate.h"
 
 namespace Game {
     float Pellet::buryBedamaVs() {
@@ -114,6 +115,35 @@ namespace Game {
         
         walkstate->execAI(captain);
     }
+
+    void Navi::applyDopes(int sprayType, Vector3f& sprayOrigin)
+    {
+        if (sprayType == SPRAY_TYPE_BITTER) {
+            Sys::Sphere searchCirc(sprayOrigin, 140.0f);
+            Delegate1<Navi, CellObject*> funcCallback(this, applyDopeSmoke);
+
+            cellMgr->mapSearch(searchCirc, &funcCallback);
+            return;
+        }
+
+        if (ConfigEnums::isGlobalSpicy()) {
+            ConfigEnums::SpicyGlobal(this);
+            return;
+        }
+
+        Iterator<Creature> cellIt(mCPlateMgr);
+        Creature* sprayTarget = nullptr;
+        CI_LOOP(cellIt)
+        {
+            Creature* got = *cellIt;
+            if (got->isPiki()) {
+                InteractDope dope(this, sprayType);
+                if (got->stimulate(dope) && sprayTarget == nullptr) {
+                    sprayTarget = got;
+                }
+            }
+        }
+    }
 }
 
 
@@ -121,4 +151,25 @@ namespace Game {
 bool canAutopluck() {
     return gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_ON;
 }
+
+
+
+namespace ConfigEnums
+{
+    void SpicyGlobal(Game::Navi* navi) {
+        int pikiKind = navi->getVsPikiColor();
+        Iterator<Game::Piki> iPiki = Game::pikiMgr;
+        CI_LOOP(iPiki) {
+            Game::Piki* piki = *iPiki;
+            if (piki->isAlive() && piki->mPikiKind == pikiKind) {
+                bool tried = piki->startDope(piki->doped());
+                if (!tried) {
+                    piki->extendDopeTime();
+                }
+            }
+        } 
+    }
+    
+} // namespace ConfigEnums
+
 

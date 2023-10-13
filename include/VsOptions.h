@@ -8,6 +8,18 @@ static const char* cBackgroundName = "/background.bti";
 
 extern bool sNameOverride[4];
 
+extern f32 gPassiveSpicy;
+extern f32 gPassiveBitter;
+
+static const f32 sSprayTimers[] = {
+    3.402823466e+38f,
+    300.0f, // 5 minutes
+    180.0f, // 3 minutes
+    60.0f,  // 1 minute
+    30.0f,  // 30 seconds
+    0.0f    // infinite
+};
+
 struct VsOptionsMenuMgr {
     VsOptionsMenuMgr();
     void init();
