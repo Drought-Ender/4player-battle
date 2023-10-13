@@ -399,8 +399,14 @@ struct OnyonTekiCard : public TekiCard
                 count++;
             } 
         }
+
         averageOnionEnemies /= count;
-        return TekiCard::getWeight(cardMgr, teamID) * (float)averageOnionEnemies / 3.5f;
+
+        float enemyMax = 3.2f - averageOnionEnemies / 3.2f;
+
+        float enemyMultiplier = (3.2f - enemyMultiplier) / 3.2f;
+        
+        return TekiCard::getWeight(cardMgr, teamID) * enemyMultiplier;
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {
