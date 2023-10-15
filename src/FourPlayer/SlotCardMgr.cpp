@@ -402,9 +402,9 @@ struct OnyonTekiCard : public TekiCard
 
         averageOnionEnemies /= count;
 
-        float enemyMax = 3.2f - averageOnionEnemies / 3.2f;
+        float enemyMultiplier = (3.2f - averageOnionEnemies) / 3.2f;
 
-        float enemyMultiplier = (3.2f - enemyMultiplier) / 3.2f;
+        if (enemyMultiplier < 0.0f) enemyMultiplier = 0.0f;
         
         return TekiCard::getWeight(cardMgr, teamID) * enemyMultiplier;
     }
