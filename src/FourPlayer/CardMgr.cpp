@@ -209,17 +209,17 @@ void CardMgr::draw(Graphics& gfx) {
         Vector3f p3SlotPos     = getSlotOrigin(2);
         Vector3f p4SlotPos     = getSlotOrigin(3);
         
-		if (machines[getVsTeam(0)]->mSpinState) {
+		if (machines[getVsTeam(0)]->mSpinState && gDrawNavi[0]) {
 			drawSlot(gfx, olimarSlotPos, *machines[getVsTeam(0)]);
 		}
-		if (machines[getVsTeam(1)]->mSpinState) {
+		if (machines[getVsTeam(1)]->mSpinState && gDrawNavi[1]) {
 			drawSlot(gfx, louieSlotPos, *machines[getVsTeam(1)]);
 		}
         if (gNaviNum >= 3) {
-            if (machines[getVsTeam(2)]->mSpinState) {
+            if (machines[getVsTeam(2)]->mSpinState && gDrawNavi[2]) {
                 drawSlot(gfx, p3SlotPos, *machines[getVsTeam(2)]);
             }
-            if (gNaviNum == 4 && machines[getVsTeam(3)]->mSpinState) {
+            if (gNaviNum == 4 && machines[getVsTeam(3)]->mSpinState && gDrawNavi[3]) {
                 drawSlot(gfx, p4SlotPos, *machines[getVsTeam(3)]);
             }
         }
@@ -244,7 +244,7 @@ void CardMgr::gotPlayerCard(int user)
 		machines[user]->_18 = 0;
 	} else if (machines[user]->mCherryStock < 4) {
         for (int i = 0; i < 4; i++) {
-            if (getVsTeam(i) == user) {
+            if (getVsTeam(i) == user && gDrawNavi[i]) {
                 Vector2f panePos = getLampPos(i, machines[user]->mCherryStock);
                 DebugReport("Owner %i\n", i);
 

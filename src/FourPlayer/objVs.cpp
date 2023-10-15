@@ -291,6 +291,11 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 
 	ScreenSet* screens[] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 };
 
+	for (int i = 0; i < 4; i++) {
+		P2DScreen::Node& node1 = screens[i]->mScreen->_118;
+		mLifeGaudeAfter[i] = (og::Screen::CallBack_DrawAfter*)node1.getChildAt(node1.getChildCount() - 1);
+	}
+
 	if (gConfig[SPICY_PASSIVE] == ConfigEnums::SPICYPASSIVE_INF) {
 		OSReport("SPICY OFF!!!!\n");
 		for (int i = 0; i < 4; i++) {
@@ -542,10 +547,15 @@ void FourObjVs::doUpdateCommon() {
     }
 	ScreenSet* screens[] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 };
 	for (int i = 0; i < ARRAY_SIZE(screens); i++) {
-		if (i >= Game::gNaviNum || mDisp->mNaviInactiveFlags[i]) {
+		if (i >= Game::gNaviNum) {
 			screens[i]->mScreen->setXY(0.0f, -600.0f);
 			screens[i]->mScreen->hide();
 		}
+		if (mDisp->mNaviInactiveFlags[i]) {
+			mLifeGaudeAfter[i]->mIsVisible = false;
+			screens[i]->mScreen->search('NALL')->hide();
+		}
+
 	}
 
     mBloGroup->update();

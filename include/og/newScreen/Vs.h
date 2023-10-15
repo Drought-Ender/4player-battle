@@ -225,6 +225,8 @@ struct FourObjVs : public ObjVs {
 
 	P2DScreen::Mgr_tuning* mTimerScreen;
 
+	og::Screen::CallBack_DrawAfter* mLifeGaudeAfter[4];
+
 	struct Clock
 	{
 		Clock() {
