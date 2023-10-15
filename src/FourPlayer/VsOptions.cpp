@@ -55,6 +55,8 @@ void Option::readOptions() {
 
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::ALL_FLOWER]->varibleForward();
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::RESET_BEDAMA]->varibleForward();
+
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::PIKMIN_XLU]->varibleForward();
         
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_RED]->varibleForward();
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_BLACK]->varibleForward();
