@@ -158,9 +158,9 @@ Option gOptions[] = {
     },
     {
         "Versus Hiba",
-        { "Off", "On" },
-        { "Versus Hiba will not spawn", "Versus Hiba will be spawned" },
-        2,
+        { "Off", "On", "Old" },
+        { "Versus Hiba will not spawn", "Versus Hiba will be spawned", "Versus Hiba will be spawned and use old code" },
+        3,
         0
     },
     {
