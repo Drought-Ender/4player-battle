@@ -21,7 +21,6 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/efxEnemyDought.o\
 	$(BUILD_DIR)/src/FourPlayer/efxPikminDrought.o\
 	$(BUILD_DIR)/src/FourPlayer/vsHiba.o\
-	$(BUILD_DIR)/src/FourPlayer/FourPlayerSound.o\
 	$(BUILD_DIR)/src/FourPlayer/SlotCardMgr.o\
 
 
