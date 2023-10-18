@@ -36,9 +36,27 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/gamePlayData.h"
 
+#include "Game/Entities/ElecBug.h"
+#include "Game/Entities/Bomb.h"
+
 static int sEditNum;
 
 namespace Game {
+
+void ElecbugTest() {
+	if (generalEnemyMgr) {
+		Bomb::Mgr* mgr = static_cast<Bomb::Mgr*>(generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Bomb));
+			if (mgr) {
+			for (int i = 0; i < mgr->mNumObjects; i++) {
+				Bomb::Obj* obj = static_cast<Bomb::Obj*>(mgr->getEnemy(i));
+				if (obj->isAlive()) {
+					OSReport("%s state\n", obj->mCurrentLifecycleState->mName);
+				}
+			}
+		}
+	}
+}
+
 namespace VsGame {
 
 static const char someVsArray[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

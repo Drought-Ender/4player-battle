@@ -5332,6 +5332,15 @@ initGenerators__Q24Game15BaseGameSectionFv:
 /* 8014CEB4 00149DF4  48 0A 4F 9D */	bl loadCreatures__Q24Game14GeneratorCacheFi
 .L_8014CEB8:
 /* 8014CEB8 00149DF8  48 0F 06 61 */	bl birthAll__Q24Game17PelletBirthBufferFv
+
+lwz r3, gameSystem__4Game@sda21(r13)
+lbz r4, 0x48(r3)
+cmplwi r4, 0
+beq .L_DONT_PLACE_OBJ
+lwz r3, mapMgr__4Game@sda21(r13)
+bl placeObjects__Q24Game10RoomMapMgrFv
+.L_DONT_PLACE_OBJ:
+
 mr r3, r30
 bl birthNavis__Q24Game15BaseGameSectionFv
 .L_8014D6CC:
@@ -11126,7 +11135,7 @@ setupFloatMemory__Q24Game15BaseGameSectionFv:
 /* 801510FC 0014E03C  38 A0 FF FF */	li r5, -1
 /* 80151100 0014E040  80 6D 91 E0 */	lwz r3, generalEnemyMgr__4Game@sda21(r13)
 /* 80151104 0014E044  54 04 06 3E */	clrlwi r4, r0, 0x18
-/* 80151108 0014E048  4B FB C4 F1 */	bl allocateEnemys__Q24Game15GeneralEnemyMgrFUci
+/* 80151108 0014E048  4B FB C4 F1 */	# bl allocateEnemys__Q24Game15GeneralEnemyMgrFUci
 /* 8015110C 0014E04C  80 6D 91 E0 */	lwz r3, generalEnemyMgr__4Game@sda21(r13)
 /* 80151110 0014E050  4B FB BE A5 */	bl setupSoundViewerAndBas__Q24Game15GeneralEnemyMgrFv
 /* 80151114 0014E054  80 6D 93 20 */	lwz r3, pelletMgr__4Game@sda21(r13)
@@ -11236,7 +11245,7 @@ setupFloatMemory__Q24Game15BaseGameSectionFv:
 /* 8015128C 0014E1CC  57 A0 06 3F */	clrlwi. r0, r29, 0x18
 /* 80151290 0014E1D0  41 82 00 0C */	beq .L_8015129C
 /* 80151294 0014E1D4  80 6D 93 08 */	lwz r3, mapMgr__4Game@sda21(r13)
-/* 80151298 0014E1D8  48 06 84 F9 */	bl placeObjects__Q24Game10RoomMapMgrFv
+/* 80151298 0014E1D8  48 06 84 F9 */	# bl placeObjects__Q24Game10RoomMapMgrFv
 .L_8015129C:
 /* 8015129C 0014E1DC  7F E3 FB 78 */	mr r3, r31
 /* 801512A0 0014E1E0  80 8D 9A EC */	lwz r4, sys@sda21(r13)
