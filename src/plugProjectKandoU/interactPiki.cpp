@@ -484,7 +484,7 @@ bool InteractFire::actPiki(Game::Piki* piki)
 	int pikiKind         = piki->mPikiKind;
 	if (currState && currState->transittable(PIKISTATE_Panic)) {
 		if (pikiKind != Red && pikiKind != Bulbmin) {
-			if (mCreature->isTeki()) {
+			if (mCreature && mCreature->isTeki()) {
 				EnemyBase* teki = static_cast<EnemyBase*>(mCreature);
 				piki->setTekiKillID(teki->getEnemyTypeID());
 			} else {
@@ -545,7 +545,7 @@ bool InteractBubble::actPiki(Game::Piki* piki)
 	int pikiKind         = piki->mPikiKind;
 	if (currState && currState->transittable(PIKISTATE_Panic)) {
 		if (pikiKind != Blue && pikiKind != Bulbmin) {
-			if (mCreature->isTeki()) {
+			if (mCreature && mCreature->isTeki()) {
 				EnemyBase* teki = static_cast<EnemyBase*>(mCreature);
 				piki->setTekiKillID(teki->getEnemyTypeID());
 			} else {

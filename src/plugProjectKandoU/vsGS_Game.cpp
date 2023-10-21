@@ -318,6 +318,10 @@ void GameState::exec(VsGameSection* section)
 		updateNavi(section, VSPlayer_Purple);
 		updateNavi(section, VSPlayer_White);
 
+		if (vsSlotCardMgr) {
+			vsSlotCardMgr->update();
+		}
+
 		if (!gameSystem->paused() && mTimeLeft >= 0.0f && !section->mMenuFlags
 		    && !moviePlayer->mDemoState) 
 		{

@@ -9,37 +9,6 @@ namespace Game
 namespace VsGame
 {
 
-struct VsSlotEntityArg {
-    VsSlotEntityArg(int i) { mUser = i; }
-    int mUser;
-};
-
-struct VsSlotCardEntity : public TPositionObject, public CNode {
-
-    VsSlotCardEntity() {
-        mToDelete = false;
-        mPosition = 0.0f;
-    }
-
-    Vector3f mPosition;
-    bool mToDelete;
-
-    virtual Vector3f getPosition() { return mPosition; }
-
-    void create(VsSlotEntityArg* arg) {
-        init(arg); 
-    }
-
-    virtual void init(VsSlotEntityArg*) {};
-    virtual void exec() {};
-    virtual void cleanup() {};
-};
-
-struct VsSlotCardEntityMgr : public CNode {
-    void exec();
-};
-
-
 class VsSlotMachineCard
 {
     protected:
@@ -73,6 +42,48 @@ class VsSlotMachineCard
     }
 };
 
+struct ActionEntity : public CNode {
+    virtual bool update() { };
+};
+
+struct TeamEntity : public ActionEntity {
+    TeamEntity(int teamID) : mTeamID(teamID) 
+    {
+    }
+
+    const int mTeamID;
+
+    int getTeamID() const { return mTeamID; }
+};
+
+struct TeamPositionEntity : public TeamEntity, public TPositionObject {
+    TeamPositionEntity(int teamID, Vector3f position) : TeamEntity(teamID), mPosition(position)
+    {
+    }
+
+    Vector3f mPosition;
+
+    virtual Vector3f getPosition() { return mPosition; }
+};
+
+struct HazardBarrier : TeamPositionEntity {
+    HazardBarrier(int, Vector3f);
+    ~HazardBarrier();
+
+    efx::TBase* mEfx;
+    f32 mTimer;
+    f32 mEfxTimer;
+
+    virtual bool update();
+};
+
+struct ActionEntityMgr : private CNode {
+
+    void add(ActionEntity* entity);
+
+    void update();
+};
+
 struct VsSlotCardMgr
 {
     VsSlotCardMgr();
@@ -88,11 +99,19 @@ struct VsSlotCardMgr
     VsSlotMachineCard* getAt(int i) { return mUsingCards[i]; }
     int getCardCount() { return mCardCount; }
 
+    void update();
+
+    ActionEntityMgr* getActionMgr() { return &mActionMgr; };
+
 
     int mCardCount;
     
     VsSlotMachineCard** mUsingCards;
+
+    ActionEntityMgr mActionMgr;
 };
+
+
 
 extern bool sEnemyXLU;
 

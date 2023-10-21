@@ -22,6 +22,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/efxPikminDrought.o\
 	$(BUILD_DIR)/src/FourPlayer/vsHiba.o\
 	$(BUILD_DIR)/src/FourPlayer/SlotCardMgr.o\
+	$(BUILD_DIR)/src/FourPlayer/ActionEntities.o\
 
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)

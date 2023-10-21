@@ -2,6 +2,7 @@
 #include "efx/TDenki.h"
 #include "JSystem/JParticle/JPAMath.h"
 #include "Game/Entities/ElecHiba.h"
+#include "efx/TBarrier.h"
 
 namespace efx
 {
@@ -43,6 +44,52 @@ void TTankSpore::forceKill() {
     if (mParticleCallBack.mEfxHit) {
         mParticleCallBack.mEfxHit->forceKill();
     }
+}
+
+bool TBarrier::create(Arg* arg) {
+    P2ASSERTLINE(0x2EF, strcmp(arg->getName(), "ArgVsBarrier") == 0);
+    ArgBarrier* denkiArg = static_cast<ArgBarrier*>(arg);
+    if (!TSimple3::create(denkiArg)) {
+        return false;
+    }
+    for (int i = 0; i < ARRAY_SIZE(mEmitters); i++) {
+        JPABaseEmitter* emitter = mEmitters[i];
+        if (emitter) {
+            if (denkiArg->mVsHibaColor == 0) {
+                emitter->mColor1.r = 0xff;
+                emitter->mColor1.g = 0x00;
+                emitter->mColor1.b = 0x00;
+                emitter->mColor2.r = 0xff;
+                emitter->mColor2.g = 0x00;
+                emitter->mColor2.b = 0x00;
+            }
+            else if (denkiArg->mVsHibaColor == 1) {
+                emitter->mColor1.r = 0x00;
+                emitter->mColor1.g = 0x00;
+                emitter->mColor1.b = 0xff;
+                emitter->mColor2.r = 0x00;
+                emitter->mColor2.g = 0x00;
+                emitter->mColor2.b = 0xff;
+            }
+            else if (denkiArg->mVsHibaColor == 2) {
+                emitter->mColor1.r = 0x80;
+                emitter->mColor1.g = 0x80;
+                emitter->mColor1.b = 0xff;
+                emitter->mColor2.r = 0x80;
+                emitter->mColor2.g = 0x80;
+                emitter->mColor2.b = 0xff;
+            }
+            else if (denkiArg->mVsHibaColor == 3) {
+                emitter->mColor1.r = 0x40;
+                emitter->mColor1.g = 0x00;
+                emitter->mColor1.b = 0xff;
+                emitter->mColor2.r = 0x80;
+                emitter->mColor2.g = 0x00;
+                emitter->mColor2.b = 0xff;
+            }
+        }
+    }
+    return true;
 }
 
 bool TDenkiHiba::create(Arg* arg) {
@@ -103,6 +150,7 @@ bool TDenkiHiba::create(Arg* arg) {
     highScale = Vector3f(highScale.x, highScale.y * scale, highScale.z);
     return true;
 }
+
 
 
 } // namespace efx

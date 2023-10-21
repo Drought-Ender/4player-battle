@@ -636,6 +636,21 @@ struct BedamaCard : public VsSlotMachineCard
     }
 };
 
+struct HazardBarrierCard : public VsSlotMachineCard
+{
+    HazardBarrierCard(const char* texName) : VsSlotMachineCard(texName) {
+    };
+
+    void onUseCard(CardMgr* cardMgr, int user) {
+        HazardBarrier* card = new HazardBarrier(getVsTeam(user), naviMgr->getAt(user)->getPosition());
+        vsSlotCardMgr->mActionMgr.add(card);
+    }
+
+    virtual const char* getDescription() {
+        return "Creates a barrier of your color for a short time";
+    }
+};
+
 
 VsSlotMachineCard** VsSlotCardMgr::sAllCards = nullptr;
 int VsSlotCardMgr::sTotalCardCount = 0;
@@ -704,6 +719,28 @@ void VsSlotCardMgr::generateCards(VsGameSection* section) {
 
             currCard++;
         }
+    }
+}
+
+void VsSlotCardMgr::update() {
+    mActionMgr.update();
+}
+
+void ActionEntityMgr::update() {
+    FOREACH_NODE(ActionEntity, mChild, entity) {
+        bool toDel = entity->update();
+        if (toDel) {
+            ActionEntity* prev = static_cast<ActionEntity*>(entity->mPrev);
+            entity->del();
+            entity = prev;
+            if (!entity) break;
+        }
+    }
+}
+
+void ActionEntityMgr::add(ActionEntity* entity) {
+    if (entity) {
+        CNode::add(entity);
     }
 }
 
