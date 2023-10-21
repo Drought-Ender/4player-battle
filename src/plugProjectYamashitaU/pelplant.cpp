@@ -414,8 +414,8 @@ void Obj::changePelletColor()
 {
 	if (mPellet && mColor == PELCOLOR_RANDOM) {
 		if (mColorChangeTimer > C_PARMS->mPelplantParms.mColorChangeTime.mValue) {
-			int pelColorArr[] = { PELCOLOR_RED, PELCOLOR_YELLOW, PELCOLOR_BLUE, PELCOLOR_PURPLE, PELCOLOR_WHITE, PELCOLOR_RANDOM };
-			int pelColorIdx[] = { 2, 0, 1, 3, 4, 5 };
+			int pelColorArr[] = { PELCOLOR_RED, PELCOLOR_YELLOW, PELCOLOR_BLUE, PELCOLOR_WHITE, PELCOLOR_PURPLE, PELCOLOR_RANDOM };
+			int pelColorIdx[] = { 2, 0, 1, 4, 3, 5 };
 			u16 initialColor;
 			if (mPellet) {
 				initialColor = mPellet->mPelletColor;
