@@ -167,4 +167,6 @@ Game::VsGameSection* GetVsGameSection() {
     return static_cast<Game::VsGameSection*>(Game::gameSystem->mSection);
 }
 
+int SaveEditNum(int);
+
 #endif

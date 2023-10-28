@@ -337,6 +337,7 @@ void TitleState::execVs(VsGameSection* section)
 		} else {                       // no c-stick input
 			section->mEditNumber = -2; // random?
 		}
+		SaveEditNum(section->mEditNumber);
 
 		int stageNumber;
 		int check = Screen::gGame2DMgr->check_VsSelect(stageNumber, section->mOlimarHandicap, section->mLouieHandicap, section->mWhiteHandicap, section->mPurpleHandicap);
