@@ -553,6 +553,7 @@ void FourObjVs::doUpdateCommon() {
 		}
 		if (mDisp->mNaviInactiveFlags[i]) {
 			mLifeGaudeAfter[i]->mIsVisible = false;
+			screens[i]->mLifeGauge[i].mNaviLifeRatio = 0.0f;
 			screens[i]->mScreen->search('NALL')->hide();
 		}
 
