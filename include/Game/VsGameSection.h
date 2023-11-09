@@ -106,6 +106,8 @@ struct VsGameSection : public BaseGameSection {
 
 	#define YELLOW_MARBLE_COUNT 13
 
+	void killNearestP4Marbles();
+
 
 	bool mIsVersusMode;                            // _174
 	VSFifo* mVsFifo;                               // _178

@@ -1553,6 +1553,86 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		pellet->setPosition(pos, false);
 		mMarbleYellow[i] = pellet;
 	}
+
+	if (gThreePlayer) {
+		killNearestP4Marbles();
+	}
+}
+
+inline f32 GetCreatureSqrDistance(Vector3f& basePos, Creature* creature) {
+	Vector3f position = creature->getPosition();
+	return sqrDistanceXZ(basePos, position);
+}
+
+void VsGameSection::killNearestP4Marbles() {
+	Onyon* team4Onyon = ItemOnyon::mgr->getOnyon(gScoreDelegations[1][1]);
+
+	Vector3f basePos = team4Onyon->getGoalPos();
+
+	
+	
+
+	PelletIterator iPellet;
+
+	GeneralMgrIterator<EnemyBase> iEnemy = generalEnemyMgr;
+
+	PelletList::cKind kind;
+
+	// I fucking hate const cast
+	PelletConfig* config = PelletList::Mgr::getConfigAndKind(const_cast<char*>(VsOtakaraName::cBedamaYellow), kind);
+
+	for (int i = 0; i < 3; i++) {
+
+		f32 minDistance = 1e+38;
+
+		Creature* nearest = nullptr;
+		
+		CI_LOOP(iPellet) {
+			Pellet* pellet = *iPellet;
+			if (pellet->isAlive() && pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) {
+				f32 distance = GetCreatureSqrDistance(basePos, pellet);
+				if (distance < minDistance) {
+					minDistance = distance;
+					nearest = pellet;
+				}
+			}
+		}
+
+		CI_LOOP(iEnemy) {
+			EnemyBase* enemy = *iEnemy;
+			if (enemy->isAlive() && enemy->mPelletDropCode == config->mParams.mIndex + 768) {
+				f32 distance = GetCreatureSqrDistance(basePos, enemy);
+				if (distance < minDistance) {
+					minDistance = distance;
+					nearest = enemy;
+				}
+			}
+		}
+
+		if (nearest->isTeki()) {
+			static_cast<EnemyBase*>(nearest)->mPelletDropCode = 0;
+		}
+		else if (nearest->isPellet()) {
+			Iterator<BaseItem> iTreaure = ItemTreasure::mgr;
+			CI_LOOP(iTreaure) {
+				ItemTreasure::Item* treasure = static_cast<ItemTreasure::Item*>(*iTreaure);
+				if (treasure->mPellet == nearest) {
+					treasure->releasePellet();
+					treasure->kill(nullptr);
+				}
+			}
+			Pellet* pellet = static_cast<Pellet*>(nearest);
+			pellet->mPelletFlag = 0;
+
+			PelletGoalStateArg arg (team4Onyon);
+
+			pellet->mPelletState->transit(pellet, PELSTATE_Goal, &arg);
+			
+		}
+	}
+
+
+
 }
 
 void VsGameSection::createRedBlueBedamas(Vector3f& pos)
