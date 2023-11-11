@@ -126,8 +126,20 @@ CardMgr::SlotMachine* CardMgr::getSlotMachine(int idx) {
 	return machines[idx];
 }
 
-bool CardMgr::SlotMachine::dispCherryTarget() {
-	if (mSlotID != UNRESOLVED) return vsSlotCardMgr->mUsingCards[mSlotID]->useTarget();
+bool CardMgr::SlotMachine::dispCherryTarget(int user) {
+	if (mSlotID != UNRESOLVED) {
+		switch (vsSlotCardMgr->mUsingCards[mSlotID]->useTarget())
+		{
+		case NONE:
+			return false;
+		case TEAM:
+			return getAliveTeamCount() > 2;
+		case PLAYER:
+			return getAliveAdversaries(getVsTeam(user)) > 1;
+		default:
+			break;
+		}
+	}
 
 	return false;
 }
@@ -147,9 +159,18 @@ bool CardMgr::usePlayerCard(int teamUser, TekiMgr* tekiMgr)
 		return false;
 	}
 
-	if (slotID == UNRESOLVED || (vsSlotCardMgr->mUsingCards[slotID]->useTarget() && target == -1)) {
+	if (slotID == UNRESOLVED || (machines[teamUser]->dispCherryTarget(gUseCardNavi) && target == -1)) {
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
         return false;
+	}
+
+	if (target == -1) {
+		for (int i = 0; i < gNaviNum; i++) {
+			if (teamUser != getVsTeam(i)) {
+				target = i;
+				break;
+			}
+		}
 	}
 
 	vsSlotCardMgr->mUsingCards[slotID]->useCard(this, gUseCardNavi, target);

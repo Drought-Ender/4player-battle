@@ -143,7 +143,7 @@ struct CardMgr {
 		void updateZoomIn();
 		void updateZoomUse();
 
-		bool dispCherryTarget();
+		bool dispCherryTarget(int user);
 
 		bool equalTo(int);
 		bool canJumpToCard(int card);

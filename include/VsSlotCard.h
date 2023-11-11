@@ -9,6 +9,12 @@ namespace Game
 namespace VsGame
 {
 
+enum TargetSpecifier {
+    NONE = 0,
+    TEAM = 1,
+    PLAYER = 2
+};
+
 class VsSlotMachineCard
 {
     protected:
@@ -26,7 +32,7 @@ class VsSlotMachineCard
     virtual int getWeight(CardMgr* cardMgr, int teamID) { return 100; }
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) { }
     virtual void onUseCard(CardMgr* cardMgr, int user) { }
-    virtual bool useTarget() { return false; }
+    virtual TargetSpecifier useTarget() { return NONE; }
 
     void updateTexName(const char* texname) { mTexName = texname; }
     virtual bool varibleForward() { return false; }

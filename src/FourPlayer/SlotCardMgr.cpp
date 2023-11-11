@@ -357,7 +357,7 @@ struct TekiCard : public VsSlotMachineCard {
         return enemy;
     }
 
-    virtual bool useTarget() { return true; }
+    
 };
 
 struct OnyonTekiCard : public TekiCard
@@ -436,6 +436,8 @@ struct OnyonTekiCard : public TekiCard
     virtual const char* getDescription() {
         return "Spawns an enemy at your target's onion";
     }
+
+    virtual TargetSpecifier useTarget() { return TEAM; }
 };
 
 struct NaviTekiCard : public TekiCard
@@ -479,6 +481,8 @@ struct NaviTekiCard : public TekiCard
     virtual const char* getDescription() {
         return "Spawns an enemy on your target";
     }
+
+    virtual TargetSpecifier useTarget() { return PLAYER; }
 
 };
 

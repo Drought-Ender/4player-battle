@@ -218,7 +218,7 @@ void CallBack_LifeGauge::moveIcon()
  */
 void CallBack_LifeGauge::update()
 {
-	if (!og::newScreen::checkMovieActive() && gDrawNavi[mData->mActiveNaviID]) {
+	if (!og::newScreen::checkMovieActive()) {
 		moveIcon();
 		mNaviLifeRatio = mData->mNaviLifeRatio;
 		mLifeGauge->update(mNaviLifeRatio);
