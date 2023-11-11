@@ -22,36 +22,25 @@ bool sNameOverride[4] = { false, false, false, false };
 f32 gPassiveSpicy;
 f32 gPassiveBitter;
 
+void SetOption(OptionsEnum option, int value, bool hide = false) {
+    gOptions[option].value = value;
+    gOptions[option].hide = hide;
+    gConfig[option] = value;
+}
+
 void Option::readOptions() {
     OSReport("Tournament Mode Ptr %p\n", &gTournamentMode);
     if (gTournamentMode) {
 
-        gOptions[PLAYER_NAME].value = ConfigEnums::NAME_ON;
-        gConfig[PLAYER_NAME] = ConfigEnums::NAME_ON;
-        gOptions[PLAYER_NAME].hide  = true;
-
-        gOptions[MARBLE_BURY].value = ConfigEnums::PLACE_BURY;
-        gConfig[MARBLE_BURY] = ConfigEnums::PLACE_BURY;
-
-        gOptions[MARBLE_CARRY].value = ConfigEnums::CARRY_ON;
-        gConfig[MARBLE_CARRY] = ConfigEnums::CARRY_ON;
-
-        gOptions[SPICY_TYPE].hide = true;
-        gOptions[SPICY_TYPE].value = ConfigEnums::SPICY_NERF;
-        gConfig[SPICY_TYPE] = ConfigEnums::SPICY_NERF;
-
-        gOptions[EGG_DROPS].hide = true;
-        gOptions[EGG_DROPS].value = ConfigEnums::EGG_NECTAR;
-        gConfig[EGG_DROPS] = ConfigEnums::EGG_NECTAR;
-
-        gOptions[PELLET_POSY].hide = true;
-        gOptions[PELLET_POSY].value = ConfigEnums::PELMATCH_ON;
-        gConfig[PELLET_POSY] = ConfigEnums::PELMATCH_ON;
+        SetOption(PLAYER_NAME, ConfigEnums::NAME_ON, true);
+        SetOption(MARBLE_BURY, ConfigEnums::PLACE_BURY);
+        SetOption(MARBLE_CARRY, ConfigEnums::CARRY_ON);
+        SetOption(SPICY_TYPE, ConfigEnums::SPICY_NERF, true);
+        SetOption(EGG_DROPS, ConfigEnums::EGG_SINGLE, true);
+        SetOption(PELLET_POSY, ConfigEnums::PELMATCH_ON, true);
+        SetOption(STALEMATE_TIMER, ConfigEnums::STALEMATE_ON, true);
+        SetOption(AUTOPLUCK, ConfigEnums::AUTOPLUCK_ON);
         
-        gOptions[STALEMATE_TIMER].hide = true;
-        gOptions[STALEMATE_TIMER].value = ConfigEnums::STALEMATE_ON;
-        gConfig[STALEMATE_TIMER] = ConfigEnums::STALEMATE_ON;
-
 
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::ALL_FLOWER]->varibleForward();
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::RESET_BEDAMA]->varibleForward();
