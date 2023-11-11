@@ -1319,19 +1319,27 @@ void VsGameSection::updateCardGeneration()
 		if (FABS(spawnFactor[i]) < 0.2f) {
 
 		} else if (0.2f <= FABS(spawnFactor[i]) < 0.4f) {
-			isUrgent[i]      = true;
+			isUrgent[i]            = true;
 			factors[i][0]          = 0.3f;
 			factors[i][1]          = 0.5f;
 		} else if (0.4f <= FABS(spawnFactor[i]) < 0.8f) {
-			maxSpawnCherries[i] = 1;
-			isUrgent[i]           = true;
+			maxSpawnCherries[i]    = 1;
+			isUrgent[i]            = true;
 			factors[i][0]          = 0.2f;
 			factors[i][1]          = 0.4f;
 		} else if (0.8f <= FABS(spawnFactor[i])) {
-			maxSpawnCherries[i] = 2;
-			isUrgent[i]           = true;
+			maxSpawnCherries[i]    = 2;
+			isUrgent[i]            = true;
 			factors[i][0]          = 0.2f;
 			factors[i][1]          = 0.4f;
+		}
+
+		if (spawnFactor[i] > 0.0f) {
+
+			f32 originalFactor0 = factors[i][0];
+
+			factors[i][1] = 1 - factors[i][0]; 
+			factors[i][0] = 1 - originalFactor0;
 		}
 
 
@@ -1354,6 +1362,14 @@ void VsGameSection::updateCardGeneration()
 					}
 				}
 			}
+
+			if (lowFactor[i] > 0.0f) {
+
+				f32 originalFactor0 = factors[i][0];
+
+				factors[i][1] = 1 - factors[i][0]; 
+				factors[i][0] = 1 - originalFactor0;
+			}
 		}
 	}
 
@@ -1367,9 +1383,9 @@ void VsGameSection::updateCardGeneration()
 	const f32 cardTimerConst[] = {0.5f,  3.0f, 6.0f, 10.0f, 14.0f, 20.0f, 0};
 	const f32 cardTimerRand[]  = {0.75f, 1.0f, 2.0f, 3.0f,  4.0f,  6.0f,  0};
 
-	bool hasUrgency = isUrgent[0] || isUrgent[1] || isUrgent[2] || isUrgent[3];
+	bool hasUrgency = isUrgent[0] || isUrgent[1];
 	int spawnCherries = maxSpawnCherries[0] + maxSpawnCherries[1] + maxSpawnCherries[2] + maxSpawnCherries[3] + 5;
-	if (spawnCherries > 10) spawnCherries = 10;
+	if (spawnCherries > mMaxCherries) spawnCherries = mMaxCherries;
 
 	if (mCardCount < 4 || (hasUrgency && mCardCount < spawnCherries) && gConfig[CHERRY_RATE] != ConfigEnums::RATE_NEVER) { // config is never spawn
 		f32 ticking = sys->mDeltaTime;
@@ -1704,7 +1720,10 @@ void VsGameSection::calcVsScores()
 					if (our == their) continue;
 					Vector3f theirOnyonPos = onyons[their]->getPosition();
 					f32 theirDistance = _distanceXZ(marblePosition, theirOnyonPos);
-					scores[our] += 1.0f / ((f32)exp((theirDistance / (ourDistance + theirDistance) - 0.5f) * -10.0f) + 1.0f) / 3;
+					f32 newScore = 1.0f / ((f32)exp((theirDistance / (ourDistance + theirDistance) - 0.5f) * -10.0f) + 1.0f);
+					if (newScore > scores[our]) {
+						scores[our] = newScore;
+					}
 				}
 			}
 
@@ -1759,8 +1778,19 @@ void VsGameSection::calcVsScores()
 				if (other == i) continue;
 				Vector3f otherOnyonPosition = onyons[other]->getPosition();
 				f32 otherDist = _distanceXZ(marblePosition, otherOnyonPosition);
-				redBlueScore[i] += 1.0f / ((f32)exp((ourDist / (ourDist + otherDist) - 0.5f) * -10.0f) + 1.0f) / 3;
+
+				f32 ePower = ourDist / (ourDist + otherDist) - 0.5f;
+				if (marble->mCarryColor == getPikiFromTeamEnum(other)) {
+					ePower += 0.1f;
+				}
+
+				// 1 / ( e^(-10 * (part/whole - 1/2)) + 1 )
+				f32 score = 1.0f / ((f32)exp(-10.0f * (ePower)) + 1.0f);
+				if (score > redBlueScore[i]) {
+					redBlueScore[i] = score;
+				}
 			}
+
 			mRedBlueScore[i] = redBlueScore[i];
 		}
 	}
@@ -1797,7 +1827,10 @@ void VsGameSection::calcVsScores()
 					if (our == their) continue;
 					Vector3f theirOnyonPosition = onyons[their]->getPosition();
 					f32 theirDist            = _distanceXZ(cherryPosition, theirOnyonPosition);
-					score[our] = 1.0f / ((f32)exp((theirDist / (ourDist + theirDist) - 0.5f) * -10.0f) + 1.0f) / 3;
+					f32 newScore = 1.0f / ((f32)exp((theirDist / (ourDist + theirDist) - 0.5f) * -10.0f) + 1.0f);
+					if (newScore > score[our]) {
+						score[our] = newScore;
+					}
 				}
 			}
 

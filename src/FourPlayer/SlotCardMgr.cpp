@@ -6,6 +6,8 @@
 #include "Dolphin/rand.h"
 #include "VsOptions.h"
 #include "DroughtLib.h"
+#include "Game/pathfinder.h"
+#include "Game/Cave/RandMapMgr.h"
 
 
 namespace Game
@@ -542,10 +544,55 @@ struct BedamaCard : public VsSlotMachineCard
     const char* mBuryTexname;
 
     bool mBuryBedama;
+
+    f32 mUseEffectiveness[4];
+
+    void updateUseEffectiveness(CardMgr* cardMgr, int teamID) {
+        float redBlueScoreCount = cardMgr->mSection->mRedBlueScore[teamID];
+
+        f32 ourYellowScoreCount = cardMgr->mSection->mYellowScore[teamID] * getAliveTeamCount();
+
+        f32 enemyYellowScoreCount = 0.0f;
+
+        for (int i = 0; i < 4; i++) {
+            if (i != teamID && isTeamAlive(i)) {
+                enemyYellowScoreCount += cardMgr->mSection->mYellowScore[i];
+            }
+        }
+
+        float resetBedamaProb = 0.0f;
+        
+        if (redBlueScoreCount < 0.2f) {
+            
+        }
+        else if (redBlueScoreCount < 0.4f) {
+            resetBedamaProb = 0.2f;
+        }
+        else if (redBlueScoreCount < 0.7f) {
+            resetBedamaProb = 0.5f;
+        }
+        else {
+            resetBedamaProb = 0.8f;
+        }
+
+        if (ourYellowScoreCount - enemyYellowScoreCount >= 0.4f) {
+            resetBedamaProb *= 0.7f;
+        }
+
+        mUseEffectiveness[teamID] += resetBedamaProb / 3.0f;
+    }
+
+    virtual void allocate(VsGameSection* section) {
+        for (int i = 0; i < 4; i++) {
+            mUseEffectiveness[i] = 0.0f;
+        }
+    }
     
 
     void onUseCard(CardMgr* cardMgr, int user) {
+        updateUseEffectiveness(cardMgr, getVsTeam(user));
         if (mBuryBedama) {
+            
             BuryBedama(cardMgr, user);
             return;
         }
@@ -563,7 +610,6 @@ struct BedamaCard : public VsSlotMachineCard
 				CI_LOOP(ICreature) { (*ICreature)->endStick(); }
 			}
 
-            updateMarbleEffectiveness(bedama);
             bedama->mPelletSM->transit(bedama, PELSTATE_Return, &arg);
         }
     }
@@ -600,18 +646,21 @@ struct BedamaCard : public VsSlotMachineCard
         return ToggleBedama();
     }
 
-    float calcMarbleDist(Vector3f& marbleLocation, int user) {
-
-
-    }
-
-    void updateMarbleEffectiveness(Pellet* bedama) {
-
-    }
-
 
     int getBedamaWeight(CardMgr* cardMgr, int teamID, int total, int baseWeight) {
         float redBlueScoreCount = cardMgr->mSection->mRedBlueScore[teamID];
+
+        
+
+        f32 ourYellowScoreCount = cardMgr->mSection->mYellowScore[teamID] * getAliveTeamCount();
+
+        f32 enemyYellowScoreCount = 0.0f;
+
+        for (int i = 0; i < 4; i++) {
+            if (i != teamID && isTeamAlive(i)) {
+                enemyYellowScoreCount += cardMgr->mSection->mYellowScore[i];
+            }
+        }
 
         float resetBedamaProb = 0.0f;
         
@@ -627,6 +676,18 @@ struct BedamaCard : public VsSlotMachineCard
         else {
             resetBedamaProb = 0.8f;
         }
+
+        if (ourYellowScoreCount - enemyYellowScoreCount >= 0.4f) {
+            resetBedamaProb *= 0.7f;
+        }
+
+        f32 overuseFactor = mUseEffectiveness[teamID];
+        if (overuseFactor > 0.4f) {
+            overuseFactor = 0.4f;
+        }
+
+        resetBedamaProb -= overuseFactor;
+
         if (resetBedamaProb > 0.0f) {
             return total * resetBedamaProb;
         }

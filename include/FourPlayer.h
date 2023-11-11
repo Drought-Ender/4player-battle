@@ -305,6 +305,16 @@ bool isTeamActive(int idx) {
     return false;
 }
 
+bool isTeamAlive(int idx) {
+    if (idx < 0|| idx >= 4) return false;
+    if (gEffectiveTeamCount == 4) return true;
+    for (int i = 0; i < 4; i++) {
+        if (gDrawNavi[i] && getVsTeam(i) == idx) {
+            return true;
+        }
+    }
+    return false;
+}
 
 bool doesTeamHavePlayers(int idx) {
     for (int i = 0; i < Game::gNaviNum; i++) {

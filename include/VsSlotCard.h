@@ -40,11 +40,9 @@ class VsSlotMachineCard
 
     virtual const char* getDescription() = 0;
 
-
-
     void useCard(CardMgr* cardMgr, int user, int target) {
-        onUseCard(cardMgr, user, target);
         onUseCard(cardMgr, user);
+        onUseCard(cardMgr, user, target);
     }
 };
 
