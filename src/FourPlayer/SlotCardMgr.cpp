@@ -514,7 +514,6 @@ struct TankOnyonTeki : public OnyonTekiCard
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {
-        OSReport("TankOnyonTeki::onUseCard(CardMgr* %p, int %i, int %i)\n", cardMgr, user, target);
         
         int FTankId = mTekiMgrID;
 
@@ -648,9 +647,13 @@ struct BedamaCard : public VsSlotMachineCard
 
 
     int getBedamaWeight(CardMgr* cardMgr, int teamID, int total, int baseWeight) {
-        float redBlueScoreCount = cardMgr->mSection->mRedBlueScore[teamID];
 
-        
+        Pellet* marble = cardMgr->mSection->mMarbleRedBlue[teamID];
+        if (marble->mPelletState->mId == PELSTATE_BounceBury || marble->mPelletState->mId == PELSTATE_Return) {
+            return 0; // If its already recovering, don't even
+        }
+
+        float redBlueScoreCount = cardMgr->mSection->mRedBlueScore[teamID];
 
         f32 ourYellowScoreCount = cardMgr->mSection->mYellowScore[teamID] * getAliveTeamCount();
 
@@ -691,6 +694,16 @@ struct BedamaCard : public VsSlotMachineCard
         if (resetBedamaProb > 0.0f) {
             return total * resetBedamaProb;
         }
+
+        if (mBuryBedama) {
+            if (marble->isBuried()) {
+                return 15;
+            }
+            else {
+                return 60;
+            }
+        }
+
         return 30;
     }
 
