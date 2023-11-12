@@ -479,3 +479,9 @@ void PelletNumber::Object::changeMaterial() {
 }
 
 } // namespace Game
+
+// GetBackupWaypoint__FRQ24Game15WPEdgeSearchArg
+Game::WayPoint* GetBackupWaypoint(Game::WPEdgeSearchArg& searchArg) {
+	Game::WPSearchArg arg (searchArg.mStartPosition, nullptr, 0, 100.0f);
+	return Game::mapMgr->mRouteMgr->getNearestWayPoint(arg);
+}

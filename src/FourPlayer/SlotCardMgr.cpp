@@ -223,12 +223,19 @@ struct XLUCard : public VsSlotMachineCard
 
 // isInvisible__Q24Game4PikiFv
 bool Piki::isInvisible() {
-    return (gameSystem->isVersusMode() && VsGame::sEnemyXLU && GetVsGameSection()->mGhostIconTimers[getTeamFromPiki(mPikiKind)] > 0.0f && !doped());
+    int firstNaviIndex = -1;
+    for (int i = 0; i < 4; i++) {
+        if (getVsPikiColor(i) == mPikiKind) {
+            firstNaviIndex = i;
+            break;
+        }
+    }
+    return (firstNaviIndex != -1 && gameSystem->isVersusMode() && VsGame::sEnemyXLU && GetVsGameSection()->mGhostIconTimers[firstNaviIndex] > 0.0f && !doped());
 }
 
 // isInvisible__Q24Game4NaviFv
 bool Navi::isInvisible() {
-    return (gameSystem->isVersusMode() && VsGame::sEnemyXLU && GetVsGameSection()->mGhostIconTimers[getVsTeam()] > 0.0f);
+    return (gameSystem->isVersusMode() && VsGame::sEnemyXLU && GetVsGameSection()->mGhostIconTimers[mNaviIndex] > 0.0f);
 }
 
 struct DopeCard : public VsSlotMachineCard
