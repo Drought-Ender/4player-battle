@@ -19,7 +19,7 @@ HazardBarrier::HazardBarrier(int teamID, Vector3f position) : TeamPositionEntity
 }
 
 bool HazardBarrier::update() {
-    OSReport("HazardBarrier::update\n");
+    DebugReport("HazardBarrier::update\n");
     mTimer    += sys->mDeltaTime;
     mEfxTimer += sys->mDeltaTime;
 

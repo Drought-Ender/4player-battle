@@ -50,7 +50,7 @@ void ElecbugTest() {
 			for (int i = 0; i < mgr->mNumObjects; i++) {
 				Bomb::Obj* obj = static_cast<Bomb::Obj*>(mgr->getEnemy(i));
 				if (obj->isAlive()) {
-					OSReport("%s state\n", obj->mCurrentLifecycleState->mName);
+					DebugReport("%s state\n", obj->mCurrentLifecycleState->mName);
 				}
 			}
 		}
@@ -490,7 +490,7 @@ void VsGameSection::SetupCourseinfo() {
 	mapMgr->mCourseInfo->mCourseIndex = 0;
 	
 	sprintf(filepath, "/user/drought/cave/%s/%i", properCaveName, sEditNum);
-	OSReport("%s", filepath);
+	DebugReport("%s", filepath);
 	mapMgr->mCourseInfo->mFolder = filepath;
 	mapMgr->mCourseInfo->mAbeFolder = filepath;
 }
@@ -869,12 +869,12 @@ void VsGameSection::createVsPikmins()
 
 	whites = mWhiteHandicap * 5;
 
-	OSReport("Whites %i\n", whites);
+	DebugReport("Whites %i\n", whites);
 
 	int& purples = pikmin->getCount(Purple, Leaf);
 	purples = mPurpleHandicap * 5;
 
-	OSReport("Purpels %i\n", whites);
+	DebugReport("Purpels %i\n", whites);
 	
 
 
@@ -1485,7 +1485,7 @@ void VsGameSection::dropCard(VsGameSection::DropCardArg& arg)
  */
 void VsGameSection::createYellowBedamas(int bedamas)
 {
-	OSReport("VsGameSection::createYellowBedamas\n");
+	DebugReport("VsGameSection::createYellowBedamas\n");
 	if (mVsStageData) {
 		if (gEffectiveTeamCount == 2) {
 			bedamas = mVsStageData->mStartNumYellowMarbles;
@@ -1502,15 +1502,15 @@ void VsGameSection::createYellowBedamas(int bedamas)
 
 		if (gEffectiveTeamCount > 2) currentFlag *= 0x10;
 
-		OSReport("currentFlag %i\n", currentFlag);
+		DebugReport("currentFlag %i\n", currentFlag);
 
 		int flag = mVsStageData->mMarbleFlags;
 
-		OSReport("Our Flag %i\n", flag);
+		DebugReport("Our Flag %i\n", flag);
 
 		int flagOut = flag & currentFlag;
 
-		OSReport("FlagOut %i\n", flagOut);
+		DebugReport("FlagOut %i\n", flagOut);
 
 		if (flagOut != 0) {
 			return;

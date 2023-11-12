@@ -328,7 +328,7 @@ void GameState::exec(VsGameSection* section)
 			if (gConfig[SPICY_PASSIVE] != ConfigEnums::SPICYPASSIVE_OFF && gConfig[SPICY_PASSIVE] != ConfigEnums::SPICYPASSIVE_INF) {
 				gPassiveSpicy  -= sys->mDeltaTime;
 				if (gPassiveSpicy <= 0.0f) {
-					OSReport("Inc Spicy Dope\n");
+					DebugReport("Inc Spicy Dope\n");
 					gPassiveSpicy += sSprayTimers[gConfig[SPICY_PASSIVE]];
 					incAllGlobalDope(SPRAY_TYPE_SPICY);
 				}

@@ -29,7 +29,7 @@ void SetOption(OptionsEnum option, int value, bool hide = false) {
 }
 
 void Option::readOptions() {
-    OSReport("Tournament Mode Ptr %p\n", &gTournamentMode);
+    DebugReport("Tournament Mode Ptr %p\n", &gTournamentMode);
     if (gTournamentMode) {
 
         SetOption(PLAYER_NAME, ConfigEnums::NAME_ON, true);
@@ -303,7 +303,7 @@ bool VsOptionsMenuMgr::update() {
     if (!mActiveMenu) return true;
 
     if (mMenuCooldown) {
-        OSReport("Menu Cooldown %i\n", mMenuCooldown);
+        DebugReport("Menu Cooldown %i\n", mMenuCooldown);
         mMenuCooldown = false;
         return false;
     }
@@ -731,7 +731,7 @@ CharacterData sCharacters[4];
 
 void* CharacterData::loadModel() {
     char buffer[256];
-    OSReport("Name %s\n", mName);
+    DebugReport("Name %s\n", mName);
     sprintf(buffer, "/player/%s/model.bmd", mName);
 
     LoadResource::Arg loadArg(buffer);
@@ -1015,7 +1015,7 @@ void CharacterSelect::cleanup() {
     for (int i = 0; i < 4; i++) {
         sCharacters[i].mCharaterID = mCursors[i];
         strcpy(sCharacters[i].mName, mCharacters[mCursors[i]].mCharacterName);
-        OSReport("Name %s\n", sCharacters[i].mName);
+        DebugReport("Name %s\n", sCharacters[i].mName);
         strcpy(sCharacters[i].mDispName, mPlayerNames[i]);
         CharacterData::CleanDisplayName(ARRAY_SIZE(sCharacters[i].mDispName), sCharacters[i].mDispName);
         
@@ -1063,7 +1063,7 @@ void CharacterData::CleanDisplayName(int size, char* chr) {
 
     chr[i + 1] = '\0';
 
-    OSReport("Name %s %i\n", chr, i);
+    DebugReport("Name %s %i\n", chr, i);
 }
 
 void CharacterData::initDefaults() {
@@ -1082,7 +1082,7 @@ void CharacterData::initDefaults() {
     for (int i = 0; i < 4; i++) {
         char* string = stream.readString(nullptr, 0);
         strcpy(sCharacters[i].mName, string);
-        OSReport("Name %i %s %s\n", i, string, sCharacters[i].mName);
+        DebugReport("Name %i %s %s\n", i, string, sCharacters[i].mName);
         sCharacters[i].makeDisplayName();
         sCharacters[i].mImage = sCharacters[i].loadImage();
         sCharacters[i].mCharaterID = i;

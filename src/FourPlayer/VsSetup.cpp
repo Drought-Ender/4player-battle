@@ -188,7 +188,7 @@ void PikiMgr::setVsXlu(int p1, bool p2)
 	if (p2) {
 		mFlags[0] &= ~(1 << p1);
 	} else {
-		//OSReport("XLU %s\n", getPikiColorName(p1));
+		//DebugReport("XLU %s\n", getPikiColorName(p1));
 		mFlags[0] |= 1 << p1;
 	}
 }

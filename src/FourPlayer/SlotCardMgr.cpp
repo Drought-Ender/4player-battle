@@ -799,7 +799,7 @@ void VsSlotCardMgr::generateCards(VsGameSection* section) {
         if (VsSlotCardMgr::sUsingCards[i]) {
 
             mUsingCards[currCard] = sAllCards[i];
-            OSReport("mUsingCards[%i] %p\n", currCard, mUsingCards[currCard]);
+            DebugReport("mUsingCards[%i] %p\n", currCard, mUsingCards[currCard]);
             mUsingCards[currCard]->allocate(section);
 
             currCard++;

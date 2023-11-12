@@ -90,7 +90,7 @@ void CardMgr::loadResource()
 	mSlotTextures = new JUTTexture*[mSlotNum];
 
 	for (int i = 0; i < mSlotNum; i++) {
-		OSReport("Tex %i %s\n", i, VsGame::vsSlotCardMgr->getAt(i)->GetTexName());
+		DebugReport("Tex %i %s\n", i, VsGame::vsSlotCardMgr->getAt(i)->GetTexName());
 		ResTIMG* img = (ResTIMG*)arch->getResource(VsGame::vsSlotCardMgr->getAt(i)->GetTexName());
 		if (img) {
 			mSlotTextures[i] = new JUTTexture(img);
@@ -387,28 +387,28 @@ int CardSelector::selectCard()
 
 void CardMgr::SlotMachine::start()
 {
-	OSReport("CardMgr::SlotMachine::start()\n");
+	DebugReport("CardMgr::SlotMachine::start()\n");
 	_51 = false;
 
 	int cardCount = vsSlotCardMgr->mCardCount;
-	OSReport("Card Count %i\n", cardCount);
+	DebugReport("Card Count %i\n", cardCount);
 
     CardSelector cardSelector(cardCount);
 
-	OSReport("ctor\n");
+	DebugReport("ctor\n");
 
 	
     
     for (int i = 0; i < cardCount; i++) {
-		OSReport("Card %i: %p\n", i, vsSlotCardMgr->mUsingCards[i]);
+		DebugReport("Card %i: %p\n", i, vsSlotCardMgr->mUsingCards[i]);
         cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getWeight(mCardMgr, mPlayerIndex);
     }
 
-	OSReport("Weights done\n");
+	DebugReport("Weights done\n");
 
 	
     cardSelector.fixBrokenWeights();
-	OSReport("fixBrokenWeights()\n");
+	DebugReport("fixBrokenWeights()\n");
 
 
     int totalMeasure = cardSelector.getTotalWeight();
@@ -419,12 +419,12 @@ void CardMgr::SlotMachine::start()
 
     mSelectedSlot = cardSelector.selectCard();
 
-	OSReport("Selection done\n");
+	DebugReport("Selection done\n");
 
     if (mPrevSelected < cardCount) {
         cardSelector.mValues[mPrevSelected] /= 10;
     }
-    OSReport("return;\n");
+    DebugReport("return;\n");
 
     mPrevSelected = mSelectedSlot;
     _28 = randFloat();
@@ -651,7 +651,7 @@ void VsGame::CardMgr::initDraw()
     }
 
 
-	OSReport("CardCount %i\n", CardCount);
+	DebugReport("CardCount %i\n", CardCount);
 	int countA = CardCount;
 	int countB = 32;
 	_F8        = countA * countB * 2;

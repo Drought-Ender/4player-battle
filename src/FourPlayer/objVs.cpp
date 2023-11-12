@@ -297,7 +297,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	}
 
 	if (gConfig[SPICY_PASSIVE] == ConfigEnums::SPICYPASSIVE_INF) {
-		OSReport("SPICY OFF!!!!\n");
+		DebugReport("SPICY OFF!!!!\n");
 		for (int i = 0; i < 4; i++) {
 			screens[i]->mScreen->search('dy_r')->move(-600.0f, 0.0f);
 			screens[i]->mScreen->search('dy_l')->move(-600.0f, 0.0f);

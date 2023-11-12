@@ -645,29 +645,29 @@ namespace
 
 
 void TVsSelect::setSelectTextures() {
-    OSReport("loading textures...\n");
-    OSReport("Stage Count: %i\n", mStageCount);
-    OSReport("Icon Names: %i\n", ARRAY_SIZE(VsNames));
+    DebugReport("loading textures...\n");
+    DebugReport("Stage Count: %i\n", mStageCount);
+    DebugReport("Icon Names: %i\n", ARRAY_SIZE(VsNames));
     for (int i = 0; i < mStageCount; i++) {
         mLevelTextures[i] = nullptr;
         if (i < ARRAY_SIZE(VsNames)) {
             
             char buffer[64];
             sprintf(buffer, "timg/%s.bti", VsNames[i]);
-            OSReport("loading %s...\n", buffer);
+            DebugReport("loading %s...\n", buffer);
             void* obj = _B4->getResource(buffer);
             mLevelTextures[i] = (ResTIMG*)obj;
             
         }
-        OSReport("%p obj\n", mLevelTextures[i]);
+        DebugReport("%p obj\n", mLevelTextures[i]);
         if (!mLevelTextures[i]) {
-            OSReport("replacing Image\n");
+            DebugReport("replacing Image\n");
             void* obj2 = mArchive->getResource("timg/loozy_icon.bti");
             mLevelTextures[i] = (ResTIMG*)obj2;
             P2ASSERT(mLevelTextures[i]);
         }
     } 
-    OSReport("Func has no issues\n");
+    DebugReport("Func has no issues\n");
 }
 
 void TVsSelect::makeMsgTag() {

@@ -807,7 +807,7 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 	
 	for (int i = 0; i < count; i++) {
 		VsWeights val = { avg[0], avg[1] };
-		OSReport("FIRST SCORE %f\n", val[FIRST_SCORE]);
+		DebugReport("FIRST SCORE %f\n", val[FIRST_SCORE]);
 		
 		// if (i == 0) val[FIRST_SCORE] += weight[FIRST_SCORE];
 		// if (i == 1) val[FIRST_SCORE] -= weight[FIRST_SCORE];
@@ -896,12 +896,12 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			mMapTileList[idx] = nodes[i];
 			mSpawnList[idx]   = gens[i];
 
-			OSReport("PLACED AT %i, %i\n", mMapTileList[idx]->getVersusScore(FIRST_SCORE), mMapTileList[idx]->getVersusScore(SECOND_SCORE));
+			DebugReport("PLACED AT %i, %i\n", mMapTileList[idx]->getVersusScore(FIRST_SCORE), mMapTileList[idx]->getVersusScore(SECOND_SCORE));
 
 			newScore[FIRST_SCORE]  -= (mMapTileList[idx]->getVersusScore(FIRST_SCORE));
 			newScore[SECOND_SCORE] -= (mMapTileList[idx]->getVersusScore(SECOND_SCORE));
 
-			OSReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
+			DebugReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
 
 			return mMapTileList[idx]->getBaseGenGlobalPosition(mSpawnList[idx]);
 		}

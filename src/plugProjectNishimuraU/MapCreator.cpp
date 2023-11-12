@@ -46,7 +46,7 @@ void RoomMapMgr::getStartPosition(Vector3f& pos, int idx) {
 void RoomMapMgr::nishimuraPlaceRooms()
 {
 	const int numRooms = Cave::randMapMgr->getNumRooms();
-	OSReport("Room count %i\n", numRooms);
+	DebugReport("Room count %i\n", numRooms);
 	allocRooms(numRooms);
 
 	for (int index = 0; index < numRooms; index++) {
@@ -70,7 +70,7 @@ void RoomMapMgr::nishimuraPlaceRooms()
 		mStartPositions[i].y = startPos.y;
 		mStartPositions[i].z = startPos.z;
 	}
-	OSReport("Done\n");
+	DebugReport("Done\n");
 }
 
 /*
