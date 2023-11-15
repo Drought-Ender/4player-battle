@@ -39,6 +39,8 @@
 #include "Game/Entities/ElecBug.h"
 #include "Game/Entities/Bomb.h"
 
+#include "VsOptions.h"
+
 static int sEditNum;
 
 namespace Game {
@@ -411,9 +413,6 @@ void VsGameSection::onSetupFloatMemory()
 
 	Farm::farmMgr = nullptr;
 	mTekiMgr      = new VsGame::TekiMgr();
-
-	
-
 	mCardMgr      = new VsGame::CardMgr(this, mTekiMgr);
 
 	VsGame::vsSlotCardMgr = new VsGame::VsSlotCardMgr;
@@ -426,17 +425,20 @@ void VsGameSection::onSetupFloatMemory()
 
 	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
 
-		PelletInitArg initArg;
-		PelletList::cKind cKind;
+		if (isMemoryOverrideOn() || i < 3) {
 
-		PelletConfig* pelletConfig = PelletList::Mgr::getConfigAndKind(const_cast<char*>(marbles[i]), cKind);
+			PelletInitArg initArg;
+			PelletList::cKind cKind;
 
-		JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
+			PelletConfig* pelletConfig = PelletList::Mgr::getConfigAndKind(const_cast<char*>(marbles[i]), cKind);
 
-		initArg._10             = pelletConfig->mParams.mIndex;
-		initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
-		initArg.mPelletType     = cKind;
-		pelletMgr->setUse(&initArg);
+			JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
+
+			initArg._10             = pelletConfig->mParams.mIndex;
+			initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
+			initArg.mPelletType     = cKind;
+			pelletMgr->setUse(&initArg);
+		}
 	}
 
 
@@ -474,8 +476,6 @@ namespace
 	char filepath[64];
 } // namespace name
 
-
-
 void VsGameSection::SetupCourseinfo() {
 	
 	int lastChar = strlen(mEditFilename);
@@ -485,12 +485,22 @@ void VsGameSection::SetupCourseinfo() {
 
 	strncpy(properCaveName, mEditFilename, lastChar - 4);
 	properCaveName[lastChar - 4] = nullptr;
-
-	mapMgr->mCourseInfo = new CourseInfo();
-	mapMgr->mCourseInfo->mCourseIndex = 0;
 	
 	sprintf(filepath, "/user/drought/cave/%s/%i", properCaveName, sEditNum);
 	DebugReport("%s", filepath);
+
+	int entrynum = DVDConvertPathToEntrynum(filepath);
+
+	if (entrynum == -1) {
+		hasSetupMapMgr = false;
+		return;
+	}
+
+	hasSetupMapMgr = true;
+
+	mapMgr->mCourseInfo = new CourseInfo();
+	mapMgr->mCourseInfo->mCourseIndex = 0;
+
 	mapMgr->mCourseInfo->mFolder = filepath;
 	mapMgr->mCourseInfo->mAbeFolder = filepath;
 }

@@ -29,6 +29,7 @@ void SetOption(OptionsEnum option, int value, bool hide = false) {
 }
 
 void Option::readOptions() {
+    DebugReport("Memory Size %i\n", MEMORY_SIZE);
     DebugReport("Tournament Mode Ptr %p\n", &gTournamentMode);
     if (gTournamentMode) {
 
@@ -54,6 +55,8 @@ void Option::readOptions() {
         Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_BLACK] = false;
     }
 }
+
+bool hasSetupMapMgr;
 
 Option gOptions[] = {
     {

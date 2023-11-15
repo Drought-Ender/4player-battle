@@ -2,6 +2,14 @@
 #include "VsSlotCard.h"
 #include "PSGame/Rappa.h"
 
+#define MEMORY_SIZE (*(u32*)0x800000f0)
+
+inline bool isMemoryOverrideOn() {
+    return MEMORY_SIZE >= 0x2000000;
+}
+
+extern bool hasSetupMapMgr;
+
 struct IMenu;
 
 static const char* cBackgroundName = "/background.bti";

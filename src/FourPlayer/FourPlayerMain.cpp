@@ -15,6 +15,9 @@
 #include "Game/PikiMgr.h"
 #include "JSystem/J3D/J3DModelLoader.h"
 #include "VsOptions.h"
+#include "Game/MapMgr.h"
+#include "Game/mapParts.h"
+#include "Game/generalEnemyMgr.h"
 
 f32 gFirstViewportHeight = 0.5f;
 f32 gOtherViewportHeight = 0.5f;
@@ -40,6 +43,15 @@ bool gFancyCamera;
 int gNaviNum = 2;
 
 void BaseGameSection::birthNavis() {
+
+	if (!hasSetupMapMgr) {
+		generalEnemyMgr->allocateEnemys(mPlayerMode, -1);
+		generalEnemyMgr->setupSoundViewerAndBas();
+		pelletMgr->setupResources();
+	}
+
+	static_cast<Game::RoomMapMgr*>(mapMgr)->placeObjects();
+
 	gNaviNum = CalcNaviNum();
 	for (int i = 0; i < 4; i++) {
 		gDrawNavi[i] = true;

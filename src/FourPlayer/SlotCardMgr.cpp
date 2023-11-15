@@ -516,8 +516,14 @@ struct TankOnyonTeki : public OnyonTekiCard
         TekiMgr* tekiMgr = section->mCardMgr->mTekiMgr;
         mTekiMgrID = allocateTeki(tekiMgr, mEnemyID);
         mWTankId   = allocateTeki(tekiMgr, mWTankTeki);
-        mGTankId   = allocateTeki(tekiMgr, mGTankTeki);
-        mMTankId   = allocateTeki(tekiMgr, mMTankTeki);
+        if (isMemoryOverrideOn()) {
+            mGTankId   = allocateTeki(tekiMgr, mGTankTeki);
+            mMTankId   = allocateTeki(tekiMgr, mMTankTeki);
+        }
+        else {
+            mGTankId = -1;
+            mMTankId = -1;
+        }
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {

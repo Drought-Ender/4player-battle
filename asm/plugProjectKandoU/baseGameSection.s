@@ -5333,12 +5333,12 @@ initGenerators__Q24Game15BaseGameSectionFv:
 .L_8014CEB8:
 /* 8014CEB8 00149DF8  48 0F 06 61 */	bl birthAll__Q24Game17PelletBirthBufferFv
 
-lwz r3, gameSystem__4Game@sda21(r13)
-lbz r4, 0x48(r3)
-cmplwi r4, 0
-beq .L_DONT_PLACE_OBJ
-lwz r3, mapMgr__4Game@sda21(r13)
-bl placeObjects__Q24Game10RoomMapMgrFv
+# lwz r3, gameSystem__4Game@sda21(r13)
+# lbz r4, 0x48(r3)
+# cmplwi r4, 0
+# beq .L_DONT_PLACE_OBJ
+# lwz r3, mapMgr__4Game@sda21(r13)
+# bl placeObjects__Q24Game10RoomMapMgrFv
 .L_DONT_PLACE_OBJ:
 
 mr r3, r30
@@ -10804,8 +10804,10 @@ setupFloatMemory__Q24Game15BaseGameSectionFv:
 /* 80150BF8 0014DB38  38 9E 03 A0 */	addi r4, r30, 0x3a0
 /* 80150BFC 0014DB3C  38 A0 00 00 */	li r5, 0
 /* 80150C00 0014DB40  48 2D 27 5D */	bl heapStatusStart__6SystemFPcP7JKRHeap
+bl getPikminAlloc__Fv
+mr r4, r3
 /* 80150C04 0014DB44  80 6D 92 F4 */	lwz r3, pikiMgr__4Game@sda21(r13)
-/* 80150C08 0014DB48  38 80 00 64 */	li r4, 0xC8
+/* 80150C08 0014DB48  38 80 00 64 */	# li r4, 0xC8
 /* 80150C0C 0014DB4C  48 00 12 B5 */	bl "alloc__27MonoObjectMgr<Q24Game4Piki>Fi"
 /* 80150C10 0014DB50  80 6D 9A EC */	lwz r3, sys@sda21(r13)
 /* 80150C14 0014DB54  38 9E 03 A0 */	addi r4, r30, 0x3a0

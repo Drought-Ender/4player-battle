@@ -86,6 +86,14 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         mTeamIDs[i] = i;
     }
 
+    if (!isMemoryOverrideOn()) {
+        for (int i = 0; i < 4; i++) {
+            if (mTeamIDs[i] >= 2) {
+                mTeamIDs[i] = 1;
+            }
+        }
+    }
+
     Game::gNaviNum = Game::CalcNaviNum();
     for (int i = 0; i < 4; i++) {
         mNewWinValues[i] = mRealWinCounts[i];
@@ -366,7 +374,7 @@ bool TFourVsSelect::doUpdate() {
         for (int i = 0; i < 4; i++) {
             P2ASSERT(controllerArray[i]);
             if (controllerArray[i]->isButtonDown(JUTGamePad::PRESS_RIGHT) && !mAnimActive[i]) {
-                if (mTeamIDs[i] == Game::TEAM_PURPLE) {
+                if (mTeamIDs[i] == Game::TEAM_PURPLE || (!isMemoryOverrideOn() && mTeamIDs[i] == Game::TEAM_BLUE)) {
                     PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
                     mErrAnimActive[i] = true;
                     mErrAnimProgress[i] = 0.0f;
@@ -676,3 +684,8 @@ void TVsSelect::makeMsgTag() {
 }
 
 } // namespace name
+
+// getPikminAlloc__Fv
+int getPikminAlloc() {
+    return isMemoryOverrideOn() ? 200 : 100;
+}
