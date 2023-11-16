@@ -807,6 +807,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 		if (section->mRealMarbleCounts[player] >= 4) {
 			isYellow = true;
 			section->mRealMarbleCounts[player] = 3;
+			section->mDispMarbleCounts[player] = 4;
 		}
 	}
 
