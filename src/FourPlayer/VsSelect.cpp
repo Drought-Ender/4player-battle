@@ -592,6 +592,15 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
     
 
     TVsSelect::doDraw(gfx);
+
+    if (!isMemoryOverrideOn()) {
+
+        J2DPrint print2(getPikminFont(), JUtility::TColor(0xffffffff), JUtility::TColor(0x807700ff));
+
+        print2.print(20.0f, 30.0f, "MEMORY OVERRIDE IS OFF");
+        print2.print(20.0f, 90.0f, "White and Purple teams are disabled\n some maps may crash");
+
+    }
     
     // J2DPrint printer(getPikminFont(), 0.0f);
 
