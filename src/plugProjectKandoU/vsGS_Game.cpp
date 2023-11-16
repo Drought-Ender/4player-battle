@@ -885,7 +885,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 		gDopeCountArray[player][1] += gDopeCountArray[gBedamaColor][1];			
 	
 	case ConfigEnums::CAPTURE_STEALMARBLE:
-	
+	case ConfigEnums::CAPTURE_KILLPIKI:
 	case ConfigEnums::CAPTURE_ELIMINATE: 
 		Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(player));
 		BaseGameSection* baseSection = gameSystem->mSection;
@@ -1048,7 +1048,10 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 			}
 		}
 		mExtinctions[gBedamaColor] = true;
-		
+
+		if (gConfig[CAPTURE_MARBLE] == ConfigEnums::CAPTURE_KILLPIKI) {
+			section->killAllPiki(VsGame::gBedamaColor);
+		}
 
 		if (isWinExtinction()) {
 			int winner = getExtinctionWinner();

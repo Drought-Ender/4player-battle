@@ -41,6 +41,10 @@
 
 #include "VsOptions.h"
 
+#include "Game/PikiState.h"
+
+#include "Game/Entities/ItemPikihead.h"
+
 static int sEditNum;
 
 namespace Game {
@@ -487,14 +491,17 @@ void VsGameSection::SetupCourseinfo() {
 	properCaveName[lastChar - 4] = nullptr;
 	
 	sprintf(filepath, "/user/drought/cave/%s/%i", properCaveName, sEditNum);
-	DebugReport("%s", filepath);
+	DebugReport("%s\n", filepath);
 
 	int entrynum = DVDConvertPathToEntrynum(filepath);
 
 	if (entrynum == -1) {
+		DebugReport("%s not found!\n", filepath);
 		hasSetupMapMgr = false;
 		return;
 	}
+
+	DebugReport("%s found!\n", filepath);
 
 	hasSetupMapMgr = true;
 
@@ -1005,6 +1012,7 @@ bool GameMessageVsBattleFinished::actVs(VsGameSection* section)
 {
     switch (gConfig[CAPTURE_MARBLE])
     {
+	case ConfigEnums::CAPTURE_KILLPIKI:
     case ConfigEnums::CAPTURE_ELIMINATE:
     case ConfigEnums::CAPTURE_STEALMARBLE:
     case ConfigEnums::CAPTURE_STEALSPRAY:
@@ -1019,6 +1027,29 @@ bool GameMessageVsBattleFinished::actVs(VsGameSection* section)
 		section->mState->onBattleFinished(section, mWinningSide, false);
 	}
 	return true;
+}
+
+void VsGameSection::killAllPiki(int team) {
+	int pikiKind = getPikiFromTeamEnum(team);
+
+	Iterator<Piki> iPiki = pikiMgr;
+	CI_LOOP(iPiki) {
+		Piki* piki = *iPiki;
+		if (piki->isAlive() && piki->getKind() == pikiKind) {
+			DyingStateArg arg;
+			arg.mAnimIdx = IPikiAnims::KOROBU2;
+			piki->mFsm->transitForce(piki, PIKISTATE_Dying, &arg);
+		}
+	}
+
+	Iterator<ItemPikihead::Item> iPkhd = ItemPikihead::mgr;
+
+	CI_LOOP(iPkhd) {
+		ItemPikihead::Item* pikiHead = *iPkhd;
+		if (pikiHead->isAlive() && pikiHead->mColor == pikiKind) {
+			pikiHead->kill(nullptr);
+		}
+	}
 }
 
 int VsGame::gBedamaColor = 0;

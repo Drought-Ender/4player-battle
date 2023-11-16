@@ -97,6 +97,8 @@ struct VsGameSection : public BaseGameSection {
 
 	Pellet* createCardPellet();
 
+	void killAllPiki(int color);
+
 	static int mRedWinCount;
 	static int mBlueWinCount;
 	static int mWhiteWinCount;

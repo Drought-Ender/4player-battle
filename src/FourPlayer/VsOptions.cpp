@@ -192,14 +192,15 @@ Option gOptions[] = {
     },
     {
         "Marble Capture",
-        { "Victory", "Eliminate", "Steal Marbles", "Steal Sprays" },
+        { "Victory", "Eliminate", "Steal Marbles", "Steal Sprays", "Extinct Pikmin" },
         { 
             "The Player who captures a marble wins", 
             "The player who's marble was captured is eliminated", 
             "Eliminates the player and gives the capturer their marbles", 
-            "Eliminates the player and gives the capturer their sprays" 
+            "Eliminates the player and gives the capturer their sprays",
+            "Eliminates the player and kills all pikmin immediately"
         },
-        4,
+        5,
         0
     },
     {
