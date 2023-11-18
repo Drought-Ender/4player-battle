@@ -133,9 +133,9 @@ bool CardMgr::SlotMachine::dispCherryTarget(int user) {
 		case NONE:
 			return false;
 		case TEAM:
-			return getAliveTeamCount() > 2;
+			return gConfig[FRIENDLY_FIRE] == ConfigEnums::FRIENDCHERRY_ON || getAliveTeamCount() > 2;
 		case PLAYER:
-			return getAliveAdversaries(getVsTeam(user)) > 1;
+			return gConfig[FRIENDLY_FIRE] == ConfigEnums::FRIENDCHERRY_ON || getAliveAdversaries(getVsTeam(user)) > 1;
 		default:
 			break;
 		}

@@ -276,7 +276,7 @@ void StateAttack::cleanup(EnemyBase* enemy)
 		elecHiba->resetAttrHitCount();
 	}
 	else {
-		elecHiba->decAttrHitCount(2);
+		elecHiba->decAttrHitCount(4);
 	}
 }
 
