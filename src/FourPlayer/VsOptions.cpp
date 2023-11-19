@@ -582,7 +582,7 @@ void VsCardMenu::init(VsOptionsMenuMgr* menu) {
 
     mCardArchive = JKRArchive::mount("user/Kando/vstex/arc.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 
-    Vector2f startOffset(50.0f, 150.0f);
+    Vector2f startOffset(50.0f, 50.0f);
 
     Vector2f cardSize (60.0f);
     Vector2f spaceBetween (20.0f);
@@ -679,10 +679,6 @@ void VsCardMenu::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
     for (int i = 0; i < mCardCount; i++) {
         mCards[i].draw();
     }
-
-    
-
-    
 }
 
 void VsCardMenu::cleanup() {
