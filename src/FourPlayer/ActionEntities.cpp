@@ -1,6 +1,7 @@
 #include "VsSlotCard.h"
 #include "efx/TBarrier.h"
 #include "Game/MapMgr.h"
+#include "efx/THdama.h"
 
 
 namespace Game
@@ -67,6 +68,42 @@ bool HazardBarrier::update() {
 
 HazardBarrier::~HazardBarrier() {
     mEfx->fade();
+}
+
+
+WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime) : PositionEntity(position) {
+    mWaitTimer = timer;
+    mExistenceTimer = existenceTime;
+    mEntityID = entityId;
+
+    mEfx = new efx::THdamaSight;
+
+    efx::Arg efxArg (mPosition);
+    mEfx->create(&efxArg);    
+}
+
+bool WaitEnemySpawn::update() {
+    mWaitTimer -= sys->mDeltaTime;
+    
+    if (mWaitTimer < 0.0f) {
+        birthFromSky();
+        return true;
+    }
+    return false;
+}
+
+WaitEnemySpawn::~WaitEnemySpawn() {
+    mEfx->fade();
+    delete mEfx;
+}
+
+EnemyBase* WaitEnemySpawn::birthFromSky() {
+    TekiMgr* tekiMgr = GetVsGameSection()->mCardMgr->mTekiMgr;
+    EnemyBase* enemy = tekiMgr->birthFromSky(mEntityID, mPosition, mExistenceTimer);
+    if (enemy) {
+        enemy->setAnimSpeed(30.0f);
+    }
+    return enemy;
 }
 
 } // namespace VsGame

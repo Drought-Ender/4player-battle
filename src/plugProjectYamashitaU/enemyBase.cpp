@@ -718,6 +718,8 @@ void StateMachine::init(EnemyBase* enemy)
 	registerState(new StoneState);
 	registerState(new EarthquakeState);
 	registerState(new FitState);
+
+	registerState(new BirthTypeDropAutoState);
 }
 
 /*
@@ -996,6 +998,7 @@ void EnemyBase::onInitPost(CreatureInitArg* arg)
 	case EDG_Navi:
 	case EDG_Treasure:
 	case EDG_Earthquake:
+	case EDG_AUTO:
 		if (isEvent(0, EB_IsHardConstraint)) {
 			mLifecycleFSM->start(this, EnemyBaseFSM::EBS_Living, nullptr);
 		} else {
@@ -1014,6 +1017,9 @@ void EnemyBase::onInitPost(CreatureInitArg* arg)
 				break;
 			case EDG_Earthquake:
 				mLifecycleFSM->start(this, EnemyBaseFSM::EBS_DropEarthquake, nullptr);
+				break;
+			case EDG_AUTO:
+				mLifecycleFSM->start(this, EnemyBaseFSM::EBS_DropAuto, nullptr);
 				break;
 			default:
 				JUT_PANICLINE(1483, "Unknown birth type:%d", mDropGroup);

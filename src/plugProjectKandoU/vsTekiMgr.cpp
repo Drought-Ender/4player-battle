@@ -77,6 +77,25 @@ EnemyBase* TekiMgr::birth(int idx, Vector3f& position, float timer)
 	return nullptr;
 }
 
+EnemyBase* TekiMgr::birthFromSky(int idx, Vector3f& position, float timer)
+{
+	TekiNode* node = getNode(idx);
+	if (node) {
+		EnemyBirthArg birthArg;
+		birthArg.mFaceDir  = TAU * randFloat();
+		birthArg.mPosition = position;
+		birthArg.mExistenceLength = timer;
+		birthArg.mTekiBirthType = 6;
+		EnemyBase* teki = generalEnemyMgr->birth(node->mId, birthArg);
+		if (teki) {
+			teki->init(nullptr);
+		}
+		return teki;
+	}
+	return nullptr;
+}
+
+
 int TekiMgr::getEnemy(EnemyTypeID::EEnemyTypeID id) {
 	for (int i = 0; i < mNodeCount; i++) {
 		if (getNode(i)->mId == id) {

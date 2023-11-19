@@ -8,7 +8,8 @@
 #include "DroughtLib.h"
 #include "Game/pathfinder.h"
 #include "Game/Cave/RandMapMgr.h"
-
+#include "Game/PikiState.h"
+#include "PikiAI.h"
 
 namespace Game
 {
@@ -44,6 +45,41 @@ struct NaviTekiParams
     f32 radius;
     f32 spawnHeight;
     f32 despawnTimer;
+};
+
+struct NaviFallTekiParams : public NaviTekiParams {
+    inline NaviFallTekiParams() : NaviTekiParams() {
+        mStartSpawnTimer = 0.0f;
+    }
+
+    inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight)
+        : NaviTekiParams(objCount, spawnRadius, spawnHeight)
+    {
+        mStartSpawnTimer = 0.0f;
+    }
+
+    inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength)
+        : NaviTekiParams(objCount, spawnRadius, spawnHeight, despawnTimerLength)
+    {
+        mStartSpawnTimer = 0.0f;
+    }
+
+    inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength, f32 startSpawnWait)
+        : NaviTekiParams(objCount, spawnRadius, spawnHeight, despawnTimerLength)
+    {
+        mStartSpawnTimer = startSpawnWait;
+        mVarience = 0.0f;
+    }
+
+    inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength, f32 startSpawnWait, f32 varience)
+        : NaviTekiParams(objCount, spawnRadius, spawnHeight, despawnTimerLength)
+    {
+        mStartSpawnTimer = startSpawnWait;
+        mVarience = varience;
+    }
+
+    f32 mStartSpawnTimer;
+    f32 mVarience;
 };
 
 
@@ -356,13 +392,19 @@ struct TekiCard : public VsSlotMachineCard {
 
     EnemyBase* birth(TekiMgr* tekiMgr, Vector3f& position, bool willDespawn) {
         EnemyBase* enemy = tekiMgr->birth(mTekiMgrID, position, willDespawn);
-        enemy->setAnimSpeed(30.0f);
+        if (enemy) enemy->setAnimSpeed(30.0f);
         return enemy;
     }
 
     EnemyBase* birth(TekiMgr* tekiMgr, Vector3f& position, float timer) {
         EnemyBase* enemy = tekiMgr->birth(mTekiMgrID, position, timer);
-        enemy->setAnimSpeed(30.0f);
+        if (enemy) enemy->setAnimSpeed(30.0f);
+        return enemy;
+    }
+
+    EnemyBase* birthFromSky(TekiMgr* tekiMgr, Vector3f& position, float timer) {
+        EnemyBase* enemy = tekiMgr->birthFromSky(mTekiMgrID, position, timer);
+        if (enemy) enemy->setAnimSpeed(30.0f);
         return enemy;
     }
 
@@ -742,6 +784,138 @@ struct HazardBarrierCard : public VsSlotMachineCard
     }
 };
 
+struct PluckAllCard : public VsSlotMachineCard
+{
+    PluckAllCard(const char* texName) : VsSlotMachineCard(texName) {};
+
+    virtual void onUseCard(CardMgr* cardMgr, int user) {
+        Iterator<ItemPikihead::Item> iPikiHead = ItemPikihead::mgr;
+        Navi* navi = naviMgr->getAt(user);
+        int pikiColor = getVsPikiColor(user);
+        CI_LOOP(iPikiHead) {
+            ItemPikihead::Item* pikiHead = *iPikiHead;
+            if (pikiHead->mColor == pikiColor && pikiHead->isAlive()) {
+                if (!pikiHead->canPullout()) continue;
+                PikiMgr::mBirthMode = 1;
+                Piki* pluckedPiki = pikiMgr->birth();
+                PikiMgr::mBirthMode = 0;
+                if (pluckedPiki) {
+                    pluckedPiki->init(nullptr);
+                    pluckedPiki->changeShape(pikiHead->mColor);
+                    pluckedPiki->changeHappa(pikiHead->mHeadType);
+                    pluckedPiki->setPosition(pikiHead->mPosition, false);
+                    pluckedPiki->mFsm->transit(pluckedPiki, PIKISTATE_AutoNuki, nullptr);
+                    pikiHead->kill(nullptr);
+                    pikiHead->setAlive(false);
+                }
+
+            }
+        }
+    }
+
+    virtual int getWeight(CardMgr* cardMgr, int teamID) {
+        int ourPikiHead = 0;
+        int theirPikiHead = 0;
+        Iterator<ItemPikihead::Item> iPikihead = ItemPikihead::mgr;
+        CI_LOOP(iPikihead) {
+            ItemPikihead::Item* pikiHead = *iPikihead;
+            if (pikiHead->mColor == getPikiFromTeamEnum(teamID)) {
+                ourPikiHead++;
+            }
+            else if (isTeamAlive(pikiHead->mColor)) {
+                theirPikiHead++;
+            }
+        }
+        int bonus = ourPikiHead - theirPikiHead;
+        return (50 * getAliveTeamCount()) + bonus;
+    }
+
+    virtual const char* getDescription() {
+        return "Plucks all of your buried pikmin";
+    }
+};
+
+
+
+struct WarpHomeCard : public VsSlotMachineCard
+{
+    WarpHomeCard(const char* texname) : VsSlotMachineCard(texname) {}
+
+    static void WarpAll(int user, Vector3f& place) {
+        Navi* victim = naviMgr->getAt(user);
+        victim->mPosition3 = place;
+
+        Iterator<Piki> iPiki = pikiMgr;
+
+        CI_LOOP(iPiki) {
+            Piki* piki = *iPiki;
+            if (piki->isAlive() && piki->mNavi == victim && piki->mBrain->mActionId == PikiAI::ACT_Formation) {
+                piki->setPosition(place, false);
+                piki->mNavi = nullptr;
+                InteractFue fue (victim, true, true);
+                piki->stimulate(fue);
+            }
+        }
+    }
+
+    virtual void onUseCard(CardMgr* cardMgr, int user) {
+        Vector3f onyonPos = ItemOnyon::mgr->getOnyon(getVsPikiColor(user))->getSuckPos();
+        WarpAll(user, onyonPos);
+    }
+
+    virtual const char* getDescription() {
+        return "Teleports you and your squad back to your base";
+    }
+};
+
+struct NaviAwaitFallSkyCard : public NaviTekiCard
+{
+    f32 mWaitTimer;
+    f32 mVarience;
+    
+    NaviAwaitFallSkyCard(EnemyTypeID::EEnemyTypeID id, NaviFallTekiParams parms, const char* texName) : NaviTekiCard(id, parms, texName)
+    {
+        mWaitTimer = parms.mStartSpawnTimer;
+        mVarience  = parms.mVarience;
+    }
+
+    virtual void onUseCard(CardMgr* cardMgr, int user, int target) {
+        
+        Navi* navi = naviMgr->getAt(target);
+        for (int i = 0; i < mParms.count; i++) {
+            Vector3f spawnNaviPos;
+            if (navi) {
+                spawnNaviPos = navi->getPosition();
+                
+                float faceDir = navi->getFaceDir();
+                float radius = randFloat() * mParms.radius;
+                
+                float angle  = randFloat() * TAU;                
+            
+                Vector3f spawnOffset = Vector3f(
+                    radius * pikmin2_sinf(angle), 
+                    0.0f, 
+                    radius * pikmin2_cosf(angle)
+                );
+
+                spawnNaviPos += spawnOffset;
+                if (mWaitTimer == 0.0f) {
+                    EnemyBase* enemy = birth(cardMgr->mTekiMgr, spawnNaviPos, mParms.despawnTimer);
+                }
+                else {
+                    f32 wait = mWaitTimer + randFloat() * mVarience;
+                    WaitEnemySpawn* card = new WaitEnemySpawn(spawnNaviPos, mTekiMgrID, mWaitTimer, mParms.despawnTimer);
+                    vsSlotCardMgr->mActionMgr.add(card);
+                }
+            }
+        }
+    }
+
+    virtual const char* getDescription() {
+        return "Spawns an enemy on your target from the sky";
+    }
+};
+
 
 VsSlotMachineCard** VsSlotCardMgr::sAllCards = nullptr;
 int VsSlotCardMgr::sTotalCardCount = 0;
@@ -778,6 +952,22 @@ void VsSlotCardMgr::initAllCards() {
         EnemyTypeID::EnemyID_Gtank,
         EnemyTypeID::EnemyID_Mtank,
         "teki_tank.bti"
+    );
+    sAllCards[TEKI_DEMON] = new OnyonTekiCard(EnemyTypeID::EnemyID_Demon, "teki_demon.bti");
+    sAllCards[TEKI_FUEFUKI] = new OnyonTekiCard(EnemyTypeID::EnemyID_Fuefuki, "teki_fuefuki.bti");
+    sAllCards[TEKI_JELLYFLOAT] = new OnyonTekiCard(EnemyTypeID::EnemyID_Kurage, "teki_kurage.bti");
+    sAllCards[TEKI_FKABUTO] = new NaviTekiCard(EnemyTypeID::EnemyID_Fkabuto, NaviTekiParams(1, 0.0f, 0.0f, 10.0f), "teki_kabuto.bti");
+    sAllCards[ALL_PLUCK] = new PluckAllCard("fue_pullout.bti");
+    sAllCards[PATH_BLOCK] = new HazardBarrierCard("fire_water.bti");
+    sAllCards[WARP_HOME] = new WarpHomeCard("warp_home.bti");
+    sAllCards[TEKI_KUMA] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 0.0f, 20.0f, 3.0f), "teki_kuma.bti");
+    sAllCards[BOMB_STORM] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 0.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
+    sAllCards[TEKI_OTAKARA] = new TankOnyonTeki(
+        EnemyTypeID::EnemyID_FireOtakara,
+        EnemyTypeID::EnemyID_WaterOtakara,
+        EnemyTypeID::EnemyID_GasOtakara,
+        EnemyTypeID::EnemyID_SporeOtakara,
+        "teki_otakara.bti"
     );
 }
 
@@ -823,8 +1013,10 @@ void ActionEntityMgr::update() {
         if (toDel) {
             ActionEntity* prev = static_cast<ActionEntity*>(entity->mPrev);
             entity->del();
+            delete entity;
             entity = prev;
             if (!entity) break;
+            
         }
     }
 }

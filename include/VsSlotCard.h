@@ -4,6 +4,12 @@
 #include "Game/VsGame.h"
 #include "Game/Stickers.h"
 
+
+namespace efx
+{
+    struct THdamaSight;
+} // namespace efx
+
 namespace Game
 {
 namespace VsGame
@@ -70,6 +76,18 @@ struct TeamPositionEntity : public TeamEntity, public TPositionObject {
     virtual Vector3f getPosition() { return mPosition; }
 };
 
+struct PositionEntity : public ActionEntity, public TPositionObject
+{
+    PositionEntity(Vector3f position) : ActionEntity(), mPosition(position)
+    {
+    }
+
+    Vector3f mPosition;
+
+    virtual Vector3f getPosition() { return mPosition; }
+};
+
+
 struct HazardBarrier : TeamPositionEntity {
     HazardBarrier(int, Vector3f);
     ~HazardBarrier();
@@ -79,6 +97,22 @@ struct HazardBarrier : TeamPositionEntity {
     f32 mEfxTimer;
 
     virtual bool update();
+};
+
+
+struct WaitEnemySpawn : PositionEntity {
+
+    EnemyBase* birthFromSky();
+
+    WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime);
+    ~WaitEnemySpawn();
+
+    virtual bool update();
+
+    efx::THdamaSight* mEfx;
+    f32 mWaitTimer;
+    f32 mExistenceTimer;
+    int mEntityID;
 };
 
 struct ActionEntityMgr : private CNode {

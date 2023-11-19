@@ -102,6 +102,7 @@ enum DropGroup {
 	EDG_Navi       = 3, // Is the dropping object a Player?
 	EDG_Treasure   = 4, // Is the dropping object a Treasure?
 	EDG_Earthquake = 5, // Is the dropping object an Earthquake?
+	EDG_AUTO       = 6
 };
 
 // Interface for specific overrides (e.g. PelplantInitialParams)
@@ -783,6 +784,7 @@ enum StateID {
 	EBS_Stone,
 	EBS_Earthquake,
 	EBS_Fit,
+	EBS_DropAuto,
 	EBS_Count, // 10
 };
 
@@ -865,6 +867,17 @@ struct BirthTypeDropEarthquakeState : public BirthTypeDropState {
 
 	virtual bool isFinishableWaitingBirthTypeDrop(EnemyBase*); // _38
 };
+
+struct BirthTypeDropAutoState : public BirthTypeDropState {
+	inline BirthTypeDropAutoState()
+	    : BirthTypeDropState(EBS_DropAuto)
+	{
+		mName = "BirthTypeDropAuto";
+	}
+
+	virtual bool isFinishableWaitingBirthTypeDrop(EnemyBase*) { return true; }; // _38
+};
+
 
 /**
  * Birth-without-dropping state?

@@ -84,6 +84,7 @@ struct TekiMgr {
 	bool birthable(int);    // unused
 	EnemyBase* birth(int, Vector3f&, bool);
 	EnemyBase* birth(int, Vector3f&, float);
+	EnemyBase* birthFromSky(int, Vector3f&, float);
 	int getEnemy(EnemyTypeID::EEnemyTypeID);
 	EnemyTypeID::EEnemyTypeID getID(int); // unused
 
@@ -105,6 +106,16 @@ enum eCardType { // official enum name
 	TEKI_ROCK         = 9,
 	TEKI_BOMBOTAKRA   = 10,
 	TEKI_TANK         = 11,
+	TEKI_FUEFUKI      = 12,
+	ALL_PLUCK         = 13,
+	PATH_BLOCK        = 14,
+	TEKI_DEMON        = 15,
+	TEKI_KUMA         = 16,
+	TEKI_JELLYFLOAT   = 17,
+	TEKI_FKABUTO      = 18,
+	WARP_HOME         = 19,
+	BOMB_STORM        = 20,
+	TEKI_OTAKARA      = 21,
 	CARD_ID_COUNT,
 	UNRESOLVED = 0xffff
 };

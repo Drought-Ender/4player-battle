@@ -143,6 +143,7 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_UmiMushiBlind  = 101, // Toady Bloyster
     EnemyID_Gtank          = 102,
     EnemyID_Mtank          = 103,
+    EnemyID_SporeOtakara   = 104,
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00

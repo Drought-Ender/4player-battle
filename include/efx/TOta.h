@@ -35,6 +35,16 @@ struct TOtaChargegas : public TChaseMtxT2 {
 	// _00-_2C  = TChaseMtxT2
 };
 
+struct TOtaChargeSpore : public TChaseMtxT2 {
+	inline TOtaChargeSpore()
+	    : TChaseMtxT2(0, PID_OtaChargegas_1, PID_OtaChargegas_2)
+	{
+	}
+
+	// _00      = VTBL
+	// _00-_2C  = TChaseMtxT2
+};
+
 struct TOtaChargewat : public TChaseMtxT2 {
 	inline TOtaChargewat()
 	    : TChaseMtxT2(0, PID_OtaChargewat_1, PID_OtaChargewat_2)
