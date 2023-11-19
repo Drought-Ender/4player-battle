@@ -71,6 +71,7 @@
 #include "Game/Entities/YellowKochappy.h"
 
 #include "Game/Entities/Tank.h"
+#include "Game/Entities/SporeOtakara.h"
 
 
 #include "Game/plantsMgr.h"
@@ -379,6 +380,9 @@ void Game::GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 		break;
 	case EnemyTypeID::EnemyID_Mtank:
 		mgr = new Mtank::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_SporeOtakara:
+		mgr = new SporeOtakara::Mgr(limit, type);
 		break;
 	default:
 		JUT_PANIC("UNKNOWN ENEMY MANAGER %i FOR %s", enemyID, name);

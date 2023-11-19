@@ -229,7 +229,8 @@ bool isEnemyHarmless(int id) {
 	case Game::EnemyTypeID::EnemyID_WaterOtakara: \
 	case Game::EnemyTypeID::EnemyID_GasOtakara: \
 	case Game::EnemyTypeID::EnemyID_ElecOtakara: \
-    case Game::EnemyTypeID::EnemyID_BombOtakara
+    case Game::EnemyTypeID::EnemyID_BombOtakara: \
+    case Game::EnemyTypeID::EnemyID_SporeOtakara
 
 #define SwitchMiniHoudai Game::EnemyTypeID::EnemyID_MiniHoudai: \
 	case Game::EnemyTypeID::EnemyID_FminiHoudai

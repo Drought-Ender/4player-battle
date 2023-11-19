@@ -84,6 +84,17 @@ struct TOtaGas : public TSimple2 {
 	// _00-_10  = TSimple2
 };
 
+struct TOtaSpore : public TSimple2 {
+	inline TOtaSpore()
+	    : TSimple2(PID_OtaGas_1, PID_OtaGas_2)
+	{
+	}
+
+	// _00      = VTBL
+	// _00-_10  = TSimple2
+};
+
+
 struct TOtaWat : public TSimple4 {
 	inline TOtaWat()
 	    : TSimple4(PID_OtaWat_1, PID_OtaWat_2, PID_OtaWat_3, PID_OtaWat_4)

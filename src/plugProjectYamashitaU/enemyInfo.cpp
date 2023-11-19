@@ -108,7 +108,7 @@ EnemyInfo gEnemyInfo[] = {
    {"DangoMushi",         EnemyTypeID::EnemyID_DangoMushi,     -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
    {"Gtank",              EnemyTypeID::EnemyID_Gtank,          -1,                                1,      0x0097,    "Tank",         "Tank",         "Tank",         "",         "",         "Tank",         "Tank",         -1,                               0,    BDT_Strong},
    {"Mtank",              EnemyTypeID::EnemyID_Mtank,          -1,                                1,      0x0097,    "Tank",         "Tank",         "Tank",         "",         "",         "Tank",         "Tank",         -1,                               0,    BDT_Strong},
-   {"SporeOtakara",       EnemyTypeID::EnemyID_ElecOtakara,    -1,                                1,      0x0007,    "FireOtakara",  "FireOtakara",  "Otakara",      "",         "",         "Otakara",      "Otakara",      -1,                               0,    BDT_Normal},
+   {"SporeOtakara",       EnemyTypeID::EnemyID_SporeOtakara,   -1,                                1,      0x0007,    "FireOtakara",  "FireOtakara",  "Otakara",      "",         "",         "Otakara",      "Otakara",      -1,                               0,    BDT_Normal},
 
 };
 // clang-format on
@@ -164,6 +164,7 @@ char* getEnemyResName(int enemyID, int enemyFlags)
 	case EnemyTypeID::EnemyID_WaterOtakara:
 	case EnemyTypeID::EnemyID_GasOtakara:
 	case EnemyTypeID::EnemyID_ElecOtakara:
+   case EnemyTypeID::EnemyID_SporeOtakara:
 		return "Otakara";
 		break;
 	}
