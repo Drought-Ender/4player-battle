@@ -3,6 +3,7 @@
 #include "Game/PikiMgr.h"
 #include "Game/GameSystem.h"
 #include "Game/Navi.h"
+#include "Game/NaviState.h"
 #include "Game/PikiState.h"
 
 namespace Game {
@@ -136,4 +137,12 @@ int Piki::getDownfloorMass()
 	return 1;
 }
 
+void endPluck(NaviNukuState* state, Navi* navi) {
+    if (navi && navi->mController1 && navi->mController1->isButtonDown(PAD_BUTTON_B)) {
+        navi->transit(NSID_Walk, nullptr);
+        navi->_26A = false;
+    }
 }
+
+}
+

@@ -6145,6 +6145,9 @@ exec__Q24Game13NaviNukuStateFPQ24Game4Navi:
 /* 80181D80 0017ECC0  7C 9F 23 78 */	mr r31, r4
 /* 80181D84 0017ECC4  93 C1 00 18 */	stw r30, 0x18(r1)
 /* 80181D88 0017ECC8  7C 7E 1B 78 */	mr r30, r3
+bl endPluck__4GameFPQ24Game13NaviNukuStatePQ24Game4Navi
+mr r3, r30
+mr r4, r31
 /* 80181D8C 0017ECCC  80 AD 9B 54 */	lwz r5, moviePlayer__4Game@sda21(r13)
 /* 80181D90 0017ECD0  28 05 00 00 */	cmplwi r5, 0
 /* 80181D94 0017ECD4  41 82 00 5C */	beq .L_80181DF0

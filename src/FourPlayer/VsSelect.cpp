@@ -645,7 +645,7 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
 
 namespace 
 {
-    const char* VsNames[] = {
+    const char* cVsNames[] = {
         "otegaru",
         "ujyaujya",
         "hirobiro",
@@ -655,8 +655,27 @@ namespace
         "nobinobi",
         "kakukaku",
         "meiro",
-        "tile",
-        "be_dama_r"
+            "tile",
+        "combat_zone",
+        "deep_blue",
+        "kingchappy",
+        "snagret",
+        "sunset",
+        "steel",
+        "metals",
+        "wraith",
+        "frozen",
+        "chaos",
+        "plant",
+        "theater",
+        "court",
+        "basin",
+        "bridge",
+        "toy",
+        "seesaw",
+        "field",
+        "rain",
+        "sewer"
     };
 } // namespace 
 
@@ -664,13 +683,13 @@ namespace
 void TVsSelect::setSelectTextures() {
     DebugReport("loading textures...\n");
     DebugReport("Stage Count: %i\n", mStageCount);
-    DebugReport("Icon Names: %i\n", ARRAY_SIZE(VsNames));
+    DebugReport("Icon Names: %i\n", ARRAY_SIZE(cVsNames));
     for (int i = 0; i < mStageCount; i++) {
         mLevelTextures[i] = nullptr;
-        if (i < ARRAY_SIZE(VsNames)) {
+        if (i < ARRAY_SIZE(cVsNames)) {
             
             char buffer[64];
-            sprintf(buffer, "timg/%s.bti", VsNames[i]);
+            sprintf(buffer, "timg/%s.bti", cVsNames[i]);
             DebugReport("loading %s...\n", buffer);
             void* obj = _B4->getResource(buffer);
             mLevelTextures[i] = (ResTIMG*)obj;

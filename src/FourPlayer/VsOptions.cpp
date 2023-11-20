@@ -42,7 +42,6 @@ void Option::readOptions() {
         SetOption(STALEMATE_TIMER, ConfigEnums::STALEMATE_ON, true);
         SetOption(AUTOPLUCK, ConfigEnums::AUTOPLUCK_ON);
         
-
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::ALL_FLOWER]->varibleForward();
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::RESET_BEDAMA]->varibleForward();
 
