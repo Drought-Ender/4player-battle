@@ -800,6 +800,8 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode* node, int scores[2])
 
 int newScore[2]; 
 
+static f32 gScoreBias;
+
 void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p1, VsWeights p2)
 {
     VsWeights avg;
@@ -812,6 +814,9 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 	newScore[FIRST_SCORE]  = 0;
 	newScore[SECOND_SCORE] = 0;
 
+	gScoreBias = 0.5f;
+
+	DebugReport("Score Bias %f\n", gScoreBias);
 
 	MapNode* nodeList[16];
 	BaseGen* genList[16];
@@ -893,7 +898,7 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			if (gEffectiveTeamCount < 3) {
 				secondDiff = 0;
 			}
-			distScores[i] = firstDiff + secondDiff;
+			distScores[i] = firstDiff * gScoreBias + secondDiff * (1.0f - gScoreBias);
 		}
 	}
 
@@ -913,10 +918,27 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 
 			DebugReport("PLACED AT %i, %i\n", mMapTileList[idx]->getVersusScore(FIRST_SCORE), mMapTileList[idx]->getVersusScore(SECOND_SCORE));
 
-			newScore[FIRST_SCORE]  -= (mMapTileList[idx]->getVersusScore(FIRST_SCORE));
-			newScore[SECOND_SCORE] -= (mMapTileList[idx]->getVersusScore(SECOND_SCORE));
+			f32 firstScore = (f32)mMapTileList[idx]->getVersusScore(FIRST_SCORE);
+			f32 secondScore = (f32)mMapTileList[idx]->getVersusScore(SECOND_SCORE);
+
+			if (firstScore == 0.0f && secondScore == 0.0f) {
+				return mMapTileList[idx]->getBaseGenGlobalPosition(mSpawnList[idx]);
+			}
+
+			DebugReport("Scores %f %f\n", firstScore, secondScore);
+
+			f32 firstPercentage  = FABS(firstScore) / (FABS(firstScore) + FABS(secondScore));
+			f32 secondPercentage = 1.0f - firstPercentage;
+
+			DebugReport("Percentages %f\n", firstPercentage);
+			
+			newScore[FIRST_SCORE]  -= firstScore;
+			newScore[SECOND_SCORE] -= secondScore;
+
+			gScoreBias = (firstPercentage * 0.25f) + (gScoreBias * 0.75f);
 
 			DebugReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
+			DebugReport("Score Bias %f\n", gScoreBias);
 
 			return mMapTileList[idx]->getBaseGenGlobalPosition(mSpawnList[idx]);
 		}
