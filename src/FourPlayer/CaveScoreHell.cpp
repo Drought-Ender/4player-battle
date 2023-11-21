@@ -539,6 +539,21 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 
 						enemyType = enemyIDArr[teamColor];
 					}
+					else if (enemyType == EnemyTypeID::EnemyID_Gtank && gEffectiveTeamCount == 2) {
+						int teamColor = 0;
+						
+						while (gScoreDelegations[0][0] == getPikiFromTeamEnum(teamColor) 
+							|| gScoreDelegations[0][1] == getPikiFromTeamEnum(teamColor)) {
+
+							teamColor++;
+						}
+						
+						
+						EnemyTypeID::EEnemyTypeID enemyIDArr[] = 
+						{ EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Gtank, EnemyTypeID::EnemyID_Mtank };
+
+						enemyType = enemyIDArr[teamColor];
+					}
 
 					if (canSpawnTeki) {
 						EnemyBase* enemy = generalEnemyMgr->birth(enemyType, birthArg);

@@ -22,29 +22,29 @@ VsSlotCardMgr* vsSlotCardMgr;
 struct NaviTekiParams
 {
     inline NaviTekiParams() {
-        count = 0;
-        radius = 0.0f;
-        spawnHeight = 0.0f;
+        mCount = 0;
+        mRadius = 0.0f;
+        mSpawnHeight = 0.0f;
     }
     
     inline NaviTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight) {
-        count = objCount;
-        radius = spawnRadius;
-        spawnHeight = spawnHeight;
-        despawnTimer = 0.0f;
+        mCount = objCount;
+        mRadius = spawnRadius;
+        mSpawnHeight = spawnHeight;
+        mDespawnTimer = 0.0f;
     }
 
     inline NaviTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength) {
-        count = objCount;
-        radius = spawnRadius;
-        spawnHeight = spawnHeight;
-        despawnTimer = despawnTimerLength;
+        mCount = objCount;
+        mRadius = spawnRadius;
+        mSpawnHeight = spawnHeight;
+        mDespawnTimer = despawnTimerLength;
     }
 
-    int count;
-    f32 radius;
-    f32 spawnHeight;
-    f32 despawnTimer;
+    int mCount;
+    f32 mRadius;
+    f32 mSpawnHeight;
+    f32 mDespawnTimer;
 };
 
 struct NaviFallTekiParams : public NaviTekiParams {
@@ -398,6 +398,7 @@ struct TekiCard : public VsSlotMachineCard {
 
     EnemyBase* birth(TekiMgr* tekiMgr, Vector3f& position, float timer) {
         EnemyBase* enemy = tekiMgr->birth(mTekiMgrID, position, timer);
+        P2ASSERT(enemy);
         if (enemy) enemy->setAnimSpeed(30.0f);
         return enemy;
     }
@@ -500,16 +501,16 @@ struct NaviTekiCard : public TekiCard
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {
         Navi* navi = naviMgr->getAt(target);
-        for (int i = 0; i < mParms.count; i++) {
+        for (int i = 0; i < mParms.mCount; i++) {
             Vector3f spawnNaviPos;
             if (navi) {
                 spawnNaviPos = navi->getPosition();
                 
                 float faceDir = navi->getFaceDir();
-                float radius = randFloat() * mParms.radius;
+                float radius = randFloat() * mParms.mRadius;
                 
                 float angle  = randFloat() * TAU;
-                float height = mParms.spawnHeight;
+                float height = mParms.mSpawnHeight;
                 
             
                 Vector3f spawnOffset = Vector3f(
@@ -520,13 +521,13 @@ struct NaviTekiCard : public TekiCard
 
                 spawnNaviPos += spawnOffset;
 
-                birth(cardMgr->mTekiMgr, spawnNaviPos, mParms.despawnTimer);
+                birth(cardMgr->mTekiMgr, spawnNaviPos, mParms.mDespawnTimer);
             }   
         }
     }
 
     virtual void allocate(VsGameSection* section) {
-        mTekiMgrID = allocateTeki(section->mCardMgr->mTekiMgr, mEnemyID, mParms.count * 2);
+        mTekiMgrID = allocateTeki(section->mCardMgr->mTekiMgr, mEnemyID, mParms.mCount * 2);
     }
 
     virtual const char* getDescription() {
@@ -882,13 +883,13 @@ struct NaviAwaitFallSkyCard : public NaviTekiCard
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {
         
         Navi* navi = naviMgr->getAt(target);
-        for (int i = 0; i < mParms.count; i++) {
+        for (int i = 0; i < mParms.mCount; i++) {
             Vector3f spawnNaviPos;
             if (navi) {
                 spawnNaviPos = navi->getPosition();
                 
                 float faceDir = navi->getFaceDir();
-                float radius = randFloat() * mParms.radius;
+                float radius = randFloat() * mParms.mRadius;
                 
                 float angle  = randFloat() * TAU;                
             
@@ -900,11 +901,11 @@ struct NaviAwaitFallSkyCard : public NaviTekiCard
 
                 spawnNaviPos += spawnOffset;
                 if (mWaitTimer == 0.0f) {
-                    EnemyBase* enemy = birth(cardMgr->mTekiMgr, spawnNaviPos, mParms.despawnTimer);
+                    EnemyBase* enemy = birth(cardMgr->mTekiMgr, spawnNaviPos, mParms.mDespawnTimer);
                 }
                 else {
                     f32 wait = mWaitTimer + randFloat() * mVarience;
-                    WaitEnemySpawn* card = new WaitEnemySpawn(spawnNaviPos, mTekiMgrID, mWaitTimer, mParms.despawnTimer);
+                    WaitEnemySpawn* card = new WaitEnemySpawn(spawnNaviPos, mTekiMgrID, mWaitTimer, mParms.mDespawnTimer);
                     vsSlotCardMgr->mActionMgr.add(card);
                 }
             }
