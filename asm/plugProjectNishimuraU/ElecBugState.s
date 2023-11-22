@@ -922,8 +922,9 @@ exec__Q34Game7ElecBug11StateChargeFPQ24Game9EnemyBase:
 /* 80279880 002767C0  38 80 00 1C */	li r4, 0x1c
 /* 80279884 002767C4  C3 E1 00 48 */	lfs f31, 0x48(r1)
 /* 80279888 002767C8  C3 A1 00 4C */	lfs f29, 0x4c(r1)
-/* 8027988C 002767CC  80 6D 91 E0 */	lwz r3, generalEnemyMgr__4Game@sda21(r13)
-/* 80279890 002767D0  4B E9 44 15 */	bl getEnemyMgr__Q24Game15GeneralEnemyMgrFi
+/* 8027988C 002767CC  80 6D 91 E0 */	# lwz r3, generalEnemyMgr__4Game@sda21(r13)
+mr r3, r31
+/* 80279890 002767D0  4B E9 44 15 */	bl GetOurEnemyMgr__4GameFPQ24Game9EnemyBase
 /* 80279894 002767D4  28 03 00 00 */	cmplwi r3, 0
 /* 80279898 002767D8  41 82 02 58 */	beq .L_80279AF0
 /* 8027989C 002767DC  41 82 00 08 */	beq .L_802798A4

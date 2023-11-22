@@ -462,6 +462,48 @@ struct StateWalk : public State {
 };
 /////////////////////////////////////////////////////////////////
 } // namespace Houdai
+
+namespace TechnoHoudai
+{
+
+struct Obj : public Houdai::Obj
+{
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()      // _258 (weak)
+	{
+		return EnemyTypeID::EnemyID_TechnoHoudai;
+	}
+};
+
+
+struct Mgr : public EnemyMgrBase {
+	Mgr(int objLimit, u8 modelType);
+
+	//////////////// VTABLE
+	// virtual ~Mgr();                                  // _58 (weak)
+	virtual void createObj(int);                       // _A0
+	virtual EnemyBase* getEnemy(int idx);              // _A4
+	virtual void doAlloc();                            // _A8
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_TechnoHoudai;
+	}
+	virtual void loadModelData();                   // _C8
+	virtual J3DModelData* doLoadBmd(void* filename) // _D4 (weak)
+	{
+		return J3DModelLoaderDataBase::load(filename, 0x21240030);
+	}
+	//////////////// VTABLE END
+
+	// _00 		= VTBL
+	// _00-_44	= EnemyMgrBase
+	Obj* mObj; // _44, probably
+};
+
+
+
+} // namespace TechnoHoudai
+
+
 } // namespace Game
 
 #endif

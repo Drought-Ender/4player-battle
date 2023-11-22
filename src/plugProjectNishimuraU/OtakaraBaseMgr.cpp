@@ -27,7 +27,7 @@ void Mgr::loadModelData()
 {
 	EnemyTypeID::EEnemyTypeID ids[]
 	    = { EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara, EnemyTypeID::EnemyID_GasOtakara,
-		    EnemyTypeID::EnemyID_ElecOtakara, EnemyTypeID::EnemyID_BombOtakara };
+		    EnemyTypeID::EnemyID_ElecOtakara, EnemyTypeID::EnemyID_BombOtakara, EnemyTypeID::EnemyID_SporeOtakara };
 	int id_count = sizeof(ids) / sizeof(EnemyTypeID::EEnemyTypeID);
 
 	for (int i = 0; i < id_count; i++) {
@@ -54,7 +54,7 @@ void Mgr::loadAnimData()
 {
 	EnemyTypeID::EEnemyTypeID ids[]
 	    = { EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara, EnemyTypeID::EnemyID_GasOtakara,
-		    EnemyTypeID::EnemyID_ElecOtakara, EnemyTypeID::EnemyID_BombOtakara };
+		    EnemyTypeID::EnemyID_ElecOtakara, EnemyTypeID::EnemyID_BombOtakara, EnemyTypeID::EnemyID_SporeOtakara };
 	int id_count = sizeof(ids) / sizeof(EnemyTypeID::EEnemyTypeID);
 
 	for (int i = 0; i < id_count; i++) {

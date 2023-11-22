@@ -109,7 +109,8 @@ EnemyInfo gEnemyInfo[] = {
    {"Gtank",              EnemyTypeID::EnemyID_Gtank,          -1,                                1,      0x0097,    "Tank",         "Tank",         "Tank",         "",         "",         "Tank",         "Tank",         -1,                               0,    BDT_Strong},
    {"Mtank",              EnemyTypeID::EnemyID_Mtank,          -1,                                1,      0x0097,    "Tank",         "Tank",         "Tank",         "",         "",         "Tank",         "Tank",         -1,                               0,    BDT_Strong},
    {"SporeOtakara",       EnemyTypeID::EnemyID_SporeOtakara,   -1,                                1,      0x0007,    "FireOtakara",  "FireOtakara",  "Otakara",      "",         "",         "Otakara",      "Otakara",      -1,                               0,    BDT_Normal},
-
+   {"TechnoHoudai",       EnemyTypeID::EnemyID_TechnoHoudai,   -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
+   {"TechnoBug",          EnemyTypeID::EnemyID_TechnoBug,      -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Normal},
 };
 // clang-format on
 

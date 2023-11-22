@@ -144,6 +144,8 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_Gtank          = 102,
     EnemyID_Mtank          = 103,
     EnemyID_SporeOtakara   = 104,
+    EnemyID_TechnoHoudai   = 105,
+    EnemyID_TechnoBug      = 106,
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00
@@ -179,7 +181,7 @@ inline int getEnemyMgrID(int enemyID)
 #define IS_ENEMY_BOSS(id)                                                                                                        \
 	(id == EnemyTypeID::EnemyID_Queen || id == EnemyTypeID::EnemyID_SnakeCrow || id == EnemyTypeID::EnemyID_KingChappy           \
 	 || id == EnemyTypeID::EnemyID_Damagumo || id == EnemyTypeID::EnemyID_OoPanModoki || id == EnemyTypeID::EnemyID_Houdai       \
-	 || id == EnemyTypeID::EnemyID_UmiMushiBlind || id == EnemyTypeID::EnemyID_BlackMan || id == EnemyTypeID::EnemyID_DangoMushi \
+	 || id == EnemyTypeID::EnemyID_TechnoHoudai || id == EnemyTypeID::EnemyID_UmiMushiBlind || id == EnemyTypeID::EnemyID_BlackMan || id == EnemyTypeID::EnemyID_DangoMushi \
 	 || id == EnemyTypeID::EnemyID_BigFoot || id == EnemyTypeID::EnemyID_SnakeWhole || id == EnemyTypeID::EnemyID_UmiMushi       \
 	 || id == EnemyTypeID::EnemyID_BigTreasure)
 
@@ -219,7 +221,8 @@ bool isEnemyHarmless(int id) {
 #define SwitchSarai Game::EnemyTypeID::EnemyID_Sarai: \
 	case Game::EnemyTypeID::EnemyID_Demon
 
-#define SwitchBug Game::EnemyTypeID::EnemyID_ElecBug
+#define SwitchBug Game::EnemyTypeID::EnemyID_ElecBug: \
+    case Game::EnemyTypeID::EnemyID_TechnoBug
 
 #define SwitchGrub Game::EnemyTypeID::EnemyID_UjiA: \
 	case Game::EnemyTypeID::EnemyID_UjiB: \

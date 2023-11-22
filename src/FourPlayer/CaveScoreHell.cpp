@@ -935,7 +935,7 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			newScore[FIRST_SCORE]  -= firstScore;
 			newScore[SECOND_SCORE] -= secondScore;
 
-			gScoreBias = (firstPercentage * 0.25f) + (gScoreBias * 0.75f);
+			gScoreBias = (firstPercentage * 0.1f) + (gScoreBias * 0.9f);
 
 			DebugReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
 			DebugReport("Score Bias %f\n", gScoreBias);

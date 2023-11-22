@@ -25,6 +25,9 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/ActionEntities.o\
 	$(BUILD_DIR)/src/FourPlayer/SporeOtakara.o\
 	$(BUILD_DIR)/src/FourPlayer/SporeOtakaraMgr.o\
+	$(BUILD_DIR)/src/FourPlayer/TechnoHoudaiMgr.o\
+	$(BUILD_DIR)/src/FourPlayer/TechnoBugMgr.o\
+	$(BUILD_DIR)/src/FourPlayer/FixElecBug.o\
 
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)

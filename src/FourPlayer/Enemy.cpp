@@ -384,6 +384,12 @@ void Game::GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	case EnemyTypeID::EnemyID_SporeOtakara:
 		mgr = new SporeOtakara::Mgr(limit, type);
 		break;
+	case EnemyTypeID::EnemyID_TechnoHoudai:
+		mgr = new TechnoHoudai::Mgr(limit, type);
+		break;
+	case EnemyTypeID::EnemyID_TechnoBug:
+		mgr = new TechnoBug::Mgr(limit, type);
+		break;
 	default:
 		JUT_PANIC("UNKNOWN ENEMY MANAGER %i FOR %s", enemyID, name);
 		break;
