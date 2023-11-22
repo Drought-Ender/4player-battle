@@ -116,6 +116,7 @@ enum eCardType { // official enum name
 	WARP_HOME         = 19,
 	BOMB_STORM        = 20,
 	TEKI_OTAKARA      = 21,
+	TEKI_MITES        = 22,
 	CARD_ID_COUNT,
 	UNRESOLVED = 0xffff
 };
