@@ -23,6 +23,7 @@
 #include "Game/Cave/RandMapMgr.h"
 #include "Dolphin/rand.h"
 #include "Game/Entities/PelletNumber.h"
+#include "DroughtLib.h"
 
 namespace Game
 {
@@ -476,6 +477,24 @@ void PelletNumber::Object::changeMaterial() {
 
 	mModel->mJ3dModel->calcMaterial();
 	mModel->mJ3dModel->diff();
+}
+
+struct HasFloor : public WPCondition {
+	bool satisfy(WayPoint* other) {
+		Vector3f position = other->getPosition();
+		return DroughtLib::hasValidFloor(position);
+	}
+};
+
+void Navi::voidout() {
+	HasFloor condition;
+	WPSearchArg arg (mPosition3, &condition, 0, 0.0f);
+	WayPoint* nearest = mapMgr->mRouteMgr->getNearestWayPoint(arg);
+	Vector3f landPos = nearest->getPosition();
+	landPos.y = mapMgr->getMinY(landPos) + 300.0f;
+	mPosition3 = landPos;
+	InteractFlick flick (nullptr, 0.0f, 10.0f, 0.0f);
+	stimulate(flick);
 }
 
 } // namespace Game

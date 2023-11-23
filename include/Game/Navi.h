@@ -200,6 +200,8 @@ struct Navi : public FakePiki, virtual public PelletView {
 	void updateThrowDisable();
 	void useDope(int);
 
+	void voidout();
+
 	inline void setCalcs()
 	{
 		SysShape::Model* model = mModel;

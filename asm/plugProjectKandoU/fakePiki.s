@@ -3053,17 +3053,7 @@ lbl_constructor:
 /* 8013F2E4 0013C224  4E 80 04 21 */	bctrl 
 /* 8013F2E8 0013C228  C0 41 00 10 */	lfs f2, 0x10(r1)
 /* 8013F2EC 0013C22C  7F E3 FB 78 */	mr r3, r31
-/* 8013F2F0 0013C230  C0 02 9F E0 */	lfs f0, lbl_80518340@sda21(r2)
-/* 8013F2F4 0013C234  38 81 00 18 */	addi r4, r1, 0x18
-/* 8013F2F8 0013C238  C0 61 00 0C */	lfs f3, 0xc(r1)
-/* 8013F2FC 0013C23C  38 A0 00 00 */	li r5, 0
-/* 8013F300 0013C240  C0 21 00 14 */	lfs f1, 0x14(r1)
-/* 8013F304 0013C244  EC 02 00 2A */	fadds f0, f2, f0
-/* 8013F308 0013C248  D0 41 00 1C */	stfs f2, 0x1c(r1)
-/* 8013F30C 0013C24C  D0 61 00 18 */	stfs f3, 0x18(r1)
-/* 8013F310 0013C250  D0 21 00 20 */	stfs f1, 0x20(r1)
-/* 8013F314 0013C254  D0 01 00 1C */	stfs f0, 0x1c(r1)
-/* 8013F318 0013C258  4B FF BE 91 */	bl "setPosition__Q24Game8CreatureFR10Vector3<f>b"
+bl voidout__Q24Game4NaviFv
 .L_8013F31C:
 /* 8013F31C 0013C25C  E3 E1 00 58 */	psq_l f31, 88(r1), 0, qr0
 /* 8013F320 0013C260  80 01 00 64 */	lwz r0, 0x64(r1)
