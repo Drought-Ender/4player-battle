@@ -862,17 +862,19 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
     BaseGen* whiteOnyonGen  = mMapScore->getFixObjGen(FIXNODE_VsWhiteOnyon);  // r29
 	BaseGen* purpleOnyonGen = mMapScore->getFixObjGen(FIXNODE_VsPurpleOnyon); // r30
 
-	f32 maxDist = 400.0f;
+	f32 maxDist = 800.0f;
 	int distScores[128];
 
 	for (int i = 0; i < count; i++) {
 		MapNode* currNode = nodes[i];
-		f32 len           = 400.0f;
+		f32 len           = maxDist;
+		bool isFirstDiff = true;
 		if (redOnyonNode == currNode) {
 			Vector3f onyonPos = redOnyonGen->mPosition;
 			Vector3f genPos   = gens[i]->mPosition;
 			Vector3f sep      = Vector3f(onyonPos.y - genPos.y, onyonPos.z - genPos.z, onyonPos.x - genPos.x);
 			len               = _length2(sep);
+			DebugReport("Hi from red onyon node!\n");
 		} else if (blueOnyonNode == currNode) {
 			Vector3f onyonPos = blueOnyonGen->mPosition;
 			Vector3f genPos   = gens[i]->mPosition;
@@ -883,26 +885,34 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			Vector3f genPos   = gens[i]->mPosition;
 			Vector3f sep      = Vector3f(onyonPos.y - genPos.y, onyonPos.z - genPos.z, onyonPos.x - genPos.x);
 			len               = _length2(sep);
+			isFirstDiff = false;
         } else if (purpleOnyonNode == currNode) {
             Vector3f onyonPos = purpleOnyonGen->mPosition;
 			Vector3f genPos   = gens[i]->mPosition;
 			Vector3f sep      = Vector3f(onyonPos.y - genPos.y, onyonPos.z - genPos.z, onyonPos.x - genPos.x);
 			len               = _length2(sep);
+			isFirstDiff = false;
         }
 
+		int firstDiff = absVal(currNode->getVersusScore(FIRST_SCORE) - scores[FIRST_SCORE]);
+		int secondDiff = absVal(currNode->getVersusScore(SECOND_SCORE) - scores[SECOND_SCORE]);
+
 		if (len < maxDist) {
-			distScores[i] = 12800 - (int)len;
+			int add = (isFirstDiff) ? secondDiff : firstDiff;
+			distScores[i] = 12800 - (int)len + add;
+			DebugReport("My Score is %i\n", distScores[i]);
 		} else {
-			int firstDiff = absVal(currNode->getVersusScore(FIRST_SCORE) - scores[FIRST_SCORE]);
-			int secondDiff = absVal(currNode->getVersusScore(SECOND_SCORE) - scores[SECOND_SCORE]);
 			if (gEffectiveTeamCount < 3) {
 				secondDiff = 0;
 			}
-			distScores[i] = firstDiff * gScoreBias + secondDiff * (1.0f - gScoreBias);
+			distScores[i] = MAX(firstDiff, secondDiff);
+			DebugReport("My Other Score is %i\n", distScores[i]);
 		}
 	}
 
 	getItemDropSortingList(nodes, gens, distScores, count);
+
+	DebugReport("We're Done\n");
 
 	for (int i = 0; i < count; i++) {
 		bool check = true;
@@ -935,7 +945,7 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			newScore[FIRST_SCORE]  -= firstScore;
 			newScore[SECOND_SCORE] -= secondScore;
 
-			gScoreBias = (firstPercentage * 0.1f) + (gScoreBias * 0.9f);
+			// gScoreBias = (firstPercentage * 0.1f) + (gScoreBias * 0.9f);
 
 			DebugReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
 			DebugReport("Score Bias %f\n", gScoreBias);
