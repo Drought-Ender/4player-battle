@@ -172,8 +172,25 @@ void Obj::interactFireAttack()
 				Vector2f delta;
 				getDistance2D(position, delta);
 				if (SQUARE(delta.x) + SQUARE(delta.y) < radSqr) {
-					InteractFire fire(this, C_PARMS->mGeneral.mAttackDamage.mValue);
-					creature->stimulate(fire);
+					switch (getEnemyTypeID()) {
+						case EnemyTypeID::EnemyID_Hiba:
+							InteractFire fire(this, C_PARMS->mGeneral.mAttackDamage.mValue);
+							creature->stimulate(fire);
+							break;
+						case EnemyTypeID::EnemyID_WaterHiba:
+							InteractBubble water(this, C_PARMS->mGeneral.mAttackDamage.mValue);
+							creature->stimulate(water);
+							break;
+						case EnemyTypeID::EnemyID_GasLineHiba:
+							InteractGas gas(this, C_PARMS->mGeneral.mAttackDamage.mValue);
+							creature->stimulate(gas);
+							break;
+						case EnemyTypeID::EnemyID_SporeHiba:
+							InteractSpore spore(this, C_PARMS->mGeneral.mAttackDamage.mValue);
+							creature->stimulate(spore);
+							break;
+					}
+					
 				}
 			}
 		}

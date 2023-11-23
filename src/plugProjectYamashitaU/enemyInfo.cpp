@@ -111,6 +111,10 @@ EnemyInfo gEnemyInfo[] = {
    {"SporeOtakara",       EnemyTypeID::EnemyID_SporeOtakara,   -1,                                1,      0x0007,    "FireOtakara",  "FireOtakara",  "Otakara",      "",         "",         "Otakara",      "Otakara",      -1,                               0,    BDT_Normal},
    {"TechnoHoudai",       EnemyTypeID::EnemyID_TechnoHoudai,   -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Boss},
    {"TechnoBug",          EnemyTypeID::EnemyID_TechnoBug,      -1,                                1,      0x0007,    "",             "",             "",             "",         "",         "",             "",             -1,                               0,    BDT_Normal},
+   {"WaterHiba",          EnemyTypeID::EnemyID_WaterHiba,      -1,                                1,      0x0207,    "Hiba",         "Hiba",         "Hiba",         "Hiba",     "Hiba",     "Hiba",         "Hiba",         -1,                               0,    BDT_Empty},
+   {"GasLineHiba",        EnemyTypeID::EnemyID_GasLineHiba,    -1,                                1,      0x0207,    "Hiba",         "Hiba",         "Hiba",         "Hiba",     "Hiba",     "Hiba",         "Hiba",         -1,                               0,    BDT_Empty},
+   {"SporeHiba",          EnemyTypeID::EnemyID_SporeHiba,      -1,                                1,      0x0207,    "Hiba",         "Hiba",         "Hiba",         "Hiba",     "Hiba",     "Hiba",         "Hiba",         -1,                               0,    BDT_Empty},
+
 };
 // clang-format on
 
