@@ -163,7 +163,6 @@ extern Controller* gControllerP3;
 extern Controller* gControllerP4;
 
 void incAllGlobalDope(int color) {
-    DebugReport("incAllGlobalDope(int)\n");
     for (int i = 0; i < 4; i++) {
         gDopeCountArray[i][color]++;
     }
@@ -269,7 +268,6 @@ int getAliveTeamCount() {
 }
 
 int getAliveAdversaries(int team) {
-    DebugReport("Team id %i\n", team);
     int count = 0;
     for (int i = 0; i < gNaviNum; i++) {
         if (gDrawNavi[i]) {
@@ -279,7 +277,6 @@ int getAliveAdversaries(int team) {
             }
         }
     }
-    DebugReport("Count %i\n", count);
 
     return count;
 }

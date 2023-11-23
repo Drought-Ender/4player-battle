@@ -681,8 +681,6 @@ namespace
 
 
 void TVsSelect::setSelectTextures() {
-    DebugReport("loading textures...\n");
-    DebugReport("Stage Count: %i\n", mStageCount);
     DebugReport("Icon Names: %i\n", ARRAY_SIZE(cVsNames));
     for (int i = 0; i < mStageCount; i++) {
         mLevelTextures[i] = nullptr;
@@ -695,15 +693,12 @@ void TVsSelect::setSelectTextures() {
             mLevelTextures[i] = (ResTIMG*)obj;
             
         }
-        DebugReport("%p obj\n", mLevelTextures[i]);
         if (!mLevelTextures[i]) {
-            DebugReport("replacing Image\n");
             void* obj2 = mArchive->getResource("timg/loozy_icon.bti");
             mLevelTextures[i] = (ResTIMG*)obj2;
             P2ASSERT(mLevelTextures[i]);
         }
     } 
-    DebugReport("Func has no issues\n");
 }
 
 void TVsSelect::makeMsgTag() {

@@ -41,6 +41,12 @@ void initScoreDelegations() {
 				gScoreDelegations[0][deleID++] = (OnyonTypes)Game::getPikiFromTeamEnum(i);
 			}
 		}
+		deleID = 0;
+		for (int i = 0; i < 4; i++) {
+			if (!Game::isTeamActive(i)) {
+				gScoreDelegations[1][deleID++] = (OnyonTypes)Game::getPikiFromTeamEnum(i);
+			}
+		}
 	}
 }
 
@@ -53,8 +59,49 @@ enum ScoreDelegations {
 namespace Game
 {
 
+typedef EnemyTypeID::EEnemyTypeID EnemySet[4];
+
+EnemySet TankSet = 
+	{ EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Gtank, EnemyTypeID::EnemyID_Mtank };
+
+EnemySet OtakaraSet = 
+	{ EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara, EnemyTypeID::EnemyID_GasOtakara, EnemyTypeID::EnemyID_SporeOtakara };
+
+EnemySet HibaSet = 
+	{ EnemyTypeID::EnemyID_Hiba, EnemyTypeID::EnemyID_WaterHiba, EnemyTypeID::EnemyID_GasLineHiba, EnemyTypeID::EnemyID_SporeHiba };
+
+EnemyTypeID::EEnemyTypeID GetEnemyFromSet(EnemyTypeID::EEnemyTypeID enemyType, EnemySet enemySet) {
+	int genericIdx = -1;
+	for (int i = 0; i < 4; i++) {
+		if (enemyType == enemySet[i]) {
+			genericIdx = i;
+			break;
+		}
+	}
+	if (genericIdx == -1) {
+		return enemyType;
+	}
+
+	int pikiColor = reinterpret_cast<int*>(gScoreDelegations)[genericIdx];
+
+
+	return enemySet[getTeamFromPiki(pikiColor)];
+}
+
+EnemyTypeID::EEnemyTypeID MakeReplacementFromGenericEnemy(EnemyTypeID::EEnemyTypeID enemyType) {
+	DebugReport("Enemy In %s\n", EnemyInfoFunc::getEnemyName(enemyType, 0xffff));
+	enemyType = GetEnemyFromSet(enemyType, TankSet);
+	enemyType = GetEnemyFromSet(enemyType, OtakaraSet);
+	enemyType = GetEnemyFromSet(enemyType, HibaSet);
+	DebugReport("Enemy Out %s\n", EnemyInfoFunc::getEnemyName(enemyType, 0xffff));
+	return enemyType;
+}
+
+
 namespace Cave
 {
+
+
 
 EnemyUnit* gPelplantEnemyUnit;
 int gPelplantsPerBunch;
@@ -530,30 +577,6 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					else if (enemyType == EnemyTypeID::EnemyID_Pelplant) {
 						isPelplant = true;
 					}
-					else if (enemyType == EnemyTypeID::EnemyID_Tank || enemyType == EnemyTypeID::EnemyID_Wtank && gEffectiveTeamCount == 2) {
-						blowhogIdx = enemyType - EnemyTypeID::EnemyID_Tank;
-						int pikiColor = gScoreDelegations[0][blowhogIdx];
-						int teamColor = getTeamFromPiki(pikiColor);
-						EnemyTypeID::EEnemyTypeID enemyIDArr[] = 
-						{ EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Gtank, EnemyTypeID::EnemyID_Mtank };
-
-						enemyType = enemyIDArr[teamColor];
-					}
-					else if (enemyType == EnemyTypeID::EnemyID_Gtank && gEffectiveTeamCount == 2) {
-						int teamColor = 0;
-						
-						while (gScoreDelegations[0][0] == getPikiFromTeamEnum(teamColor) 
-							|| gScoreDelegations[0][1] == getPikiFromTeamEnum(teamColor)) {
-
-							teamColor++;
-						}
-						
-						
-						EnemyTypeID::EEnemyTypeID enemyIDArr[] = 
-						{ EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Gtank, EnemyTypeID::EnemyID_Mtank };
-
-						enemyType = enemyIDArr[teamColor];
-					}
 
 					if (canSpawnTeki) {
 						EnemyBase* enemy = generalEnemyMgr->birth(enemyType, birthArg);
@@ -1003,7 +1026,7 @@ int RandMapScore::getVersusHighScore(int color) {
 }
 
 void RandEnemyUnit::setEnemySlot()
-{
+{	
 	DebugReport("RandEnemyUnit::setEnemySlot()\n");
 	if (mTotalCount < mMaxEnemies) {
 		DebugReport("RandEnemyUnit::setEnemyTypeC()\n");
@@ -1072,6 +1095,10 @@ void RandEnemyUnit::setVersusEasyEnemy()
 		EnemyNode* nextNode = (EnemyNode*)currNode->mNext;
 
 		if (currInfo) {
+
+			currInfo->mEnemyID = MakeReplacementFromGenericEnemy(currInfo->mEnemyID);
+
+
 			if (currInfo->mEnemyID == vsEasyIDs[0]) {
 				enemyCounts[0][0] += currInfo->mWeight / 10;
 				enemyUnits[0] = unit;

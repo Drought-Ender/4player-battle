@@ -85,7 +85,7 @@ struct Obj : public Hiba::Obj {
     Obj();
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()      // _258 (weak)
 	{
-		return EnemyTypeID::EnemyID_GasLineHiba;
+		return EnemyTypeID::EnemyID_SporeHiba;
 	}
     void createEffect();
 };
@@ -99,7 +99,7 @@ struct Mgr : public EnemyMgrBaseAlwaysMovieActor {
 	virtual EnemyBase* getEnemy(int idx);              // _A4
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
 	{
-		return EnemyTypeID::EnemyID_GasLineHiba;
+		return EnemyTypeID::EnemyID_SporeHiba;
 	}
 
 	// _00 		= VTBL

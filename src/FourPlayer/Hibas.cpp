@@ -39,6 +39,7 @@ EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
 
 Obj::Obj()
 {
+	OSReport("NEW HIBA WATER\n");
 	mAnimator = new Hiba::ProperAnimator;
 	setFSM(new Hiba::FSM);
 	createEffect();
@@ -137,6 +138,7 @@ EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
 
 Obj::Obj()
 {
+	OSReport("NEW HIBA SPORE\n");
 	mAnimator = new Hiba::ProperAnimator;
 	setFSM(new Hiba::FSM);
 	createEffect();

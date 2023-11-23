@@ -10,6 +10,9 @@
 struct Graphics;
 
 namespace Game {
+
+EnemyTypeID::EEnemyTypeID MakeReplacementFromGenericEnemy(EnemyTypeID::EEnemyTypeID enemyType);
+
 namespace Cave {
 struct RandEnemyUnit;
 struct RandItemUnit;
