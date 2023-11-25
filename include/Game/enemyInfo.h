@@ -258,7 +258,10 @@ bool isEnemyHarmless(int id) {
 
 #define SwitchHiba Game::EnemyTypeID::EnemyID_Hiba: \
 	case Game::EnemyTypeID::EnemyID_GasHiba: \
-	case Game::EnemyTypeID::EnemyID_ElecHiba
+	case Game::EnemyTypeID::EnemyID_ElecHiba: \
+    case Game::EnemyTypeID::EnemyID_GasLineHiba: \
+    case Game::EnemyTypeID::EnemyID_WaterHiba: \
+    case Game::EnemyTypeID::EnemyID_SporeHiba
     
 #define SwitchInanimate \
     SwitchPom: case SwitchHiba: \

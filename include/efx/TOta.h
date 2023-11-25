@@ -41,6 +41,8 @@ struct TOtaChargeSpore : public TChaseMtxT2 {
 	{
 	}
 
+	virtual bool create(Arg*);
+
 	// _00      = VTBL
 	// _00-_2C  = TChaseMtxT2
 };
@@ -89,6 +91,8 @@ struct TOtaSpore : public TSimple2 {
 	    : TSimple2(PID_OtaGas_1, PID_OtaGas_2)
 	{
 	}
+
+	virtual bool create(Arg*);
 
 	// _00      = VTBL
 	// _00-_10  = TSimple2

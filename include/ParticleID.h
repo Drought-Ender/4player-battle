@@ -946,4 +946,6 @@
 #define PID_PKS_SporeOff_1 (0x2c6)
 #define PID_PKS_SporeOff_2 (0x2c7)
 
+#define PID_SporeHiba (0x2d4)
+
 #endif

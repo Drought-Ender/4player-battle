@@ -153,7 +153,6 @@ bool CardMgr::usePlayerCard(int teamUser, TekiMgr* tekiMgr)
 	bool used = true;
 
 	int target = CherryTarget::GetTarget(naviMgr->getAt(gUseCardNavi)->mController2);
-	DebugReport("Target is %i\n", target);
 
 	if (machines[teamUser]->_18) {
 		return false;
@@ -387,28 +386,22 @@ int CardSelector::selectCard()
 
 void CardMgr::SlotMachine::start()
 {
-	DebugReport("CardMgr::SlotMachine::start()\n");
 	_51 = false;
 
 	int cardCount = vsSlotCardMgr->mCardCount;
-	DebugReport("Card Count %i\n", cardCount);
 
     CardSelector cardSelector(cardCount);
 
-	DebugReport("ctor\n");
 
 	
     
     for (int i = 0; i < cardCount; i++) {
-		DebugReport("Card %i: %p\n", i, vsSlotCardMgr->mUsingCards[i]);
         cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getWeight(mCardMgr, mPlayerIndex);
     }
 
-	DebugReport("Weights done\n");
 
 	
     cardSelector.fixBrokenWeights();
-	DebugReport("fixBrokenWeights()\n");
 
 
     int totalMeasure = cardSelector.getTotalWeight();
@@ -419,12 +412,10 @@ void CardMgr::SlotMachine::start()
 
     mSelectedSlot = cardSelector.selectCard();
 
-	DebugReport("Selection done\n");
 
     if (mPrevSelected < cardCount) {
         cardSelector.mValues[mPrevSelected] /= 10;
     }
-    DebugReport("return;\n");
 
     mPrevSelected = mSelectedSlot;
     _28 = randFloat();
