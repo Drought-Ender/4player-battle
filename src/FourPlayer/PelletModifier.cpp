@@ -109,7 +109,9 @@ void Pellet::onInit(CreatureInitArg* initArg)
         mPelletFlag = FLAG_VS_BEDAMA_WHITE;
     } else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaPurple) == 0) {
         mPelletFlag = FLAG_VS_BEDAMA_PURPLE;
-    }
+    } else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaMini) == 0) {
+		mPelletFlag = FLAG_VS_BEDAMA_MINI;
+	}
 
 	if (static_cast<PelletInitArg*>(initArg)->_1C == 0) {
 		mModel = mMgr->createShape(_43C, mSlotIndex);
@@ -251,6 +253,9 @@ void PelletMgr::makeVsCarryMinMax(PelletInitArg& arg, char* name)
 		} else if (strcmp(VsOtakaraName::cBedamaWhite, name) == 0) {
 			arg.mMinCarriers = 1;
 			arg.mMaxCarriers = 8;
+		} else if (strcmp(VsOtakaraName::cBedamaMini, name) == 0) {
+			arg.mMinCarriers = 1;
+			arg.mMaxCarriers = 8;
 		}
 	}
 }
@@ -274,6 +279,9 @@ void PelletMgr::_makeVsCarryMinMax(PelletInitArg& arg, char* name)
 			arg.mMinCarriers = 1;
 			arg.mMaxCarriers = 8;
 		} else if (strcmp(VsOtakaraName::cBedamaWhite, name) == 0) {
+			arg.mMinCarriers = 1;
+			arg.mMaxCarriers = 8;
+		} else if (strcmp(VsOtakaraName::cBedamaMini, name) == 0) {
 			arg.mMinCarriers = 1;
 			arg.mMaxCarriers = 8;
 		}

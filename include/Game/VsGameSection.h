@@ -160,6 +160,9 @@ struct VsGameSection : public BaseGameSection {
 	int mDispMarbleCounts[4];                      // _3D4
 	int mRealMarbleCounts[4];                      // _3DC
 	int mGetDopeCount[4][2];
+	// mini marbles
+	int mDispMiniCounts[4];
+	int mRealMiniCounts[4];
 };
 
 const static int vsGameSize = sizeof(VsGameSection);

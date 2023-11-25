@@ -208,7 +208,8 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 		FLAG_VS_BEDAMA_BLUE   = 5,
 		FLAG_VS_BEDAMA_YELLOW = 6,
 		FLAG_VS_BEDAMA_WHITE  = 7,
-		FLAG_VS_BEDAMA_PURPLE = 8
+		FLAG_VS_BEDAMA_PURPLE = 8,
+		FLAG_VS_BEDAMA_MINI   = 9
 	};
 
 	int getBedamaPikiColor();

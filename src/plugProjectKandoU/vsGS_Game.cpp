@@ -797,29 +797,34 @@ void GameState::setWinMarbleColor(int teamID, int color) {
  * Address:	8022A868
  * Size:	00014C
  */
-void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool isYellow)
+void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, MarbleType marbleType)
 {
-	if (!isYellow && !_16 && gConfig[CAPTURE_MARBLE] == ConfigEnums::CAPTURE_STEALMARBLE) {
+	if (marbleType == RED_OR_BLUE && !_16 && gConfig[CAPTURE_MARBLE] == ConfigEnums::CAPTURE_STEALMARBLE) {
 		section->mRealMarbleCounts[player] += section->mRealMarbleCounts[gBedamaColor];
 		section->mDispMarbleCounts[player] += section->mRealMarbleCounts[gBedamaColor];
 		section->mRealMarbleCounts[gBedamaColor] = 0;
 		section->mDispMarbleCounts[gBedamaColor] = 0;
 		if (section->mRealMarbleCounts[player] >= 4) {
-			isYellow = true;
+			marbleType = YELLOW;
 			section->mRealMarbleCounts[player] = 3;
 			section->mDispMarbleCounts[player] = 4;
 		}
 	}
 
-	if (isYellow) {
+	if (marbleType == MINI) {
+		section->mRealMiniCounts[player]++;
+		if (section->mRealMiniCounts[player] == 5) {
+			section->mRealMiniCounts[player] = 0;
+			marbleType = YELLOW;
+		}
+	}
+
+	if (marbleType == YELLOW) {
 		section->mRealMarbleCounts[player]++;
-		if (isYellow && section->mRealMarbleCounts[player] == 4 && !_16) {
+		if (section->mRealMarbleCounts[player] == 4 && !_16) {
 			_16 = true;
 
 			u8 loseReason = VSLOSE_ColoredMarble;
-			if (!isYellow) {
-				loseReason |= VSLOSE_Marble;
-			}
 
 			for (int i = 0; i < 4; i++) {
 				if (i != player) {
@@ -854,10 +859,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, bool is
 	case ConfigEnums::CAPTURE_VICTORY: {
 		_16 = 1;
 
-		u8 loseReason = VSLOSE_ColoredMarble;
-		if (!isYellow) {
-			loseReason |= VSLOSE_Marble;
-		}
+		u8 loseReason = VSLOSE_ColoredMarble | VSLOSE_Marble;
 
 		for (int i = 0; i < 4; i++) {
 			if (i != player) {
@@ -1623,6 +1625,11 @@ void GameState::drawStatus(Graphics&, VsGameSection* section) { }
 void GameState::onYellowBedamaGet(VsGameSection* section) {
 	mTimeLeft += VS_TIMER_ADD_TIME;
 }
+
+void GameState::onMiniBedamaGet(VsGameSection* section) {
+	mTimeLeft += VS_TIMER_ADD_TIME / 5;
+}
+
 
 } // namespace VsGame
 } // namespace Game

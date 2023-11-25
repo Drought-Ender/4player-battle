@@ -338,7 +338,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			pellet->movie_begin(false);
 			mOnyon->movie_begin(false);
 			GameMessageVsRedOrSuckStart mesg(team);
-			mesg.mIsYellow = false;
+			mesg.mMarbleType = false;
 			mesg.mBedamaColor = 0;
 			gameSystem->mSection->sendMessage(mesg);
 
@@ -346,7 +346,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			pellet->movie_begin(false);
 			mOnyon->movie_begin(false);
 			GameMessageVsRedOrSuckStart mesg2(team);
-			mesg2.mIsYellow = false;
+			mesg2.mMarbleType = false;
 			mesg2.mBedamaColor = 1;
 			gameSystem->mSection->sendMessage(mesg2);
 
@@ -354,7 +354,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			pellet->movie_begin(false);
 			mOnyon->movie_begin(false);
 			GameMessageVsRedOrSuckStart mesg2(team);
-			mesg2.mIsYellow = false;
+			mesg2.mMarbleType = false;
 			mesg2.mBedamaColor = 2;
 			gameSystem->mSection->sendMessage(mesg2);
 
@@ -362,7 +362,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			pellet->movie_begin(false);
 			mOnyon->movie_begin(false);
 			GameMessageVsRedOrSuckStart mesg2(team);
-			mesg2.mIsYellow = false;
+			mesg2.mMarbleType = false;
 			mesg2.mBedamaColor = 3;
 			gameSystem->mSection->sendMessage(mesg2);
 
@@ -371,7 +371,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 				pellet->movie_begin(false);
 				mOnyon->movie_begin(false);
 				GameMessageVsRedOrSuckStart mesg3(team);
-				mesg3.mIsYellow = true;
+				mesg3.mMarbleType = true;
 				mesg3.mBedamaColor = 0;
 				gameSystem->mSection->sendMessage(mesg3);
 

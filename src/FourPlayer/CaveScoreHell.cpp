@@ -556,6 +556,7 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					birthArg.mPosition = birthPos;
 					
 					birthArg.mOtakaraItemCode = node->getExtraCode();
+					DebugReport("Otakara Code %u\n", birthArg.mOtakaraItemCode.mValue);
 					birthArg.mTekiBirthType = (EnemyTypeID::EEnemyTypeID)node->getObjectType();
 					node->isFixedBattery();
 
@@ -897,7 +898,6 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			Vector3f genPos   = gens[i]->mPosition;
 			Vector3f sep      = Vector3f(onyonPos.y - genPos.y, onyonPos.z - genPos.z, onyonPos.x - genPos.x);
 			len               = _length2(sep);
-			DebugReport("Hi from red onyon node!\n");
 		} else if (blueOnyonNode == currNode) {
 			Vector3f onyonPos = blueOnyonGen->mPosition;
 			Vector3f genPos   = gens[i]->mPosition;
@@ -923,7 +923,6 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 		if (len < maxDist) {
 			int add = (gEffectiveTeamCount > 2) ? (isFirstDiff) ? secondDiff : firstDiff : 0;
 			distScores[i] = 12800 - (int)len + add;
-			DebugReport("My Score is %i\n", distScores[i]);
 		} else {
 			if (gEffectiveTeamCount < 3) {
 				distScores[i] = firstDiff;
@@ -931,13 +930,10 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			else {
 				distScores[i] = MAX(firstDiff, secondDiff);
 			}
-			DebugReport("My Other Score is %i\n", distScores[i]);
 		}
 	}
 
 	getItemDropSortingList(nodes, gens, distScores, count);
-
-	DebugReport("We're Done\n");
 
 	for (int i = 0; i < count; i++) {
 		bool check = true;

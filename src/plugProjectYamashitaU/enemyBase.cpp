@@ -2469,6 +2469,8 @@ void EnemyBase::throwupItem()
 
 	PelletInitArg pelletInitArg;
 
+	OSReport("Pellet Drop Code %i\n", mPelletDropCode.mValue);
+
 	if (pelletMgr->makePelletInitArg(pelletInitArg, mPelletDropCode)) {
 		pelletInitArg.mState         = 2;
 		EnemyTypeID::EEnemyTypeID id = getEnemyTypeID();

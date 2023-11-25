@@ -425,7 +425,7 @@ void VsGameSection::onSetupFloatMemory()
 	mTekiMgr->entry(EnemyTypeID::EnemyID_Tobi, 20);
 
 	mCardMgr->loadResource();
-	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaYellow, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite };
+	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaYellow, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaMini };
 
 	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
 
@@ -1063,9 +1063,8 @@ bool GameMessageVsRedOrSuckStart::actVs(VsGameSection* section)
 {
 	
 	VsGame::gBedamaColor = mBedamaColor;
-	DebugReport("Bedama Color %i\n", VsGame::gBedamaColor);
 	if (section->mState) {
-		section->mState->onRedOrBlueSuckStart(section, mColor, mIsYellow);
+		section->mState->onRedOrBlueSuckStart(section, mColor, (VsGame::MarbleType)mMarbleType);
 	}
 	return true;
 }
@@ -1078,16 +1077,35 @@ bool GameMessageVsRedOrSuckStart::actVs(VsGameSection* section)
 bool GameMessageVsGetOtakara::actVs(VsGameSection* section)
 {
 	if (section->mState) {
-		section->mDispMarbleCounts[_04]++;
+		section->mDispMarbleCounts[mTeamColor]++;
 		section->mState->onYellowBedamaGet(section);
-		PSSetLastBeedamaDirection(_04 == 0, section->mDispMarbleCounts[_04] == 3);
-		if (section->mDispMarbleCounts[_04] >= 4) {
-			section->mState->onBattleFinished(section, _04, true);
+		PSSetLastBeedamaDirection(true, section->mDispMarbleCounts[mTeamColor] == 3);
+		if (section->mDispMarbleCounts[mTeamColor] >= 4) {
+			section->mState->onBattleFinished(section, mTeamColor, true);
 		}
 	}
 
 	return true;
 }
+
+bool GameMessageVsGetMiniOtakara::actVs(VsGameSection* section)
+{
+	if (section->mState) {
+		section->mDispMiniCounts[mTeamColor]++;
+		section->mState->onMiniBedamaGet(section);
+
+		if (section->mDispMiniCounts[mTeamColor] >= 5) {
+			section->mDispMiniCounts[mTeamColor] = 0;
+			section->mDispMarbleCounts[mTeamColor]++;
+			PSSetLastBeedamaDirection(true, section->mDispMarbleCounts[mTeamColor] == 3);
+			if (section->mDispMarbleCounts[mTeamColor] >= 4) {
+				section->mState->onBattleFinished(section, mTeamColor, true);
+			}
+		}
+	}
+	return true;
+}
+
 
 /*
  * --INFO--
@@ -1526,7 +1544,6 @@ void VsGameSection::dropCard(VsGameSection::DropCardArg& arg)
  */
 void VsGameSection::createYellowBedamas(int bedamas)
 {
-	DebugReport("VsGameSection::createYellowBedamas\n");
 	if (mVsStageData) {
 		if (gEffectiveTeamCount == 2) {
 			bedamas = mVsStageData->mStartNumYellowMarbles;
@@ -1542,16 +1559,9 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		int currentFlag = 1 << editnum;
 
 		if (gEffectiveTeamCount > 2) currentFlag *= 0x10;
-
-		DebugReport("currentFlag %i\n", currentFlag);
-
 		int flag = mVsStageData->mMarbleFlags;
-
-		DebugReport("Our Flag %i\n", flag);
-
 		int flagOut = flag & currentFlag;
 
-		DebugReport("FlagOut %i\n", flagOut);
 
 		if (flagOut != 0) {
 			return;
@@ -1573,8 +1583,6 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 		mMarbleYellow[i] = nullptr;
 	}
-
-	DebugReport("Bedamas %i\n", bedamas);
 
 	PelletList::cKind kind;
 	char* name = const_cast<char*>(VsOtakaraName::cBedamaYellow);
@@ -2081,7 +2089,6 @@ namespace Game
 	void VsGameSection::updateFancyCam() {
 		gFancyTimer -= sys->mDeltaTime;
 		if (gFancyTimer <= 0.0f) {
-			DebugReport("Update but fancy\n");
 			gFancyTimer = cTimerInterval;
 			gFancyTarget = fancyCamLookForTarget();
 		}

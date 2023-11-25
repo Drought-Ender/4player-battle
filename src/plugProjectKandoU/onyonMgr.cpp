@@ -466,12 +466,16 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 		}
 
 		// TODO: define when pellet states
-		pellet->mPelletSM->transit(pellet, 5, nullptr);
+		pellet->mPelletSM->transit(pellet, PELSTATE_ScaleAppear, nullptr);
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) {
-			GameMessageVsGetOtakara mesg(getTeamFromPiki((EPikiKind)item->mOnyonType));
+			GameMessageVsGetOtakara mesg (getTeamFromPiki((EPikiKind)item->mOnyonType));
 			gameSystem->mSection->sendMessage(mesg);
 			return true;
+		}
+
+		if (pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_MINI) {
+			
 		}
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_CHERRY) {

@@ -83,7 +83,7 @@ struct GameMessageVsGetDoping : public GameMessage {
 
 struct GameMessageVsGetOtakara : public GameMessage {
 	inline GameMessageVsGetOtakara(u32 onyonType)
-	    : _04(onyonType)
+	    : mTeamColor(onyonType)
 	    , _08(1)
 	{
 	}
@@ -91,8 +91,20 @@ struct GameMessageVsGetOtakara : public GameMessage {
 	virtual bool actVs(VsGameSection*); // _10
 
 	// _00 = VTBL
-	u32 _04; // _04, onyon type according to ghidra, but that enum is meant to be a short
+	u32 mTeamColor; // _04, onyon type according to ghidra, but that enum is meant to be a short
 	int _08; // _08
+};
+
+struct GameMessageVsGetMiniOtakara : public GameMessage {
+	inline GameMessageVsGetMiniOtakara(u32 onyonType)
+	    : mTeamColor(onyonType)
+	{
+	}
+
+	virtual bool actVs(VsGameSection*); // _10
+
+	// _00 = VTBL
+	u32 mTeamColor; // _04, onyon type according to ghidra, but that enum is meant to be a short
 };
 
 struct GameMessageVsGotCard : public GameMessage {
@@ -111,13 +123,16 @@ struct GameMessageVsPikminDead : public GameMessage {
 	virtual bool actVs(VsGameSection*); // _10
 };
 
+
 struct GameMessageVsRedOrSuckStart : public GameMessage {
 	GameMessageVsRedOrSuckStart(int type) { mColor = type; }
 	virtual bool actVs(VsGameSection*); // _10
 
+	
+
 	// _00 = VTBL
 	int mColor;     // _04 0 = blue 1 = red
-	bool mIsYellow; // _08 - unknown
+	int mMarbleType; // _08 - unknown
 	int mBedamaColor;
 };
 
