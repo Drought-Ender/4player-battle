@@ -970,7 +970,7 @@ void VsSlotCardMgr::initAllCards() {
         EnemyTypeID::EnemyID_SporeOtakara,
         "teki_otakara.bti"
     );
-    sAllCards[TEKI_MITES] = new NaviTekiCard(EnemyTypeID::EnemyID_TamagoMushi, NaviTekiParams(1, 0.0f, 0.0f), "teki_fuefuki.bti");
+    sAllCards[TEKI_MITES] = new NaviTekiCard(EnemyTypeID::EnemyID_TamagoMushi, NaviTekiParams(1, 0.0f, 0.0f), "teki_mitites.bti");
 }
 
 VsSlotCardMgr::VsSlotCardMgr() {
