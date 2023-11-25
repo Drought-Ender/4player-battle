@@ -692,7 +692,7 @@ void TVsSelect::setSelectTextures() {
 }
 
 void TVsSelect::makeMsgTag() {
-    u64 spots[] = { '4771_00', '4712_00' };
+    u64 spots[] = { '4771_00', '4810_00' };
     _1FC = new TOffsetMsgSet(spots, '4770_00', ARRAY_SIZE(spots));
 }
 
