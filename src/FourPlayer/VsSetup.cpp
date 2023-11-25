@@ -379,6 +379,19 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 				JUT_PANICLINE(512, "not onyon %d\n", mOnyon->mObjectTypeID);
 			}
 		}
+		else if ((u32)type == Pellet::FLAG_VS_BEDAMA_MINI) {
+			if ((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon) {
+				pellet->movie_begin(false);
+				mOnyon->movie_begin(false);
+				GameMessageVsRedOrSuckStart mesg3(team);
+				mesg3.mMarbleType = 2;
+				mesg3.mBedamaColor = 0;
+				gameSystem->mSection->sendMessage(mesg3);
+
+			} else {
+				JUT_PANICLINE(512, "not onyon %d\n", mOnyon->mObjectTypeID);
+			}
+		}
 	}
 
 	if (flag) {

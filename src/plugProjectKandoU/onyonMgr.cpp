@@ -475,7 +475,9 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 		}
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_MINI) {
-			
+			GameMessageVsGetMiniOtakara mesg(getTeamFromPiki((EPikiKind)item->mOnyonType));
+			gameSystem->mSection->sendMessage(mesg);
+			return true;
 		}
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_CHERRY) {

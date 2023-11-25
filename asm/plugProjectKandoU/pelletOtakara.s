@@ -1340,7 +1340,7 @@ setupResources__Q34Game13PelletOtakara3MgrFv:
 /* 80200AF4 001FDA34  80 6D 9A EC */	lwz r3, sys@sda21(r13)
 /* 80200AF8 001FDA38  48 22 28 65 */	bl heapStatusStart__6SystemFPcP7JKRHeap
 /* 80200AFC 001FDA3C  7F E3 FB 78 */	mr r3, r31
-/* 80200B00 001FDA40  38 80 00 20 */	li r4, 0x20
+/* 80200B00 001FDA40  38 80 00 20 */	li r4, 0x40
 /* 80200B04 001FDA44  48 00 19 11 */	bl "alloc__Q24Game49FixedSizePelletMgr<Q34Game13PelletOtakara6Object>Fi"
 /* 80200B08 001FDA48  3C 80 80 48 */	lis r4, lbl_80481B80@ha
 /* 80200B0C 001FDA4C  7F E3 FB 78 */	mr r3, r31

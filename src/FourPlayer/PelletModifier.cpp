@@ -355,6 +355,11 @@ bool PelletOtakara::Object::setBedamaColor() {
         obj->_70 = 4;
         return true;
     }
+	if (mPelletFlag == FLAG_VS_BEDAMA_MINI) {
+		mBedamaColor = 3;
+        obj->_70 = 4;
+		return true;
+	}
     return false;
 }
 

@@ -44,14 +44,6 @@ int gNaviNum = 2;
 
 void BaseGameSection::birthNavis() {
 
-	if (!hasSetupMapMgr) {
-		generalEnemyMgr->allocateEnemys(mPlayerMode, -1);
-		generalEnemyMgr->setupSoundViewerAndBas();
-		pelletMgr->setupResources();
-	}
-
-	static_cast<Game::RoomMapMgr*>(mapMgr)->placeObjects();
-
 	gNaviNum = CalcNaviNum();
 	for (int i = 0; i < 4; i++) {
 		gDrawNavi[i] = true;

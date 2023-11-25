@@ -55,8 +55,6 @@ void Option::readOptions() {
     }
 }
 
-bool hasSetupMapMgr;
-
 Option gOptions[] = {
     {
         "Display Names",

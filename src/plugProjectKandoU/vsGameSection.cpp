@@ -131,6 +131,8 @@ VsGameSection::VsGameSection(JKRHeap* heap, bool gameMode)
 	{
 		mRealMarbleCounts[i] = 0;
 		mDispMarbleCounts[i] = 0;
+		mRealMiniCounts[i]   = 0;
+		mDispMiniCounts[i]   = 0;
 	}
 	
 	mEditNumber            = -2;
@@ -491,19 +493,16 @@ void VsGameSection::SetupCourseinfo() {
 	properCaveName[lastChar - 4] = nullptr;
 	
 	sprintf(filepath, "/user/drought/cave/%s/%i", properCaveName, sEditNum);
-	DebugReport("%s\n", filepath);
 
 	int entrynum = DVDConvertPathToEntrynum(filepath);
 
 	if (entrynum == -1) {
 		DebugReport("%s not found!\n", filepath);
-		hasSetupMapMgr = false;
-		return;
+	}
+	else {
+		DebugReport("%s found!\n", filepath);
 	}
 
-	DebugReport("%s found!\n", filepath);
-
-	hasSetupMapMgr = true;
 
 	mapMgr->mCourseInfo = new CourseInfo();
 	mapMgr->mCourseInfo->mCourseIndex = 0;

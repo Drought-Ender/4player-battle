@@ -8,8 +8,6 @@ inline bool isMemoryOverrideOn() {
     return MEMORY_SIZE >= 0x2000000;
 }
 
-extern bool hasSetupMapMgr;
-
 struct IMenu;
 
 static const char* cBackgroundName = "/background.bti";

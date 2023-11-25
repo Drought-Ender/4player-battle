@@ -82,6 +82,8 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 	for (int i = 0; i < 4; i++) {
 		section->mDispMarbleCounts[i] = 0;
 		section->mRealMarbleCounts[i] = 0;
+		section->mDispMiniCounts[i]   = 0;
+		section->mRealMiniCounts[i]   = 0;
 		mWinColors[i] = 0;
 		mNaviStatus[i] = -1;
 		mExtinctions[i] = false;

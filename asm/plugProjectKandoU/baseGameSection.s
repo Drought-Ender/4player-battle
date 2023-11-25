@@ -5333,12 +5333,12 @@ initGenerators__Q24Game15BaseGameSectionFv:
 .L_8014CEB8:
 /* 8014CEB8 00149DF8  48 0F 06 61 */	bl birthAll__Q24Game17PelletBirthBufferFv
 
-# lwz r3, gameSystem__4Game@sda21(r13)
-# lbz r4, 0x48(r3)
-# cmplwi r4, 0
-# beq .L_DONT_PLACE_OBJ
-# lwz r3, mapMgr__4Game@sda21(r13)
-# bl placeObjects__Q24Game10RoomMapMgrFv
+lwz r3, gameSystem__4Game@sda21(r13)
+lbz r4, 0x48(r3)
+cmplwi r4, 0
+beq .L_DONT_PLACE_OBJ
+lwz r3, mapMgr__4Game@sda21(r13)
+bl placeObjects__Q24Game10RoomMapMgrFv
 .L_DONT_PLACE_OBJ:
 
 mr r3, r30
