@@ -735,6 +735,10 @@ struct DispMemberVs : public DispMemberBase {
 
 	u32 mTimerMinute;
 	u32 mTimerSecond;
+
+	int mMiniMarbleCounts[4];
+
+	bool mHideMiniMarble;
 };
 
 // size 0x28

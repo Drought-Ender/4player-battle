@@ -266,6 +266,10 @@ void VsGameSection::onInit()
 	for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
 		mMarbleYellow[i] = nullptr;
 	}
+
+	for (int i = 0; i < MINI_MARBLE_COUNT; i++) {
+		mMarbleMini[i] = nullptr;
+	}
 }
 
 /*
@@ -1138,6 +1142,20 @@ bool GameMessagePelletBorn::actVs(VsGameSection* section)
 		}
 		JUT_PANICLINE(1592, "no space for new yellow\n");
 	}
+	else if (mPellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_MINI) {
+		for (int i = 0; i < MINI_MARBLE_COUNT; i++) {
+			if (section->mMarbleMini[i] == mPellet) {
+				return false;
+			}
+		}
+		for (int i = 0; i < MINI_MARBLE_COUNT; i++) {
+			if (!section->mMarbleMini[i]) {
+				section->mMarbleMini[i] == mPellet;
+				return true;
+			}
+		}
+		JUT_PANICLINE(1592, "no space for new mini marble\n");
+	}
 	return false;
 }
 
@@ -1156,6 +1174,17 @@ bool GameMessagePelletDead::actVs(VsGameSection* section)
 			}
 		}
 		JUT_PANICLINE(1617, "no entry for pellet\n");
+	}
+
+	if (mPellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_MINI) { // is yellow bedama
+		for (int i = 0; i < MINI_MARBLE_COUNT; i++) {
+			if (section->mMarbleMini[i] == mPellet) {
+				section->mMarbleMini[i] = nullptr;
+				return true;
+			}
+		}
+		DebugReport("no entry for mini pellet\n");
+		// JUT_PANICLINE(1617, "no entry for mini pellet\n");
 	}
 
 	return false;
@@ -1543,12 +1572,28 @@ void VsGameSection::dropCard(VsGameSection::DropCardArg& arg)
  */
 void VsGameSection::createYellowBedamas(int bedamas)
 {
+	int miniBedamas = 0;
+
 	if (mVsStageData) {
 		if (gEffectiveTeamCount == 2) {
 			bedamas = mVsStageData->mStartNumYellowMarbles;
+			if (mVsStageData->mStartNumMiniMarbles >= 0) {
+				mHasMiniBedamas = true;
+				miniBedamas = mVsStageData->mStartNumMiniMarbles;
+			}
+			else {
+				mHasMiniBedamas = false;
+			}
 		}
 		else {
 			bedamas = mVsStageData->mStartNumYellowMarblesVsFour;
+			if (mVsStageData->mStartNumMiniMarblesFour >= 0) {
+				mHasMiniBedamas = true;
+				miniBedamas = mVsStageData->mStartNumMiniMarblesFour;
+			}
+			else {
+				mHasMiniBedamas = false;
+			}
 		}
 
 		int editnum = sEditNum;
@@ -1566,16 +1611,12 @@ void VsGameSection::createYellowBedamas(int bedamas)
 			return;
 		}
 
-		if (bedamas == 0) {
-			for (int i = 0; i < YELLOW_MARBLE_COUNT; i++) {
-				mMarbleYellow[i] = nullptr;
-			}
-			return;
-		}
-
 
 		if (bedamas >= YELLOW_MARBLE_COUNT) {
 			bedamas = YELLOW_MARBLE_COUNT;
+		}
+		if (miniBedamas >= MINI_MARBLE_COUNT) {
+			miniBedamas = MINI_MARBLE_COUNT;
 		}
 	}
 
@@ -1583,22 +1624,53 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		mMarbleYellow[i] = nullptr;
 	}
 
-	PelletList::cKind kind;
-	char* name = const_cast<char*>(VsOtakaraName::cBedamaYellow);
+	for (int i = 0; i < MINI_MARBLE_COUNT; i++) {
+		mMarbleMini[i] = nullptr;
+	}
+
+	if (bedamas == 0 && miniBedamas == 0) {
+		return;
+	}
+
 	PelletInitArg pelletArg;
+	{
 
-	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
-	JUT_ASSERTLINE(2154, config, "zannenn\n"); // 'disappointing'
+		PelletList::cKind kind;
+		char* name = const_cast<char*>(VsOtakaraName::cBedamaYellow);
+		
 
-	pelletArg._10 = config->mParams.mIndex;
+		PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
+		JUT_ASSERTLINE(2154, config, "zannenn\n"); // 'disappointing'
 
-	pelletArg.mTextIdentifier = config->mParams.mName.mData;
-	pelletArg.mPelletType     = kind;
-	pelletArg.mMinCarriers    = 1;
-	pelletArg.mMaxCarriers    = 8;
-	JUT_ASSERTLINE(2163, bedamas <= 50, "oosugi %d\n", bedamas);
+		pelletArg._10 = config->mParams.mIndex;
 
-	Vector3f positions[50];
+		pelletArg.mTextIdentifier = config->mParams.mName.mData;
+		pelletArg.mPelletType     = kind;
+		pelletArg.mMinCarriers    = 1;
+		pelletArg.mMaxCarriers    = 8;
+	}
+
+	PelletInitArg miniPelletArg;
+
+	{
+		PelletList::cKind miniKind;
+		char* mininame = const_cast<char*>(VsOtakaraName::cBedamaMini);
+		
+
+		PelletConfig* miniConfig = PelletList::Mgr::getConfigAndKind(mininame, miniKind);
+		JUT_ASSERTLINE(2154, miniConfig, "zannenn\n"); // 'disappointing'
+
+		miniPelletArg._10 = miniConfig->mParams.mIndex;
+
+		miniPelletArg.mTextIdentifier = miniConfig->mParams.mName.mData;
+		miniPelletArg.mPelletType     = miniKind;
+		miniPelletArg.mMinCarriers    = 1;
+		miniPelletArg.mMaxCarriers    = 8;
+	}
+
+	JUT_ASSERTLINE(2163, bedamas + miniBedamas <= MINI_MARBLE_COUNT, "oosugi %d\n", bedamas);
+
+	Vector3f positions[MINI_MARBLE_COUNT];
 	
 	VsWeights mindists;
 	VsWeights maxdists;
@@ -1610,12 +1682,18 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		mindists[0] = mindists[1] = 0.1f;
 		maxdists[0] = maxdists[1] = 0.9f;
 	};
-	Cave::randMapMgr->getItemDropPosition(positions, bedamas, mindists, maxdists);
+	Cave::randMapMgr->getItemDropPosition(positions, bedamas + miniBedamas, mindists, maxdists);
 	for (int i = 0; i < bedamas; i++) {
 		Pellet* pellet = pelletMgr->birth(&pelletArg);
 		Vector3f pos   = positions[i];
 		pellet->setPosition(pos, false);
 		mMarbleYellow[i] = pellet;
+	}
+	for (int j = 0; j < miniBedamas; j++) {
+		Pellet* pellet = pelletMgr->birth(&pelletArg);
+		Vector3f pos   = positions[bedamas + j];
+		pellet->setPosition(pos, false);
+		mMarbleMini[j] = pellet;
 	}
 
 	if (gThreePlayer) {

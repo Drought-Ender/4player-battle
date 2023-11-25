@@ -108,6 +108,8 @@ struct VsGameSection : public BaseGameSection {
 
 	#define YELLOW_MARBLE_COUNT 13
 
+	#define MINI_MARBLE_COUNT 77
+
 	void killNearestP4Marbles();
 
 
@@ -163,8 +165,12 @@ struct VsGameSection : public BaseGameSection {
 	// mini marbles
 	int mDispMiniCounts[4];
 	int mRealMiniCounts[4];
+
+	Pellet* mMarbleMini[MINI_MARBLE_COUNT];
+	bool mHasMiniBedamas;
 };
 
+// vsGameSize__4Game
 const static int vsGameSize = sizeof(VsGameSection);
 
 } // namespace Game

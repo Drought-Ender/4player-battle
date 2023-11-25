@@ -282,6 +282,9 @@ struct StageData : public CNode {
 	int mStartNumYellowMarbles;    // _B0
 	int mStartNumYellowMarblesVsFour;
 	u8 mMarbleFlags;
+
+	int mStartNumMiniMarbles;
+	int mStartNumMiniMarblesFour;
 };
 
 struct StageList : public CNode {

@@ -51,6 +51,11 @@ FourObjVs::FourObjVs(const char* name) : ObjVs(name), mClock() {
         mBedamaGetTimers[i] = 0.05f;
 
         mColoredBedamaPanes[i] = nullptr;
+
+		for (int j = 0; j < 4; j++) {
+			mPane_minibedama[i][j] = nullptr;
+			mPane_mininodama[i][j] = nullptr;
+		}
     }
 
     mHasAllBedamaP3 = false;
@@ -70,6 +75,68 @@ const TColorPair gGetMarbleColors[4] = {
 	{ 0xffffffff, 0xe8f9e2ff },
 	{ 0xae42ffff, 0xd281ffff }
 };
+
+inline void FourObjVs::SetupBedamaPanes(J2DPane* root, int player, J2DPictureEx* firstPane, J2DPictureEx* secondPane, J2DPictureEx* thirdPane, J2DPictureEx* minipane, f32 baseX, f32 baseY) {
+	J2DPictureEx** allBedamaPanes[4]  = { mPane_bedama1P, mPane_bedama2P, mPane_bedama3P, mPane_bedama4P };
+	J2DPictureEx** allNodamaPanes[4]  = { mPane_nodama1P, mPane_nodama2P, mPane_nodama3P, mPane_nodama4P };
+	J2DPictureEx** allWindamaPanes[4] = { mPane_windama1P, mPane_windama2P, mPane_windama3P, mPane_windama4P };
+
+	og::Screen::ScaleMgr** allScaleMgrs[4][2] = { 
+		{mScaleMgrP1_1, mScaleMgrP1_2},
+		{mScaleMgrP2_1, mScaleMgrP2_2},
+		{mScaleMgrP3_1, mScaleMgrP3_2},
+		{mScaleMgrP4_1, mScaleMgrP4_2}
+	};
+
+	J2DPictureEx** ourBedamaPanes  = allBedamaPanes[player];
+	J2DPictureEx** ourNodamaPanes  = allNodamaPanes[player];
+	J2DPictureEx** ourWindamaPanes = allWindamaPanes[player];
+
+	og::Screen::ScaleMgr** ourScaleMgrs_1 = allScaleMgrs[player][0];
+	og::Screen::ScaleMgr** ourScaleMgrs_2 = allScaleMgrs[player][1];
+
+	{
+		f32 incSize = 40.0f * mBedamaScale;
+
+		f32 xoffs     = 0;
+		f32 yoffs     = 0;
+		for (int i = 0; i < 4; i++) {
+			ourBedamaPanes[i]
+				= og::Screen::CopyPictureToPane(firstPane, root, baseX + xoffs, baseY + yoffs, 'bd1P_000' + i);
+			ourNodamaPanes[i]
+				= og::Screen::CopyPictureToPane(secondPane, root, baseX + xoffs, baseY + yoffs, 'nd1P_000' + i);
+			ourWindamaPanes[i]
+				= og::Screen::CopyPictureToPane(thirdPane, root, baseX + xoffs, baseY + yoffs, 'wd1P_000' + i);
+			ourScaleMgrs_1[i] = new og::Screen::ScaleMgr;
+			ourScaleMgrs_2[i] = new og::Screen::ScaleMgr;
+			xoffs += incSize;
+			ourWindamaPanes[i]->hide();
+		}
+	}
+
+	{
+		f32 incSize = 20.0f * mBedamaScale;
+
+		baseX -= 10.0f * mBedamaScale;
+		baseY -= 30.0f * mBedamaScale;
+
+		f32 xoffs     = 0;
+		f32 yoffs     = 0;
+		for (int i = 0; i < 4; i++) {
+			mPane_minibedama[player][i]
+				= og::Screen::CopyPictureToPane(minipane, root, baseX + xoffs, baseY + yoffs, 'bd1P_000' + i);
+			mPane_mininodama[player][i]
+				= og::Screen::CopyPictureToPane(secondPane, root, baseX + xoffs, baseY + yoffs, 'nd1P_000' + i);
+			mMinidamaScaleMgr[player][i] = new og::Screen::ScaleMgr;
+			xoffs += incSize;
+		}
+
+	}
+
+
+
+
+}
 
 void FourObjVs::doCreate(JKRArchive* arc) {
     mScreenP1 = new ScreenSet;
@@ -137,13 +204,12 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	J2DPictureEx* paneBdamaY = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_yello'));
 	J2DPictureEx* paneBdamaB = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_blue'));
 	J2DPictureEx* panePcup   = static_cast<J2DPictureEx*>(bdamaScreen->search('Pcup'));
+	J2DPictureEx* paneMiniDama = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_mini'));
 
     mColoredBedamaPanes[0] = paneBdamaR;
     mColoredBedamaPanes[1] = paneBdamaB;
 	mColoredBedamaPanes[2] = paneBdamaW;
 	mColoredBedamaPanes[3] = paneBdamaP;
-
-	J2DPane* root = scrn1->search('ROOT');
 
     bool use4PSetup = Game::gNaviNum > 2;
 
@@ -152,80 +218,20 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : 220.0f;
     f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs + (20.0f - 20.0f * mBedamaScale);
 
-	
-	f32 incSize = 40.0f * mBedamaScale;
-
-    
-
-	u32 xoffs     = 0;
-    u32 yoffs     = 0;
-	for (int i = 0; i < 4; i++) {
-		mPane_bedama1P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaY, root, baseOffs + xoffs, baseYOffs + yoffs, 'bd1P_000' + i);
-		mPane_nodama1P[i]
-		    = og::Screen::CopyPictureToPane(panePcup, root, baseOffs + xoffs, baseYOffs + yoffs, 'nd1P_000' + i);
-		mPane_windama1P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaR, root, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
-		mScaleMgrP1_1[i] = new og::Screen::ScaleMgr;
-		mScaleMgrP1_2[i] = new og::Screen::ScaleMgr;
-		xoffs += incSize;
-		mPane_windama1P[i]->hide();
-	}
-
-    
+	J2DPane* root = scrn1->search('ROOT');
+	SetupBedamaPanes(root, 0, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
 
 	J2DPane* root2 = scrn2->search('ROOT');
-	xoffs          = 0;
-    yoffs          = 0;
-	for (int i = 0; i < 4; i++) {
-		mPane_bedama2P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaY, root2, baseOffs + xoffs, baseYOffs + yoffs, 'bd1P_000' + i);
-		mPane_nodama2P[i]
-		    = og::Screen::CopyPictureToPane(panePcup, root2, baseOffs + xoffs, baseYOffs + yoffs, 'nd1P_000' + i);
-		mPane_windama2P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaR, root2, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
-		mScaleMgrP2_1[i] = new og::Screen::ScaleMgr;
-		mScaleMgrP2_2[i] = new og::Screen::ScaleMgr;
-		xoffs += incSize;
-		mPane_windama2P[i]->hide();
-	}
-
+	SetupBedamaPanes(root2, 1, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
 
     J2DPane* root3 = scrn3->search('ROOT');
-    xoffs     = 0;
-    yoffs     = 0;
-	for (int i = 0; i < 4; i++) {
-		mPane_bedama3P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaY, root3, baseOffs + xoffs, baseYOffs + yoffs, 'bd1P_000' + i);
-		mPane_nodama3P[i]
-		    = og::Screen::CopyPictureToPane(panePcup, root3, baseOffs + xoffs, baseYOffs + yoffs, 'nd1P_000' + i);
-		mPane_windama3P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaR, root3, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
-		mScaleMgrP3_1[i] = new og::Screen::ScaleMgr;
-		mScaleMgrP3_2[i] = new og::Screen::ScaleMgr;
-		xoffs += incSize;
-		mPane_windama3P[i]->hide();
-	}
+	SetupBedamaPanes(root3, 2, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
 
     J2DPane* root4 = scrn4->search('ROOT');
-    xoffs     = 0;
-    yoffs     = 0;
-	for (int i = 0; i < 4; i++) {
-		mPane_bedama4P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaY, root4, baseOffs + xoffs, baseYOffs + yoffs, 'bd1P_000' + i);
-		mPane_nodama4P[i]
-		    = og::Screen::CopyPictureToPane(panePcup, root4, baseOffs + xoffs, baseYOffs + yoffs, 'nd1P_000' + i);
-		mPane_windama4P[i]
-		    = og::Screen::CopyPictureToPane(paneBdamaR, root4, baseOffs + xoffs, baseYOffs + yoffs, 'wd1P_000' + i);
-		mScaleMgrP4_1[i] = new og::Screen::ScaleMgr;
-		mScaleMgrP4_2[i] = new og::Screen::ScaleMgr;
-		xoffs += incSize;
-		mPane_windama4P[i]->hide();
-	}
+	SetupBedamaPanes(root4, 3, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
 
 	mScreenIcons = new P2DScreen::Mgr_tuning;
 	mScreenIcons->set("obake_icon.blo", 0x1040000, arc);
-	
 
 	J2DPictureEx* paneObake = static_cast<J2DPictureEx*>(mScreenIcons->search('obake'));
 	mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
@@ -718,6 +724,45 @@ inline void FourObjVs::CheckBedama(int idx, int playerID, bool doEfx, f32 scale,
 
 }
 
+inline void FourObjVs::CheckMiniBedama(int idx, int playerID, bool doEfx, f32 scale) {
+
+	if (mDisp->mHideMiniMarble) {
+		mPane_mininodama[playerID][idx]->hide();
+		mPane_minibedama[playerID][idx]->hide();
+		return;
+	}
+
+
+	if (mDisp->mMiniMarbleCounts[playerID] == 0) {
+		mMiniDamaGotFlags[playerID][idx] = 0;
+	}
+
+	if (mDisp->mMiniMarbleCounts[playerID] > idx) {
+		mPane_mininodama[playerID][idx]->hide();
+		mPane_minibedama[playerID][idx]->show();
+		mPane_minibedama[playerID][idx]->updateScale(scale);
+		if (!mMiniDamaGotFlags[playerID][idx]) {
+			if (doEfx && mDoneState != 1) {
+				ogSound->setBdamaGet();
+				Vector2f pos;
+				og::Screen::calcGlbCenter(mPane_minibedama[playerID][idx], &pos);
+
+				efx2d::ArgScaleColorColor arg(&pos, 0.5f, 0xcfcf00ff, 0xe7e757ff);
+				efx2d::T2DSprayset_forVS efx;
+				efx.create(&arg);
+			}
+			mMinidamaScaleMgr[playerID][idx]->up();
+		}
+		mMiniDamaGotFlags[playerID][idx] = true;
+	} else {
+		mPane_minibedama[playerID][idx]->hide();
+		mPane_mininodama[playerID][idx]->show();
+		mPane_mininodama[playerID][idx]->updateScale(scale * 0.5f);
+		mMiniDamaGotFlags[playerID][idx] = false;
+	}
+
+}
+
 inline void FourObjVs::CheckBedamaWin(int playerID, bool doEfx, bool& isWin) {
 
 	J2DPictureEx** bedamaPanes[] = { mPane_bedama1P, mPane_bedama2P, mPane_bedama3P, mPane_bedama4P };
@@ -760,6 +805,10 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 		f32 p4ScaleYellow = mScaleMgrP4_1[i]->calc() * mBedamaScale;
 		f32 p3ScaleColor = mScaleMgrP3_2[i]->calc()  * mBedamaScale;
 		f32 p4ScaleColor = mScaleMgrP4_2[i]->calc()  * mBedamaScale;
+
+		for (int player = 0; player < 4; player++) {
+			CheckMiniBedama(i, player, doEfx, mMinidamaScaleMgr[player][i]->calc() * mBedamaScale);
+		}
 
         mPane_windama1P[i]->updateScale(p1ScaleColor);
         mPane_windama2P[i]->updateScale(p2ScaleColor);

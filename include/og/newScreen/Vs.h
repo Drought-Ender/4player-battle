@@ -176,7 +176,10 @@ struct FourObjVs : public ObjVs {
 
 	void CheckWindama(int idx, int player, bool b, bool& isWin);
 	void CheckBedama(int idx, int player, bool doEfx, f32 scale, bool& isWin);
+	void CheckMiniBedama(int idx, int player, bool doEfx, f32 scale);
 	void CheckBedamaWin(int player, bool doEfx, bool& isWin);
+
+	void SetupBedamaPanes(J2DPane* root, int player, J2DPictureEx* yellowDamaPane, J2DPictureEx* cupPane, J2DPictureEx* redDamaPane, J2DPictureEx* minipane, f32 baseX, f32 baseY);
 
 	ScreenSet* mScreenP3;
 	ScreenSet* mScreenP4;
@@ -226,6 +229,13 @@ struct FourObjVs : public ObjVs {
 	P2DScreen::Mgr_tuning* mTimerScreen;
 
 	og::Screen::CallBack_DrawAfter* mLifeGaudeAfter[4];
+
+	J2DPictureEx* mPane_minibedama[4][4];
+	J2DPictureEx* mPane_mininodama[4][4];
+
+	og::Screen::ScaleMgr* mMinidamaScaleMgr[4][4];
+
+	bool mMiniDamaGotFlags[4][4];
 
 	struct Clock
 	{

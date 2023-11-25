@@ -819,6 +819,9 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, MarbleT
 			section->mRealMiniCounts[player] = 0;
 			marbleType = YELLOW;
 		}
+		else {
+			return;
+		}
 	}
 
 	if (marbleType == YELLOW) {
@@ -1544,6 +1547,12 @@ void GameState::update_GameChallenge(VsGameSection* section)
 
 			disp.mNaviInactiveFlags[i] = mNaviStatus[i] != -1;
 		}
+
+		for (int i = 0; i < 4; i++) {
+			disp.mMiniMarbleCounts[i] = section->mDispMiniCounts[i];
+		}
+
+		disp.mHideMiniMarble = !section->mHasMiniBedamas;
 
 		disp.mTimerSecond = ((u32)mTimeLeft) % 60;
 		disp.mTimerMinute = ((u32)mTimeLeft) / 60;

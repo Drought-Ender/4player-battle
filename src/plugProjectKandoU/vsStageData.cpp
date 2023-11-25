@@ -148,6 +148,9 @@ void StageData::read(Stream& stream)
 	mStartNumBitter = stream.readInt();
 	mStartNumSpicy  = stream.readInt();
 
+	mStartNumMiniMarbles = -1;
+	mStartNumMiniMarblesFour = -1;
+
 	if (version >= 2) {
 		mIndex2D = stream.readInt();
 	}
@@ -167,6 +170,11 @@ void StageData::read(Stream& stream)
 	}
 	if (version >= 6) {
 		mMarbleFlags = (u8)stream.readInt();
+	}
+
+	if (version >= 7) {
+		mStartNumMiniMarbles = stream.readInt();
+		mStartNumMiniMarblesFour = stream.readInt();
 	}
 }
 

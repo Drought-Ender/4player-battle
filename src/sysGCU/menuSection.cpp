@@ -6,6 +6,18 @@
 #include "VsSlotCard.h"
 #include "VsOptions.h"
 
+#include "types.h"
+#include "GameFlow.h"
+#include "BootSection.h"
+#include "Demo.h"
+#include "Game/SingleGameSection.h"
+#include "Game/VsGameSection.h"
+#include "JSystem/JKernel/JKRHeap.h"
+#include "JSystem/JUtility/JUTException.h"
+#include "RootMenuSection.h"
+#include "Title.h"
+#include "nans.h"
+
 /*
  * --INFO--
  * Address:	804245CC
@@ -67,4 +79,33 @@ bool MenuSection::runChildSection()
 	JKRHeap::sCurrentHeap->getFreeSize();
 
 	return (mCurrentSection != 0);
+}
+
+
+ISection* GameFlow::createSection(JKRHeap* heap)
+{
+	ISection* section;
+	switch (mActiveSectionFlag) {
+	case 0x17:
+		section = new Demo::Section(heap);
+		break;
+	case 0x16:
+		section = new Title::Section(heap);
+		break;
+	case 0x2:
+		section = new Game::SingleGameSection(heap);
+		break;
+	case 0x3:
+		section = new Game::VsGameSection(heap, false);
+		break;
+	case 0x1E:
+		section = new Game::VsGameSection(heap, true);
+		break;
+	default:
+		section = new Title::Section(heap);
+		break;
+	}
+
+	mActiveSectionFlag = 22;
+	return section;
 }
