@@ -885,7 +885,7 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
     BaseGen* whiteOnyonGen  = mMapScore->getFixObjGen(FIXNODE_VsWhiteOnyon);  // r29
 	BaseGen* purpleOnyonGen = mMapScore->getFixObjGen(FIXNODE_VsPurpleOnyon); // r30
 
-	f32 maxDist = 800.0f;
+	f32 maxDist = 400.0f;
 	int distScores[128];
 
 	for (int i = 0; i < count; i++) {
@@ -921,14 +921,16 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 		int secondDiff = absVal(currNode->getVersusScore(SECOND_SCORE) - scores[SECOND_SCORE]);
 
 		if (len < maxDist) {
-			int add = (isFirstDiff) ? secondDiff : firstDiff;
+			int add = (gEffectiveTeamCount > 2) ? (isFirstDiff) ? secondDiff : firstDiff : 0;
 			distScores[i] = 12800 - (int)len + add;
 			DebugReport("My Score is %i\n", distScores[i]);
 		} else {
 			if (gEffectiveTeamCount < 3) {
-				secondDiff = 0;
+				distScores[i] = firstDiff;
 			}
-			distScores[i] = MAX(firstDiff, secondDiff);
+			else {
+				distScores[i] = MAX(firstDiff, secondDiff);
+			}
 			DebugReport("My Other Score is %i\n", distScores[i]);
 		}
 	}
