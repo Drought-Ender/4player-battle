@@ -48,6 +48,7 @@ struct Item;
 } // namespace Game
 
 struct Graphics;
+struct WayPointLinks;
 
 struct FindCondition : public Condition<CollPart> {
 	virtual bool satisfy(CollPart*); // _08 (weak)
@@ -96,6 +97,7 @@ enum PikiBrainAction {
 	ACT_Teki      = 11,
 	ACT_Rescue    = 12,
 	ACT_Battle    = 13,
+	ACT_Pathfind,
 	ACT_ActionCount, // total number of actions
 };
 
@@ -793,6 +795,39 @@ struct PathMoveArg : public ActionArg {
 	Vector3f _08;          // _08
 	s16 _14;               // _14
 	u32 _18;               // _18
+};
+
+
+struct PathfindArg : public ActionArg {
+	virtual char* getName() {
+		return "PathfindArg";
+	}
+
+	// _00 = VTBL
+	Vector3f mTargetPos;
+};
+
+struct ActPathfind : public Action {
+	ActPathfind(Game::Piki* p);
+
+	virtual void init(ActionArg* settings); // _08
+	virtual int exec();                     // _0C
+	virtual void cleanup() {};                 // _10
+
+	bool initPathfinding();
+	int execPathfinding();
+
+	bool execMove();
+	bool execMoveGoal();
+
+
+    Vector3f mTargetPosition;
+    u32 mPathCheckID;
+    int mState;
+    int mPathNodes;
+    Game::PathNode* mPathNode;
+	Game::PathNode* mPathNodePrev;
+	int mAttempts;
 };
 
 struct ActPathMove : public Action {

@@ -117,6 +117,7 @@ enum eCardType { // official enum name
 	BOMB_STORM        = 20,
 	TEKI_OTAKARA      = 21,
 	TEKI_MITES        = 22,
+	IDLE_ALERT        = 23,
 	CARD_ID_COUNT,
 	UNRESOLVED = 0xffff
 };

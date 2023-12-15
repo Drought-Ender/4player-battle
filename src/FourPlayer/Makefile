@@ -29,6 +29,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/TechnoBugMgr.o\
 	$(BUILD_DIR)/src/FourPlayer/FixElecBug.o\
 	$(BUILD_DIR)/src/FourPlayer/Hibas.o\
+	$(BUILD_DIR)/src/FourPlayer/PikiPathfind.o\
 
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)

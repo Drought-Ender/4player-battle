@@ -917,6 +917,31 @@ struct NaviAwaitFallSkyCard : public NaviTekiCard
     }
 };
 
+struct IdleAlertCard : public VsSlotMachineCard
+{
+    IdleAlertCard(const char* texname) : VsSlotMachineCard(texname) {}
+
+    virtual void onUseCard(CardMgr* cardMgr, int user) {
+        Iterator<Piki> iPiki = pikiMgr;
+
+        OSReport("Test\n");
+
+        CI_LOOP(iPiki) {
+            Piki* piki = *iPiki;
+            if (piki->isAlive() && piki->mPikiKind == getVsPikiColor(user) && piki->mCurrentState->mId == PIKISTATE_Walk && piki->mBrain->mActionId == PikiAI::ACT_Free) {
+                PikiAI::PathfindArg arg;
+                arg.mTargetPos = naviMgr->getAt(user)->getPosition();
+                piki->mBrain->start(PikiAI::ACT_Pathfind, &arg);
+            }
+        }
+    }
+
+    virtual const char* getDescription() {
+        return "Calls all your pikmin to you";
+    }
+};
+
+
 
 VsSlotMachineCard** VsSlotCardMgr::sAllCards = nullptr;
 int VsSlotCardMgr::sTotalCardCount = 0;
@@ -971,6 +996,7 @@ void VsSlotCardMgr::initAllCards() {
         "teki_otakara.bti"
     );
     sAllCards[TEKI_MITES] = new NaviTekiCard(EnemyTypeID::EnemyID_TamagoMushi, NaviTekiParams(1, 0.0f, 0.0f), "teki_mitites.bti");
+    sAllCards[IDLE_ALERT] = new IdleAlertCard("idle_alert.bti");
 }
 
 VsSlotCardMgr::VsSlotCardMgr() {
