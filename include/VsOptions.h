@@ -136,6 +136,7 @@ struct CharacterData
     static void MakeDisplayName(int size, char* name);
     static void PrepareDisplayName(int size, char* name);
     static void CleanDisplayName(int size, char* name);
+    static void UpdateImages();
 
     void makeDisplayName();
 
@@ -155,7 +156,6 @@ extern CharacterData sCharacters[4];
 
 
 
-
 struct CharacterImage
 {
     CharacterImage() {
@@ -169,8 +169,11 @@ struct CharacterImage
     }
 
 
+
     
     ResTIMG* loadImage();
+
+    void createPicture();
 
     void draw(Vector2f& position, Vector2f& size);
 
@@ -220,6 +223,7 @@ struct CharacterSelect : public IMenu
     Controller* mControllers[4];
     int mCursors[4];
     int mNameCursors[4];
+    int mLoadAt;
 
     char mPlayerNames[4][CharacterData::sMaxNameSize];
     bool mSelectingCharactor[4];

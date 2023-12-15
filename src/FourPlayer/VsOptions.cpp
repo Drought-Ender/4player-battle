@@ -688,7 +688,7 @@ void VsCardMenu::cleanup() {
 void CharacterSelect::load() {
     loadAndRead(this, "/player/names.txt");
     for (int i = 0; i < mCharacterCount; i++) {
-        mCharacters[i].mPicture = new J2DPictureEx(mCharacters[i].loadImage(), 0);
+        mCharacters[i].mPicture = nullptr;
     }
 }
 
@@ -706,6 +706,11 @@ ResTIMG* CharacterImage::loadImage() {
 	}
     
     return nullptr;
+}
+
+void CharacterImage::createPicture() {
+    OSReport("Create Picture\n");
+    mPicture = new J2DPictureEx(loadImage(), 0);
 }
 
 ResTIMG* CharacterData::loadImage() {
@@ -793,6 +798,8 @@ void CharacterSelect::read(Stream& stream) {
 void CharacterSelect::init(VsOptionsMenuMgr* menu) {
     load();
 
+    mLoadAt = 0;
+
     mControllers[0] = menu->mController;
     for (int i = 1; i < 4; i++) {
         mControllers[i] = new Controller((JUTGamePad::EPadPort)i);
@@ -835,7 +842,7 @@ static Vector2f sNamePositions[4] = {
 };
 
 void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
-    for (int i = 0; i < mCharacterCount; i++) {
+    for (int i = 0; i < mLoadAt; i++) {
         mCharacters[i].draw();
     }
 
@@ -920,6 +927,14 @@ void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
 }
 
 bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
+
+
+    if (mLoadAt < mCharacterCount) {
+        mCharacters[mLoadAt].createPicture();
+        mLoadAt++;
+    }
+
+
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
         menu->StartMenu<VsConfigMenu>();
@@ -1093,4 +1108,10 @@ CharacterSelect::~CharacterSelect() {
         delete mControllers[i];    
     }
     
+}
+
+void CharacterData::UpdateImages() {
+    for (int i = 0; i < 4; i++) {
+        sCharacters[i].mImage = sCharacters[i].loadImage();
+    }
 }

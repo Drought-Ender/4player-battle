@@ -65,6 +65,8 @@ const f32 boxYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f};
 
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
+    CharacterData::UpdateImages();
+
     gOptionMenu = new VsOptionsMenuMgr;
     gOptionMenu->init();
 

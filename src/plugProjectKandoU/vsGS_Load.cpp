@@ -9,6 +9,7 @@
 #include "Game/SingleGame.h"
 #include "TParticle2dMgr.h"
 #include "PSSystem/PSSystemIF.h"
+#include "VsOptions.h"
 
 namespace Game {
 namespace VsGame {
@@ -35,6 +36,8 @@ LoadState::LoadState()
  */
 void LoadState::init(Game::VsGameSection* section, StateArg* args)
 {
+	CharacterData::UpdateImages();
+
 	if (Radar::mgr) {
 		Radar::mgr->clear();
 	}
