@@ -2913,6 +2913,9 @@ mr r29, r3
 /* 80199740 00196680  93 A1 00 14 */	stw r29, 0x14(r1)
 /* 80199744 00196684  7C 7D 1B 78 */	mr r29, r3
 /* 80199748 00196688  83 E3 00 30 */	lwz r31, 0x30(r3)
+mr r3, r31
+mr r4, r30
+bl "MultiplyPelletMove__4GameFPQ24Game6PelletR10Vector3<f>"
 /* 8019974C 0019668C  7F E3 FB 78 */	mr r3, r31
 /* 80199750 00196690  4B FD 12 21 */	bl getTotalCarryPikmins__Q24Game6PelletFv
 /* 80199754 00196694  6C 63 80 00 */	xoris r3, r3, 0x8000
@@ -3094,6 +3097,9 @@ mr r29, r3
 /* 801999E4 00196924  EC 00 07 F2 */	fmuls f0, f0, f31
 /* 801999E8 00196928  D0 1F 00 B8 */	stfs f0, 0xb8(r31)
 /* 801999EC 0019692C  83 7F 00 30 */	lwz r27, 0x30(r31)
+mr r3, r27
+addi r4, r31, 0xb0
+bl "MultiplyPelletMove__4GameFPQ24Game6PelletR10Vector3<f>"
 /* 801999F0 00196930  7F 63 DB 78 */	mr r3, r27
 /* 801999F4 00196934  4B FD 0F 7D */	bl getTotalCarryPikmins__Q24Game6PelletFv
 /* 801999F8 00196938  6C 63 80 00 */	xoris r3, r3, 0x8000
@@ -3574,6 +3580,9 @@ mr r29, r3
 /* 8019A0CC 0019700C  D0 21 00 18 */	stfs f1, 0x18(r1)
 /* 8019A0D0 00197010  D0 01 00 1C */	stfs f0, 0x1c(r1)
 /* 8019A0D4 00197014  83 7E 00 30 */	lwz r27, 0x30(r30)
+mr r3, r27
+addi r4, r1, 0x14
+bl "MultiplyPelletMove__4GameFPQ24Game6PelletR10Vector3<f>"
 /* 8019A0D8 00197018  7F 63 DB 78 */	mr r3, r27
 /* 8019A0DC 0019701C  4B FD 08 95 */	bl getTotalCarryPikmins__Q24Game6PelletFv
 /* 8019A0E0 00197020  6C 63 80 00 */	xoris r3, r3, 0x8000

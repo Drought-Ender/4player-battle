@@ -802,10 +802,24 @@ void GameState::setWinMarbleColor(int teamID, int color) {
 void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, MarbleType marbleType)
 {
 	if (marbleType == RED_OR_BLUE && !_16 && gConfig[CAPTURE_MARBLE] == ConfigEnums::CAPTURE_STEALMARBLE) {
-		section->mRealMarbleCounts[player] += section->mRealMarbleCounts[gBedamaColor];
-		section->mDispMarbleCounts[player] += section->mRealMarbleCounts[gBedamaColor];
-		section->mRealMarbleCounts[gBedamaColor] = 0;
-		section->mDispMarbleCounts[gBedamaColor] = 0;
+		section->mRealMarbleCounts[player] += section->mDispMarbleCounts[gBedamaColor];
+		section->mDispMarbleCounts[player] += section->mDispMarbleCounts[gBedamaColor];
+
+		section->mRealMiniCounts[player] += section->mDispMiniCounts[gBedamaColor];
+		section->mDispMiniCounts[player] += section->mDispMiniCounts[gBedamaColor];
+
+		section->mRealMarbleCounts[gBedamaColor] -= section->mDispMarbleCounts[gBedamaColor];
+		section->mDispMarbleCounts[gBedamaColor] -= section->mDispMarbleCounts[gBedamaColor];
+
+		section->mDispMiniCounts[gBedamaColor] -= section->mDispMiniCounts[gBedamaColor];
+		section->mRealMiniCounts[gBedamaColor] -= section->mDispMiniCounts[gBedamaColor];
+		
+		if (section->mRealMiniCounts[player] >= 5) {
+			section->mRealMiniCounts[player] -= 5;
+			section->mDispMiniCounts[player] -= 5;
+			section->mRealMarbleCounts[player]++;			
+		}
+
 		if (section->mRealMarbleCounts[player] >= 4) {
 			marbleType = YELLOW;
 			section->mRealMarbleCounts[player] = 3;
@@ -817,6 +831,7 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, MarbleT
 		section->mRealMiniCounts[player]++;
 		if (section->mRealMiniCounts[player] == 5) {
 			section->mRealMiniCounts[player] = 0;
+			section->mDispMiniCounts[player] = 0;
 			marbleType = YELLOW;
 		}
 		else {
@@ -1600,7 +1615,7 @@ void GameState::vsTimeUp(VsGameSection* section) {
 	bool marbleDraw = true;
 
 	for (int i = 0; i < ARRAY_SIZE(section->mDispMarbleCounts); i++) {
-		int& marbleCount = section->mDispMarbleCounts[i];
+		int marbleCount = section->mDispMarbleCounts[i] * 5 + section->mDispMiniCounts[i];
 		if (marbleCount > highestMarbleCount) {
 			highestID = i;
 			highestMarbleCount = marbleCount;

@@ -367,6 +367,8 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	void updateDiscoverDisable();
 	bool discoverDisabled();
 
+	float getMoveMultiplier();
+
 	inline void setValidColor(u16 color)
 	{
 		//P2ASSERTLINE(909, !(color > 2));

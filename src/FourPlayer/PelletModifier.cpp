@@ -391,4 +391,16 @@ void Pellet::setupGeneratorBedama() {
 	}
 }
 
+float Pellet::getMoveMultiplier() {
+	if (mPelletFlag == FLAG_VS_BEDAMA_MINI) {
+		return 2.0f;
+	}
+	return 1.0f;
+}
+
+void MultiplyPelletMove(Pellet* pellet, Vector3f& move) {
+    move *= pellet->getMoveMultiplier();
+}
+
+
 } // namespace Game
