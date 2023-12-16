@@ -1021,6 +1021,10 @@ bool GameMessageVsGetDoping::actVs(VsGameSection* section)
 	return true;
 }
 
+bool GameMessageVsGetBingoOtakara::actVs(VsGameSection* section) {
+	section->mBingoMgr->TeamReceivePellet(mTeamColor, mPellet);
+}
+
 /*
  * --INFO--
  * Address:	801C2E7C

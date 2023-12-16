@@ -26,6 +26,7 @@
 #include "PSSystem/PSScene.h"
 #include "PSM/Scene.h"
 #include "JSystem/JAudio/JALCalc.h"
+#include "VsOptions.h"
 #include "Dolphin/rand.h"
 #include "PikiAi.h"
 #include "JSystem/J3D/J3DModelLoader.h"
@@ -472,6 +473,12 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 			GameMessageVsGetOtakara mesg (getTeamFromPiki((EPikiKind)item->mOnyonType));
 			gameSystem->mSection->sendMessage(mesg);
 			return true;
+		}
+
+		if (gGameModeID == MAINGAME_BINGO) {
+			GameMessageVsGetBingoOtakara mesg(getTeamFromPiki((EPikiKind)item->mOnyonType));
+			mesg.mPellet = pellet;
+			gameSystem->mSection->sendMessage(mesg);
 		}
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_MINI) {

@@ -88,6 +88,13 @@ const TColorPair gGetMarbleColors[4] = {
 	{ 0xae42ffff, 0xd281ffff }
 };
 
+const JUtility::TColor gBingoGetColors[4] = {
+	0xffa0a0ff,
+	0xa0a0ffff,
+	0xffffffff,
+	0xbe60ffff
+};
+
 
 
 void FourObjVs::BingoCard::Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictureEx* itemPane, f32 scale, f32 baseX, f32 baseY, int id) {
@@ -102,6 +109,7 @@ void FourObjVs::BingoCard::Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictu
 	f32 yoffs     = 0;
 	for (int y = 0; y < 4; y++) {
 		for (int x = 0; x < 4; x++) {
+			mFlags[x][y] = false;
 			OSReport("StartCopy\n");
 			mPaneBase[x][y] = og::Screen::CopyPictureToPane(basePane, root, baseX + xoffs, baseY + yoffs, 'bpb_000' + id * 16 + x * 4 + y);
 			mPaneBase[x][y]->updateScale(scale);
@@ -317,7 +325,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		OSReport("Setup Done\n");
 
 		for (int i = 0; i < 4; i++) {
-			mBingoCards[i].SetColor(teamColors[i]);
+			mBingoCards[i].SetColor(teamColors[Game::getVsTeam_s(i)]);
 		}
 
 		UpdateBingoCardTextures();
@@ -623,6 +631,9 @@ void FourObjVs::doUpdateCommon() {
     checkUpdateWinColor();
 	if (gGameModeID == MAINGAME_BEDAMA) {
     	setOnOffBdama4P(!mSetBedamaFlag && !Game::moviePlayer->isActive());
+	}
+	else if (gGameModeID == MAINGAME_BINGO) {
+		setOnOffBingo();
 	}
     checkObake();
 	updateCSticks();
@@ -960,6 +971,24 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 		else if (P4win) {
 			mPlayWinSound = true;
 			ogSound->setVsWin1P();
+		}
+	}
+}
+
+void FourObjVs::setOnOffBingo() {
+	for (int i = 0; i < 4; i++) {
+		int team = Game::getVsTeam_s(i);
+		Game::VsGame::BingoMgr::BingoCard& card = mDisp->mBingoMgr->mCards[team];
+		Game::VsGame::BingoMgr::ObjectKey& key = mDisp->mBingoMgr->mKey;
+
+		for (int x = 0; x < 4; x++) {
+			for (int y = 0; y < 4; y++) {
+				if (card.mActive[x][y] && !mBingoCards[i].mFlags[x][y]) {
+					mBingoCards[i].mFlags[x][y] = true;
+					mBingoCards[i].mPaneBase[x][y]->changeTexture(mPaneBingoGet->getTIMG(0), 0);
+					mBingoCards[i].mPaneBase[x][y]->setWhite(gBingoGetColors[team]);
+				}
+			}
 		}
 	}
 }

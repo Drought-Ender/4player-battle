@@ -274,6 +274,7 @@ struct FourObjVs : public ObjVs {
 	{
 		J2DPictureEx* mPaneBase[4][4];
 		J2DPictureEx* mPaneItem[4][4];
+		bool mFlags[4][4];
 
 		void Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictureEx* itemPane, f32 scale, f32 baseX, f32 baseY, int id);
 		void SetColor(JUtility::TColor& color);
@@ -288,6 +289,7 @@ struct FourObjVs : public ObjVs {
 
 	void doUpdateCommon();
 	void setOnOffBdama4P(bool doEfx);
+	void setOnOffBingo();
 	void updateCSticks();
 	void checkObake();
 	void recolorPane(P2DScreen::Mgr_tuning*, JUtility::TColor&);

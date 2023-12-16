@@ -12,7 +12,7 @@ namespace VsGame
 {
 
 BingoMgr::BingoMgr() {
-    mCards = new BingoCard[gEffectiveTeamCount];
+    mCards = new BingoCard[4];
 }
 
 BingoMgr::~BingoMgr() {
@@ -133,6 +133,7 @@ void BingoMgr::BingoCard::Generate(ObjectKey& key) {
             
 
             mObjects[x][y] = entryArray[randIdx];
+            mActive[x][y]  = false;
 
             totalEntries--;
 
@@ -148,7 +149,7 @@ void BingoMgr::BingoCard::Generate(ObjectKey& key) {
 }
 
 void BingoMgr::GenerateCards() {
-    for (int i = 0; i < gEffectiveTeamCount; i++) {
+    for (int i = 0; i < 4; i++) {
         mCards[i].Generate(mKey);
     }
 }
@@ -183,9 +184,11 @@ void BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
         }
     }
 
+    if (count == 0) return;
+
     int selectedID = matchingIDs[(int)(count * randFloat())];
 
-
+    DebugReport("Updating %i %i!\n", selectedID / 4, selectedID % 4);
 
     reinterpret_cast<bool*>(mActive)[selectedID] = true;
 }
