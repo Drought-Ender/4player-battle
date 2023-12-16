@@ -8,9 +8,12 @@
 #include "VSFifo.h"
 #include "Game/Entities/ItemBigFountain.h"
 #include "Game/Entities/ItemHole.h"
+#include "Game/BingoMgr.h"
 #include "FourPlayer.h"
 
 struct Controller;
+
+int GetEditNum();
 
 namespace Game {
 struct PikiContainer;
@@ -168,6 +171,8 @@ struct VsGameSection : public BaseGameSection {
 
 	Pellet* mMarbleMini[MINI_MARBLE_COUNT];
 	bool mHasMiniBedamas;
+
+	VsGame::BingoMgr* mBingoMgr;
 };
 
 // vsGameSize__4Game

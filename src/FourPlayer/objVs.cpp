@@ -25,6 +25,10 @@ namespace og
 namespace newScreen
 {
 
+FourObjVs::~FourObjVs() {
+
+}
+
 FourObjVs::FourObjVs(const char* name) : ObjVs(name), mClock() {
     mScreenP3 = nullptr;
     mScreenP4 = nullptr;
@@ -100,10 +104,12 @@ void FourObjVs::BingoCard::Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictu
 		for (int x = 0; x < 4; x++) {
 			OSReport("StartCopy\n");
 			mPaneBase[x][y] = og::Screen::CopyPictureToPane(basePane, root, baseX + xoffs, baseY + yoffs, 'bpb_000' + id * 16 + x * 4 + y);
+			mPaneBase[x][y]->updateScale(scale);
 			OSReport("...\n");
 			P2ASSERT(itemPane);
 			P2ASSERT(itemPane->getTIMG(0));
 			mPaneItem[x][y] = og::Screen::CopyPictureToPane(itemPane, root, baseX + xoffs, baseY + yoffs, 'bpi_000' + id * 16 + x * 4 + y);
+			mPaneItem[x][y]->updateScale(scale);
 			MemoryReport();
 			xoffs += incSize;
 		}
@@ -120,6 +126,20 @@ void FourObjVs::BingoCard::SetColor(JUtility::TColor& color) {
 	}
 
 	
+}
+
+void FourObjVs::UpdateBingoCardTextures() {
+	for (int i = 0; i < 4; i++) {
+
+		Game::VsGame::BingoMgr::BingoCard& card = mDisp->mBingoMgr->mCards[Game::getVsTeam_s(i)];
+		Game::VsGame::BingoMgr::ObjectKey& key = mDisp->mBingoMgr->mKey;
+
+		for (int x = 0; x < 4; x++) {
+			for (int y = 0; y < 4; y++) {
+				mBingoCards[i].mPaneItem[x][y]->changeTexture(key.mObjectEntries[card.mObjects[x][y]].mObjectTexture, 0);
+			}
+		}
+	}
 }
 
 inline void FourObjVs::SetupBedamaPanes(J2DPane* root, int player, J2DPictureEx* firstPane, J2DPictureEx* secondPane, J2DPictureEx* thirdPane, J2DPictureEx* minipane, f32 baseX, f32 baseY) {
@@ -178,10 +198,6 @@ inline void FourObjVs::SetupBedamaPanes(J2DPane* root, int player, J2DPictureEx*
 		}
 
 	}
-
-
-
-
 }
 
 void FourObjVs::doCreate(JKRArchive* arc) {
@@ -290,7 +306,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	}
 	else if (gGameModeID == MAINGAME_BINGO) {
 		OSReport("bingo game\n");
-		baseYOffs -= 50.0f;
+		baseYOffs -= (Game::gNaviNum <= 2) ? 70.0f : 50.0f;
 		baseOffs += 35.0f;
 		
 		mBingoCards[0].Setup(root,  paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 0);
@@ -303,6 +319,8 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		for (int i = 0; i < 4; i++) {
 			mBingoCards[i].SetColor(teamColors[i]);
 		}
+
+		UpdateBingoCardTextures();
 	}
 
 	mScreenIcons = new P2DScreen::Mgr_tuning;

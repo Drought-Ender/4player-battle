@@ -137,6 +137,7 @@ VsGameSection::VsGameSection(JKRHeap* heap, bool gameMode)
 	
 	mEditNumber            = -2;
 	mVsFifo                = nullptr;
+	mBingoMgr = nullptr;
 
 	if (gGameConfig.mParms.mVsFifo.mData > 0) {
 		size_t size = gGameConfig.mParms.mVsFifo.mData * KILOBYTE_BYTECOUNT;
@@ -260,6 +261,7 @@ void VsGameSection::onInit()
     mMarbleRedBlue[2]      = nullptr;
 	mMarbleRedBlue[1]      = nullptr;
 	mMarbleRedBlue[0]      = nullptr;
+	mBingoMgr = nullptr;
 
 	Radar::mgr = new Radar::Mgr();
 
@@ -425,6 +427,14 @@ void VsGameSection::onSetupFloatMemory()
 	mTekiMgr      = new VsGame::TekiMgr();
 	mCardMgr      = new VsGame::CardMgr(this, mTekiMgr);
 
+	if (gGameModeID == MAINGAME_BINGO) {
+		mBingoMgr = new VsGame::BingoMgr;
+		
+	}
+	else {
+		mBingoMgr = nullptr;
+	}
+
 	VsGame::vsSlotCardMgr = new VsGame::VsSlotCardMgr;
 	VsGame::vsSlotCardMgr->generateCards(this);
 
@@ -475,6 +485,10 @@ void VsGameSection::postSetupFloatMemory()
 
 		if (gGameModeID == MAINGAME_BEDAMA) {
 			createYellowBedamas(7);
+		}
+		if (mBingoMgr) {
+			mBingoMgr->init(this);
+			mBingoMgr->GenerateCards();
 		}
 		initCardPellets();
 	}
@@ -2240,4 +2254,8 @@ namespace Game
 int SaveEditNum(int i) {
     sEditNum = i;
     return sEditNum;
+}
+
+int GetEditNum() {
+	return sEditNum;
 }

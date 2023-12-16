@@ -1212,6 +1212,7 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 	} else if (config->is("s05_pikminzero")) {
 		Screen::gGame2DMgr->close_GameOver();
 		og::Screen::DispMemberVs vs;
+		vs.mBingoMgr = section->mBingoMgr;
 		Screen::gGame2DMgr->open_GameVs(vs, 0);
 		section->startMainBgm();
 		if (gameSystem->isVersusMode()) {
@@ -1396,6 +1397,7 @@ void GameState::open_GameChallenge(VsGameSection* section, int in)
 
 	} else if (gameSystem->isVersusMode()) {
 		og::Screen::DispMemberVs disp;
+		disp.mBingoMgr = section->mBingoMgr;
 		Screen::gGame2DMgr->open_GameVs(disp, in);
 
 	} else {
@@ -1472,6 +1474,7 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		}
 
 		og::Screen::DispMemberVs disp;
+		disp.mBingoMgr = section->mBingoMgr;
 
 		Navi* olimar                    = naviMgr->getAt(0);
 		disp.mOlimarData.mFollowPikis   = GameStat::formationPikis.mCounter[0];

@@ -6,6 +6,7 @@
 #include "IDelegate.h"
 #include "id32.h"
 #include "Rect.h"
+#include "Game/BingoMgr.h"
 #include "FourPlayer.h"
 
 struct Controller;
@@ -739,6 +740,8 @@ struct DispMemberVs : public DispMemberBase {
 	int mMiniMarbleCounts[4];
 
 	bool mHideMiniMarble;
+
+	Game::VsGame::BingoMgr* mBingoMgr;
 };
 
 // size 0x28

@@ -161,6 +161,7 @@ struct ObjVs : public ::Screen::ObjBase {
 struct FourObjVs : public ObjVs {
 
 	FourObjVs(const char*);
+	~FourObjVs();
 
 	void setWinBedamaColor(int color, int player);
 	bool checkUpdateWinColor();
@@ -278,7 +279,7 @@ struct FourObjVs : public ObjVs {
 		void SetColor(JUtility::TColor& color);
 	};
 	
-	
+	void UpdateBingoCardTextures();
 
 	BingoCard mBingoCards[4];
 

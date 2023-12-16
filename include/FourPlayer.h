@@ -27,7 +27,7 @@ static const JUtility::TColor vsTeamColors[] = { 0xff5050ff, 0x5050ffff, 0xfffff
 
 
 inline void DebugReport(const char* msg, ...) {
-    #if DEBUG == 1
+    //#if DEBUG == 1
     if (gDebugPrint) {
         va_list marker;
 
@@ -35,7 +35,7 @@ inline void DebugReport(const char* msg, ...) {
         vprintf(msg, marker);
         va_end(marker);
     }
-    #endif
+    //#endif
 }
 
 JUTFont* getPikminFont() {
