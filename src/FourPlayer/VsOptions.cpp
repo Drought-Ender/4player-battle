@@ -308,6 +308,15 @@ void VsOptionsMenuMgr::init() {
     StartMenu<VsConfigMenu>();
 }
 
+VsOptionsMenuMgr::~VsOptionsMenuMgr() {
+    OSReport("Options Menu dtor called!\n");
+    for (int i = 0; i < ARRAY_SIZE(mMenus); i++) {
+        delete mMenus[i];
+        mMenus[i] = nullptr;
+    }
+    delete mBackground;
+}
+
 bool VsOptionsMenuMgr::update() {
     if (!mActiveMenu) return true;
 
@@ -945,7 +954,7 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
-        menu->StartMenu<VsConfigMenu>();
+        menu->StartMenu<GamemodeSelect>();
         return false;
     }
     for (int i = 0; i < ARRAY_SIZE(mControllers); i++) {
@@ -1122,4 +1131,143 @@ void CharacterData::UpdateImages() {
     for (int i = 0; i < 4; i++) {
         sCharacters[i].mImage = sCharacters[i].loadImage();
     }
+}
+
+void GamemodeSelect::load() {
+    loadImage(mMainGameImages[0], "yellow_game.bti");
+    loadImage(mMainGameImages[1], "bingo_game.bti");
+}
+
+
+void GamemodeSelect::init(VsOptionsMenuMgr* mgr) {
+    load();
+
+    mActiveMainGamemodeID = 0;
+    mCursorRow = 0;
+    mCursorCol = GAMEMODE_MAIN;
+
+    
+}
+
+bool GamemodeSelect::update(VsOptionsMenuMgr* menu) {
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_RIGHT) && mCursorRow < getMaxRow() - 1) {
+        mCursorRow++;
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+    }
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_LEFT) && mCursorRow > 0) {
+        mCursorRow--;
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
+    }
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_A)) {
+        if (mCursorCol == GAMEMODE_MAIN) {
+            mActiveMainGamemodeID = mCursorRow;
+            PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+        }
+    }
+
+
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
+        menu->StartMenu<VsConfigMenu>();
+        return false;
+    }
+    if (menu->mController->isButtonDown(JUTGamePad::PRESS_START)) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CLOSE, 0);
+        return true;
+    }
+    return false;
+}
+
+int GamemodeSelect::getMaxRow() {
+    switch (mCursorCol)
+    {
+    case GAMEMODE_MAIN:
+        return ARRAY_SIZE(mMainGameImages);
+    default:
+        return -1;
+    }
+}
+
+void GamemodeSelect::drawCursor(VsOptionsMenuMgr* mgr, Graphics& gfx) {
+    Vector2f size (120.0f, 120.0f);
+    Vector2f place (50.0f, 70.0f);
+
+    if (mCursorCol == GAMEMODE_MAIN ) {
+        place.x += (size.x + 10.0f) * mCursorRow;
+    }
+
+    J2DPrint printCursor (getPikminFont(), 0.0f);
+
+    printCursor.mGlyphHeight *= 3.75f * 2;
+    printCursor.mGlyphWidth  *= 2.75f * 2;
+    printCursor.print(place.x - (printCursor.mGlyphWidth / 3) / 2, place.y + size.y, "[ ]");
+}
+
+void GamemodeSelect::draw(VsOptionsMenuMgr* mgr, Graphics& gfx) {
+
+    GamemodeSelect::drawCursor(mgr, gfx);
+
+    Vector2f size (120.0f, 120.0f);
+    Vector2f place (50.0f, 70.0f);
+
+
+    
+
+    for (int i = 0; i < ARRAY_SIZE(mMainGameImages); i++) {
+        drawImage(mMainGameImages[i], place, size, mActiveMainGamemodeID == i);
+
+        place.x += size.x + 10.0f;
+    }
+
+    {
+        J2DPrint print (getPikminFont(), 0.0f);
+        print.print(10.0f, 30.0f, "4P-Battle Gamemode Select | Players: %i\n", Game::gNaviNum);
+    }
+
+    {
+        J2DPrint printer (getPikminFont(), 0.0f);
+        printer.mGlyphHeight /= 2;
+        printer.mGlyphWidth /= 2;
+        printer.print(50.0f, 60.0f, "Main Gamemode:");
+    }
+}
+
+EMainGamemodes gGameModeID = MAINGAME_BEDAMA;
+
+
+void GamemodeSelect::cleanup() {
+    gGameModeID = (EMainGamemodes)mActiveMainGamemodeID;
+}
+
+void GamemodeSelect::drawImage(J2DPictureEx*& img, Vector2f& position, Vector2f& size, bool active) {
+    Vector2f corner2 = position + size;
+    JGeometry::TBox2f box (position.x, position.y, corner2.x, corner2.y);
+    if (img) {
+        if (!active) {
+            img->setAlpha(0xA0);
+        }
+        else {
+            img->setAlpha(0xFF);
+        }
+        img->drawOut(box, box);
+    }
+}
+
+void GamemodeSelect::loadImage(J2DPictureEx*& source, const char* texname) {
+    char buffer[256];
+    sprintf(buffer, "/user/drought/vstex/gamemode/%s", texname);
+
+    LoadResource::Arg loadArg(buffer);
+	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
+
+
+    if (resource) {
+		ResTIMG* icon = static_cast<ResTIMG*>(resource->mFile);
+        source = new J2DPictureEx(icon, 0);
+        return;
+	}
+    JUT_ASSERT("%s not found!", texname);
 }

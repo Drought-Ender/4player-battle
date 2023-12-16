@@ -28,6 +28,7 @@ static const f32 sSprayTimers[] = {
 
 struct VsOptionsMenuMgr {
     VsOptionsMenuMgr();
+    ~VsOptionsMenuMgr();
     void init();
     bool update();
     void draw(Graphics&);
@@ -38,8 +39,8 @@ struct VsOptionsMenuMgr {
     bool mMenuCooldown;
     Controller* mController;
     IMenu* mActiveMenu;
-    IMenu* mMenus[3];
-    int mMenuIDs[3];
+    IMenu* mMenus[4];
+    int mMenuIDs[4];
     J2DPictureEx* mBackground;
 };
 
@@ -228,6 +229,44 @@ struct CharacterSelect : public IMenu
     char mPlayerNames[4][CharacterData::sMaxNameSize];
     bool mSelectingCharactor[4];
 };
+
+enum EMainGamemodes {
+    MAINGAME_BEDAMA,
+    MAINGAME_BINGO
+};
+
+struct GamemodeSelect : public IMenu
+{
+    const static int sMenuID = 3;
+
+    enum EGameModeTypeID {
+        GAMEMODE_MAIN
+    };
+
+    void load();
+
+    virtual void init(VsOptionsMenuMgr*);
+    virtual bool update(VsOptionsMenuMgr*);
+    virtual void draw(VsOptionsMenuMgr*, Graphics&);
+    virtual void cleanup();
+
+    void loadImage(J2DPictureEx*& source, const char* texname);
+    void drawImage(J2DPictureEx*& img, Vector2f& position, Vector2f& size, bool);
+
+    void drawCursor(VsOptionsMenuMgr*, Graphics&);
+
+    int getMaxRow();
+
+    int mCursorRow;
+    EGameModeTypeID mCursorCol;
+
+    u8 mActiveMainGamemodeID;
+    
+    J2DPictureEx* mMainGameImages[2];
+};
+
+extern EMainGamemodes gGameModeID;
+
 
 bool isUpper(const char c) {
     return c >= 'A' && c <= 'Z';

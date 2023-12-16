@@ -5,6 +5,7 @@
 #include "Game/Entities/PelletOtakara.h"
 #include "Game/Entities/PelletItem.h"
 #include "PSM/Otakara.h"
+#include "VsOptions.h"
 
 namespace Game
 {
@@ -96,7 +97,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 		mPelletFlag = FLAG_NONE;
 	}
 
-	if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaYellow) == 0) {
+	if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaYellow) == 0 && gGameModeID == MAINGAME_BEDAMA) {
 		OSReport("FLAG_VS_BEDAMA_YELLOW\n");
 		mPelletFlag = FLAG_VS_BEDAMA_YELLOW;
 	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaRed) == 0) {
@@ -109,7 +110,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
         mPelletFlag = FLAG_VS_BEDAMA_WHITE;
     } else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaPurple) == 0) {
         mPelletFlag = FLAG_VS_BEDAMA_PURPLE;
-    } else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaMini) == 0) {
+    } else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaMini) == 0 && gGameModeID == MAINGAME_BEDAMA) {
 		mPelletFlag = FLAG_VS_BEDAMA_MINI;
 	}
 

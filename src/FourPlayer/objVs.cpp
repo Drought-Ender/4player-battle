@@ -219,16 +219,23 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs + (20.0f - 20.0f * mBedamaScale);
 
 	J2DPane* root = scrn1->search('ROOT');
-	SetupBedamaPanes(root, 0, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
-
 	J2DPane* root2 = scrn2->search('ROOT');
-	SetupBedamaPanes(root2, 1, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
+	J2DPane* root3 = scrn3->search('ROOT');
+	J2DPane* root4 = scrn4->search('ROOT');
 
-    J2DPane* root3 = scrn3->search('ROOT');
-	SetupBedamaPanes(root3, 2, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
+	if (gGameModeID == MAINGAME_BEDAMA) {
+		
+		SetupBedamaPanes(root, 0, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
 
-    J2DPane* root4 = scrn4->search('ROOT');
-	SetupBedamaPanes(root4, 3, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
+		
+		SetupBedamaPanes(root2, 1, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
+
+		
+		SetupBedamaPanes(root3, 2, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
+
+		
+		SetupBedamaPanes(root4, 3, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
+	}
 
 	mScreenIcons = new P2DScreen::Mgr_tuning;
 	mScreenIcons->set("obake_icon.blo", 0x1040000, arc);
@@ -293,7 +300,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     // for (int i = 0; i < 4; i++) {
     //     setWinBedamaColor(i, mDisp->mWinMarbleColors[i]);
     // }
-    setOnOffBdama4P(false);
+	if (gGameModeID == MAINGAME_BEDAMA) setOnOffBdama4P(false);
 
 	ScreenSet* screens[] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 };
 
@@ -521,7 +528,9 @@ void FourObjVs::updateCSticks() {
 void FourObjVs::doUpdateCommon() {
 	mClock.update();
     checkUpdateWinColor();
-    setOnOffBdama4P(!mSetBedamaFlag && !Game::moviePlayer->isActive());
+	if (gGameModeID == MAINGAME_BEDAMA) {
+    	setOnOffBdama4P(!mSetBedamaFlag && !Game::moviePlayer->isActive());
+	}
     checkObake();
 	updateCSticks();
 	mScreenP1->update(mDisp->mOlimarData);

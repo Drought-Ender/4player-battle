@@ -473,8 +473,9 @@ void VsGameSection::postSetupFloatMemory()
 		createRedBlueBedamas(position);
 
 
-
-		createYellowBedamas(7);
+		if (gGameModeID == MAINGAME_BEDAMA) {
+			createYellowBedamas(7);
+		}
 		initCardPellets();
 	}
 
