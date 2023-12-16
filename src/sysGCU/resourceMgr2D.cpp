@@ -11,7 +11,7 @@ namespace Resource {
  */
 // INLINE
 inline Mgr2D::Mgr2D(JKRHeap* heap)
-    : Mgr(heap, 0xD4800)
+    : Mgr(heap, 0xF4800)
 {
 	P2ASSERTLINE(34, heap);
 

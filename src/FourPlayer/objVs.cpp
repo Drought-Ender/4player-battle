@@ -9,7 +9,15 @@
 #include "CherryTarget.h"
 #include "Game/VsGameSection.h"
 #include "Game/VsGame.h"
+#include "JSystem/JKernel/JKRHeap.h"
 #include "VsOptions.h"
+
+
+#if DEBUG == 1
+#define MemoryReport() OSReport("%i: %x Free Size\n", __LINE__, JKRHeap::sCurrentHeap->getFreeSize())
+#else
+#define MemoryReport()
+#endif
 
 namespace og
 {
@@ -75,6 +83,44 @@ const TColorPair gGetMarbleColors[4] = {
 	{ 0xffffffff, 0xe8f9e2ff },
 	{ 0xae42ffff, 0xd281ffff }
 };
+
+
+
+void FourObjVs::BingoCard::Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictureEx* itemPane, f32 scale, f32 baseX, f32 baseY, int id) {
+	f32 incSize = 25.0f * scale;
+
+	OSReport("FourObjVs::BingoCard::Setup(... %p)\n", itemPane);
+
+	P2ASSERT(basePane);
+	P2ASSERT(itemPane);
+
+	f32 xoffs     = 0;
+	f32 yoffs     = 0;
+	for (int y = 0; y < 4; y++) {
+		for (int x = 0; x < 4; x++) {
+			OSReport("StartCopy\n");
+			mPaneBase[x][y] = og::Screen::CopyPictureToPane(basePane, root, baseX + xoffs, baseY + yoffs, 'bpb_000' + id * 16 + x * 4 + y);
+			OSReport("...\n");
+			P2ASSERT(itemPane);
+			P2ASSERT(itemPane->getTIMG(0));
+			mPaneItem[x][y] = og::Screen::CopyPictureToPane(itemPane, root, baseX + xoffs, baseY + yoffs, 'bpi_000' + id * 16 + x * 4 + y);
+			MemoryReport();
+			xoffs += incSize;
+		}
+		xoffs = 0;
+		yoffs += incSize;
+	}
+}
+
+void FourObjVs::BingoCard::SetColor(JUtility::TColor& color) {
+	for (int y = 0; y < 4; y++) {
+		for (int x = 0; x < 4; x++) {
+			mPaneBase[x][y]->setWhite(color);
+		}
+	}
+
+	
+}
 
 inline void FourObjVs::SetupBedamaPanes(J2DPane* root, int player, J2DPictureEx* firstPane, J2DPictureEx* secondPane, J2DPictureEx* thirdPane, J2DPictureEx* minipane, f32 baseX, f32 baseY) {
 	J2DPictureEx** allBedamaPanes[4]  = { mPane_bedama1P, mPane_bedama2P, mPane_bedama3P, mPane_bedama4P };
@@ -205,6 +251,12 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	J2DPictureEx* paneBdamaB = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_blue'));
 	J2DPictureEx* panePcup   = static_cast<J2DPictureEx*>(bdamaScreen->search('Pcup'));
 	J2DPictureEx* paneMiniDama = static_cast<J2DPictureEx*>(bdamaScreen->search('Pb_mini'));
+	J2DPictureEx* paneBingobase = static_cast<J2DPictureEx*>(bdamaScreen->search('bngoBase'));
+	J2DPictureEx* paneBingoItem = static_cast<J2DPictureEx*>(bdamaScreen->search('bngoItem'));
+	mPaneBingoGet = static_cast<J2DPictureEx*>(bdamaScreen->search('bngoGet'));
+
+	P2ASSERT(paneBingoItem);
+	P2ASSERT(mPaneBingoGet);
 
     mColoredBedamaPanes[0] = paneBdamaR;
     mColoredBedamaPanes[1] = paneBdamaB;
@@ -236,6 +288,22 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		
 		SetupBedamaPanes(root4, 3, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
 	}
+	else if (gGameModeID == MAINGAME_BINGO) {
+		OSReport("bingo game\n");
+		baseYOffs -= 50.0f;
+		baseOffs += 35.0f;
+		
+		mBingoCards[0].Setup(root,  paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 0);
+		mBingoCards[1].Setup(root2, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 1);
+		mBingoCards[2].Setup(root3, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 2);
+		mBingoCards[3].Setup(root4, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 3);
+
+		OSReport("Setup Done\n");
+
+		for (int i = 0; i < 4; i++) {
+			mBingoCards[i].SetColor(teamColors[i]);
+		}
+	}
 
 	mScreenIcons = new P2DScreen::Mgr_tuning;
 	mScreenIcons->set("obake_icon.blo", 0x1040000, arc);
@@ -249,10 +317,13 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	mPaneObake2P->setAlpha(mAlphaObakeP2 * 255.0f);
     mPaneObake3P->setAlpha(mAlphaObakeP1 * 255.0f);
 	mPaneObake4P->setAlpha(mAlphaObakeP2 * 255.0f);
+	MemoryReport();
 
 
 	mScreenStickIcons = new P2DScreen::Mgr_tuning;
+	MemoryReport();
 	mScreenStickIcons->set("cherry_target.blo", 0x1040000, arc);
+	MemoryReport();
 	J2DPictureEx* paneOutStick = static_cast<J2DPictureEx*>(mScreenStickIcons->search('CtrlBubl'));
 	J2DPictureEx* paneCtick    = static_cast<J2DPictureEx*>(mScreenStickIcons->search('CStick'));
 	JUT_ASSERT(paneOutStick, "ctrlbubl missing\n");
@@ -278,11 +349,13 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 			mExtraIcons[i][j]->updateScale(0.5f);
 			mExtraIcons[i][j]->setAlpha(127);
 		}
+		MemoryReport();
 	}
 
-
+	MemoryReport();
 	mTimerScreen = new P2DScreen::Mgr_tuning;
 	mTimerScreen->set("timer.blo", 0x2040000, arc);
+	MemoryReport();
 
 
 	mClock.minute = og::Screen::setCallBack_CounterRV(mTimerScreen, 'MTime1', &mDisp->mTimerMinute, 1, false, true, arc);
@@ -290,6 +363,8 @@ void FourObjVs::doCreate(JKRArchive* arc) {
     mClock.second->setZeroAlpha(255);
     mClock.colon  = (J2DPicture*)mTimerScreen->search('CTime');
     mClock.base   = mTimerScreen->search('BaseTime');
+
+	MemoryReport();
 
     if (!gConfig[STALEMATE_TIMER]) {
         mClock.base->hide();
@@ -401,7 +476,7 @@ void FourObjVs::Clock::update() {
     second->update();
     
     setColors();
-    
+    MemoryReport();
 }
 
 void FourObjVs::Clock::setColors() {

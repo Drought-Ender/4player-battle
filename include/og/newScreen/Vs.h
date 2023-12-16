@@ -269,6 +269,22 @@ struct FourObjVs : public ObjVs {
 
 	} mClock;
 
+	struct BingoCard
+	{
+		J2DPictureEx* mPaneBase[4][4];
+		J2DPictureEx* mPaneItem[4][4];
+
+		void Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictureEx* itemPane, f32 scale, f32 baseX, f32 baseY, int id);
+		void SetColor(JUtility::TColor& color);
+	};
+	
+	
+
+	BingoCard mBingoCards[4];
+
+	J2DPictureEx* mPaneBingoGet;
+	
+
 	void doUpdateCommon();
 	void setOnOffBdama4P(bool doEfx);
 	void updateCSticks();

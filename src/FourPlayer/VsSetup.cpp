@@ -25,6 +25,11 @@
 #include "Game/Entities/PelletNumber.h"
 #include "DroughtLib.h"
 
+
+void theEntropyFunction() {
+	OSReport("This function exists because weird things happen");
+}
+
 namespace Game
 {
     
