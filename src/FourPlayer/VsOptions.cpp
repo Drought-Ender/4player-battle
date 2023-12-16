@@ -267,6 +267,14 @@ Option gOptions[] = {
         },
         2,
         0
+    },
+    {
+        "Pikmin Reservoir",
+        { "Off", "On" },
+        {
+            "Excess Pikmin will not be stored",
+            "Excess Pikmin will be stored in the onyon"
+        }
     }
 };
 

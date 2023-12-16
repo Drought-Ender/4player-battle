@@ -823,6 +823,18 @@ Vector3f Onyon::getGoalPos()
  */
 void Onyon::doAI()
 {
+
+	int mapPikmins = GameStat::getMapPikmins(mOnyonType);
+	if (mapPikmins < 50 && gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+		int& colorLeft = playData->mPikiContainer.getCount(mOnyonType, Leaf);
+		if (colorLeft > 0) {
+			mToBirth += colorLeft;
+			mToBirth--;
+			vsChargePikmin();
+			colorLeft = 0;
+		}
+	}
+	
 	if (gConfig[PIKMIN_BIRTH] == ConfigEnums::BIRTH_PIKMIN) {
 		birthByExitPiki();
 	}
@@ -1236,8 +1248,8 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 		if (mOnyonType < ONYON_TYPE_MAX) {
 			switch (animid) {
 			case 1: // shoot out seeds
-				if (mToBirth) {
-					int shootcount = mToBirth / 2;
+				if (mToBirth && gConfig[PIKMIN_BIRTH] != ConfigEnums::BIRTH_PIKMIN) {
+					int shootcount = MIN(mToBirth / 2, 25);
 					if (shootcount <= 0) {
 						shootcount = 1;
 					}
@@ -1250,15 +1262,27 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 							int whites = GameStat::getMapPikmins(White);
 							int purples = GameStat::getMapPikmins(Purple);
 							if (mOnyonType == ONYON_TYPE_BLUE && blues >= 50) {
+								if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+									playData->mPikiContainer.getCount(Blue, Leaf)++;
+								}
 								mToBirth--;
 								continue;
 							} else if (mOnyonType == ONYON_TYPE_RED && reds >= 50) {
+								if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+									playData->mPikiContainer.getCount(Red, Leaf)++;
+								}
 								mToBirth--;
 								continue;
 							} else if (mOnyonType == ONYON_TYPE_PURPLE && purples >= 50) {
+								if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+									playData->mPikiContainer.getCount(Purple, Leaf)++;
+								}
 								mToBirth--;
 								continue;
 							} else if (mOnyonType == ONYON_TYPE_WHITE && whites >= 50) {
+								if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+									playData->mPikiContainer.getCount(White, Leaf)++;
+								}
 								mToBirth--;
 								continue;
 							}
@@ -1630,6 +1654,10 @@ void Onyon::enterPiki(Piki* piki)
 	} else {
 		startWaitMotion();
 	}
+}
+
+bool Onyon::ShouldTryBirthing() {
+	return mToBirth;
 }
 
 /*

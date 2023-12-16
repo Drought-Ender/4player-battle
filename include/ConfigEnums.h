@@ -142,4 +142,9 @@ enum ESpicyPassive {
     SPICYPASSIVE_INF = 5
 };
 
+enum EReservoir {
+    RESERVOIR_OFF = 0,
+    RESERVOIR_ON
+};
+
 } // namespace ConfigEnums

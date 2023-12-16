@@ -131,6 +131,7 @@ struct Onyon : public BaseItem {
 	void update_pmotions();
 
 	void birthByExitPiki();
+	bool ShouldTryBirthing();
 
 	void updateSpot();
 	void initTube();

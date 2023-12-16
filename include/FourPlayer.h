@@ -109,7 +109,8 @@ enum OptionsEnum {
     BITTER_PASSIVE,
     SPICY_PASSIVE,
     STALEMATE_TIMER,
-    GLOBAL_SPICY
+    GLOBAL_SPICY,
+    RESERVOIR
 };
 
 namespace ConfigEnums {
