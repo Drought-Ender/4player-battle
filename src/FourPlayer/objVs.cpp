@@ -110,17 +110,20 @@ void FourObjVs::BingoCard::Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictu
 	for (int y = 0; y < 4; y++) {
 		for (int x = 0; x < 4; x++) {
 			mFlags[x][y] = false;
+			mScaleMgrs[x][y] = new og::Screen::ScaleMgr;
+
 			OSReport("StartCopy\n");
 			mPaneBase[x][y] = og::Screen::CopyPictureToPane(basePane, root, baseX + xoffs, baseY + yoffs, 'bpb_000' + id * 16 + x * 4 + y);
-			mPaneBase[x][y]->updateScale(scale);
 			OSReport("...\n");
 			P2ASSERT(itemPane);
 			P2ASSERT(itemPane->getTIMG(0));
 			mPaneItem[x][y] = og::Screen::CopyPictureToPane(itemPane, root, baseX + xoffs, baseY + yoffs, 'bpi_000' + id * 16 + x * 4 + y);
-			mPaneItem[x][y]->updateScale(scale);
 			MemoryReport();
 			xoffs += incSize;
+
+			
 		}
+		
 		xoffs = 0;
 		yoffs += incSize;
 	}
@@ -315,7 +318,8 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	else if (gGameModeID == MAINGAME_BINGO) {
 		OSReport("bingo game\n");
 		baseYOffs -= (Game::gNaviNum <= 2) ? 70.0f : 50.0f;
-		baseOffs += 35.0f;
+
+		baseOffs += (Game::gNaviNum <= 2) ? -10.0f : 35.0f;
 		
 		mBingoCards[0].Setup(root,  paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 0);
 		mBingoCards[1].Setup(root2, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 1);
@@ -983,8 +987,15 @@ void FourObjVs::setOnOffBingo() {
 
 		for (int x = 0; x < 4; x++) {
 			for (int y = 0; y < 4; y++) {
+
+				f32 scale = mBingoCards[i].mScaleMgrs[x][y]->calc();
+				mBingoCards[i].mPaneBase[x][y]->updateScale(scale * mBedamaScale);
+				mBingoCards[i].mPaneItem[x][y]->updateScale(scale * mBedamaScale);
+
 				if (card.mActive[x][y] && !mBingoCards[i].mFlags[x][y]) {
 					mBingoCards[i].mFlags[x][y] = true;
+					mBingoCards[i].mScaleMgrs[x][y]->up();
+					og::ogSound->setSE(PSSE_SY_EQUIP_LADER);
 					mBingoCards[i].mPaneBase[x][y]->changeTexture(mPaneBingoGet->getTIMG(0), 0);
 					mBingoCards[i].mPaneBase[x][y]->setWhite(gBingoGetColors[team]);
 				}

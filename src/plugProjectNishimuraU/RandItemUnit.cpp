@@ -250,7 +250,7 @@ MapNode* RandItemUnit::getItemNormalSetMapNode(BaseGen** outGens)
 							if (!isItemSetDone(currMapNode, currBaseGen)) {
 								mapNodeList[counter]   = currMapNode;
 								baseGenList[counter]   = currBaseGen;
-								nodeScoreList[counter] = (currMapNode->getNodeScore() / slotNum) + 1;
+								nodeScoreList[counter] = (currMapNode->getVersusScore() / slotNum) + 1;
 								totalScore += nodeScoreList[counter];
 								counter++;
 							}

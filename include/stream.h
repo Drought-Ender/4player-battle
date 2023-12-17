@@ -124,17 +124,18 @@ struct RamStream : Stream {
  * @param nullCheck	Should we check if the file was successfully mounted to RAM or not?
  */
 template <typename T>
-inline void loadAndRead(T* thisPtr, char* fname, JKRHeap* heap = nullptr, bool nullCheck = true)
+inline bool loadAndRead(T* thisPtr, char* fname, JKRHeap* heap = nullptr, bool nullCheck = true)
 {
 	void* handle = JKRDvdRipper::loadToMainRAM(fname, 0, Switch_0, 0, heap, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, 0, 0);
 	if (nullCheck && !handle) {
-		return;
+		return false;
 	}
 
 	RamStream stream(handle, -1);
 	stream.resetPosition(true, 1);
 	thisPtr->read(stream);
 	delete[] handle;
+	return true;
 }
 
 #endif

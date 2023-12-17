@@ -12,6 +12,7 @@
 #include "Screen/Game2DMgr.h"
 #include "Morimura/challengeSelect2d.h"
 #include "Morimura/VsSelect.h"
+#include "VsOptions.h"
 #include "Controller.h"
 #include "TParticle2dMgr.h"
 #include "Game/Navi.h"
@@ -363,6 +364,11 @@ void TitleState::execVs(VsGameSection* section)
 			else {
 				strcpy(section->mCaveInfoFilename, data->mCaveInfoFilename);
 				strcpy(section->mEditFilename, data->mStageLayoutFilePath);
+			}
+
+			if (gGameModeID == MAINGAME_BINGO) {
+				sprintf(section->mCaveInfoFilename, "bingo/%s", data->mCaveInfoFilename);
+				sprintf(section->mEditFilename, "bingo/%s", data->mStageLayoutFilePath);
 			}
 
 			

@@ -14,8 +14,6 @@ MAPGENFLAG ?= 0
 # Use the all-in-one updater after successful build? (Fails on non-windows platforms)
 USE_AOI ?= 0
 
-DEBUG ?= 0
-
 ifeq ($(VERBOSE),0)
   QUIET := @
 endif

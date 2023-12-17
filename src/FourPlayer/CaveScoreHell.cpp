@@ -406,6 +406,10 @@ int MapNode::getVersusScore() {
     return mVsScore[0] + mVsScore[1];
 }
 
+int MapNode::getVersusNetScore() {
+    return MAX(FABS(mVsScore[0]), FABS(mVsScore[1]));
+}
+
 int MapNode::getVersusScore(int color) {
     return mVsScore[color];
 }
@@ -872,6 +876,70 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 		avg[FIRST_SCORE]  = newFirstAvg;
 		avg[SECOND_SCORE] = newSecondAvg;
 	}
+}
+
+int skew[2] = {0, 0};
+
+MapNode* RandItemUnit::getItemNormalSetMapNode(BaseGen** outGens)
+{
+	MapNode* bestMapNode;
+	BaseGen* bestMapGen;
+	int counter    = 0;
+	int minScore = 100000;
+
+	int finalScores[2];
+
+
+	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currMapNode)
+	{
+		if (currMapNode->mUnitInfo->getUnitKind() == UNITKIND_Room) {
+			int firstScore = absVal(currMapNode->getVersusScore(FIRST_SCORE) - skew[FIRST_SCORE] + mMapScore->mVersusHighScore[FIRST_SCORE] + mMapScore->mVersusLowScore[FIRST_SCORE]);
+			DebugReport("First score %i\n", firstScore);
+			int secondScore = absVal(currMapNode->getVersusScore(SECOND_SCORE) - skew[SECOND_SCORE]);
+			
+			int currScore = MAX(firstScore, secondScore);
+			BaseGen* baseGen  = currMapNode->mUnitInfo->getBaseGen();
+			if (baseGen) {
+				FOREACH_NODE(BaseGen, baseGen->mChild, currBaseGen)
+				{
+					if (currBaseGen->mSpawnType == BaseGen::Treasure__Item) {
+						if (!isItemSetDone(currMapNode, currBaseGen)) {
+							if (currScore < minScore) {
+								bestMapNode = currMapNode;
+								bestMapGen = currBaseGen;
+								minScore = currScore;
+								finalScores[FIRST_SCORE] = currMapNode->getVersusScore(FIRST_SCORE);
+								finalScores[SECOND_SCORE] = currMapNode->getVersusScore(SECOND_SCORE);
+							}
+						}
+					}
+				}
+			}
+
+		} else if (!strncmp(currMapNode->getUnitName(), "item", 4)) {
+			int firstScore = absVal(currMapNode->getVersusScore(FIRST_SCORE) - skew[FIRST_SCORE] + mMapScore->mVersusHighScore[FIRST_SCORE] + mMapScore->mVersusLowScore[FIRST_SCORE]);
+			int secondScore = absVal(currMapNode->getVersusScore(SECOND_SCORE) - skew[SECOND_SCORE]);
+			
+			int currScore = MAX(firstScore, secondScore);
+			if (!isItemSetDone(currMapNode, nullptr)) {
+				if (currScore < minScore) {
+					bestMapNode = currMapNode;
+					bestMapGen = nullptr;
+					minScore = currScore;
+					finalScores[FIRST_SCORE] = currMapNode->getVersusScore(FIRST_SCORE);
+					finalScores[SECOND_SCORE] = currMapNode->getVersusScore(SECOND_SCORE);
+				}
+			}
+		}
+	}
+
+	int skewUp = (finalScores[0] > 1) ? -10 : 10;
+
+	skew[0] = skewUp;
+
+	*outGens = bestMapGen;
+
+	return bestMapNode;
 }
 
 Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, int count, int scores[2], int idx)

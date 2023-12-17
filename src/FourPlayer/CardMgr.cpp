@@ -194,12 +194,22 @@ bool CardMgr::usePlayerCard(int teamUser, TekiMgr* tekiMgr)
 Vector3f CardMgr::getSlotOrigin(int playerIdx)
 {
     if (gNaviNum == 2) {
-        if (playerIdx == 0) {
-            return Vector3f(515.0f, 115.0f, 0.0f);
-        }
-        else {
-            return Vector3f(515.0f, 315.0f, 0.0f);
-        }
+		if (gGameModeID == MAINGAME_BEDAMA) {
+			if (playerIdx == 0) {
+				return Vector3f(515.0f, 115.0f, 0.0f);
+			}
+			else {
+				return Vector3f(515.0f, 315.0f, 0.0f);
+			}
+		}
+		else if (gGameModeID == MAINGAME_BINGO) {
+			if (playerIdx == 0) {
+				return Vector3f(565.0f, 115.0f, 0.0f);
+			}
+			else {
+				return Vector3f(565.0f, 315.0f, 0.0f);
+			}
+		}
     }
     else {
         switch (playerIdx)

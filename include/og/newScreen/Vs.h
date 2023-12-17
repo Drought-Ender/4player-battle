@@ -274,6 +274,8 @@ struct FourObjVs : public ObjVs {
 	{
 		J2DPictureEx* mPaneBase[4][4];
 		J2DPictureEx* mPaneItem[4][4];
+		
+		og::Screen::ScaleMgr* mScaleMgrs[4][4];
 		bool mFlags[4][4];
 
 		void Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictureEx* itemPane, f32 scale, f32 baseX, f32 baseY, int id);

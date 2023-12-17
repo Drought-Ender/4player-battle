@@ -271,6 +271,7 @@ struct MapNode : public CNode {
 	int getEnemyScore();
 	int getNodeScore();
 	int getVersusScore();
+	int getVersusNetScore();
 	int getVersusScore(int color);
 	char* getUnitName();
 	void getNodeCentreOffset(f32&, f32&);

@@ -33,7 +33,7 @@ void BingoMgr::init(VsGameSection* section) {
 
     char filepath[64];
 	
-	sprintf(filepath, "/user/drought/bingo/%s/%i.txt", properCaveName, GetEditNum());
+	sprintf(filepath, "/user/drought/bingocard/%s/%i.txt", properCaveName, GetEditNum());
 
     DebugReport("before archives\n");
 
@@ -43,7 +43,10 @@ void BingoMgr::init(VsGameSection* section) {
 
     DebugReport("before load\n");
 
-    loadAndRead(this, filepath);
+    bool success = loadAndRead(this, filepath);
+    if (!success) {
+        JUT_PANIC("%s missing!\n", filepath);
+    }
 
     DebugReport("Done reading\n");
     if (yamashitaArchive) {

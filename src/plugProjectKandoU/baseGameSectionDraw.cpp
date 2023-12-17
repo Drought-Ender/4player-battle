@@ -21,7 +21,7 @@
 
 const char* message = "drct-post";
 
-bool sDebugMode = false;
+bool sDebugMode = true;
 
 bool gDrawNavi[4];
 
