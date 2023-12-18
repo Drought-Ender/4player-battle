@@ -68,6 +68,10 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 		section->setCamController();
 		clearLoseCauses();
 		Screen::gGame2DMgr->startFadeBG_Floor();
+
+		if (section->mBingoMgr) {
+			section->mBingoMgr->CountExists();
+		}
 	}
 
 	mHasKeyDemoPlayed = false;
@@ -768,6 +772,7 @@ void GameState::cleanup(VsGameSection* section)
  */
 void GameState::onBattleFinished(VsGameSection* section, int winnerMaybe, bool check)
 {
+	
 	if (_16) {
 		return;
 	}
@@ -886,6 +891,10 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, MarbleT
 				BitFlag<u8>& loseCauses = mLoseCauses[i];
 				setLoseCause(loseCauses, loseReason);
 			}
+		}
+		
+		if (section->mBingoMgr) {
+			section->mBingoMgr->mWinner = player;
 		}
 
 		mWinColors[player] = gBedamaColor;

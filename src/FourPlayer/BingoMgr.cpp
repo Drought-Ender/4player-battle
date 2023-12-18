@@ -3,6 +3,7 @@
 #include "Game/pelletConfig.h"
 #include "Dolphin/rand.h"
 #include "Game/VsGame.h"
+#include "Game/generalEnemyMgr.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "utilityU.h"
 
@@ -342,6 +343,10 @@ void BingoMgr::TeamReceivePellet(int team, Pellet* pellet) {
     }
 }
 
+int BingoMgr::ObjectKey::FindPellet(Pellet* pellet) {
+    return FindPellet(pellet->getKind(), pellet->mConfig->mParams.mIndex);
+}
+
 int BingoMgr::ObjectKey::FindPellet(u8 kind, s16 id) {
     for (int i = 0; i < mObjectNum; i++) {
         Object& obj = mObjectEntries[i];
@@ -352,15 +357,34 @@ int BingoMgr::ObjectKey::FindPellet(u8 kind, s16 id) {
     return -1;
 }
 
+int BingoMgr::ObjectKey::FindEnemy(int enemyID) {
+    const char* enemyName = EnemyInfoFunc::getEnemyName(enemyID, 0xffff);;
+    for (int i = 0; i < mObjectNum; i++) {
+        Object& obj = mObjectEntries[i];
+        if (obj.mPelType != PelletList::CARCASS) {
+            continue;
+        }
+
+        const char* peltName = PelletList::Mgr::getConfigList(PelletList::CARCASS)->getPelletConfig(obj.mPelletID)->mParams.mName.mData;
+
+        if (!strcmp(enemyName, peltName)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int BingoMgr::ObjectKey::FindEnemy(EnemyBase* enemy) {
+    return FindEnemy(enemy->getEnemyTypeID());
+}
+
 /// @brief Updates bingo card for recieving a pellet
 /// @param key ObjectKey from the bingoMgr
 /// @param pellet The Pellet Recieved
 /// @return The changed id from 0 to 15
 int BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
-    u8 kind = pellet->getKind();
-    s16 id = pellet->mConfig->mParams.mIndex;
 
-    int configIdx = key.FindPellet(kind, id);
+    int configIdx = key.FindPellet(pellet);
 
     if (configIdx == -1) return;
 
@@ -384,9 +408,8 @@ int BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
 }
 
 int BingoMgr::BingoCard::ReceiveDispPellet(ObjectKey& key, Pellet* pellet) {
-    u8 kind = pellet->getKind();
-    s16 id = pellet->mConfig->mParams.mIndex;
-    int configIdx = key.FindPellet(kind, id);
+
+    int configIdx = key.FindPellet(pellet);
 
     for (int i = 0; i < 4 * 4; i++) {
         if (reinterpret_cast<u8*>(mObjects)[i] == configIdx && reinterpret_cast<bool*>(mActive)[i] && !reinterpret_cast<bool*>(mDisp)[i]) {
@@ -404,6 +427,89 @@ bool BingoMgr::BingoCard::PelletSuckProcedure(ObjectKey& key, Pellet* pellet) {
     bool success = CheckLine(4);
 
     return success;
+}
+
+void BingoMgr::CountExists() {
+    mKey.CountExists();
+}
+
+void BingoMgr::ObjectKey::CountExists() {
+    for (int i = 0; i < mObjectNum; i++) {
+        mObjectEntries[i].mExistCount = 0;
+    }
+
+    PelletIterator iPellet;
+    CI_LOOP(iPellet) {
+        Pellet* pellet = *iPellet;
+
+        int idx = FindPellet(pellet);
+        if (idx != -1) {
+            mObjectEntries[idx].mExistCount++;
+        }
+    }
+
+    FOREACH_NODE(EnemyMgrNode, generalEnemyMgr->mEnemyMgrNode.mChild, enemyNode) {
+
+        int idx = FindEnemy(enemyNode->mEnemyID);
+
+        if (idx != -1) {
+            mObjectEntries[idx].mExistCount = enemyNode->mMgr->mNumObjects;
+        }
+
+    }
+
+    for (int idx = 0; idx < mObjectNum; idx++) {
+        const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)mObjectEntries[idx].mPelType)->getPelletConfig(mObjectEntries[idx].mPelletID)->mParams.mName.mData;
+        DebugReport("Found %i of %s\n", mObjectEntries[idx].mExistCount, peltName);
+    }
+
+    
+    
+}
+
+void BingoMgr::ObjectKey::Object::CountExists() {
+    mExistCount = 0;
+
+    PelletIterator iPellet;
+    CI_LOOP(iPellet) {
+        Pellet* pellet = *iPellet;
+
+        u8 kind = pellet->getKind();
+        s16 id = pellet->mConfig->mParams.mIndex;
+
+        if (mPelType == kind && mPelletID == id) {
+            mExistCount++;
+        }
+    }
+
+    
+
+    const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)mPelType)->getPelletConfig(mPelletID)->mParams.mName.mData;
+    DebugReport("Found %i of %s\n", mExistCount, peltName);
+
+}
+
+void BingoMgr::informDeath(Pellet* pelt) {
+    mKey.informDeath(pelt);
+}
+
+void BingoMgr::informDeath(EnemyBase* enemy) {
+    mKey.informDeath(enemy);
+}
+
+void BingoMgr::ObjectKey::informDeath(Pellet* pelt) {
+    int idx = FindPellet(pelt);
+    mObjectEntries[idx].mExistCount--;
+}
+
+void BingoMgr::ObjectKey::informDeath(EnemyBase* enemy) {
+    int idx = FindEnemy(enemy);
+    mObjectEntries[idx].mExistCount--;
+}
+
+bool BingoMgr::BingoCard::isImpossible(ObjectKey& key, int x, int y) {
+    u8 idx = mObjects[x][y];
+    return !mActive[x][y] && key.mObjectEntries[idx].mExistCount <= 0;
 }
 
 } // namespace VsGame

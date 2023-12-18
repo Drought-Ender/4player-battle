@@ -288,6 +288,10 @@ struct FourObjVs : public ObjVs {
 	BingoCard mBingoCards[4];
 
 	J2DPictureEx* mPaneBingoGet;
+	J2DPictureEx* mPaneBingoImpossible;
+
+	float mDoesNotExistTimer;
+	bool mDoesNotExistActive;
 	
 
 	void doUpdateCommon();

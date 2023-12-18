@@ -11,6 +11,7 @@ namespace Game
 
 struct VsGameSection;
 struct Pellet;
+struct EnemyBase;
 
 namespace VsGame
 {
@@ -33,11 +34,22 @@ struct BingoMgr
             ResTIMG* mObjectTexture;
 
             void read(Stream&);
+
+            void CountExists();
+
         };
 
         void read(Stream&);
         
+        int FindPellet(Pellet* pelt);
         int FindPellet(u8 peltype, s16 pelid);
+        int FindEnemy(int enemyID);
+        int FindEnemy(EnemyBase*);
+
+        void informDeath(Pellet*);
+        void informDeath(EnemyBase*);
+
+        void CountExists();
         
 
         int mObjectNum;
@@ -63,13 +75,19 @@ struct BingoMgr
         bool CheckLine(int min, LineData& data, bool disp=false);
         int CheckLine(int min, LineData* data, int arraySize, bool disp=false);
         bool PelletSuckProcedure(ObjectKey& key, Pellet* pellet);
+
+        bool isImpossible(ObjectKey& key, int x, int y);
     };
 
     void GenerateCards();
 
     void TeamReceivePellet(int team, Pellet* pellet);
 
+    void CountExists();
+
     void read(Stream&);
+    void informDeath(Pellet*);
+    void informDeath(EnemyBase*);
     void init(VsGameSection*);
 
     ObjectKey mKey;

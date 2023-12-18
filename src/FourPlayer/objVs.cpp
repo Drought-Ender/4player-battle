@@ -144,7 +144,12 @@ void FourObjVs::UpdateBingoCardTextures() {
 
 		for (int x = 0; x < 4; x++) {
 			for (int y = 0; y < 4; y++) {
-				mBingoCards[i].mPaneItem[x][y]->changeTexture(key.mObjectEntries[card.mObjects[x][y]].mObjectTexture, 0);
+				if (mDoesNotExistActive && card.isImpossible(key, x, y)) {
+					mBingoCards[i].mPaneItem[x][y]->changeTexture(mPaneBingoImpossible->getTIMG(0), 0);
+				}
+				else {
+					mBingoCards[i].mPaneItem[x][y]->changeTexture(key.mObjectEntries[card.mObjects[x][y]].mObjectTexture, 0);
+				}
 			}
 		}
 	}
@@ -278,6 +283,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	J2DPictureEx* paneBingobase = static_cast<J2DPictureEx*>(bdamaScreen->search('bngoBase'));
 	J2DPictureEx* paneBingoItem = static_cast<J2DPictureEx*>(bdamaScreen->search('bngoItem'));
 	mPaneBingoGet = static_cast<J2DPictureEx*>(bdamaScreen->search('bngoGet'));
+	mPaneBingoImpossible = paneBingoItem;
 
 	P2ASSERT(paneBingoItem);
 	P2ASSERT(mPaneBingoGet);
@@ -328,6 +334,9 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		for (int i = 0; i < 4; i++) {
 			mBingoCards[i].SetColor(teamColors[Game::getVsTeam_s(i)]);
 		}
+
+		mDoesNotExistTimer  = 3.0f;
+		mDoesNotExistActive = false;
 
 		UpdateBingoCardTextures();
 	}
@@ -629,8 +638,9 @@ void FourObjVs::updateCSticks() {
 
 void FourObjVs::doUpdateCommon() {
 	mClock.update();
-    checkUpdateWinColor();
+    
 	if (gGameModeID == MAINGAME_BEDAMA) {
+		checkUpdateWinColor();
     	setOnOffBdama4P(!mSetBedamaFlag && !Game::moviePlayer->isActive());
 	}
 	else if (gGameModeID == MAINGAME_BINGO) {
@@ -1031,6 +1041,15 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 }
 
 void FourObjVs::setOnOffBingo(bool doEfx) {
+
+	mDoesNotExistTimer -= sys->mDeltaTime;
+
+	if (mDoesNotExistTimer < 0.0f) {
+		mDoesNotExistTimer = 3.0f;
+		mDoesNotExistActive = !mDoesNotExistActive;
+		UpdateBingoCardTextures();
+	}
+	
 	for (int i = 0; i < 4; i++) {
 		int team = Game::getVsTeam_s(i);
 		Game::VsGame::BingoMgr::BingoCard& card = mDisp->mBingoMgr->mCards[team];
@@ -1058,6 +1077,8 @@ void FourObjVs::setOnOffBingo(bool doEfx) {
 		}
 	}
 
+	
+
 	if (!mPlayWinSound) {
 		if (mDisp->mBingoMgr->mWinner != -1 && doEfx) {
 			mPlayWinSound = true;
@@ -1076,7 +1097,11 @@ void FourObjVs::setWinBingoBounce() {
 	
 	Game::VsGame::BingoMgr::LineData lineData;
 	bool found = card.CheckLine(4, lineData);
-	P2ASSERT(found);
+
+	if (!found) {
+		return;
+	}
+
 	DebugReport("Found line\n");
 
 	for (int player = 0; player < 4; player++) {

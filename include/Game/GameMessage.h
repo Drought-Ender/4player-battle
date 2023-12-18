@@ -10,6 +10,7 @@ struct BaseGameSection;
 struct SingleGameSection;
 struct VsGameSection;
 struct Pellet;
+struct EnemyBase;
 
 struct GameMessage {
 	virtual bool actCommon(BaseGameSection*);   // _08 (weak)
@@ -41,6 +42,18 @@ struct GameMessagePelletDead : public GameMessage {
 
 	// _00 = VTBL
 	Pellet* mPellet; // _04
+};
+
+struct GameMessageEnemyDead : public GameMessage {
+	inline GameMessageEnemyDead(EnemyBase* enemy)
+	    : mEnemy(enemy)
+	{
+	}
+
+	virtual bool actVs(VsGameSection*); // _10
+
+	// _00 = VTBL
+	EnemyBase* mEnemy; // _04
 };
 
 struct GameMessageVsAddEnemy : public GameMessage {

@@ -39,6 +39,8 @@
 #include "PSSystem/PSStream.h"
 #include "PSGame/Global.h"
 
+#include "Game/GameMessage.h"
+
 // Utility
 #include "Dolphin/rand.h"
 
@@ -2400,6 +2402,9 @@ void EnemyBase::deathProcedure()
 {
 	disableEvent(0, EB_IsDamageAnimAllowed);
 	setAlive(false);
+
+	GameMessageEnemyDead mesg(this);
+	gameSystem->mSection->sendMessage(mesg);
 
 	if (isEvent(0, EB_IsBittered)) {
 		throwupItem();

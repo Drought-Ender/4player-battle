@@ -1214,6 +1214,20 @@ bool GameMessagePelletDead::actVs(VsGameSection* section)
 		// JUT_PANICLINE(1617, "no entry for mini pellet\n");
 	}
 
+	if (section->mBingoMgr) {
+		section->mBingoMgr->informDeath(mPellet);
+	}
+
+	return false;
+}
+
+bool GameMessageEnemyDead::actVs(VsGameSection* section) {
+	if (section->mBingoMgr) {
+		if (mEnemy->isEvent(0, EB_IsBittered)) {
+			section->mBingoMgr->informDeath(mEnemy);
+		}
+	}
+	
 	return false;
 }
 
