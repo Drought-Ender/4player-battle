@@ -325,6 +325,8 @@ bool doesTeamHavePlayers(int idx) {
     return false;
 }
 
+bool isTeamLouie(int teamID);
+
 
 
 } // namespace Game

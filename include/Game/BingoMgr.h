@@ -59,8 +59,9 @@ struct BingoMgr
         void Generate(ObjectKey& key);
         int ReceiveDispPellet(ObjectKey& key, Pellet* pellet);
         int ReceivePellet(ObjectKey& key, Pellet* pellet);
-        bool CheckLine(int min);
-        bool CheckLine(int min, LineData& data);
+        bool CheckLine(int min, bool disp=false);
+        bool CheckLine(int min, LineData& data, bool disp=false);
+        int CheckLine(int min, LineData* data, int arraySize, bool disp=false);
         bool PelletSuckProcedure(ObjectKey& key, Pellet* pellet);
     };
 
@@ -74,6 +75,7 @@ struct BingoMgr
     ObjectKey mKey;
     BingoCard* mCards; // array
     int mWinner;
+    bool mBedamaSound[2];
 };
 
 

@@ -526,6 +526,17 @@ void Navi::voidout() {
 	stimulate(flick);
 }
 
+bool isTeamLouie(int teamID) {
+	for (int i = 0; i < 4; i++) {
+		if (i == 1) continue;
+		DebugReport("Team id %i\n", getVsTeam(i));
+		if (getVsTeam(i) == teamID) {
+			return false;
+		}
+	}
+	return true;
+}
+
 } // namespace Game
 
 // GetBackupWaypoint__FRQ24Game15WPEdgeSearchArg

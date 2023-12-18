@@ -1109,7 +1109,7 @@ bool GameMessageVsGetOtakara::actVs(VsGameSection* section)
 	if (section->mState) {
 		section->mDispMarbleCounts[mTeamColor]++;
 		section->mState->onYellowBedamaGet(section);
-		PSSetLastBeedamaDirection(true, section->mDispMarbleCounts[mTeamColor] == 3);
+		PSSetLastBeedamaDirection(!isTeamLouie(mTeamColor), section->mDispMarbleCounts[mTeamColor] == 3);
 		if (section->mDispMarbleCounts[mTeamColor] >= 4) {
 			section->mState->onBattleFinished(section, mTeamColor, true);
 		}
@@ -1127,7 +1127,7 @@ bool GameMessageVsGetMiniOtakara::actVs(VsGameSection* section)
 		if (section->mDispMiniCounts[mTeamColor] >= 5) {
 			section->mDispMiniCounts[mTeamColor] = 0;
 			section->mDispMarbleCounts[mTeamColor]++;
-			PSSetLastBeedamaDirection(true, section->mDispMarbleCounts[mTeamColor] == 3);
+			PSSetLastBeedamaDirection(!isTeamLouie(mTeamColor), section->mDispMarbleCounts[mTeamColor] == 3);
 			if (section->mDispMarbleCounts[mTeamColor] >= 4) {
 				section->mState->onBattleFinished(section, mTeamColor, true);
 			}

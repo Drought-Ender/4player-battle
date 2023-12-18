@@ -4,6 +4,7 @@
 #include "Dolphin/rand.h"
 #include "Game/VsGame.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
+#include "utilityU.h"
 
 namespace Game
 {
@@ -24,6 +25,8 @@ JKRArchive* matobaArchive = nullptr;
 
 void BingoMgr::init(VsGameSection* section) {
     mWinner = -1;
+    mBedamaSound[0] = false;
+    mBedamaSound[1] = false;
 
     int lastChar = strlen(section->mEditFilename);
 
@@ -60,7 +63,7 @@ void BingoMgr::init(VsGameSection* section) {
     DebugReport("All is well\n");
 }
 
-bool BingoMgr::BingoCard::CheckLine(const int min) {
+bool BingoMgr::BingoCard::CheckLine(const int min, bool disp) {
     
     int rowMajorCount[4] = { 0, 0, 0, 0 };
     int colMajorCount[4] = { 0, 0, 0, 0 };
@@ -70,7 +73,7 @@ bool BingoMgr::BingoCard::CheckLine(const int min) {
     for (int row = 0; row < 4; row++) {
         for (int col = 0; col < 4; col++) {
 
-            if (mActive[row][col]) {
+            if ((disp) ? mDisp[row][col] : mActive[row][col]) {
                 rowMajorCount[row]++;
                 colMajorCount[col]++;
                 if (row == col) {
@@ -84,15 +87,10 @@ bool BingoMgr::BingoCard::CheckLine(const int min) {
     }
 
     for (int i = 0; i < 4; i++) {
-        DebugReport("rowMajorCount[%i] %i\n", i, rowMajorCount[i]);
-        DebugReport("colMajorCount[%i] %i\n", i, colMajorCount[i]);
         if (rowMajorCount[i] >= min || colMajorCount[i] >= min) {
             return true;
         }
     }
-
-    DebugReport("XequYCornerCount %i\n", XequYCornerCount);
-    DebugReport("XnotYCornerCount %i\n", XnotYCornerCount);
 
     if (XequYCornerCount >= min || XnotYCornerCount >= min) {
         return true;
@@ -101,9 +99,7 @@ bool BingoMgr::BingoCard::CheckLine(const int min) {
     return false;
 }
 
-bool BingoMgr::BingoCard::CheckLine(const int min, LineData& line) {
-    DebugReport("BingoMgr::BingoCard::CheckLine(int, LineData&)\n");
-    
+bool BingoMgr::BingoCard::CheckLine(const int min, LineData& line, bool disp) {    
     int rowMajorCount[4] = { 0, 0, 0, 0 };
     int colMajorCount[4] = { 0, 0, 0, 0 };
     int XequYCornerCount = 0;
@@ -112,7 +108,7 @@ bool BingoMgr::BingoCard::CheckLine(const int min, LineData& line) {
     for (int row = 0; row < 4; row++) {
         for (int col = 0; col < 4; col++) {
 
-            if (mActive[row][col]) {
+            if ((disp) ? mDisp[row][col] : mActive[row][col]) {
                 rowMajorCount[row]++;
                 colMajorCount[col]++;
                 if (row == col) {
@@ -142,9 +138,6 @@ bool BingoMgr::BingoCard::CheckLine(const int min, LineData& line) {
         }
     }
 
-    DebugReport("XequYCornerCount %i\n", XequYCornerCount);
-    DebugReport("XnotYCornerCount %i\n", XnotYCornerCount);
-
     if (XequYCornerCount >= min) {
         for (int i = 0; i < 4; i++) {
             line.mXValues[i] = i;
@@ -162,6 +155,70 @@ bool BingoMgr::BingoCard::CheckLine(const int min, LineData& line) {
     }
     
     return false;
+}
+
+int BingoMgr::BingoCard::CheckLine(const int min, LineData* lines, int arraySize, bool disp) {
+    int lineCount = 0;
+    
+    int rowMajorCount[4] = { 0, 0, 0, 0 };
+    int colMajorCount[4] = { 0, 0, 0, 0 };
+    int XequYCornerCount = 0;
+    int XnotYCornerCount = 0;
+
+    for (int row = 0; row < 4; row++) {
+        for (int col = 0; col < 4; col++) {
+
+            if ((disp) ? mDisp[row][col] : mActive[row][col]) {
+                rowMajorCount[row]++;
+                colMajorCount[col]++;
+                if (row == col) {
+                    XequYCornerCount++;
+                }
+                if (row == 3 - col) {
+                    XnotYCornerCount++;
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (rowMajorCount[i] >= min) {
+            for (int row = 0; row < 4; row++) {
+                lines[lineCount].mXValues[row] = i;
+                lines[lineCount].mYValues[row] = row;
+            }
+            lineCount++;
+            if (arraySize == lineCount) return lineCount;
+        }
+        if (colMajorCount[i] >= min) {
+            for (int col = 0; col < 4; col++) {
+                lines[lineCount].mXValues[col] = col;
+                lines[lineCount].mYValues[col] = i;
+            }
+            lineCount++;
+            if (arraySize == lineCount) return lineCount;
+        }
+    }
+
+    if (XequYCornerCount >= min) {
+        for (int i = 0; i < 4; i++) {
+            lines[lineCount].mXValues[i] = i;
+            lines[lineCount].mYValues[i] = i;
+        }
+        lineCount++;
+        if (arraySize == lineCount) return lineCount;
+    }
+
+    if (XnotYCornerCount >= min) {
+        for (int i = 0; i < 4; i++) {
+            lines[lineCount].mXValues[i] = 3 - i;
+            lines[lineCount].mYValues[i] = i;
+        }
+        lineCount++;
+        if (arraySize == lineCount) return lineCount;
+    }
+    
+    return lineCount;
 }
 
 void BingoMgr::read(Stream& stream) {
@@ -269,6 +326,19 @@ void BingoMgr::TeamReceivePellet(int team, Pellet* pellet) {
     if (idx == -1) {
         mCards[team].ReceivePellet(mKey, pellet);
         mCards[team].ReceiveDispPellet(mKey, pellet);
+        
+        
+    }
+
+    bool isOlimar = !isTeamLouie(team);
+
+    if (mWinner != -1) {
+        PSSetLastBeedamaDirection(isOlimar, false);
+    }
+    else if (!mBedamaSound[isOlimar] && mCards[team].CheckLine(3, true)) {
+        DebugReport("BEDAMA!\n");
+        mBedamaSound[isOlimar] = true;
+        PSSetLastBeedamaDirection(isOlimar, true);
     }
 }
 
@@ -319,7 +389,6 @@ int BingoMgr::BingoCard::ReceiveDispPellet(ObjectKey& key, Pellet* pellet) {
     int configIdx = key.FindPellet(kind, id);
 
     for (int i = 0; i < 4 * 4; i++) {
-        DebugReport("Data at %i | obj %i, active %i, disp %i\n", i, mObjects[i], mActive[i], mDisp[i]);
         if (reinterpret_cast<u8*>(mObjects)[i] == configIdx && reinterpret_cast<bool*>(mActive)[i] && !reinterpret_cast<bool*>(mDisp)[i]) {
             reinterpret_cast<bool*>(mDisp)[i] = true;
             return i;

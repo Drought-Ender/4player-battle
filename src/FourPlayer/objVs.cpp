@@ -752,6 +752,60 @@ void FourObjVs::doDraw(Graphics& gfx) {
     }
     ObjVs::doDraw(gfx);
 	mTimerScreen->draw(gfx, gfx.mPerspGraph);
+	if (gGameModeID == MAINGAME_BINGO) {
+		DrawThreeInARow(gfx);
+	}
+}
+
+void FourObjVs::DrawThreeInARow(Graphics& gfx) {
+
+	if (mDisp->mBingoMgr->mWinner != -1) return;
+
+	J2DPerspGraph* graf = &gfx.mPerspGraph;
+	graf->setPort();
+
+	JUtility::TColor color1 = 0xffffffff;
+	JUtility::TColor color2 = 0x000000ff;
+	
+
+	for (int player = 0; player < 4; player++) {
+		int team = Game::getVsTeam_s(player);
+		Game::VsGame::BingoMgr::BingoCard& card = mDisp->mBingoMgr->mCards[team];
+		Game::VsGame::BingoMgr::ObjectKey& key = mDisp->mBingoMgr->mKey;
+
+		Game::VsGame::BingoMgr::LineData data[10];
+
+		int count = card.CheckLine(3, data, ARRAY_SIZE(data), true);
+
+		for (int i = 0; i < count; i++) {
+			int x1 = data[i].mXValues[0];
+			int x2 = data[i].mXValues[3];
+
+			int y1 = data[i].mYValues[0];
+			int y2 = data[i].mYValues[3];
+
+			Vector2f pos1;
+			Vector2f pos2;
+
+			og::Screen::calcGlbCenter(mBingoCards[player].mPaneBase[x1][y1], &pos1);
+			og::Screen::calcGlbCenter(mBingoCards[player].mPaneBase[x2][y2], &pos2);
+
+			JGeometry::TVec2f first = pos1;
+			JGeometry::TVec2f second = pos2;
+
+			u8 oldWidth = graf->mLineWidth;
+
+			graf->setLineWidth(10);
+			graf->setColor(color2);
+			graf->line(first, second);
+
+			graf->setLineWidth(4);
+			graf->setColor(color1);
+			graf->line(first, second);
+
+			graf->setLineWidth(oldWidth);
+		}
+	}
 }
 
 inline void FourObjVs::CheckWindama(int idx, int playerID, bool doEfx, bool& isWin) {
@@ -962,16 +1016,16 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 		} else if (P1win) {
 			mPlayWinSound = true;
 			ogSound->setVsWin1P();
-		} else if (P2win) {
-			mPlayWinSound = true;
-			ogSound->setVsWin2P();
 		} else if (P3win) {
 			mPlayWinSound = true;
-			ogSound->setVsWin2P();
+			ogSound->setVsWin1P();
 		}
 		else if (P4win) {
 			mPlayWinSound = true;
 			ogSound->setVsWin1P();
+		} else if (P2win) {
+			mPlayWinSound = true;
+			ogSound->setVsWin2P();
 		}
 	}
 }
@@ -991,10 +1045,14 @@ void FourObjVs::setOnOffBingo(bool doEfx) {
 
 				if (card.mDisp[x][y] && !mBingoCards[i].mFlags[x][y]) {
 					mBingoCards[i].mFlags[x][y] = true;
-					mBingoCards[i].mScaleMgrs[x][y]->up();
-					og::ogSound->setSE(PSSE_SY_EQUIP_LADER);
+
 					mBingoCards[i].mPaneBase[x][y]->changeTexture(mPaneBingoGet->getTIMG(0), 0);
 					mBingoCards[i].mPaneBase[x][y]->setWhite(gBingoGetColors[team]);
+
+					if (doEfx) {
+						mBingoCards[i].mScaleMgrs[x][y]->up();
+						og::ogSound->setSE(PSSE_SY_EQUIP_LADER);
+					}
 				}
 			}
 		}
@@ -1023,7 +1081,7 @@ void FourObjVs::setWinBingoBounce() {
 
 	for (int player = 0; player < 4; player++) {
 		if (Game::getVsTeam_s(player) != team) {
-			continue;;
+			continue;
 		}
 
 		for (int i = 0; i < 4; i++) {
