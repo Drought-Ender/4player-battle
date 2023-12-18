@@ -109,6 +109,20 @@ struct GameMessageVsGetBingoOtakara : public GameMessage {
 	Pellet* mPellet; // _08
 };
 
+struct GameMessageVsBingoOtakaraSuckStart : public GameMessage {
+	inline GameMessageVsBingoOtakaraSuckStart(u32 onyonType)
+	    : mTeamColor(onyonType)
+	    , mPellet(nullptr)
+	{
+	}
+
+	virtual bool actVs(VsGameSection*); // _10
+
+	// _00 = VTBL
+	u32 mTeamColor; // _04, onyon type according to ghidra, but that enum is meant to be a short
+	Pellet* mPellet; // _08
+};
+
 struct GameMessageVsGetMiniOtakara : public GameMessage {
 	inline GameMessageVsGetMiniOtakara(u32 onyonType)
 	    : mTeamColor(onyonType)

@@ -924,6 +924,36 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, MarbleT
 	
 }
 
+void GameState::onBingoSuckStart(VsGameSection* section, int teamID, Pellet* pelt) {
+	bool isWin = section->mBingoMgr->mCards[teamID].PelletSuckProcedure(section->mBingoMgr->mKey, pelt);
+
+	if (isWin && !_16) {
+
+		section->mBingoMgr->mWinner = teamID;
+
+		u8 loseReason = VSLOSE_ColoredMarble;
+
+		_16 = true;
+
+		for (int i = 0; i < 4; i++) {
+			if (i != teamID) {
+				BitFlag<u8>& loseCauses = mLoseCauses[i];
+				setLoseCause(loseCauses, loseReason);
+			}
+		}
+
+		Onyon* onyon                 = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(teamID));
+		BaseGameSection* baseSection = gameSystem->mSection;
+
+		MoviePlayArg movieArgs("x19_vs_bedama", nullptr, baseSection->mMovieFinishCallback, 0);
+		movieArgs.mPelletName    = const_cast<char*>(VsOtakaraName::cBedamaRed);
+		movieArgs.mDelegateStart = baseSection->mMovieStartCallback;
+		movieArgs.setTarget(onyon);
+
+		moviePlayer->play(movieArgs);
+	}
+}
+
 
 
 /*

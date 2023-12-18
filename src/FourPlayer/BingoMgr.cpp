@@ -23,6 +23,8 @@ JKRArchive* yamashitaArchive = nullptr;
 JKRArchive* matobaArchive = nullptr;
 
 void BingoMgr::init(VsGameSection* section) {
+    mWinner = -1;
+
     int lastChar = strlen(section->mEditFilename);
 
 	char properCaveName[32];
@@ -56,6 +58,110 @@ void BingoMgr::init(VsGameSection* section) {
         matobaArchive->unmount();
     }
     DebugReport("All is well\n");
+}
+
+bool BingoMgr::BingoCard::CheckLine(const int min) {
+    
+    int rowMajorCount[4] = { 0, 0, 0, 0 };
+    int colMajorCount[4] = { 0, 0, 0, 0 };
+    int XequYCornerCount = 0;
+    int XnotYCornerCount = 0;
+
+    for (int row = 0; row < 4; row++) {
+        for (int col = 0; col < 4; col++) {
+
+            if (mActive[row][col]) {
+                rowMajorCount[row]++;
+                colMajorCount[col]++;
+                if (row == col) {
+                    XequYCornerCount++;
+                }
+                if (row == 3 - col) {
+                    XnotYCornerCount++;
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < 4; i++) {
+        DebugReport("rowMajorCount[%i] %i\n", i, rowMajorCount[i]);
+        DebugReport("colMajorCount[%i] %i\n", i, colMajorCount[i]);
+        if (rowMajorCount[i] >= min || colMajorCount[i] >= min) {
+            return true;
+        }
+    }
+
+    DebugReport("XequYCornerCount %i\n", XequYCornerCount);
+    DebugReport("XnotYCornerCount %i\n", XnotYCornerCount);
+
+    if (XequYCornerCount >= min || XnotYCornerCount >= min) {
+        return true;
+    }
+    
+    return false;
+}
+
+bool BingoMgr::BingoCard::CheckLine(const int min, LineData& line) {
+    DebugReport("BingoMgr::BingoCard::CheckLine(int, LineData&)\n");
+    
+    int rowMajorCount[4] = { 0, 0, 0, 0 };
+    int colMajorCount[4] = { 0, 0, 0, 0 };
+    int XequYCornerCount = 0;
+    int XnotYCornerCount = 0;
+
+    for (int row = 0; row < 4; row++) {
+        for (int col = 0; col < 4; col++) {
+
+            if (mActive[row][col]) {
+                rowMajorCount[row]++;
+                colMajorCount[col]++;
+                if (row == col) {
+                    XequYCornerCount++;
+                }
+                if (row == 3 - col) {
+                    XnotYCornerCount++;
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (rowMajorCount[i] >= min) {
+            for (int row = 0; row < 4; row++) {
+                line.mXValues[row] = i;
+                line.mYValues[row] = row;
+            }
+            return true;
+        }
+        if (colMajorCount[i] >= min) {
+            for (int col = 0; col < 4; col++) {
+                line.mXValues[col] = col;
+                line.mYValues[col] = i;
+            }
+            return true;
+        }
+    }
+
+    DebugReport("XequYCornerCount %i\n", XequYCornerCount);
+    DebugReport("XnotYCornerCount %i\n", XnotYCornerCount);
+
+    if (XequYCornerCount >= min) {
+        for (int i = 0; i < 4; i++) {
+            line.mXValues[i] = i;
+            line.mYValues[i] = i;
+        }
+        return true;
+    }
+
+    if (XnotYCornerCount >= min) {
+        for (int i = 0; i < 4; i++) {
+            line.mXValues[i] = 3 - i;
+            line.mYValues[i] = i;
+        }
+        return true;
+    }
+    
+    return false;
 }
 
 void BingoMgr::read(Stream& stream) {
@@ -137,6 +243,7 @@ void BingoMgr::BingoCard::Generate(ObjectKey& key) {
 
             mObjects[x][y] = entryArray[randIdx];
             mActive[x][y]  = false;
+            mDisp[x][y] = false;
 
             totalEntries--;
 
@@ -158,7 +265,11 @@ void BingoMgr::GenerateCards() {
 }
 
 void BingoMgr::TeamReceivePellet(int team, Pellet* pellet) {
-    mCards[team].ReceivePellet(mKey, pellet);
+    int idx = mCards[team].ReceiveDispPellet(mKey, pellet);
+    if (idx == -1) {
+        mCards[team].ReceivePellet(mKey, pellet);
+        mCards[team].ReceiveDispPellet(mKey, pellet);
+    }
 }
 
 int BingoMgr::ObjectKey::FindPellet(u8 kind, s16 id) {
@@ -171,7 +282,11 @@ int BingoMgr::ObjectKey::FindPellet(u8 kind, s16 id) {
     return -1;
 }
 
-void BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
+/// @brief Updates bingo card for recieving a pellet
+/// @param key ObjectKey from the bingoMgr
+/// @param pellet The Pellet Recieved
+/// @return The changed id from 0 to 15
+int BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
     u8 kind = pellet->getKind();
     s16 id = pellet->mConfig->mParams.mIndex;
 
@@ -194,6 +309,32 @@ void BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
     DebugReport("Updating %i %i!\n", selectedID / 4, selectedID % 4);
 
     reinterpret_cast<bool*>(mActive)[selectedID] = true;
+
+    return selectedID;
+}
+
+int BingoMgr::BingoCard::ReceiveDispPellet(ObjectKey& key, Pellet* pellet) {
+    u8 kind = pellet->getKind();
+    s16 id = pellet->mConfig->mParams.mIndex;
+    int configIdx = key.FindPellet(kind, id);
+
+    for (int i = 0; i < 4 * 4; i++) {
+        DebugReport("Data at %i | obj %i, active %i, disp %i\n", i, mObjects[i], mActive[i], mDisp[i]);
+        if (reinterpret_cast<u8*>(mObjects)[i] == configIdx && reinterpret_cast<bool*>(mActive)[i] && !reinterpret_cast<bool*>(mDisp)[i]) {
+            reinterpret_cast<bool*>(mDisp)[i] = true;
+            return i;
+        }
+    }
+    DebugReport("Bingo disp not found, This is a little concerning\n");
+    return -1;
+}
+
+bool BingoMgr::BingoCard::PelletSuckProcedure(ObjectKey& key, Pellet* pellet) {
+    int changedID = ReceivePellet(key, pellet);
+    DebugReport("Changed id %i\n", changedID);
+    bool success = CheckLine(4);
+
+    return success;
 }
 
 } // namespace VsGame

@@ -291,7 +291,8 @@ struct FourObjVs : public ObjVs {
 
 	void doUpdateCommon();
 	void setOnOffBdama4P(bool doEfx);
-	void setOnOffBingo();
+	void setOnOffBingo(bool doEfx);
+	void setWinBingoBounce();
 	void updateCSticks();
 	void checkObake();
 	void recolorPane(P2DScreen::Mgr_tuning*, JUtility::TColor&);

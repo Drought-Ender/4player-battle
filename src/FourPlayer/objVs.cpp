@@ -100,7 +100,6 @@ const JUtility::TColor gBingoGetColors[4] = {
 void FourObjVs::BingoCard::Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictureEx* itemPane, f32 scale, f32 baseX, f32 baseY, int id) {
 	f32 incSize = 25.0f * scale;
 
-	OSReport("FourObjVs::BingoCard::Setup(... %p)\n", itemPane);
 
 	P2ASSERT(basePane);
 	P2ASSERT(itemPane);
@@ -112,9 +111,7 @@ void FourObjVs::BingoCard::Setup(J2DPane* root, J2DPictureEx* basePane, J2DPictu
 			mFlags[x][y] = false;
 			mScaleMgrs[x][y] = new og::Screen::ScaleMgr;
 
-			OSReport("StartCopy\n");
 			mPaneBase[x][y] = og::Screen::CopyPictureToPane(basePane, root, baseX + xoffs, baseY + yoffs, 'bpb_000' + id * 16 + x * 4 + y);
-			OSReport("...\n");
 			P2ASSERT(itemPane);
 			P2ASSERT(itemPane->getTIMG(0));
 			mPaneItem[x][y] = og::Screen::CopyPictureToPane(itemPane, root, baseX + xoffs, baseY + yoffs, 'bpi_000' + id * 16 + x * 4 + y);
@@ -637,7 +634,7 @@ void FourObjVs::doUpdateCommon() {
     	setOnOffBdama4P(!mSetBedamaFlag && !Game::moviePlayer->isActive());
 	}
 	else if (gGameModeID == MAINGAME_BINGO) {
-		setOnOffBingo();
+		setOnOffBingo(!mSetBedamaFlag && !Game::moviePlayer->isActive());
 	}
     checkObake();
 	updateCSticks();
@@ -775,7 +772,7 @@ inline void FourObjVs::CheckWindama(int idx, int playerID, bool doEfx, bool& isW
 					Vector2f pos;
 					og::Screen::calcGlbCenter(windamaPanes[playerID][idx], &pos);
 					const TColorPair& colors = gGetMarbleColors[mWinDamaColor[0]];
-					efx2d::ArgScaleColorColor arg(&pos, 1.0f, colors[0], colors[1]);
+					efx2d::ArgScaleColorColor arg(&pos, mBedamaScale, colors[0], colors[1]);
 					efx2d::T2DSprayset_forVS efx;
 					efx.create(&arg);
 					ogSound->setBdamaGet();
@@ -824,7 +821,7 @@ inline void FourObjVs::CheckBedama(int idx, int playerID, bool doEfx, f32 scale,
 					Vector2f pos;
 					og::Screen::calcGlbCenter(bedamaPanes[playerID][idx], &pos);
 
-					efx2d::ArgScaleColorColor arg(&pos, 1.0f, 0xcfcf00ff, 0xe7e757ff);
+					efx2d::ArgScaleColorColor arg(&pos, mBedamaScale, 0xcfcf00ff, 0xe7e757ff);
 					efx2d::T2DSprayset_forVS efx;
 					efx.create(&arg);
 				}
@@ -864,7 +861,7 @@ inline void FourObjVs::CheckMiniBedama(int idx, int playerID, bool doEfx, f32 sc
 				Vector2f pos;
 				og::Screen::calcGlbCenter(mPane_minibedama[playerID][idx], &pos);
 
-				efx2d::ArgScaleColorColor arg(&pos, 0.5f, 0xcfcf00ff, 0xe7e757ff);
+				efx2d::ArgScaleColorColor arg(&pos, 0.5f * mBedamaScale, 0xcfcf00ff, 0xe7e757ff);
 				efx2d::T2DSprayset_forVS efx;
 				efx.create(&arg);
 			}
@@ -979,7 +976,7 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 	}
 }
 
-void FourObjVs::setOnOffBingo() {
+void FourObjVs::setOnOffBingo(bool doEfx) {
 	for (int i = 0; i < 4; i++) {
 		int team = Game::getVsTeam_s(i);
 		Game::VsGame::BingoMgr::BingoCard& card = mDisp->mBingoMgr->mCards[team];
@@ -992,7 +989,7 @@ void FourObjVs::setOnOffBingo() {
 				mBingoCards[i].mPaneBase[x][y]->updateScale(scale * mBedamaScale);
 				mBingoCards[i].mPaneItem[x][y]->updateScale(scale * mBedamaScale);
 
-				if (card.mActive[x][y] && !mBingoCards[i].mFlags[x][y]) {
+				if (card.mDisp[x][y] && !mBingoCards[i].mFlags[x][y]) {
 					mBingoCards[i].mFlags[x][y] = true;
 					mBingoCards[i].mScaleMgrs[x][y]->up();
 					og::ogSound->setSE(PSSE_SY_EQUIP_LADER);
@@ -1002,6 +999,51 @@ void FourObjVs::setOnOffBingo() {
 			}
 		}
 	}
+
+	if (!mPlayWinSound) {
+		if (mDisp->mBingoMgr->mWinner != -1 && doEfx) {
+			mPlayWinSound = true;
+			ogSound->setVsWin1P();
+			mDoneState = 1;
+			setWinBingoBounce();
+		}
+	}
+}
+
+void FourObjVs::setWinBingoBounce() {
+	DebugReport("FourObjVs::setWinBingoBounce()\n");
+	int team = mDisp->mBingoMgr->mWinner;
+	Game::VsGame::BingoMgr::BingoCard& card = mDisp->mBingoMgr->mCards[team];
+	Game::VsGame::BingoMgr::ObjectKey& key = mDisp->mBingoMgr->mKey;
+	
+	Game::VsGame::BingoMgr::LineData lineData;
+	bool found = card.CheckLine(4, lineData);
+	P2ASSERT(found);
+	DebugReport("Found line\n");
+
+	for (int player = 0; player < 4; player++) {
+		if (Game::getVsTeam_s(player) != team) {
+			continue;;
+		}
+
+		for (int i = 0; i < 4; i++) {
+			int x = lineData.mXValues[i];
+			int y = lineData.mYValues[i];
+			DebugReport("X, Y, i | %i, %i\n", x, y, i);
+			mBingoCards[player].mScaleMgrs[x][y]->up();
+
+			Vector2f pos;
+			og::Screen::calcGlbCenter(mBingoCards[player].mPaneBase[x][y], &pos);
+			const TColorPair& colors = gGetMarbleColors[team];
+			efx2d::ArgScaleColorColor arg(&pos, 0.325f * mBedamaScale, colors[0], colors[1]);
+			efx2d::T2DSprayset_forVS efx;
+			efx.create(&arg);
+		}
+	}
+	
+	
+
+	
 }
 
 union U32Name

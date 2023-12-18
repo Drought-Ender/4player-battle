@@ -353,6 +353,7 @@ struct State : public FSMState<VsGameSection> {
 	virtual bool goingToCave(VsGameSection*) { return false; }            // _3C (weak)
 	virtual void onBattleFinished(VsGameSection*, int, bool) { }          // _40 (weak)
 	virtual void onRedOrBlueSuckStart(VsGameSection*, int, MarbleType) { }      // _44 (weak)
+	virtual void onBingoSuckStart(VsGameSection*, int, Pellet*) { }
 	virtual bool isCardUsable(VsGameSection*) { return false; }           // _48 (weak)
 	virtual void onYellowBedamaGet(VsGameSection*) { }
 	virtual void onMiniBedamaGet(VsGameSection*) { }
@@ -382,6 +383,7 @@ struct GameState : public State {
 	virtual bool goingToCave(VsGameSection*);                     // _3C
 	virtual void onBattleFinished(VsGameSection*, int, bool);     // _40
 	virtual void onRedOrBlueSuckStart(VsGameSection*, int, MarbleType); // _44
+	virtual void onBingoSuckStart(VsGameSection*, int, Pellet*);
 	virtual bool isCardUsable(VsGameSection*);                    // _48
 	virtual void drawStatus(Graphics&, VsGameSection*);           // _4C
 	virtual void do_init(VsGameSection*);                         // _50

@@ -24,7 +24,7 @@
 #include "Dolphin/rand.h"
 #include "Game/Entities/PelletNumber.h"
 #include "DroughtLib.h"
-
+#include "VsOptions.h"
 
 void theEntropyFunction() {
 	OSReport("This function exists because weird things happen");
@@ -339,6 +339,17 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 	} else if (gameSystem->mMode == GSM_VERSUS_MODE) {
 		int type = pellet->mPelletFlag;
 		int team = getTeamFromPiki((EPikiKind)static_cast<Onyon*>(mOnyon)->mOnyonType);
+
+
+		if (gGameModeID == MAINGAME_BINGO) {
+			
+			pellet->movie_begin(false);
+			mOnyon->movie_begin(false);
+			GameMessageVsBingoOtakaraSuckStart mesg(team);
+			mesg.mPellet = pellet;
+			gameSystem->mSection->sendMessage(mesg);
+		}
+
 		if ((u32)type == Pellet::FLAG_VS_BEDAMA_RED) {
 			pellet->movie_begin(false);
 			mOnyon->movie_begin(false);

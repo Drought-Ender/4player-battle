@@ -45,13 +45,23 @@ struct BingoMgr
         
     };
 
+    struct LineData {
+        u8 mXValues[4];
+        u8 mYValues[4];
+    };
+
     struct BingoCard
     {
         u8 mObjects[4][4];
         bool mActive[4][4];
+        bool mDisp[4][4];
 
         void Generate(ObjectKey& key);
-        void ReceivePellet(ObjectKey& key, Pellet* pellet);
+        int ReceiveDispPellet(ObjectKey& key, Pellet* pellet);
+        int ReceivePellet(ObjectKey& key, Pellet* pellet);
+        bool CheckLine(int min);
+        bool CheckLine(int min, LineData& data);
+        bool PelletSuckProcedure(ObjectKey& key, Pellet* pellet);
     };
 
     void GenerateCards();
@@ -63,7 +73,7 @@ struct BingoMgr
 
     ObjectKey mKey;
     BingoCard* mCards; // array
-    
+    int mWinner;
 };
 
 

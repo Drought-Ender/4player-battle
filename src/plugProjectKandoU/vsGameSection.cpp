@@ -1023,6 +1023,14 @@ bool GameMessageVsGetDoping::actVs(VsGameSection* section)
 
 bool GameMessageVsGetBingoOtakara::actVs(VsGameSection* section) {
 	section->mBingoMgr->TeamReceivePellet(mTeamColor, mPellet);
+	return true;
+}
+
+bool GameMessageVsBingoOtakaraSuckStart::actVs(VsGameSection* section) {
+	if (section->mState) {
+		section->mState->onBingoSuckStart(section, mTeamColor, mPellet);
+	}
+	return true;
 }
 
 /*
