@@ -5,6 +5,7 @@
 #include "Game/VsGame.h"
 #include "Game/generalEnemyMgr.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
+#include "DroughtLib.h"
 #include "utilityU.h"
 
 namespace Game
@@ -237,13 +238,13 @@ void BingoMgr::ObjectKey::read(Stream& stream) {
 }
 
 void BingoMgr::ObjectKey::Object::read(Stream& stream) {
-    DebugReport("again?\n");
     char nameBuffer[64];
 
     char* objectName = stream.readString(nameBuffer, 64);
     DebugReport("Objname %s\n", objectName);
 
     mExistCount = stream.readByte();
+    mWeight = stream.readFloat();
 
     PelletInitArg initArg;
     PelletList::cKind cKind;
@@ -314,6 +315,456 @@ void BingoMgr::BingoCard::Generate(ObjectKey& key) {
 
     delete[] entryArray;
 
+    ReweighCard(key);
+}
+
+f32 BingoMgr::ObjectKey::GetTotalWeight() {
+    f32 total = 0.0f;
+    for (int i = 0; i < mObjectNum; i++) {
+        total += mObjectEntries[i].mExistCount * mObjectEntries[i].mWeight;
+    }
+    return total;
+}
+
+void BingoMgr::BingoCard::Swap(int idx1, int idx2) {
+    u8 temp = reinterpret_cast<u8*>(mObjects)[idx1];
+    reinterpret_cast<u8*>(mObjects)[idx1] = reinterpret_cast<u8*>(mObjects)[idx2];
+    reinterpret_cast<u8*>(mObjects)[idx2] = temp;
+}
+
+void BingoMgr::BingoCard::ReweighCard(ObjectKey& key) {
+    /*
+        The Plan:
+
+        SWAP THE MINIMUM CARD IN THE STRONGEST SPOT WITH EVERY OTHER CARD
+        KEEP THE SWAP THE HAS THE WORST BEST LINE
+    */
+
+
+    DebugReport("~~~~~~~ New Card! ~~~~~~~\n");
+
+    f32 totalWeight = key.GetTotalWeight();
+
+    // A line takes up 1/4th of the total bingo card
+    f32 expectedLineWeight = totalWeight / 4;
+
+    LineWeightReport weightReport = ReportWeightVerbose(key);
+
+    DebugReport("Expected Weight %f\n", expectedLineWeight);
+
+    int minLineIndex = DroughtLib::ArrayFunctions::ArrayMin(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+
+    f32 strongestLineWeight = weightReport.mWeight[minLineIndex];
+
+    int attempts = 0;
+
+    while (attempts < 10)
+    {
+        attempts++;
+        
+        f32 allMinWeights[16][16];
+
+        for (int firstSwapIndex = 0; firstSwapIndex < 16; firstSwapIndex++) {
+        
+
+            for (int swapIndex = 0; swapIndex < 16; swapIndex++) {
+
+                Swap(firstSwapIndex, swapIndex);
+
+                LineWeightReport testReport = ReportWeight(key);
+
+                int min2 = DroughtLib::ArrayFunctions::ArrayMin(testReport.mWeight, ARRAY_SIZE(testReport.mWeight));
+
+                allMinWeights[firstSwapIndex][swapIndex] = testReport.mWeight[min2];
+
+                Swap(swapIndex, firstSwapIndex);
+            }
+
+        }
+
+        Vector2i bestSwap = DroughtLib::ArrayFunctions::MatrixMax<f32, 16, 16>(allMinWeights);
+
+        DebugReport("Min Index %i | Other Index %i\n", bestSwap.x, bestSwap.y);
+
+        if (bestSwap.x == bestSwap.y) {
+            DebugReport("The search has proven fruitless\n");
+            break;
+        }
+
+        Swap(bestSwap.x, bestSwap.y);
+
+
+        weightReport = ReportWeightVerbose(key);
+
+        minLineIndex = DroughtLib::ArrayFunctions::ArrayMin(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+
+        strongestLineWeight = weightReport.mWeight[minLineIndex];
+    
+    }
+
+}
+
+void BingoMgr::BingoCard::ReweighCardByObjLineCompare(ObjectKey& key) {
+    /*
+        The Plan:
+        Find the minimum valued line, from that line, find the least value object
+        Find the maximum valued line, from that line, find the maximum value object
+
+        swap the two objects, repeat until a reasonable card is constructed
+    
+    */
+
+    DebugReport("~~~~~~~ New Card! ~~~~~~~\n");
+
+    f32 totalWeight = key.GetTotalWeight();
+
+    // A line takes up 1/4th of the total bingo card
+    f32 expectedLineWeight = totalWeight / 4;
+
+    DebugReport("Expected Weight %f\n", expectedLineWeight);
+
+    LineWeightReport weightReport = ReportWeight(key);
+
+    int attempts = 0;
+
+    
+
+    int minIdx = DroughtLib::ArrayFunctions::ArrayMin(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+    int maxIdx = DroughtLib::ArrayFunctions::ArrayMax(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+
+    f32 strongestLineWeight = weightReport.mWeight[minIdx];
+    
+    while (FABS(strongestLineWeight - expectedLineWeight) > 0.4f && attempts < 10) {
+
+        DroughtLib::StaticSizedArray<16, f32> weightsForMins = CalcPlacementWeights(key, weightReport);
+        DroughtLib::StaticSizedArray<16, f32> weightsForMaxs = CalcPlacementWeights(key, weightReport, true);
+
+        attempts++;
+
+        f32 minWeightArray[4];
+        f32 maxWeightArray[4];
+
+        LineData& minLine = weightReport.mLines[minIdx];
+        LineData& maxLine = weightReport.mLines[maxIdx];
+
+        u8 minIdxs[4];
+        u8 maxIdxs[4];
+
+        for (int i = 0; i < 4; i++) {
+            u8 minX = minLine.mXValues[i];
+            u8 minY = minLine.mYValues[i];
+
+            minIdxs[i] = minX * 4 + minY;
+
+            minWeightArray[i] = weightsForMins[minIdxs[i]];
+
+            u8 maxX = maxLine.mXValues[i];
+            u8 maxY = maxLine.mYValues[i];
+
+            maxIdxs[i] = maxX * 4 + maxY;
+
+            maxWeightArray[i] = weightsForMaxs[maxIdxs[i]];
+        }
+
+        int minMinIdx = DroughtLib::ArrayFunctions::ArrayMin(minWeightArray, ARRAY_SIZE(minWeightArray));
+
+        int trueMinIdx = minIdxs[minMinIdx];
+
+        DebugReport("Min Idx %i\n", trueMinIdx);
+
+        int maxMaxIdx = DroughtLib::ArrayFunctions::ArrayMax(maxWeightArray, ARRAY_SIZE(maxWeightArray));
+
+        int trueMaxIdx = maxIdxs[maxMaxIdx];
+
+        DebugReport("Max Idx %i\n", trueMaxIdx);
+
+        u8 holdThisPlease = reinterpret_cast<u8*>(mObjects)[trueMaxIdx];
+
+        reinterpret_cast<u8*>(mObjects)[trueMaxIdx] = reinterpret_cast<u8*>(mObjects)[trueMinIdx];
+
+        reinterpret_cast<u8*>(mObjects)[trueMinIdx] = holdThisPlease;
+
+
+        // reevaluate everything
+        weightReport = ReportWeight(key);
+
+        minIdx = DroughtLib::ArrayFunctions::ArrayMin(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+        maxIdx = DroughtLib::ArrayFunctions::ArrayMax(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+
+        strongestLineWeight = weightReport.mWeight[minIdx];
+    }
+}
+
+
+void BingoMgr::BingoCard::ReweighCardByObjShuffle(ObjectKey& key) {
+
+    DebugReport("~~~~~~~ New Card! ~~~~~~~\n");
+
+    f32 totalWeight = key.GetTotalWeight();
+
+    // A line takes up 1/4th of the total bingo card
+    f32 expectedLineWeight = totalWeight / 4;
+
+    LineWeightReport weightReport = ReportWeight(key);
+
+    DebugReport("Expected Weight %f\n", expectedLineWeight);
+
+    int minLineIndex = DroughtLib::ArrayFunctions::ArrayMin(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+
+    f32 strongestLineWeight = weightReport.mWeight[minLineIndex];
+
+    int attempts = 0;
+
+    while (FABS(strongestLineWeight - expectedLineWeight) > 0.4f && attempts < 10)
+    {
+        attempts++;
+
+        DroughtLib::StaticSizedArray<16, f32> weights = CalcPlacementWeights(key, weightReport);
+
+        int maxIdx = weights.MaxIdx();
+        int minIdx = weights.MinIdx();
+
+        DebugReport("Max Idx %i\n", maxIdx);
+        DebugReport("Min Idx %i\n", minIdx);
+
+        u8 holdThisPlease = reinterpret_cast<u8*>(mObjects)[minIdx];
+        reinterpret_cast<u8*>(mObjects)[minIdx] = reinterpret_cast<u8*>(mObjects)[maxIdx];
+        reinterpret_cast<u8*>(mObjects)[maxIdx] = holdThisPlease;
+
+        weightReport = ReportWeight(key);
+
+        minLineIndex = DroughtLib::ArrayFunctions::ArrayMin(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+
+        strongestLineWeight = weightReport.mWeight[minLineIndex];
+
+
+    }
+
+    
+
+}
+
+
+DroughtLib::StaticSizedArray<16, f32> BingoMgr::BingoCard::CalcPlacementWeights(ObjectKey& key, LineWeightReport& weightReport, bool evalSelf) {
+
+    DroughtLib::StaticSizedArray<16, f32> itemSums = 0.0f;
+    DroughtLib::StaticSizedArray<16, int> itemCounts = 0;
+
+    for (int i = 0; i < ARRAY_SIZE(weightReport.mLines); i++) {
+        LineData& line = weightReport.mLines[i];
+
+        for (int v = 0; v < 4; v++) {
+            int idx = line.mXValues[v] * 4 + line.mYValues[v];
+            if (evalSelf) {
+                itemSums[idx] += weightReport.mWeight[i] * key.mObjectEntries[reinterpret_cast<u8*>(mObjects)[idx]].mWeight;
+            }
+            else {
+                itemSums[idx] += weightReport.mWeight[i];
+            }
+            itemCounts[idx]++;
+        }
+
+    }
+
+    return itemSums;
+}
+
+DroughtLib::StaticSizedArray<16, f32> BingoMgr::BingoCard::CalcPlacementWeights(ObjectKey& key, bool evalSelf) {
+    LineWeightReport weightReport = ReportWeight(key);
+
+    return CalcPlacementWeights(key, weightReport, evalSelf);
+}
+
+
+void BingoMgr::BingoCard::ReweighCardByLineShuffle(ObjectKey& key) {
+
+    DebugReport("~~~~~~~ New Card! ~~~~~~~\n");
+
+    f32 totalWeight = key.GetTotalWeight();
+
+    // A line takes up 1/4th of the total bingo card
+    f32 expectedLineWeight = totalWeight / 4;
+
+    DebugReport("Expected Weight %f\n", expectedLineWeight);
+
+    LineWeightReport weightReport = ReportWeight(key);
+
+    int minIndex = DroughtLib::ArrayFunctions::ArrayMin(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+
+    f32 strongestLineWeight = weightReport.mWeight[minIndex];
+
+    int attempts = 0;
+
+    while (FABS(strongestLineWeight - expectedLineWeight) > 0.4f && attempts < 100)
+    {
+        DebugReport("Evaluated Min Index %i\n", minIndex);
+
+        attempts++;
+
+        const int ArrSize = ARRAY_SIZE(weightReport.mWeight);
+
+        // make an array of the weakest lines to strongest lines
+        DroughtLib::StaticSizedArray<ArrSize, int> indexList = DroughtLib::ArrayFunctions::MakeSortedIndexList<ArrSize>(weightReport.mWeight);
+
+        DebugReport("Index Array: ");
+        for (int i = 0; i < ArrSize; i++) {
+            DebugReport("%i ", indexList[i]);
+        }
+        DebugReport("\n");
+
+        Vector2i weakestPoint(0, 0);
+        Vector2i strongestPoint(0, 0);
+
+        bool success = false;
+
+
+        // find the next intersecting line with the strongest line
+        for (int i = 1; i < indexList.GetSize(); i++) {
+
+            LineData& compareLine = weightReport.mLines[indexList[i]];
+            LineData& ourLine = weightReport.mLines[minIndex];
+
+            for (int v = 0; v < 4; v++) {
+                for (int v2 = 0; v2 < 4; v2++) {
+                    if (compareLine.mXValues[v] == ourLine.mXValues[v2] && compareLine.mYValues[v] == ourLine.mYValues[v2]) {
+                        strongestPoint.x = compareLine.mXValues[v];
+                        strongestPoint.y = compareLine.mYValues[v];
+                        success = true;
+                        break;
+                    }
+                }
+                if (success) break;
+            }
+            if (success) break;
+        }
+
+        if (!success) {
+            DebugReport("not good 1\n");
+            break;
+        }
+
+        bool success2 = false;
+
+        int maxIndex = indexList[indexList.GetSize() - 1];
+
+        // find the next intersecting line with the weakest line
+        for (int i = indexList.GetSize() - 2; i >= 0; i--) {
+
+            LineData& compareLine = weightReport.mLines[indexList[i]];
+            LineData& ourLine = weightReport.mLines[maxIndex];
+
+            for (int v = 0; v < 4; v++) {
+                for (int v2 = 0; v2 < 4; v2++) {
+                    if (compareLine.mXValues[v] == ourLine.mXValues[v2] && compareLine.mYValues[v] == ourLine.mYValues[v2]) {
+                        weakestPoint.x = compareLine.mXValues[v];
+                        weakestPoint.y = compareLine.mYValues[v];
+                        if (mObjects[weakestPoint.x][weakestPoint.y] != mObjects[strongestPoint.x][strongestPoint.y]) {
+                            success2 = true;
+                        }
+                        break;
+                    }
+                }
+                if (success2) break;
+            }
+
+            if (success2) break;
+        }
+
+        if (!success2) {
+            DebugReport("Not good 2!\n");
+            break;
+        }
+
+
+        // now we have to the strongest point and the weakest point, to maximize ballence, we will swap them
+        u8 holdThisPlease = mObjects[weakestPoint.x][weakestPoint.y];
+        mObjects[weakestPoint.x][weakestPoint.y] = mObjects[strongestPoint.x][strongestPoint.y];
+        mObjects[strongestPoint.x][strongestPoint.y] = holdThisPlease;
+
+
+        // reevaluate everything
+        weightReport = ReportWeight(key);
+
+        minIndex = DroughtLib::ArrayFunctions::ArrayMin(weightReport.mWeight, ARRAY_SIZE(weightReport.mWeight));
+
+        strongestLineWeight = weightReport.mWeight[minIndex];
+
+
+    }
+    
+
+
+
+}
+
+BingoMgr::LineWeightReport BingoMgr::BingoCard::ReportWeight(ObjectKey& key) {
+    LineWeightReport report;
+
+    int lineCount = 0;
+
+    for (int i = 0; i < 4; i++) {
+        for (int row = 0; row < 4; row++) {
+            report.mLines[lineCount].mXValues[row] = i;
+            report.mLines[lineCount].mYValues[row] = row;
+
+            report.mWeight[lineCount] += key.mObjectEntries[mObjects[i][row]].mWeight;
+        }
+        lineCount++;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        for (int col = 0; col < 4; col++) {
+            report.mLines[lineCount].mXValues[col] = col;
+            report.mLines[lineCount].mYValues[col] = i;
+
+            report.mWeight[lineCount] += key.mObjectEntries[mObjects[col][i]].mWeight;
+        }
+        lineCount++;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        report.mLines[lineCount].mXValues[i] = i;
+        report.mLines[lineCount].mYValues[i] = i;
+
+        report.mWeight[lineCount] += key.mObjectEntries[mObjects[i][i]].mWeight;
+    }
+    lineCount++;
+    
+
+    for (int i = 0; i < 4; i++) {
+        report.mLines[lineCount].mXValues[i] = 3 - i;
+        report.mLines[lineCount].mYValues[i] = i;
+
+        report.mWeight[lineCount] += key.mObjectEntries[mObjects[3 - i][i]].mWeight;
+    }
+    lineCount++;
+
+
+    
+    return report;
+}
+
+BingoMgr::LineWeightReport BingoMgr::BingoCard::ReportWeightVerbose(ObjectKey& key) {
+    LineWeightReport report = ReportWeight(key);
+
+    DebugReport("Weight Report Summary:\n");
+    for (int i = 0; i < 10; i++) {
+        DebugReport("Line %i | Weight %f\n", i, report.mWeight[i]); 
+    }
+
+    DebugReport("Bingo Card Report:\n");
+    for (int x = 0; x < 4; x++) {
+        for (int y = 0; y < 4; y++) {
+            if (key.mObjectEntries[mObjects[x][y]].mPelType == 1) {
+                DebugReport("[x]");
+            }
+            else {
+                DebugReport("[o]");
+            }
+        }
+        DebugReport("\n");
+    }
+    return report;
 }
 
 void BingoMgr::GenerateCards() {
