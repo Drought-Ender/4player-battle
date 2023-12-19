@@ -26,9 +26,11 @@ JKRArchive* yamashitaArchive = nullptr;
 JKRArchive* matobaArchive = nullptr;
 
 void BingoMgr::init(VsGameSection* section) {
+    DebugReport("BingoMgr::init(VsGameSection*)\n");
     mWinner = -1;
     mBedamaSound[0] = false;
     mBedamaSound[1] = false;
+    mDeathInformed = false;
 
     int lastChar = strlen(section->mEditFilename);
 
@@ -885,6 +887,7 @@ void BingoMgr::CountExists() {
 }
 
 void BingoMgr::ObjectKey::CountExists() {
+    DebugReport("BingoMgr::ObjectKey::CountExists()\n");
     for (int i = 0; i < mObjectNum; i++) {
         mObjectEntries[i].mExistCount = 0;
     }
@@ -907,11 +910,16 @@ void BingoMgr::ObjectKey::CountExists() {
             mObjectEntries[idx].mExistCount = enemyNode->mMgr->mNumObjects;
         }
 
+        DebugReport("Finding enemy %i\n", enemyNode->mEnemyID);
+
         for (int i = 0; i < enemyNode->mMgr->mNumObjects; i++) {
             EnemyBase* enemy = enemyNode->mMgr->getEnemy(i);
-            if (enemy->mPelletDropCode) {
-                s16 dropCode  = enemy->mPelletDropCode;
-                u8 pelType = (u8)(dropCode >> 8);
+            if (enemy && !enemy->mPelletDropCode.isNull()) {
+                u8 dropCode  = enemy->mPelletDropCode;
+                u8 pelType = (u8)(enemy->mPelletDropCode.mValue >> 8);
+                const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)pelType)->getPelletConfig(dropCode)->mParams.mName.mData;
+                const char* enemyName = EnemyInfoFunc::getEnemyName(enemy->getEnemyTypeID(), 0xffff);
+                DebugReport("Found %s in %s\n", peltName, enemyName);
                 int idx = FindPellet(pelType, dropCode);
                 if (idx != -1) {
                     mObjectEntries[idx].mExistCount++;
@@ -954,10 +962,12 @@ void BingoMgr::ObjectKey::Object::CountExists() {
 
 void BingoMgr::informDeath(Pellet* pelt) {
     mKey.informDeath(pelt);
+    mDeathInformed = true;
 }
 
 void BingoMgr::informDeath(EnemyBase* enemy) {
     mKey.informDeath(enemy);
+    mDeathInformed = true;
 }
 
 void BingoMgr::ObjectKey::informDeath(Pellet* pelt) {

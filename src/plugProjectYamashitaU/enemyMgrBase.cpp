@@ -227,7 +227,6 @@ EnemyBase* EnemyMgrBase::birth(EnemyBirthArg& arg)
 		enemy->birth(arg.mPosition, arg.mFaceDir);
 		enemy->mExistDuration = arg.mExistenceLength;
 		enemy->setOtakaraCode(arg.mOtakaraItemCode);
-		OSReport("Set otakara code %i\n", enemy->mPelletDropCode.mValue);
 
 		enemy->mPelletInfo.mColor       = arg.mPelletInfo.mColor;
 		enemy->mPelletInfo.mSize        = arg.mPelletInfo.mSize;

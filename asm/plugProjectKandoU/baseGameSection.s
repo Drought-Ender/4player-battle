@@ -5297,8 +5297,8 @@ initGenerators__Q24Game15BaseGameSectionFv:
 /* 8014CE38 00149D78  4B FC 07 C1 */	bl allocateEnemys__Q24Game15GeneralEnemyMgrFUci
 /* 8014CE3C 00149D7C  80 6D 91 E0 */	lwz r3, generalEnemyMgr__4Game@sda21(r13)
 /* 8014CE40 00149D80  4B FC 01 75 */	bl setupSoundViewerAndBas__Q24Game15GeneralEnemyMgrFv
-/* 8014CE44 00149D84  80 6D 93 20 */	# lwz r3, pelletMgr__4Game@sda21(r13)
-/* 8014CE48 00149D88  48 02 05 61 */	# bl setupResources__Q24Game9PelletMgrFv
+/* 8014CE44 00149D84  80 6D 93 20 */	lwz r3, pelletMgr__4Game@sda21(r13)
+/* 8014CE48 00149D88  48 02 05 61 */	bl setupResources__Q24Game9PelletMgrFv
 /* 8014CE4C 00149D8C  3A 9D FF FF */	addi r20, r29, -1
 /* 8014CE50 00149D90  3A 61 01 98 */	addi r19, r1, 0x198
 /* 8014CE54 00149D94  56 80 10 3A */	slwi r0, r20, 2
@@ -11139,9 +11139,9 @@ mr r4, r3
 /* 80151104 0014E044  54 04 06 3E */	clrlwi r4, r0, 0x18
 /* 80151108 0014E048  4B FB C4 F1 */	# bl allocateEnemys__Q24Game15GeneralEnemyMgrFUci
 /* 8015110C 0014E04C  80 6D 91 E0 */	lwz r3, generalEnemyMgr__4Game@sda21(r13)
-/* 80151110 0014E050  4B FB BE A5 */	bl setupSoundViewerAndBas__Q24Game15GeneralEnemyMgrFv
+/* 80151110 0014E050  4B FB BE A5 */	# bl setupSoundViewerAndBas__Q24Game15GeneralEnemyMgrFv
 /* 80151114 0014E054  80 6D 93 20 */	lwz r3, pelletMgr__4Game@sda21(r13)
-/* 80151118 0014E058  48 01 C2 91 */	bl setupResources__Q24Game9PelletMgrFv
+/* 80151118 0014E058  48 01 C2 91 */	# bl setupResources__Q24Game9PelletMgrFv
 /* 8015111C 0014E05C  7F E3 FB 78 */	mr r3, r31
 /* 80151120 0014E060  81 9F 00 00 */	lwz r12, 0(r31)
 /* 80151124 0014E064  81 8C 00 58 */	lwz r12, 0x58(r12)

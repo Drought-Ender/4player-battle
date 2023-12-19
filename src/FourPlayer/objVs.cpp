@@ -1056,7 +1056,6 @@ void FourObjVs::setOnOffBingo(bool doEfx) {
 		}
 	}
 
-	bool someUpdate = false;
 	
 	for (int i = 0; i < 4; i++) {
 		int team = Game::getVsTeam_s(i);
@@ -1076,7 +1075,6 @@ void FourObjVs::setOnOffBingo(bool doEfx) {
 					mBingoCards[i].mPaneBase[x][y]->changeTexture(mPaneBingoGet->getTIMG(0), 0);
 					mBingoCards[i].mPaneBase[x][y]->setWhite(gBingoGetColors[team]);
 
-					someUpdate = true;
 
 					if (doEfx) {
 						mBingoCards[i].mScaleMgrs[x][y]->up();
@@ -1088,7 +1086,8 @@ void FourObjVs::setOnOffBingo(bool doEfx) {
 		}
 	}
 
-	if (someUpdate && !FourObjVs::sFlickerDNE) {
+	if (mDisp->mBingoMgr->mDeathInformed && !FourObjVs::sFlickerDNE) {
+		mDisp->mBingoMgr->mDeathInformed = false;
 		UpdateBingoCardTextures();
 	}
 	

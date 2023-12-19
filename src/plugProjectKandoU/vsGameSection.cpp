@@ -422,6 +422,7 @@ void VsGameSection::initPlayData()
 
 void VsGameSection::onSetupFloatMemory()
 {
+	DebugReport("VsGameSection::onSetupFloatMemory()\n");
 
 	Farm::farmMgr = nullptr;
 	mTekiMgr      = new VsGame::TekiMgr();
@@ -472,6 +473,7 @@ void VsGameSection::onSetupFloatMemory()
  */
 void VsGameSection::postSetupFloatMemory()
 {
+	DebugReport("VsGameSection::postSetupFloatMemory()\n");
 	if (gameSystem->isVersusMode()) {
 		mRedBlueYellowScore[1] = 0.0f;
 		mRedBlueYellowScore[0] = 0.0f;

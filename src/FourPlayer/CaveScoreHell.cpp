@@ -892,6 +892,8 @@ MapNode* RandItemUnit::getItemNormalSetMapNode(BaseGen** outGens)
 
 	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currMapNode)
 	{
+		int unitKind = currMapNode->mUnitInfo->getUnitKind();
+
 		if (currMapNode->mUnitInfo->getUnitKind() == UNITKIND_Room) {
 			int firstScore = absVal(currMapNode->getVersusScore(FIRST_SCORE) - skew[FIRST_SCORE] + mMapScore->mVersusHighScore[FIRST_SCORE] + mMapScore->mVersusLowScore[FIRST_SCORE]);
 			DebugReport("First score %i\n", firstScore);
@@ -916,7 +918,7 @@ MapNode* RandItemUnit::getItemNormalSetMapNode(BaseGen** outGens)
 				}
 			}
 
-		} else if (!strncmp(currMapNode->getUnitName(), "item", 4)) {
+		} else if ((unitKind == UNITKIND_Cap && !strncmp(currMapNode->getUnitName(), "item", 4)) || unitKind == UNITKIND_Corridor) {
 			int firstScore = absVal(currMapNode->getVersusScore(FIRST_SCORE) - skew[FIRST_SCORE] + mMapScore->mVersusHighScore[FIRST_SCORE] + mMapScore->mVersusLowScore[FIRST_SCORE]);
 			int secondScore = absVal(currMapNode->getVersusScore(SECOND_SCORE) - skew[SECOND_SCORE]);
 			
@@ -930,7 +932,7 @@ MapNode* RandItemUnit::getItemNormalSetMapNode(BaseGen** outGens)
 					finalScores[SECOND_SCORE] = currMapNode->getVersusScore(SECOND_SCORE);
 				}
 			}
-		}
+		} 
 	}
 
 	int skewUp = (finalScores[0] > 1) ? -10 : 10;

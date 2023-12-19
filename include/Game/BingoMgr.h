@@ -83,9 +83,9 @@ struct BingoMgr
         bool mDisp[4][4];
 
         void Generate(ObjectKey& key);
-        void ReweighCardByLineShuffle(ObjectKey& key);
-        void ReweighCardByObjShuffle(ObjectKey& key);
-        void ReweighCardByObjLineCompare(ObjectKey& key);
+        void ReweighCardByLineShuffle(ObjectKey& key); // depricated
+        void ReweighCardByObjShuffle(ObjectKey& key); // depricated
+        void ReweighCardByObjLineCompare(ObjectKey& key); // depricated
         void ReweighCard(ObjectKey& key);
         int ReceiveDispPellet(ObjectKey& key, Pellet* pellet);
         int ReceivePellet(ObjectKey& key, Pellet* pellet);
@@ -118,6 +118,7 @@ struct BingoMgr
     ObjectKey mKey;
     BingoCard* mCards; // array
     int mWinner;
+    bool mDeathInformed;
     bool mBedamaSound[2];
 };
 
