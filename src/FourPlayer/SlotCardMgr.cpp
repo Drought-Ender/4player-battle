@@ -174,6 +174,10 @@ struct FlowerCard : public VsSlotMachineCard
         return ToggleSprout();
     }
 
+    virtual int getVaribleForwardCount() {
+        return mFlowerSprouts;
+    }
+
     virtual const char* getDescription() {
         if (mFlowerSprouts) {
             return "Flowers all your pikmin and sprouts";
@@ -253,6 +257,10 @@ struct XLUCard : public VsSlotMachineCard
 
     virtual bool varibleBackward() {
         return ToggleEnemyXLU();
+    }
+
+    virtual int getVaribleForwardCount() {
+        return sEnemyXLU;
     }
 
 };
@@ -344,6 +352,10 @@ struct DopeCard : public VsSlotMachineCard
 
     virtual bool varibleBackward() {
         return ToggleSpray();
+    }
+
+    virtual int getVaribleForwardCount() {
+        return mUseDope;
     }
 
     virtual const char* getDescription() {
@@ -699,6 +711,10 @@ struct BedamaCard : public VsSlotMachineCard
 
     virtual bool varibleBackward() {
         return ToggleBedama();
+    }
+
+    virtual int getVaribleForwardCount() {
+        return mBuryBedama;
     }
 
 

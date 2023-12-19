@@ -28,33 +28,6 @@ void SetOption(OptionsEnum option, int value, bool hide = false) {
     gConfig[option] = value;
 }
 
-void Option::readOptions() {
-    DebugReport("Memory Size %i\n", MEMORY_SIZE);
-    DebugReport("Tournament Mode Ptr %p\n", &gTournamentMode);
-    if (gTournamentMode) {
-
-        SetOption(PLAYER_NAME, ConfigEnums::NAME_ON, true);
-        SetOption(MARBLE_BURY, ConfigEnums::PLACE_BURY);
-        SetOption(MARBLE_CARRY, ConfigEnums::CARRY_ON);
-        SetOption(SPICY_TYPE, ConfigEnums::SPICY_NERF, true);
-        SetOption(EGG_DROPS, ConfigEnums::EGG_SINGLE, true);
-        SetOption(PELLET_POSY, ConfigEnums::PELMATCH_ON, true);
-        SetOption(STALEMATE_TIMER, ConfigEnums::STALEMATE_ON, true);
-        SetOption(AUTOPLUCK, ConfigEnums::AUTOPLUCK_ON);
-        
-        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::ALL_FLOWER]->varibleForward();
-        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::RESET_BEDAMA]->varibleForward();
-
-        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::PIKMIN_XLU]->varibleForward();
-        
-        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_RED]->varibleForward();
-        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_BLACK]->varibleForward();
-
-        Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_RED] = false;
-        Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_BLACK] = false;
-    }
-}
-
 Option gOptions[] = {
     {
         "Display Names",
@@ -277,6 +250,99 @@ Option gOptions[] = {
         }
     }
 };
+
+void Option::GenerateOptionsFile() {
+    
+}
+
+void Option::OpenOptionsFile() {
+
+}
+
+void Option::SetDefaults() {
+    
+    DebugReport("Memory Size %i\n", MEMORY_SIZE);
+    DebugReport("Tournament Mode Ptr %p\n", &gTournamentMode);
+    if (gTournamentMode) {
+
+        SetOption(PLAYER_NAME, ConfigEnums::NAME_ON, true);
+        SetOption(MARBLE_BURY, ConfigEnums::PLACE_BURY);
+        SetOption(MARBLE_CARRY, ConfigEnums::CARRY_ON);
+        SetOption(SPICY_TYPE, ConfigEnums::SPICY_NERF, true);
+        SetOption(EGG_DROPS, ConfigEnums::EGG_SINGLE, true);
+        SetOption(PELLET_POSY, ConfigEnums::PELMATCH_ON, true);
+        SetOption(STALEMATE_TIMER, ConfigEnums::STALEMATE_ON, true);
+        SetOption(AUTOPLUCK, ConfigEnums::AUTOPLUCK_ON);
+        
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::ALL_FLOWER]->varibleForward();
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::RESET_BEDAMA]->varibleForward();
+
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::PIKMIN_XLU]->varibleForward();
+        
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_RED]->varibleForward();
+        Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_BLACK]->varibleForward();
+
+        Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_RED] = false;
+        Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_BLACK] = false;
+    }
+
+}
+
+void Option::ReadOptions(Stream& stream) {
+
+    int count = stream.readInt();
+
+    for (int i = 0; i < count; i++) {
+        int value = stream.readInt();;
+        if (i < ARRAY_SIZE(gOptions)) {
+            gOptions[i].value = value;
+        }
+    }
+
+    int cardCount = stream.readInt();
+
+    for (int i = 0; i < cardCount; i++) {
+        int varForward = stream.readInt();
+        if (Game::VsGame::VsSlotCardMgr::sAllCards[i]) {
+            for (int j = 0; j < varForward; j++) Game::VsGame::VsSlotCardMgr::sAllCards[i]->varibleForward();
+        }
+
+    }
+
+    for (int i = 0; i < 4; i++) {
+        sCharacters[i].read(stream);
+    }
+
+    gGameModeID = (EMainGamemodes)stream.readInt();
+
+
+    
+}
+
+void Option::WriteOptions(Stream& stream) {
+    int count = ARRAY_SIZE(gOptions);
+
+    stream.writeInt(count);
+
+    for (int i = 0; i < count; i++) {
+        stream.writeInt(gOptions[i].value);
+    }
+
+    int cardCount = ARRAY_SIZE(Game::VsGame::VsSlotCardMgr::sAllCards);
+    stream.writeInt(cardCount);
+
+    for (int i = 0; i < cardCount; i++) {
+        int varForward = Game::VsGame::VsSlotCardMgr::sAllCards[i]->getVaribleForwardCount();
+        stream.writeInt(varForward);
+    }
+
+    for (int i = 0; i < 4; i++) {
+        sCharacters[i].write(stream);
+    }
+
+    stream.writeInt(gGameModeID);
+}
+
 
 
 // gConfig
@@ -1109,13 +1175,28 @@ void CharacterData::initDefaults() {
     CharacterImage images[4];
 
     for (int i = 0; i < 4; i++) {
-        char* string = stream.readString(nullptr, 0);
-        strcpy(sCharacters[i].mName, string);
-        DebugReport("Name %i %s %s\n", i, string, sCharacters[i].mName);
-        sCharacters[i].makeDisplayName();
-        sCharacters[i].mImage = sCharacters[i].loadImage();
-        sCharacters[i].mCharaterID = i;
+        if (sCharacters[i].mCharaterID == -1) {
+            char* string = stream.readString(nullptr, 0);
+            strcpy(sCharacters[i].mName, string);
+            DebugReport("Name %i %s %s\n", i, string, sCharacters[i].mName);
+            sCharacters[i].makeDisplayName();
+            sCharacters[i].mImage = sCharacters[i].loadImage();
+            sCharacters[i].mCharaterID = i;
+        }
     }
+}
+
+void CharacterData::read(Stream& stream) {
+    mCharaterID = stream.readInt();
+    char* string = stream.readString(nullptr, 0);
+    strcpy(mName, string);
+    makeDisplayName();
+    mImage = loadImage();
+}
+
+void CharacterData::write(Stream& stream) {
+    stream.writeInt(mCharaterID);
+    stream.writeString(mName);
 }
 
 CharacterSelect::~CharacterSelect() {
@@ -1142,7 +1223,7 @@ void GamemodeSelect::load() {
 void GamemodeSelect::init(VsOptionsMenuMgr* mgr) {
     load();
 
-    mActiveMainGamemodeID = 0;
+    mActiveMainGamemodeID = gGameModeID;
     mCursorRow = 0;
     mCursorCol = GAMEMODE_MAIN;
 

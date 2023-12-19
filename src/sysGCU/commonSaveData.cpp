@@ -6,6 +6,7 @@
 #include "System.h"
 #include "stream.h"
 #include "PSSystem/PSSystemIF.h"
+#include "VsOptions.h"
 
 namespace Game {
 namespace CommonSaveData {

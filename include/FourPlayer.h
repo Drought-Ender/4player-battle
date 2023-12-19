@@ -80,7 +80,12 @@ struct Option {
         return toolTipStrings[value];
     }
 
-    static void readOptions();
+    static void OpenOptionsFile();
+    static void GenerateOptionsFile();
+
+    static void ReadOptions(Stream& stream);
+    static void SetDefaults();
+    static void WriteOptions(Stream& stream);
 };
 
 int GetConfigSize();

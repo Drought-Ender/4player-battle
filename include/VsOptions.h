@@ -129,6 +129,10 @@ struct VsConfigMenu : public IMenu
 
 struct CharacterData
 {
+    CharacterData() {
+        mCharaterID = -1;
+        mName[0] = 0;
+    }
 
     const static int sMaxNameSize = 20;
 
@@ -149,6 +153,9 @@ struct CharacterData
     char mName[sMaxNameSize];
     char mDispName[sMaxNameSize];
     ResTIMG* mImage;
+
+    void read(Stream&);
+    void write(Stream&);
 
 };
 

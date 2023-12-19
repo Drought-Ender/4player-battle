@@ -43,6 +43,7 @@ class VsSlotMachineCard
     void updateTexName(const char* texname) { mTexName = texname; }
     virtual bool varibleForward() { return false; }
     virtual bool varibleBackward() { return false; }
+    virtual int getVaribleForwardCount() { return 0; }
 
     virtual const char* getDescription() = 0;
 
