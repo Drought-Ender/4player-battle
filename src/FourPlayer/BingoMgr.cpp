@@ -907,6 +907,18 @@ void BingoMgr::ObjectKey::CountExists() {
             mObjectEntries[idx].mExistCount = enemyNode->mMgr->mNumObjects;
         }
 
+        for (int i = 0; i < enemyNode->mMgr->mNumObjects; i++) {
+            EnemyBase* enemy = enemyNode->mMgr->getEnemy(i);
+            if (enemy->mPelletDropCode) {
+                s16 dropCode  = enemy->mPelletDropCode;
+                u8 pelType = (u8)(dropCode >> 8);
+                int idx = FindPellet(pelType, dropCode);
+                if (idx != -1) {
+                    mObjectEntries[idx].mExistCount++;
+                }
+            }
+        }
+
     }
 
     for (int idx = 0; idx < mObjectNum; idx++) {

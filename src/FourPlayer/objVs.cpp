@@ -147,6 +147,8 @@ void FourObjVs::UpdateBingoCardTextures() {
 		for (int x = 0; x < 4; x++) {
 			for (int y = 0; y < 4; y++) {
 				if ((!FourObjVs::sFlickerDNE || mDoesNotExistActive) && card.isImpossible(key, x, y)) {
+					//mBingoCards[i].mPaneItem[x][y]->changeTexture(key.mObjectEntries[card.mObjects[x][y]].mObjectTexture, 0);
+					
 					mBingoCards[i].mPaneItem[x][y]->changeTexture(mPaneBingoImpossible->getTIMG(0), 0);
 				}
 				else {
