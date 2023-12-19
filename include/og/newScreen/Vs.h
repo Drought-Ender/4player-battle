@@ -290,6 +290,9 @@ struct FourObjVs : public ObjVs {
 	J2DPictureEx* mPaneBingoGet;
 	J2DPictureEx* mPaneBingoImpossible;
 
+
+	static bool sFlickerDNE;
+	
 	float mDoesNotExistTimer;
 	bool mDoesNotExistActive;
 	

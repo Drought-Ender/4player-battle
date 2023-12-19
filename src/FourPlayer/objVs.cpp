@@ -25,6 +25,8 @@ namespace og
 namespace newScreen
 {
 
+bool FourObjVs::sFlickerDNE = false;
+
 FourObjVs::~FourObjVs() {
 
 }
@@ -144,7 +146,7 @@ void FourObjVs::UpdateBingoCardTextures() {
 
 		for (int x = 0; x < 4; x++) {
 			for (int y = 0; y < 4; y++) {
-				if (mDoesNotExistActive && card.isImpossible(key, x, y)) {
+				if ((!FourObjVs::sFlickerDNE || mDoesNotExistActive) && card.isImpossible(key, x, y)) {
 					mBingoCards[i].mPaneItem[x][y]->changeTexture(mPaneBingoImpossible->getTIMG(0), 0);
 				}
 				else {
@@ -769,7 +771,7 @@ void FourObjVs::doDraw(Graphics& gfx) {
 
 void FourObjVs::DrawThreeInARow(Graphics& gfx) {
 
-	if (mDisp->mBingoMgr->mWinner != -1) return;
+	const int MaxLine = (mDisp->mBingoMgr->mWinner == -1) ? 3 : 4; 
 
 	J2DPerspGraph* graf = &gfx.mPerspGraph;
 	graf->setPort();
@@ -785,7 +787,7 @@ void FourObjVs::DrawThreeInARow(Graphics& gfx) {
 
 		Game::VsGame::BingoMgr::LineData data[10];
 
-		int count = card.CheckLine(3, data, ARRAY_SIZE(data), true);
+		int count = card.CheckLine(MaxLine, data, ARRAY_SIZE(data), true);
 
 		for (int i = 0; i < count; i++) {
 			int x1 = data[i].mXValues[0];
@@ -1042,13 +1044,17 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 
 void FourObjVs::setOnOffBingo(bool doEfx) {
 
-	mDoesNotExistTimer -= sys->mDeltaTime;
+	if (FourObjVs::sFlickerDNE) {
+		mDoesNotExistTimer -= sys->mDeltaTime;
 
-	if (mDoesNotExistTimer < 0.0f) {
-		mDoesNotExistTimer = 3.0f;
-		mDoesNotExistActive = !mDoesNotExistActive;
-		UpdateBingoCardTextures();
+		if (mDoesNotExistTimer < 0.0f) {
+			mDoesNotExistTimer = 3.0f;
+			mDoesNotExistActive = !mDoesNotExistActive;
+			UpdateBingoCardTextures();
+		}
 	}
+
+	bool someUpdate = false;
 	
 	for (int i = 0; i < 4; i++) {
 		int team = Game::getVsTeam_s(i);
@@ -1068,15 +1074,21 @@ void FourObjVs::setOnOffBingo(bool doEfx) {
 					mBingoCards[i].mPaneBase[x][y]->changeTexture(mPaneBingoGet->getTIMG(0), 0);
 					mBingoCards[i].mPaneBase[x][y]->setWhite(gBingoGetColors[team]);
 
+					someUpdate = true;
+
 					if (doEfx) {
 						mBingoCards[i].mScaleMgrs[x][y]->up();
 						og::ogSound->setSE(PSSE_SY_EQUIP_LADER);
 					}
+					
 				}
 			}
 		}
 	}
 
+	if (someUpdate && !FourObjVs::sFlickerDNE) {
+		UpdateBingoCardTextures();
+	}
 	
 
 	if (!mPlayWinSound) {

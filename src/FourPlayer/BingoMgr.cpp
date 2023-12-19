@@ -358,7 +358,7 @@ void BingoMgr::BingoCard::ReweighCard(ObjectKey& key) {
 
     int attempts = 0;
 
-    while (attempts < 10)
+    while (FABS(strongestLineWeight - expectedLineWeight) > strongestLineWeight * 0.1f && attempts < 30)
     {
         attempts++;
         
