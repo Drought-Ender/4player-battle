@@ -428,13 +428,7 @@ void VsGameSection::onSetupFloatMemory()
 	mTekiMgr      = new VsGame::TekiMgr();
 	mCardMgr      = new VsGame::CardMgr(this, mTekiMgr);
 
-	if (gGameModeID == MAINGAME_BINGO) {
-		mBingoMgr = new VsGame::BingoMgr;
-		
-	}
-	else {
-		mBingoMgr = nullptr;
-	}
+	mBingoMgr = nullptr;
 
 	VsGame::vsSlotCardMgr = new VsGame::VsSlotCardMgr;
 	VsGame::vsSlotCardMgr->generateCards(this);
@@ -488,9 +482,14 @@ void VsGameSection::postSetupFloatMemory()
 		if (gGameModeID == MAINGAME_BEDAMA) {
 			createYellowBedamas(7);
 		}
-		if (mBingoMgr) {
+
+		if (gGameModeID == MAINGAME_BINGO) {
+			mBingoMgr = new VsGame::BingoMgr; // if ctor isn't here than it causes problems for pellet birth buffer
 			mBingoMgr->init(this);
 			mBingoMgr->GenerateCards();
+		}
+		else {
+			mBingoMgr = nullptr;
 		}
 		initCardPellets();
 	}
@@ -1146,6 +1145,7 @@ bool GameMessageVsGetMiniOtakara::actVs(VsGameSection* section)
  */
 bool GameMessageVsAddEnemy::actVs(VsGameSection* section)
 {
+	DebugReport("Add enemy lmao\n");
 	//section->mTekiMgr->entry(_04, _08);
 	return true;
 }

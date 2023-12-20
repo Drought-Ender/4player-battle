@@ -41,6 +41,7 @@ void PelletBirthBuffer::entry(Game::PelletInitArg& initArg)
  */
 void PelletBirthBuffer::birthAll()
 {
+	OSReport("PelletBirthBuffer::birthAll()\n");
 	if (!Pellet::sFromTekiEnable) {
 		return;
 	}
@@ -54,6 +55,7 @@ void PelletBirthBuffer::birthAll()
 	}
 
 	PelletBirthBuffer::sNum = 0;
+	OSReport("End\n");
 }
 
 } // namespace Game

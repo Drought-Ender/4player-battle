@@ -438,6 +438,7 @@ ObjectLayoutInfo* RandMapMgr::makeObjectLayoutInfo(int idx)
 
 void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matching
 {
+	DebugReport("MapRoom::placeObjects(Cave::FloorInfo*, bool )\n");
 	if (!mObjectLayoutInfo) {
 		return;
 	}
@@ -560,7 +561,6 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					birthArg.mPosition = birthPos;
 					
 					birthArg.mOtakaraItemCode = node->getExtraCode();
-					DebugReport("Otakara Code %u\n", birthArg.mOtakaraItemCode.mValue);
 					birthArg.mTekiBirthType = (EnemyTypeID::EEnemyTypeID)node->getObjectType();
 					node->isFixedBattery();
 
@@ -584,9 +584,12 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					}
 
 					if (canSpawnTeki) {
+						DebugReport("Enemy in generate objects\n");
 						EnemyBase* enemy = generalEnemyMgr->birth(enemyType, birthArg);
 						if (enemy) {
+							DebugReport("pre-init\n");
 							enemy->init(nullptr);
+							DebugReport("post-init\n");
 						}
 						if (isWaterwraith) {
 							BlackMan::Obj* waterwraith = static_cast<BlackMan::Obj*>(enemy);

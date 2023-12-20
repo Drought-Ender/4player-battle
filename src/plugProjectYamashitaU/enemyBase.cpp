@@ -1060,6 +1060,7 @@ void EnemyBase::onInitPost(CreatureInitArg* arg)
  */
 void EnemyBase::setOtakaraCode(PelletMgr::OtakaraItemCode& itemCode)
 {
+	DebugReport("EnemyBase::setOtakaraCode(PelletMgr::OtakaraItemCode&)\n");
 	mPelletDropCode.mValue = itemCode;
 	if (!mPelletDropCode.isNull()) {
 		s16 dropCode  = mPelletDropCode;
@@ -1067,16 +1068,19 @@ void EnemyBase::setOtakaraCode(PelletMgr::OtakaraItemCode& itemCode)
 
 		if ((u8)dropShift == 4) {
 			Radar::Mgr::entry(this, Radar::MAP_UPGRADE, 0);
+			DebugReport("return;\n");
 			return;
 		}
 
 		if (playData->isPelletEverGot(dropShift, dropCode)) {
 			Radar::Mgr::entry(this, Radar::MAP_TREASURE, 0);
+			DebugReport("return;\n");
 			return;
 		}
 
 		Radar::Mgr::entry(this, Radar::MAP_SWALLOWED_TREASURE, 0);
 	}
+	DebugReport("return;\n");
 }
 
 void EnemyBase::forceKillEffects()
