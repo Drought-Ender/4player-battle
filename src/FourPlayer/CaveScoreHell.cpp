@@ -101,8 +101,6 @@ EnemyTypeID::EEnemyTypeID MakeReplacementFromGenericEnemy(EnemyTypeID::EEnemyTyp
 namespace Cave
 {
 
-
-
 EnemyUnit* gPelplantEnemyUnit;
 int gPelplantsPerBunch;
 

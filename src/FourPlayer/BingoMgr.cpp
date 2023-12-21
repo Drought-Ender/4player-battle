@@ -112,7 +112,7 @@ bool BingoMgr::BingoCard::CheckLine(const int min, LineData& line, bool disp) {
     for (int row = 0; row < 4; row++) {
         for (int col = 0; col < 4; col++) {
 
-            if ((disp) ? mDisp[row][col] : mActive[row][col]) {
+            if (disp ? mDisp[row][col] : mActive[row][col]) {
                 rowMajorCount[row]++;
                 colMajorCount[col]++;
                 if (row == col) {
@@ -917,9 +917,9 @@ void BingoMgr::ObjectKey::CountExists() {
             if (enemy && !enemy->mPelletDropCode.isNull()) {
                 u8 dropCode  = enemy->mPelletDropCode;
                 u8 pelType = (u8)(enemy->mPelletDropCode.mValue >> 8);
-                const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)pelType)->getPelletConfig(dropCode)->mParams.mName.mData;
-                const char* enemyName = EnemyInfoFunc::getEnemyName(enemy->getEnemyTypeID(), 0xffff);
-                DebugReport("Found %s in %s\n", peltName, enemyName);
+                // const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)pelType)->getPelletConfig(dropCode)->mParams.mName.mData;
+                // const char* enemyName = EnemyInfoFunc::getEnemyName(enemy->getEnemyTypeID(), 0xffff);
+                // DebugReport("Found %s in %s\n", peltName, enemyName);
                 int idx = FindPellet(pelType, dropCode);
                 if (idx != -1) {
                     mObjectEntries[idx].mExistCount++;
@@ -929,10 +929,10 @@ void BingoMgr::ObjectKey::CountExists() {
 
     }
 
-    for (int idx = 0; idx < mObjectNum; idx++) {
-        const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)mObjectEntries[idx].mPelType)->getPelletConfig(mObjectEntries[idx].mPelletID)->mParams.mName.mData;
-        DebugReport("Found %i of %s\n", mObjectEntries[idx].mExistCount, peltName);
-    }
+    // for (int idx = 0; idx < mObjectNum; idx++) {
+    //     const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)mObjectEntries[idx].mPelType)->getPelletConfig(mObjectEntries[idx].mPelletID)->mParams.mName.mData;
+    //     DebugReport("Found %i of %s\n", mObjectEntries[idx].mExistCount, peltName);
+    // }
 
     
     
@@ -953,11 +953,8 @@ void BingoMgr::ObjectKey::Object::CountExists() {
         }
     }
 
-    
-
-    const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)mPelType)->getPelletConfig(mPelletID)->mParams.mName.mData;
-    DebugReport("Found %i of %s\n", mExistCount, peltName);
-
+    // const char* peltName = PelletList::Mgr::getConfigList((PelletList::cKind)mPelType)->getPelletConfig(mPelletID)->mParams.mName.mData;
+    // DebugReport("Found %i of %s\n", mExistCount, peltName);
 }
 
 void BingoMgr::informDeath(Pellet* pelt) {

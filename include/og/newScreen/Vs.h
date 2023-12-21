@@ -230,7 +230,7 @@ struct FourObjVs : public ObjVs {
 
 	P2DScreen::Mgr_tuning* mTimerScreen;
 
-	og::Screen::CallBack_DrawAfter* mLifeGaudeAfter[4];
+	og::Screen::CallBack_DrawAfter* mLifeGaugeAfter[4];
 
 	J2DPictureEx* mPane_minibedama[4][4];
 	J2DPictureEx* mPane_mininodama[4][4];

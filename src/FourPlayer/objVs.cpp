@@ -421,7 +421,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 
 	for (int i = 0; i < 4; i++) {
 		P2DScreen::Node& node1 = screens[i]->mScreen->_118;
-		mLifeGaudeAfter[i] = (og::Screen::CallBack_DrawAfter*)node1.getChildAt(node1.getChildCount() - 1);
+		mLifeGaugeAfter[i] = (og::Screen::CallBack_DrawAfter*)node1.getChildAt(node1.getChildCount() - 1);
 	}
 
 	if (gConfig[SPICY_PASSIVE] == ConfigEnums::SPICYPASSIVE_INF) {
@@ -581,10 +581,12 @@ void ObjVs::ScreenSet::update(og::Screen::DataNavi& data)
 {
 	f32 scale5 = mScaleMgr1->calc();
 	f32 scale6 = mScaleMgr2->calc();
-	if (mPaneToyo01)
+	if (mPaneToyo01) {
 		mPaneToyo01->updateScale(scale5);
-	if (mPaneToyo00)
+	}
+	if (mPaneToyo00) {
 		mPaneToyo00->updateScale(scale6);
+	}
 
 	og::Screen::DopingCheck* dope = mDoping;
 	dope->mNaviLifeRatio          = data.mNaviLifeRatio;
@@ -691,7 +693,7 @@ void FourObjVs::doUpdateCommon() {
 			screens[i]->mScreen->hide();
 		}
 		if (mDisp->mNaviInactiveFlags[i]) {
-			mLifeGaudeAfter[i]->mIsVisible = false;
+			mLifeGaugeAfter[i]->mIsVisible = false;
 			screens[i]->mLifeGauge[i].mNaviLifeRatio = 0.0f;
 			screens[i]->mScreen->search('NALL')->hide();
 		}
@@ -822,6 +824,7 @@ void FourObjVs::DrawThreeInARow(Graphics& gfx) {
 	}
 }
 
+// this function does something, and it's important, don't ask me what it is though
 inline void FourObjVs::CheckWindama(int idx, int playerID, bool doEfx, bool& isWin) {
 	bool flagArr[] = { mDisp->mFlags[0], mDisp->mFlags[1], mDisp->mFlag2[0], mDisp->mFlag2[1] };
 	int marbleCounts[] = { mDisp->mMarbleCountP1, mDisp->mMarbleCountP2, mDisp->mMarbleCountP3, mDisp->mMarbleCountP4 };
@@ -1115,8 +1118,6 @@ void FourObjVs::setWinBingoBounce() {
 		return;
 	}
 
-	DebugReport("Found line\n");
-
 	for (int player = 0; player < 4; player++) {
 		if (Game::getVsTeam_s(player) != team) {
 			continue;
@@ -1125,7 +1126,6 @@ void FourObjVs::setWinBingoBounce() {
 		for (int i = 0; i < 4; i++) {
 			int x = lineData.mXValues[i];
 			int y = lineData.mYValues[i];
-			DebugReport("X, Y, i | %i, %i\n", x, y, i);
 			mBingoCards[player].mScaleMgrs[x][y]->up();
 
 			Vector2f pos;
