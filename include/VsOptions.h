@@ -4,8 +4,7 @@
 
 #define MEMORY_SIZE (*(u32*)0x800000f0)
 
-inline bool isMemoryOverrideOn() {\
-    return true;
+inline bool isMemoryOverrideOn() {
     return MEMORY_SIZE >= 0x2000000;
 }
 

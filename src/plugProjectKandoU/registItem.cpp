@@ -38,6 +38,7 @@ void ItemMgr::createManagers(u32 flags)
 	sys->heapStatusEnd("-Weed-");
 
 	GenerateMgr<ItemDownFloor::Mgr>(ItemDownFloor::mgr, "-DownFloor-");
+	GenerateMgr<ItemBridge::Mgr>(ItemBridge::mgr, "-Bridge-");
 	GenerateMgr<ItemTreasure::Mgr>(ItemTreasure::mgr, "-Treasure-");
 	GenerateMgr<ItemPikihead::Mgr>(ItemPikihead::mgr, "-PikiHead-");
 
@@ -83,7 +84,6 @@ void ItemMgr::createManagers(u32 flags)
 
 	sys->heapStatusStart("-Bridge-", nullptr);
 
-	ItemBridge::mgr = nullptr;
 	
 	sys->heapStatusEnd("-Bridge-");
 

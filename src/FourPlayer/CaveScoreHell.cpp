@@ -493,6 +493,9 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_VsBlueOnyon: {
+					if (ItemOnyon::mgr->getOnyon(gScoreDelegations[0][1])) {
+						break;
+					}
 					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, gScoreDelegations[0][1]);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
@@ -503,6 +506,9 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_VsRedOnyon: {
+					if (ItemOnyon::mgr->getOnyon(gScoreDelegations[0][0])) {
+						break;
+					}
 					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, gScoreDelegations[0][0]);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
@@ -513,6 +519,9 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
                 case OBJLAYOUT_VsWhiteOnyon: {
+					if (ItemOnyon::mgr->getOnyon(gScoreDelegations[1][0])) {
+						break;
+					}
 					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, gScoreDelegations[1][0]);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
@@ -523,6 +532,9 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					break;
 				}
 				case OBJLAYOUT_VsPurpleOnyon: {
+					if (ItemOnyon::mgr->getOnyon(gScoreDelegations[1][1])) {
+						break;
+					}
 					Onyon* pod = ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, gScoreDelegations[1][1]);
 					Vector3f birthPos;
 					node->getBirthPosition(birthPos.x, birthPos.z);
