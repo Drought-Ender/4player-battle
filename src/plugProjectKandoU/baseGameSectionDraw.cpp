@@ -45,6 +45,7 @@ namespace Game {
  */
 void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 {
+	DrawDebugMemory(gfx);
 	// Setup viewport callback to be newdraw_drawAll
 	Delegate1<BaseGameSection, Viewport*> vpDelegate(this, &BaseGameSection::newdraw_drawAll);
 	gfx.mapViewport(&vpDelegate);

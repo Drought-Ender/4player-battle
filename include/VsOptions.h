@@ -4,9 +4,12 @@
 
 #define MEMORY_SIZE (*(u32*)0x800000f0)
 
-inline bool isMemoryOverrideOn() {
+inline bool isMemoryOverrideOn() {\
+    return true;
     return MEMORY_SIZE >= 0x2000000;
 }
+
+void DrawDebugMemory(Graphics& gfx);
 
 struct IMenu;
 
