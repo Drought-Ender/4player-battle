@@ -1814,7 +1814,7 @@ BaseItem* ItemOnyon::Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenItem
 	int objectType;
 	int onyonType = ONYON_TYPE_BLUE;
 
-	switch (onyonparm->mOnyonIndex) {
+	switch (getTruePelletColor(onyonparm->mOnyonIndex)) {
 	case ONYON_TYPE_BLUE:
 		objectType = ONYON_OBJECT_ONYON;
 		onyonType  = ONYON_TYPE_BLUE;

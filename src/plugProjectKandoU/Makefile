@@ -74,7 +74,7 @@ KANDO_FILES:=\
 	$(BUILD_DIR)/asm/plugProjectKandoU/itemDownFloor.o\
 	$(BUILD_DIR)/src/plugProjectKandoU/kandoLib.o\
 	$(BUILD_DIR)/asm/plugProjectKandoU/itemBarrel.o\
-	$(BUILD_DIR)/asm/plugProjectKandoU/pelletNumber.o\
+	$(BUILD_DIR)/src/plugProjectKandoU/pelletNumber.o\
 	$(BUILD_DIR)/asm/plugProjectKandoU/pelletCarcass.o\
 	$(BUILD_DIR)/asm/plugProjectKandoU/pelletFruit.o\
 	$(BUILD_DIR)/asm/plugProjectKandoU/pelletOtakara.o\

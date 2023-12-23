@@ -61,7 +61,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	mPikminCount[5] = 0;
 	mPikminCount[6] = 0;
 	_414            = 0;
-	_43C            = (u16) static_cast<PelletInitArg*>(initArg)->_10;
+	mPelletSizeType            = (u16) static_cast<PelletInitArg*>(initArg)->_10;
 
 	mConfig = mMgr->mConfigList->getPelletConfig(static_cast<PelletInitArg*>(initArg)->mTextIdentifier);
 
@@ -115,12 +115,12 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	}
 
 	if (static_cast<PelletInitArg*>(initArg)->_1C == 0) {
-		mModel = mMgr->createShape(_43C, mSlotIndex);
+		mModel = mMgr->createShape(mPelletSizeType, mSlotIndex);
 		onCreateShape();
 	}
 
 	if (mModel) {
-		mCarryAnim.mAnimMgr = mMgr->mAnimMgr[_43C];
+		mCarryAnim.mAnimMgr = mMgr->mAnimMgr[mPelletSizeType];
 		mRadius             = 2.0f * mModel->getRoughBoundingRadius();
 	} else {
 		mRadius = mConfig->mParams.mRadius.mData;
@@ -137,7 +137,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 		}
 	}
 
-	mMgr->setCollTree(this, _43C);
+	mMgr->setCollTree(this, mPelletSizeType);
 
 	if (strcmp(mConfig->mParams.mDynamics.mData, "never") == 0) {
 		_364                                 = 2;

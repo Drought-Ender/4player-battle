@@ -2552,7 +2552,7 @@ void EnemyBase::throwupItem()
 			pelletColor = randFloat() * 3.0f;
 		}
 
-		PelletNumberInitArg numberInitArg(mPelletInfo.mSize, pelletColor);
+		PelletNumberInitArg numberInitArg(mPelletInfo.mSize, getTruePelletColor(pelletColor));
 		numberInitArg.mState = 2;
 
 		Pellet* pellet = pelletMgr->birth(&numberInitArg);

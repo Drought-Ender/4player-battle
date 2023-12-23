@@ -241,6 +241,28 @@ int getTeamFromPelplant(int pikiColor) {
     return TEAM_NULL;
 }
 
+int getTruePelletColor(int pikiColor) {
+    int teamID;
+    switch (pikiColor)
+    {
+    case PIKI_COLOR_RED: // red
+        teamID = TEAM_RED;
+        break;
+    case PIKI_COLOR_BLUE: // blue
+        teamID = TEAM_BLUE;
+        break;
+	case PIKI_COLOR_WHITE: // white
+		teamID = TEAM_WHITE;
+        break;
+	case PIKI_COLOR_PURPLE: // purple
+		teamID = TEAM_PURPLE;
+        break;
+    default:
+        return pikiColor; 
+    }
+    return reinterpret_cast<int*>(gScoreDelegations)[teamID];
+}
+
 int getPikiFromTeamEnum(int);
 
 int getTeamCount() {

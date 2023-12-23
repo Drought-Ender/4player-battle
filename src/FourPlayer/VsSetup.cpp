@@ -459,54 +459,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 	}
 }
 
-void PelletNumber::Object::changeMaterial() {
-	J3DGXColorS10 color;
-	switch (mPelletColor)
-	{
-	case Red:
-		color.r = 0xfb;
-		color.b = 0x11;
-		color.g = 0x00;
-		color.a = 0xff;
-		break;
-	case Blue:
-		color.r = 0x00;
-		color.b = 0xff;
-		color.g = 0x33;
-		color.a = 0xff;
-		break;
-	case Yellow:
-		color.r = 0xff;
-		color.g = 0xdc;
-		color.b = 0x34;
-		color.a = 0xff;
-		break;
-	case Purple:
-		color.r = 50;
-		color.g = 0;
-		color.b = 100;
-		color.a = 0xff;
-		break;
-	case White:
-		color.r = 179;
-		color.g = 230;
-		color.b = 179;
-		color.a = 0xff;
-	default:
-		color.r = 0xff;
-		color.g = 0xff;
-		color.b = 0xff;
-		color.a = 0xff;
-		break;
-	}
 
-	s32 matIdx = mModel->mJ3dModel->mModelData->mMaterialTable.mMaterialNames->getIndex("bpel1");
-	mModel->mJ3dModel->mModelData->mMaterialTable.mMaterials[matIdx]->setTevColor(0, &color);
-
-
-	mModel->mJ3dModel->calcMaterial();
-	mModel->mJ3dModel->diff();
-}
 
 struct HasFloor : public WPCondition {
 	bool satisfy(WayPoint* other) {
