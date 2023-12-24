@@ -147,4 +147,24 @@ enum EReservoir {
     RESERVOIR_ON
 };
 
+enum EBombCarry {
+    BOMBCARRY_OFF,
+    BOMBCARRY_BOMBS,
+    BOMBCARRY_EGGS,
+    BOMBCARRY_BOTH
+};
+
+enum EBlowhogCarry {
+    BLOWHOGCARRY_OFF,
+    BLOWHOGCARRY_ON
+};
+
+enum EMiscCarry {
+    MISCCARRY_OFF,
+    MISCCARRY_CHERRY,
+    MISCCARRY_LIGHT,
+    MISCCARRY_ALL
+};
+
+
 } // namespace ConfigEnums

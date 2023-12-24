@@ -117,7 +117,10 @@ enum OptionsEnum {
     SPICY_PASSIVE,
     STALEMATE_TIMER,
     GLOBAL_SPICY,
-    RESERVOIR
+    RESERVOIR,
+    CARRY_BOMB,
+    CARRY_BLOWHOG,
+    CARRY_MISC
 };
 
 namespace ConfigEnums {

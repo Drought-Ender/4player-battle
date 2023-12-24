@@ -175,4 +175,132 @@ namespace ConfigEnums
     
 } // namespace ConfigEnums
 
+namespace Game
+{
+
+bool canPickup(Navi* user, Creature* obj) {
+    if (gConfig[CARRY_MISC] == ConfigEnums::MISCCARRY_ALL) {
+        return true;
+    }
+
+    if (obj->isPellet()) {
+        Pellet* pelt = static_cast<Pellet*>(obj);
+        if (pelt->mPelletFlag == Pellet::FLAG_VS_CHERRY && gConfig[CARRY_MISC] == ConfigEnums::MISCCARRY_CHERRY) {
+            return true;
+        }
+        if (pelt->mMinCarriers < 5 && gConfig[CARRY_MISC] == ConfigEnums::MISCCARRY_LIGHT && pelt->mPelletFlag <= Pellet::FLAG_VS_CHERRY) {
+            return true;
+        }
+    }
+
+    if (obj->isTeki()) {
+
+        EnemyBase* teki = static_cast<EnemyBase*>(obj);
+
+        if (teki->getEnemyTypeID() == EnemyTypeID::EnemyID_Bomb) {
+            return gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_BOMBS || gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_BOTH;
+        }
+        if (teki->getEnemyTypeID() == EnemyTypeID::EnemyID_Egg) {
+            return gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_EGGS || gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_BOMBS;
+        }
+
+        if (gConfig[CARRY_BLOWHOG] == ConfigEnums::BLOWHOGCARRY_ON) {
+            switch (teki->getEnemyTypeID())
+            {
+            case EnemyTypeID::EnemyID_Tank:
+                if (user->onTeam(Red)) {
+                    return true;
+                }
+                break;
+            case EnemyTypeID::EnemyID_Wtank:
+                if (user->onTeam(Blue)) {
+                    return true;
+                }
+                break;
+            case EnemyTypeID::EnemyID_Gtank:
+                if (user->onTeam(White)) {
+                    return true;
+                }
+                break;
+            case EnemyTypeID::EnemyID_Mtank:
+                if (user->onTeam(Purple)) {
+                    return true;
+                }
+                break;
+            }
+        }
+
+        if (gConfig[CARRY_MISC] == ConfigEnums::MISCCARRY_LIGHT) {
+            switch (teki->getEnemyTypeID())
+            {
+            case EnemyTypeID::EnemyID_Kochappy:
+            case EnemyTypeID::EnemyID_BlueKochappy:
+            case EnemyTypeID::EnemyID_YellowKochappy:
+            case EnemyTypeID::EnemyID_KumaKochappy:
+            case EnemyTypeID::EnemyID_Catfish:
+            case EnemyTypeID::EnemyID_ElecBug:
+            case EnemyTypeID::EnemyID_Fuefuki:
+            case EnemyTypeID::EnemyID_PanModoki:
+            case EnemyTypeID::EnemyID_Sarai:
+            case EnemyTypeID::EnemyID_BombSarai:
+            case EnemyTypeID::EnemyID_Demon:
+            case EnemyTypeID::EnemyID_FireOtakara:
+            case EnemyTypeID::EnemyID_WaterOtakara:
+            case EnemyTypeID::EnemyID_GasOtakara:
+            case EnemyTypeID::EnemyID_SporeOtakara:
+            case EnemyTypeID::EnemyID_ElecOtakara:
+            case EnemyTypeID::EnemyID_Fart:
+            case EnemyTypeID::EnemyID_Kogane:
+            case EnemyTypeID::EnemyID_Wealthy:
+            case EnemyTypeID::EnemyID_UjiA:
+            case EnemyTypeID::EnemyID_UjiB:
+            case EnemyTypeID::EnemyID_Tobi:
+            case EnemyTypeID::EnemyID_TechnoBug:
+            case EnemyTypeID::EnemyID_Jigumo:
+            case EnemyTypeID::EnemyID_Qurione:
+            case EnemyTypeID::EnemyID_TamagoMushi:
+            case EnemyTypeID::EnemyID_Imomushi:
+            case EnemyTypeID::EnemyID_Sokkuri:
+            case EnemyTypeID::EnemyID_ShijimiChou:
+            case EnemyTypeID::EnemyID_Tadpole:
+                return true;
+            }
+        }
+
+    }
+    return false;
+}
+
+void NaviWalkState::collisionCallback(Navi* navi, CollEvent& event)
+{
+	Creature* collider = event.mCollidingCreature;
+	if (moviePlayer->mDemoState == 0 && collider->mObjectTypeID == OBJTYPE_Honey) {
+		ItemHoney::Item* drop = static_cast<ItemHoney::Item*>(collider);
+		if (drop->mHoneyType != HONEY_Y && drop->absorbable()) {
+			NaviAbsorbArg absorbArg(drop);
+			navi->mFsm->transit(navi, NSID_Absorb, &absorbArg);
+		}
+	}
+
+	if (moviePlayer->mDemoState == 0 && gameSystem->isVersusMode() && canPickup(navi, collider) && !collider->mCaptureMatrix && collider->isAlive()
+	    && navi->mController1) {
+
+		f32 x = -navi->mController1->getMainStickX(); // idk why this is negative lol.
+		f32 y = navi->mController1->getMainStickY();
+		if (x * x + y * y > 0.5f) {
+			if (mCollisionTimer < 100) {
+				mCollisionTimer += 3;
+			}
+
+			if (mCollisionTimer > 60) {
+				NaviCarryBombArg bombArg(collider);
+				transit(navi, NSID_CarryBomb, &bombArg);
+			}
+		}
+	}
+}
+
+
+} // namespace Game
+
 

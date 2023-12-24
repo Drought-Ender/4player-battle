@@ -665,6 +665,10 @@ void Onyon::onSetPosition()
 		mGoalWayPoint = nullptr;
 	}
 
+	if (mInitSpot) return;
+
+	mInitSpot = true;
+
 	if (gameSystem->isVersusMode()) {
 		setSpotEffect(true);
 	} else {
@@ -2234,6 +2238,8 @@ Onyon* ItemOnyon::Mgr::birth(int objtype, int onyontype)
 
 		break;
 	}
+
+	resultOnyon->mInitSpot = false;
 
 	nodeobj->mContents = resultOnyon;
 	mNodeObjectMgr.mNode.add(nodeobj);

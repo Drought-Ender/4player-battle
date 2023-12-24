@@ -169,6 +169,7 @@ struct Onyon : public BaseItem {
 	::efx::TUfoGasOut* mUfoGasOut;           // _21C
 	f32 mSpotGrowTimer;                      // _220
 	u8 mSpotState;                           // _224
+	bool mInitSpot;
 	f32 mFaceDir;                            // _228
 	u16 mToBirth;                            // _22C, used to track how many pikmin need to be spawned
 	u16 mOnyonType;                          // _22E

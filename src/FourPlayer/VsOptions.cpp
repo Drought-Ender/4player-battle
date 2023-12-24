@@ -247,7 +247,43 @@ Option gOptions[] = {
         {
             "Excess Pikmin will not be stored",
             "Excess Pikmin will be stored in the onyon"
-        }
+        },
+        2,
+        0
+    },
+    {
+        "Carry Bombs/Eggs",
+        { "Off", "Bombs", "Eggs", "Bombs & Eggs" },
+        {
+            "Nothing can be carried by players",
+            "Bombs can be carried by players",
+            "Eggs can be carried by players",
+            "Both Bombs & Eggs can be carried by players",
+        },
+        4,
+        1
+    },
+    {
+        "Carry Blowhogs",
+        { "Off", "On" },
+        {
+            "Does not let you carry blowhogs",
+            "Lets you carry friendly blowhogs of your color"
+        },
+        2,
+        0
+    },
+    {
+        "Carry Objects",
+        { "Off", "Cherries", "Light Enemies/Pellets", "ALL"},
+        {
+            "Does not let you carry any externious objects",
+            "Lets you carry cherries",
+            "Lets you carry light-weight objects (weighs < 5, exclude bedama)",
+            "Lets you carry anything lmao"
+        },
+        4,
+        0
     }
 };
 
