@@ -53,10 +53,7 @@ bool ActPathfind::initPathfinding() {
         return 2; // exit state
     }
 
-    if (mPathCheckID) {
-        Game::testPathfinder->release(mPathCheckID);
-        mPathCheckID = 0;
-    }
+    mPathCheckID = 0;
 
     Game::WPSearchArg arg2(mTargetPosition, nullptr, false, 10.0f);
     Game::WayPoint* end = Game::mapMgr->mRouteMgr->getNearestWayPoint(arg2);
@@ -91,7 +88,6 @@ int ActPathfind::execPathfinding()
         mPathNodes    = Game::testPathfinder->makepath(mPathCheckID, &mPathNode);
         mPathNodePrev = mPathNode;
         mState        = 1;
-        OSReport("Success!\n");
         break;
     case 1:
         return 2;
@@ -104,7 +100,6 @@ int ActPathfind::execPathfinding()
 }
 
 int ActPathfind::exec() {
-    OSReport("Exec\n");
     bool end = false;
     switch (mState) {
     case 0:
@@ -144,7 +139,6 @@ int ActPathfind::exec() {
             Game::testPathfinder->release(mPathCheckID);
             
         }
-        OSReport("Fail :(\n");
         return ACTEXEC_Success;
     }
     return ACTEXEC_Continue;

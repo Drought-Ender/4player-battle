@@ -944,7 +944,7 @@ struct IdleAlertCard : public VsSlotMachineCard
 
         CI_LOOP(iPiki) {
             Piki* piki = *iPiki;
-            if (piki->isAlive() && piki->mPikiKind == getVsPikiColor(user) && piki->mCurrentState->mId == PIKISTATE_Walk && piki->mBrain->mActionId == PikiAI::ACT_Free) {
+            if (piki->isAlive() && piki->mPikiKind == getVsPikiColor(user) && piki->mBrain->mActionId == PikiAI::ACT_Free) {
                 PikiAI::PathfindArg arg;
                 arg.mTargetPos = naviMgr->getAt(user)->getPosition();
                 piki->mBrain->start(PikiAI::ACT_Pathfind, &arg);
