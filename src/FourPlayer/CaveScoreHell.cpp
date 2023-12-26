@@ -307,7 +307,7 @@ MapNode* RandMapScore::getMaxVsScoreRoomMapNode(int count, MapNode** mapNode, Ba
 		if (!doSkip && currNode->mUnitInfo->getUnitKind() == UNITKIND_Room) {
 			DebugReport("Second Score %i\n", currNode->getNodeScore());
 			int secondScore = (second) ? absVal(currNode->getVersusScore(SECOND_SCORE)) : currNode->getNodeScore();
-			int nodeScore = -secondScore + absVal(currNode->getVersusScore(FIRST_SCORE)) + 10;
+			int nodeScore = -(secondScore * secondScore) + absVal(currNode->getVersusScore(FIRST_SCORE)) + 10;
 			BaseGen* gen  = currNode->mUnitInfo->getBaseGen();
 			if (gen) {
 				FOREACH_NODE(BaseGen, gen->mChild, currGen)

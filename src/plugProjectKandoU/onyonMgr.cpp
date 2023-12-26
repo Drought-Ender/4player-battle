@@ -2257,8 +2257,9 @@ Onyon* ItemOnyon::Mgr::getOnyon(int i)
 	if (i >= 0 && i < ONYON_TYPE_MAX) {
 		return mOnyons[i];
 	} else {
-		JUT_PANICLINE(2930, "illegal onyon index %d\n", i);
-		return nullptr;
+		// JUT_PANICLINE(2930, "illegal onyon index %d\n", i);
+		DebugReport("illegal onyon index %d\n", i);
+		return mOnyons[0];
 	}
 }
 

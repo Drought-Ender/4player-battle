@@ -201,7 +201,7 @@ bool canPickup(Navi* user, Creature* obj) {
             return gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_BOMBS || gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_BOTH;
         }
         if (teki->getEnemyTypeID() == EnemyTypeID::EnemyID_Egg) {
-            return gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_EGGS || gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_BOMBS;
+            return gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_EGGS || gConfig[CARRY_BOMB] == ConfigEnums::BOMBCARRY_BOTH;
         }
 
         if (gConfig[CARRY_BLOWHOG] == ConfigEnums::BLOWHOGCARRY_ON) {
