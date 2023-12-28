@@ -215,7 +215,6 @@ void* EnemyMgrBase::getNext(void* object)
  */
 EnemyBase* EnemyMgrBase::birth(EnemyBirthArg& arg)
 {
-	OSReport("EnemyMgrBase::birth(EnemyBirthArg&)\n");
 
 	if (arg.mTypeID == ~EnemyTypeID::EnemyID_Pelplant) {
 		arg.mTypeID = getEnemyTypeID();
@@ -236,7 +235,6 @@ EnemyBase* EnemyMgrBase::birth(EnemyBirthArg& arg)
 		enemy->mPelletInfo.mMaxPellets  = arg.mPelletInfo.mMaxPellets;
 		enemy->mPelletInfo.mSpawnChance = arg.mPelletInfo.mSpawnChance;
 
-		OSReport("Peltinfo done\n");
 
 		if (arg.mIsInPiklopedia) {
 			enemy->mInPiklopedia = true;
@@ -254,7 +252,6 @@ EnemyBase* EnemyMgrBase::birth(EnemyBirthArg& arg)
 		}
 	}
 
-	OSReport("return;\n");
 	return enemy;
 }
 

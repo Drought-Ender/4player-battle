@@ -14,6 +14,7 @@
 #include "Game/GameLight.h"
 #include "Game/PikiMgr.h"
 #include "JSystem/J3D/J3DModelLoader.h"
+#include "Dolphin/rand.h"
 #include "VsOptions.h"
 #include "Game/MapMgr.h"
 #include "Game/mapParts.h"
@@ -753,5 +754,29 @@ void BaseGameSection::updateSplitter2() {
 		BaseGameSection::updateSplitter();
 	}
 }
+
+Navi* NaviMgr::getActiveNavi()
+{
+	Navi* navis[4];
+	navis[0] = getAt(0);
+	navis[1] = getAt(1);
+	navis[2] = getAt(2);
+	navis[3] = getAt(3);
+	if (!navis[0] && !navis[1] && !navis[2] && !navis[3]) {
+		return nullptr;
+	}
+
+	int availableSlots[4];
+
+	int count = 0;
+	for (int i = 0; i < 4; i++) {
+		if (navis[i]) {
+			availableSlots[count++] = i;
+		}
+	}
+
+	return navis[randInt(count)];
+}
+
 
 } // namespace Game

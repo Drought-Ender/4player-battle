@@ -443,7 +443,6 @@ ObjectLayoutInfo* RandMapMgr::makeObjectLayoutInfo(int idx)
 
 void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matching
 {
-	DebugReport("MapRoom::placeObjects(Cave::FloorInfo*, bool )\n");
 	if (!mObjectLayoutInfo) {
 		return;
 	}
@@ -601,12 +600,9 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 					}
 
 					if (canSpawnTeki) {
-						DebugReport("Enemy in generate objects\n");
 						EnemyBase* enemy = generalEnemyMgr->birth(enemyType, birthArg);
 						if (enemy) {
-							DebugReport("pre-init\n");
 							enemy->init(nullptr);
-							DebugReport("post-init\n");
 						}
 						if (isWaterwraith) {
 							BlackMan::Obj* waterwraith = static_cast<BlackMan::Obj*>(enemy);
@@ -622,7 +618,6 @@ void MapRoom::placeObjects(Cave::FloorInfo* floorInfo, bool b) // basically matc
 									}
 								}
 								
-								DebugReport("PelplantTeam %i\n", pelPlantTeam);
 								if (pelPlantTeam != PELCOLOR_RANDOM) {
 									Pelplant::Obj* pelplant = static_cast<Pelplant::Obj*>(enemy);
 									pelplant->mColor = pelPlantTeam;
@@ -1479,25 +1474,36 @@ void RandMapMgr::create()
 	// The CaveGen Function (tm)
 
 	// Round 1: place map tiles + set ship spawn
+	DebugReport("setMapUnit\n");
 	mRandMapUnit->setMapUnit();
+	DebugReport("setStartSlot\n");
 	mRandMapScore->setStartSlot();
+	DebugReport("setMapUnitScore\n");
 	// Calculate score after round 1 (just distance score based on map tile layout)
 	mRandMapScore->setMapUnitScore();
 
 	// Round 2: place hole (and geyser), then place enemies
+	DebugReport("setGoalSlot\n");
 	mRandMapScore->setGoalSlot();
+	DebugReport("setEnemySlot\n");
 	mRandEnemyUnit->setEnemySlot();
 	// Calculate score after round 2 (now includes enemies as well as distance score)
+	DebugReport("setMapUnitScore\n");
 	mRandMapScore->setMapUnitScore();
 
 	// Round 3: place plants, then treasures, then cap enemies
+	DebugReport("setPlantSlot\n");
 	mRandPlantUnit->setPlantSlot();
+	DebugReport("setItemSlot\n");
 	mRandItemUnit->setItemSlot();
+	DebugReport("setCapEnemySlot\n");
 	mRandCapEnemyUnit->setCapEnemySlot();
 	// Calculate score after round 3 (doesn't get used again though)
+	DebugReport("setMapUnitScore\n");
 	mRandMapScore->setMapUnitScore();
 
 	// Round 4: place gates
+	DebugReport("setGateDoor\n");
 	mRandGateUnit->setGateDoor();
 
 	// With all units placed, determine radar texture size + allocate
