@@ -220,6 +220,12 @@ void RandMapScore::setVersusOnyon()
 				}
 			}
 		}
+		else {
+			JUT_PANIC("No random room node!\n");
+		}
+	}
+	else {
+		JUT_PANIC("Fixnodes already exist!\n");
 	}
 }
 
@@ -330,6 +336,7 @@ MapNode* RandMapScore::getMaxVsScoreRoomMapNode(int count, MapNode** mapNode, Ba
 
 void RandMapScore::clearRoomAndDoorScore()
 {
+	DebugReport("RandMapScore::clearRoomAndDoorScore()\n");
 	FOREACH_NODE(MapNode, mGenerator->getPlacedNodes()->mChild, currNode)
 	{
 		currNode->setEnemyScore();
@@ -1452,6 +1459,60 @@ void RandEnemyUnit::setSlotEnemyTypeF(int third) {
 	}
 }
 
+void RandMapScore::setMapUnitScore()
+{
+	DebugReport("RandMapScore::setMapUnitScore()\n");
+	clearRoomAndDoorScore();
+	if (!isScoreSetDone()) {
+		for (int i = 0; i < 500; i++) {
+			setUnitAndDoorScore();
+			if (isScoreSetDone()) {
+				return;
+			}
+		}
+	}
+}
+
+void RandMapMgr::create()
+{
+	DebugReport("RandMapMgr::create()\n");
+	// The CaveGen Function (tm)
+
+	// Round 1: place map tiles + set ship spawn
+	mRandMapUnit->setMapUnit();
+	mRandMapScore->setStartSlot();
+	// Calculate score after round 1 (just distance score based on map tile layout)
+	mRandMapScore->setMapUnitScore();
+
+	// Round 2: place hole (and geyser), then place enemies
+	mRandMapScore->setGoalSlot();
+	mRandEnemyUnit->setEnemySlot();
+	// Calculate score after round 2 (now includes enemies as well as distance score)
+	mRandMapScore->setMapUnitScore();
+
+	// Round 3: place plants, then treasures, then cap enemies
+	mRandPlantUnit->setPlantSlot();
+	mRandItemUnit->setItemSlot();
+	mRandCapEnemyUnit->setCapEnemySlot();
+	// Calculate score after round 3 (doesn't get used again though)
+	mRandMapScore->setMapUnitScore();
+
+	// Round 4: place gates
+	mRandGateUnit->setGateDoor();
+
+	// With all units placed, determine radar texture size + allocate
+	int x;
+	int y;
+	mRandMapUnit->getTextureSize(x, y);
+
+	x *= 8;
+	y *= 8;
+
+	sys->heapStatusStart("Radar Map Texture", nullptr);
+	mRadarMapTexture                          = new JUTTexture(x, y, GX_TF_I4);
+	mRadarMapTexture->mTexInfo->mTransparency = Transparency_2;
+	sys->heapStatusEnd("Radar Map Texture");
+}
 
 
 } // namespace Cave

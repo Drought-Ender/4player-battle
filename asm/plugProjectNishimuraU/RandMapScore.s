@@ -89,38 +89,6 @@
 .endobj lbl_80520EB0
 
 .section .text, "ax"  # 0x800056C0 - 0x80472F00
-.fn setMapUnitScore__Q34Game4Cave12RandMapScoreFv, global
-/* 8024C920 00249860  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 8024C924 00249864  7C 08 02 A6 */	mflr r0
-/* 8024C928 00249868  90 01 00 14 */	stw r0, 0x14(r1)
-/* 8024C92C 0024986C  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 8024C930 00249870  93 C1 00 08 */	stw r30, 8(r1)
-/* 8024C934 00249874  7C 7E 1B 78 */	mr r30, r3
-/* 8024C938 00249878  48 00 03 89 */	bl clearRoomAndDoorScore__Q34Game4Cave12RandMapScoreFv
-/* 8024C93C 0024987C  7F C3 F3 78 */	mr r3, r30
-/* 8024C940 00249880  48 00 02 FD */	bl isScoreSetDone__Q34Game4Cave12RandMapScoreFv
-/* 8024C944 00249884  54 60 06 3F */	clrlwi. r0, r3, 0x18
-/* 8024C948 00249888  40 82 00 2C */	bne .L_8024C974
-/* 8024C94C 0024988C  3B E0 00 00 */	li r31, 0
-.L_8024C950:
-/* 8024C950 00249890  7F C3 F3 78 */	mr r3, r30
-/* 8024C954 00249894  48 00 04 31 */	bl setUnitAndDoorScore__Q34Game4Cave12RandMapScoreFv
-/* 8024C958 00249898  7F C3 F3 78 */	mr r3, r30
-/* 8024C95C 0024989C  48 00 02 E1 */	bl isScoreSetDone__Q34Game4Cave12RandMapScoreFv
-/* 8024C960 002498A0  54 60 06 3F */	clrlwi. r0, r3, 0x18
-/* 8024C964 002498A4  40 82 00 10 */	bne .L_8024C974
-/* 8024C968 002498A8  3B FF 00 01 */	addi r31, r31, 1
-/* 8024C96C 002498AC  2C 1F 01 F4 */	cmpwi r31, 0x1f4
-/* 8024C970 002498B0  41 80 FF E0 */	blt .L_8024C950
-.L_8024C974:
-/* 8024C974 002498B4  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 8024C978 002498B8  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 8024C97C 002498BC  83 C1 00 08 */	lwz r30, 8(r1)
-/* 8024C980 002498C0  7C 08 03 A6 */	mtlr r0
-/* 8024C984 002498C4  38 21 00 10 */	addi r1, r1, 0x10
-/* 8024C988 002498C8  4E 80 00 20 */	blr 
-.endfn setMapUnitScore__Q34Game4Cave12RandMapScoreFv
-
 .fn setStartSlot__Q34Game4Cave12RandMapScoreFv, global
 /* 8024C98C 002498CC  94 21 FF F0 */	stwu r1, -0x10(r1)
 /* 8024C990 002498D0  7C 08 02 A6 */	mflr r0

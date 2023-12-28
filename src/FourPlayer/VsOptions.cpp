@@ -612,9 +612,6 @@ void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx) {
     //printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
 }
 
-
-
-
 // NOTE: Screen size is 640x480
 
 VsOptionsMenuMgr::VsOptionsMenuMgr() {
@@ -899,8 +896,6 @@ void CharacterImage::draw(Vector2f& position, Vector2f& size) {
     }
 }
 
-
-
 void CharacterImage::read(Stream& stream) {
     mCharacterName = stream.readString(nullptr, 0);
 }
@@ -1032,27 +1027,20 @@ void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
 
         }
 
-        
-
-
         // Vector2f size = mCharacters[mCursors[i]].mSize;
 
         // JGeometry::TBox2f box (position, position + size);
 
         // mSelectImg[i]->drawOut(box, box);
     }
-
-    
 }
 
 bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
-
 
     if (mLoadAt < mCharacterCount) {
         mCharacters[mLoadAt].createPicture();
         mLoadAt++;
     }
-
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
@@ -1060,8 +1048,6 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
         return false;
     }
     for (int i = 0; i < ARRAY_SIZE(mControllers); i++) {
-
-        
 
         Controller* controller = mControllers[i];
         if (mSelectingCharactor[i]) {
@@ -1128,7 +1114,6 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CLOSE, 0);
         return true;
     }
-    
     return false;
 }
 
@@ -1137,9 +1122,7 @@ CharacterImage::~CharacterImage() {
     delete mPicture;
 }
 
-void CharacterImage::delMembers() {
-    
-}
+void CharacterImage::delMembers() { }
 
 void CharacterSelect::cleanup() {
 
@@ -1170,7 +1153,6 @@ void CharacterData::MakeDisplayName(int size, char* chr) {
             chr[i] = ' ';
         }
     }
-
     chr[size - 1] = '\0'; 
 }
 
@@ -1182,7 +1164,6 @@ void CharacterData::PrepareDisplayName(int size, char* chr) {
             setSpace = true;
         }
     }
-
     chr[size - 1] = '\0'; 
 }
 
@@ -1241,7 +1222,6 @@ CharacterSelect::~CharacterSelect() {
     for (int i = 1; i < ARRAY_SIZE(mControllers); i++) {
         delete mControllers[i];    
     }
-    
 }
 
 void CharacterData::UpdateImages() {
@@ -1262,8 +1242,6 @@ void GamemodeSelect::init(VsOptionsMenuMgr* mgr) {
     mActiveMainGamemodeID = gGameModeID;
     mCursorRow = 0;
     mCursorCol = GAMEMODE_MAIN;
-
-    
 }
 
 bool GamemodeSelect::update(VsOptionsMenuMgr* menu) {
@@ -1284,7 +1262,6 @@ bool GamemodeSelect::update(VsOptionsMenuMgr* menu) {
             PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
         }
     }
-
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
@@ -1330,9 +1307,6 @@ void GamemodeSelect::draw(VsOptionsMenuMgr* mgr, Graphics& gfx) {
     Vector2f size (120.0f, 120.0f);
     Vector2f place (50.0f, 70.0f);
 
-
-    
-
     for (int i = 0; i < ARRAY_SIZE(mMainGameImages); i++) {
         drawImage(mMainGameImages[i], place, size, mActiveMainGamemodeID == i);
 
@@ -1353,7 +1327,6 @@ void GamemodeSelect::draw(VsOptionsMenuMgr* mgr, Graphics& gfx) {
 }
 
 EMainGamemodes gGameModeID = MAINGAME_BEDAMA;
-
 
 void GamemodeSelect::cleanup() {
     gGameModeID = (EMainGamemodes)mActiveMainGamemodeID;
@@ -1379,7 +1352,6 @@ void GamemodeSelect::loadImage(J2DPictureEx*& source, const char* texname) {
 
     LoadResource::Arg loadArg(buffer);
 	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
-
 
     if (resource) {
 		ResTIMG* icon = static_cast<ResTIMG*>(resource->mFile);
