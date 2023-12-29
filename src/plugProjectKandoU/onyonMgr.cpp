@@ -1840,7 +1840,7 @@ BaseItem* ItemOnyon::Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenItem
 	case ONYON_TYPE_WHITE:
 		objectType = ONYON_OBJECT_ONYON;
 		onyonType  = ONYON_TYPE_WHITE;
-
+		break;
 	case ONYON_TYPE_POD:
 		objectType = ONYON_OBJECT_POD;
 		break;
