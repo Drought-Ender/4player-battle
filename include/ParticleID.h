@@ -948,4 +948,10 @@
 
 #define PID_SporeHiba (0x2d4)
 
+#define PID_OtaChargeSpore_1 (0x02d5)
+#define PID_OtaChargeSpore_2 (0x02d6)
+
+#define PID_OtaSpore_1 (0x02d7)
+#define PID_OtaSpore_2 (0x02d8)
+
 #endif

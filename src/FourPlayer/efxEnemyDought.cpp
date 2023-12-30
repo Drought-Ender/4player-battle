@@ -155,44 +155,4 @@ bool TDenkiHiba::create(Arg* arg) {
 
 
 
-bool TOtaChargeSpore::create(Arg* arg) {
-    if (!TChaseMtxT2::create(arg)) {
-        return false;
-    }
-
-    for (int i = 0; i < ARRAY_SIZE(mItems); i++) {
-        JPABaseEmitter* emitter = mItems[i].mEmitter;
-        if (emitter) {
-            emitter->mColor1.r = 0x80;
-            emitter->mColor1.g = 0x80;
-            emitter->mColor1.b = 0xff;
-            emitter->mColor2.r = 0x80;
-            emitter->mColor2.g = 0x80;
-            emitter->mColor2.b = 0xff;
-            
-        }
-    }
-}
-
-bool TOtaSpore::create(Arg* arg) {
-    if (!TSimple2::create(arg)) {
-        return false;
-    }
-
-    for (int i = 0; i < ARRAY_SIZE(mEmitters); i++) {
-        JPABaseEmitter* emitter = mEmitters[i];
-        if (emitter) {
-            emitter->mColor1.r = 0x80;
-            emitter->mColor1.g = 0x80;
-            emitter->mColor1.b = 0xff;
-            emitter->mColor2.r = 0x80;
-            emitter->mColor2.g = 0x80;
-            emitter->mColor2.b = 0xff;
-
-
-            
-        }
-    }
-}
-
 } // namespace efx

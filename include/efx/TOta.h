@@ -37,11 +37,10 @@ struct TOtaChargegas : public TChaseMtxT2 {
 
 struct TOtaChargeSpore : public TChaseMtxT2 {
 	inline TOtaChargeSpore()
-	    : TChaseMtxT2(0, PID_OtaChargegas_1, PID_OtaChargegas_2)
+	    : TChaseMtxT2(0, PID_OtaChargeSpore_1, PID_OtaChargeSpore_2)
 	{
 	}
 
-	virtual bool create(Arg*);
 
 	// _00      = VTBL
 	// _00-_2C  = TChaseMtxT2
@@ -88,11 +87,10 @@ struct TOtaGas : public TSimple2 {
 
 struct TOtaSpore : public TSimple2 {
 	inline TOtaSpore()
-	    : TSimple2(PID_OtaGas_1, PID_OtaGas_2)
+	    : TSimple2(PID_OtaSpore_1, PID_OtaSpore_2)
 	{
 	}
 
-	virtual bool create(Arg*);
 
 	// _00      = VTBL
 	// _00-_10  = TSimple2
