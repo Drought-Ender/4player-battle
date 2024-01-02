@@ -349,6 +349,36 @@ void ObjFloor::setCaveMsgID(u32 caveid, char* buffer)
 	case 'vs19':
 		cave_msg = "4819_00";
 		break;
+	case 'vs20':
+		cave_msg = "0490_00";
+		break;
+	case 'vs21':
+		cave_msg = "0491_00";
+		break;
+	case 'vs22':
+		cave_msg = "0492_00";
+		break;
+	case 'vs23':
+		cave_msg = "0493_00";
+		break;
+	case 'vs24':
+		cave_msg = "0494_00";
+		break;
+	case 'vs25':
+		cave_msg = "0495_00";
+		break;
+	case 'vs26':
+		cave_msg = "0496_00";
+		break;
+	case 'vs27':
+		cave_msg = "0497_00";
+		break;
+	case 'vs28':
+		cave_msg = "0498_00";
+		break;
+	case 'vs29':
+		cave_msg = "0499_00";
+		break;
 	case '_uni':              // test id
 		cave_msg = "9996_00"; // "Test Message 9996"
 		break;
