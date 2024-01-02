@@ -21,21 +21,17 @@ extern bool gDrawNavi[4];
 
 extern bool gDrawNames;
 
-static bool gDebugPrint = true;
-
 static const JUtility::TColor vsTeamColors[] = { 0xff5050ff, 0x5050ffff, 0xffffffff, 0x7800ffff };
 
 
 inline void DebugReport(const char* msg, ...) {
-    //#if DEBUG == 1
-    if (gDebugPrint) {
-        va_list marker;
+    #if FOURPLAYER_DEBUG == 1
+    va_list marker;
 
-        va_start(marker, msg);
-        vprintf(msg, marker);
-        va_end(marker);
-    }
-    //#endif
+    va_start(marker, msg);
+    vprintf(msg, marker);
+    va_end(marker);
+    #endif
 }
 
 JUTFont* getPikminFont() {

@@ -21,7 +21,11 @@
 
 const char* message = "drct-post";
 
+#if FOURPLAYER_DEBUG == 1
 bool sDebugMode = true;
+#else
+bool sDebugMode = false;
+#endif
 
 bool gDrawNavi[4];
 

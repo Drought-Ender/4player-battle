@@ -2,6 +2,7 @@
 #include "JSystem/JKernel/JKRHeap.h"
 
 void DrawDebugMemory(Graphics& gfx) {
+    #if FOURPLAYER_DEBUG == 1
     J2DPrint print (getPikminFont(), 0.0f);
 
     print.mGlyphHeight /= 3;
@@ -16,5 +17,5 @@ void DrawDebugMemory(Graphics& gfx) {
     print.print(85.0f, 40.0f, "POKO COUNT: 100000000");
     print.print(85.0f, 50.0f, "PISH BANK ACCOUNT: $6 gadzillion");
     // print.print(100.0f, 30.0f, "Total Memory: %x/%x", JKRHeap::sRootHeap->getFreeSize(), JKRHeap::sRootHeap->getSize());
-    
+    #endif
 }

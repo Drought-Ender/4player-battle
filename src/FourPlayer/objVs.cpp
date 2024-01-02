@@ -13,7 +13,7 @@
 #include "VsOptions.h"
 
 
-#if DEBUG == 1
+#if FOURPLAYER_DEBUG == 1
 #define MemoryReport() OSReport("%i: %x Free Size\n", __LINE__, JKRHeap::sCurrentHeap->getFreeSize())
 #else
 #define MemoryReport()
