@@ -667,7 +667,17 @@ namespace
         "sewer",
         "basin",
         "metals",
-        "deep_blue"
+        "deep_blue",
+        "theater",
+        "spider",
+        "seesaw",
+        "bridge",
+        "frozen",
+        "wraith",
+        "rain",
+        "court",
+        "double",
+        "gates"
     };
 } // namespace 
 
