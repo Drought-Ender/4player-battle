@@ -1007,13 +1007,26 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 
 		if (len < maxDist) {
 			int add = (gEffectiveTeamCount > 2) ? (isFirstDiff) ? secondDiff : firstDiff : 0;
-			distScores[i] = 12800 - (int)len + add;
+			f32 bias = (gEffectiveTeamCount > 2) ? (isFirstDiff) ? gScoreBias : 1.0f - gScoreBias : 1.0f;
+			int val = 12800 - (int)len;
+			distScores[i] = val * bias;
+			if (val * bias > add * (1.0f - bias)) {
+				distScores[i] = val * bias;
+			}
+			else {
+				distScores[i] = add * (1.0f - bias);
+			}
 		} else {
 			if (gEffectiveTeamCount < 3) {
 				distScores[i] = firstDiff;
 			}
 			else {
-				distScores[i] = MAX(firstDiff, secondDiff);
+				if (firstDiff * gScoreBias > secondDiff * (1.0f - gScoreBias)) {
+					distScores[i] = firstDiff * gScoreBias;
+				}
+				else {
+					distScores[i] = secondDiff * (1.0f - gScoreBias);
+				}
 			}
 		}
 	}
@@ -1032,7 +1045,7 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			mMapTileList[idx] = nodes[i];
 			mSpawnList[idx]   = gens[i];
 
-			DebugReport("PLACED AT %i, %i\n", mMapTileList[idx]->getVersusScore(FIRST_SCORE), mMapTileList[idx]->getVersusScore(SECOND_SCORE));
+			// DebugReport("PLACED AT %i, %i\n", mMapTileList[idx]->getVersusScore(FIRST_SCORE), mMapTileList[idx]->getVersusScore(SECOND_SCORE));
 
 			f32 firstScore = (f32)mMapTileList[idx]->getVersusScore(FIRST_SCORE);
 			f32 secondScore = (f32)mMapTileList[idx]->getVersusScore(SECOND_SCORE);
@@ -1041,19 +1054,19 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 				return mMapTileList[idx]->getBaseGenGlobalPosition(mSpawnList[idx]);
 			}
 
-			DebugReport("Scores %f %f\n", firstScore, secondScore);
+			// DebugReport("Scores %f %f\n", firstScore, secondScore);
 
 			f32 firstPercentage  = FABS(firstScore) / (FABS(firstScore) + FABS(secondScore));
 			f32 secondPercentage = 1.0f - firstPercentage;
 
-			DebugReport("Percentages %f\n", firstPercentage);
+			// DebugReport("Percentages %f\n", firstPercentage);
 			
 			newScore[FIRST_SCORE]  -= firstScore;
 			newScore[SECOND_SCORE] -= secondScore;
 
-			// gScoreBias = (firstPercentage * 0.1f) + (gScoreBias * 0.9f);
+			gScoreBias = (firstPercentage) * 0.25f + gScoreBias * 0.75f;
 
-			DebugReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
+			// DebugReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
 			DebugReport("Score Bias %f\n", gScoreBias);
 
 			return mMapTileList[idx]->getBaseGenGlobalPosition(mSpawnList[idx]);
