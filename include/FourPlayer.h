@@ -15,7 +15,7 @@ extern bool gThreePlayer;
 
 struct Controller;
 
-#define FOURPLAYER_DEBUG true
+#define FOURPLAYER_DEBUG false
 
 extern int mRealWinCounts[4];
 extern bool gDrawVsMenu;
