@@ -34,6 +34,8 @@ struct VsOptionsMenuMgr {
     void init();
     bool update();
     void draw(Graphics&);
+
+    bool checkToggleTournament();
     
     template <typename T>
     void StartMenu();

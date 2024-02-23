@@ -15,7 +15,7 @@
 
 VsOptionsMenuMgr* gOptionMenu;
 
-const bool gTournamentMode = false;
+bool gTournamentMode = false;
 
 bool sNameOverride[4] = { false, false, false, false };
 
@@ -28,11 +28,17 @@ void SetOption(OptionsEnum option, int value, bool hide = false) {
     gConfig[option] = value;
 }
 
+void ShowOption(OptionsEnum option) {
+    gOptions[option].hide = false;
+}
+
 Option gOptions[] = {
     {
         "Display Names",
         { "Off", "On" },
-        { "Player names will not appear in-game", "player names will appear in game" }
+        { "Player names will not appear in-game", "player names will appear in game" },
+        2,
+        0
     },
     {
         "Onion Marbles",
@@ -321,6 +327,13 @@ void Option::SetDefaults() {
         Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_RED] = false;
         Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_BLACK] = false;
     }
+    else {
+        ShowOption(PLAYER_NAME);
+        ShowOption(SPICY_TYPE);
+        ShowOption(EGG_DROPS);
+        ShowOption(PELLET_POSY);
+        ShowOption(STALEMATE_TIMER);
+    }
 
 }
 
@@ -422,6 +435,8 @@ VsOptionsMenuMgr::~VsOptionsMenuMgr() {
 bool VsOptionsMenuMgr::update() {
     if (!mActiveMenu) return true;
 
+    if (checkToggleTournament()) return false;
+
     if (mMenuCooldown) {
         DebugReport("Menu Cooldown %i\n", mMenuCooldown);
         mMenuCooldown = false;
@@ -492,9 +507,9 @@ bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {
     }
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_A)) {
-        if (gOptions[mCursorOptionIndex].func) {
-            gOptions[mCursorOptionIndex].func(menu);
-        }
+        // if (gOptions[mCursorOptionIndex].func) {
+        //     gOptions[mCursorOptionIndex].func(menu);
+        // }
     }
 
     if ((menu->mController->isButtonDown(JUTGamePad::PRESS_A) && mCursorOptionIndex == endIdx) || menu->mController->isButtonDown(JUTGamePad::PRESS_START | JUTGamePad::PRESS_B)) {
@@ -600,7 +615,7 @@ void Option::print(J2DPrint& printer, J2DPrint& printer2, int idx) {
     if (hide) {
         return;
     }
-    if (!func) {
+    if (true) { // !func) {
         printer.print(50.0f, 70.0f + 30.0f * idx, "%s", name);
         printer.print(300.0f, 70.0f + 30.0f * idx, "-");
         printer2.print(300.0f, 70.0f + 30.0f * idx, "  %s",  valueStrings[value]);
@@ -621,6 +636,19 @@ VsOptionsMenuMgr::VsOptionsMenuMgr() {
         mMenus[i] = nullptr;
         mMenuIDs[i] = 0;
     }
+}
+
+bool VsOptionsMenuMgr::checkToggleTournament() {
+    
+    const u32 tournamentButtonChord = PAD_BUTTON_Y | PAD_TRIGGER_R | PAD_TRIGGER_L;
+    OSReport("Info: %i, %i, %i, %i\n", mController->isButtonDown(tournamentButtonChord), mController->getButton(), mController->getButton() & tournamentButtonChord, (mController->getButton() & tournamentButtonChord) == tournamentButtonChord);
+    if (mController->isButtonDown(tournamentButtonChord) && (mController->getButton() & tournamentButtonChord) == tournamentButtonChord) {
+        PSSystem::spSysIF->playSystemSe(PSSE_PK_ESCAPE_HOLE, 0);
+        gTournamentMode = !gTournamentMode;
+        Option::SetDefaults();
+        return true;
+    }
+    return false;
 }
 
 template <typename T>

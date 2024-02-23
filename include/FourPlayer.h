@@ -50,9 +50,7 @@ struct Option {
     const char* toolTipStrings[10];
     const int valueNum;
     int value; // doubles as default value
-    bool hide;
-    OptionFunction* func;
-    
+    bool hide;    
 
     void print(J2DPrint& printer, J2DPrint& printer2, int idx);
 

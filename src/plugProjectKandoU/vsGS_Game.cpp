@@ -836,7 +836,6 @@ void GameState::onRedOrBlueSuckStart(VsGameSection* section, int player, MarbleT
 		section->mRealMiniCounts[player]++;
 		if (section->mRealMiniCounts[player] == 5) {
 			section->mRealMiniCounts[player] = 0;
-			section->mDispMiniCounts[player] = 0;
 			marbleType = YELLOW;
 		}
 		else {

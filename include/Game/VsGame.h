@@ -19,7 +19,7 @@
 struct JUTTexture;
 struct LightObj;
 
-extern const bool gTournamentMode;
+extern bool gTournamentMode;
 
 namespace Game {
 namespace ItemHole {
