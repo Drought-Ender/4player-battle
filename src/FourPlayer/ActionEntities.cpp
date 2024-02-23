@@ -1,5 +1,6 @@
 #include "VsSlotCard.h"
 #include "efx/TBarrier.h"
+#include "efx/TOta.h"
 #include "Game/MapMgr.h"
 #include "efx/THdama.h"
 
@@ -9,13 +10,43 @@ namespace Game
 namespace VsGame
 {
 
+efx::TBase* HazardBarrier::MakeEfx(TeamID team) {
+    switch (team)
+    {
+    case TEAM_RED:
+        return new efx::TOtaFire;
+    case TEAM_BLUE:
+        return new efx::TOtaWat;
+    case TEAM_WHITE:
+        return new efx::TOtaGas;
+    case TEAM_PURPLE:
+        return new efx::TOtaSpore;
+    }
+    JUT_PANIC("INVALID TEAM ID %i\n", team);
+}
+
+f32 HazardBarrier::GetEfxTimer(TeamID team) {
+    switch (team)
+    {
+    case TEAM_RED:
+        return 1.0f;
+    case TEAM_BLUE:
+        return 0.5f;
+    case TEAM_WHITE:
+        return 0.5f;
+    case TEAM_PURPLE:
+        return 0.5f;
+    }
+    JUT_PANIC("INVALID TEAM ID %i\n", team);
+}
+
 HazardBarrier::HazardBarrier(int teamID, Vector3f position) : TeamPositionEntity(teamID, position) {
     mTimer = 0.0f;
     mEfxTimer = 0.0f;
 
-    mEfx = new efx::TBarrier;
+    mEfx = MakeEfx((TeamID)teamID);
 
-    efx::ArgBarrier efxArg (mPosition, mTeamID);
+    efx::Arg efxArg (mPosition);
     mEfx->create(&efxArg);
 }
 
@@ -57,7 +88,7 @@ bool HazardBarrier::update() {
         }
     }
 
-    if (mEfxTimer > 0.5f) {
+    if (mEfxTimer > GetEfxTimer((TeamID)mTeamID)) {
         mEfxTimer = 0.0f;
         efx::ArgBarrier efxArg (mPosition, mTeamID);
         mEfx->create(&efxArg);

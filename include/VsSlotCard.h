@@ -93,6 +93,9 @@ struct HazardBarrier : TeamPositionEntity {
     HazardBarrier(int, Vector3f);
     ~HazardBarrier();
 
+    static efx::TBase* MakeEfx(TeamID);
+    static f32 GetEfxTimer(TeamID);
+
     efx::TBase* mEfx;
     f32 mTimer;
     f32 mEfxTimer;
