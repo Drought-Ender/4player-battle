@@ -117,12 +117,9 @@ struct PlatMgr : public NodeObjectMgr<PlatInstance> {
 
 struct PlatEvent {
 	PlatInstance* mInstance; // _00
-	f32 _04;                 // _04
-	f32 _08;                 // _08
-	f32 _0C;                 // _0C
-	BaseItem* mItem;         // _10
+	Vector3f mPosition;      // _04
+	Creature* mObj;          // _10
 };
-
 extern PlatMgr* platMgr;
 } // namespace Game
 

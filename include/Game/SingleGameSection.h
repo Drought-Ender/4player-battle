@@ -21,10 +21,23 @@ struct GameState;
 struct State;
 } // namespace SingleGame
 
+
+enum DemoTimers2 {
+	DEMOTIMER_None                   = 0,
+	DEMOTIMER_Piki_Seed_In_Ground    = 1, // plays if you dont pluck the first red pikmin in 10 seconds
+	DEMOTIMER_Camera_Tutorial        = 2, // Entirely unused, the camera tutorial was meant to use it, but nothing starts its timer
+	DEMOTIMER_Unlock_Switch_To_Louie = 3,
+	DEMOTIMER_Unk6                   = 6,
+	DEMOTIMER_YouAppearLost          = 7, // When you wait 3 minutes on day 1 after growing 15 reds before crushing the first bag
+};
+
+
 /**
  * @Size{0x278}
  */
 struct SingleGameSection : public BaseGameSection {
+	typedef Game::SingleGame::State StateType;
+
 	SingleGameSection(JKRHeap*);
 
 	virtual ~SingleGameSection();                                      // _08
@@ -77,6 +90,9 @@ struct SingleGameSection : public BaseGameSection {
 	void updateMainMapScreen();
 	void drawCaveScreen();
 
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
+
 	f32 mTimer;                                    // _174
 	bool mTimerEnabled;                            // _178
 	u32 mTimerType;                                // _17C
@@ -100,7 +116,7 @@ struct SingleGameSection : public BaseGameSection {
 	efx::TChasePos* _244;                          // _244
 	int mCurrentFloor;                             // _248
 	Game::SingleGame::FSM* mFsm;                   // _24C
-	Game::SingleGame::GameState* mCurrentState;    // 250
+	Game::SingleGame::State* mCurrentState;        // _250
 	KindCounter _254;                              // _254
 	KindCounter _25C;                              // _25C
 	KindCounter mOtakaraCounter;                   // _264
