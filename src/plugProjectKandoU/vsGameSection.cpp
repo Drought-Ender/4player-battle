@@ -1430,7 +1430,7 @@ void VsGameSection::initCardGeneration()
  */
 void VsGameSection::updateCardGeneration()
 {
-	if (VsGame::CardCount == 0) {
+	if (VsGame::CardCount == 0 || (gTournamentMode && mVsStageData->mIndex2D == 29)) { // champion's court (no cherries)
 		return;
 	}
 
