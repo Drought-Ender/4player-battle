@@ -337,11 +337,11 @@ void TitleState::execVs(VsGameSection* section)
 
 		} else {                       // no c-stick input
 			section->mEditNumber = -2; // random?
-		}
-		SaveEditNum(section->mEditNumber);
+		}		
 
 		int stageNumber;
 		int check = Screen::gGame2DMgr->check_VsSelect(stageNumber, section->mOlimarHandicap, section->mLouieHandicap, section->mWhiteHandicap, section->mPurpleHandicap);
+		
 		switch (check) {
 		case 2:
 			section->mIsMenuRunning = true;
@@ -355,6 +355,7 @@ void TitleState::execVs(VsGameSection* section)
 			P2ASSERTLINE(451, data);
 			section->mVsStageData = data;
 			section->mVsStageNum  = stageNumber;
+			section->mEditNumber = SaveEditNum(section->mEditNumber);
 
 			if (getTeamCount() > 2) {
 				DebugReport("Using big map\n");

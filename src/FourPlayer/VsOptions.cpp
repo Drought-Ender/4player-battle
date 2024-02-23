@@ -641,7 +641,7 @@ VsOptionsMenuMgr::VsOptionsMenuMgr() {
 bool VsOptionsMenuMgr::checkToggleTournament() {
     
     const u32 tournamentButtonChord = PAD_BUTTON_Y | PAD_TRIGGER_R | PAD_TRIGGER_L;
-    OSReport("Info: %i, %i, %i, %i\n", mController->isButtonDown(tournamentButtonChord), mController->getButton(), mController->getButton() & tournamentButtonChord, (mController->getButton() & tournamentButtonChord) == tournamentButtonChord);
+    // OSReport("Info: %i, %i, %i, %i\n", mController->isButtonDown(tournamentButtonChord), mController->getButton(), mController->getButton() & tournamentButtonChord, (mController->getButton() & tournamentButtonChord) == tournamentButtonChord);
     if (mController->isButtonDown(tournamentButtonChord) && (mController->getButton() & tournamentButtonChord) == tournamentButtonChord) {
         PSSystem::spSysIF->playSystemSe(PSSE_PK_ESCAPE_HOLE, 0);
         gTournamentMode = !gTournamentMode;

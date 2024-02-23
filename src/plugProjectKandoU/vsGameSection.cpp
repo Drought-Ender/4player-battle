@@ -2281,6 +2281,15 @@ namespace Game
 
 int SaveEditNum(int i) {
     sEditNum = i;
+	if (gTournamentMode) {
+		if (sEditNum == -1) {
+			sEditNum = 0;
+		}
+		else if (sEditNum == 2 && GetVsGameSection()->mVsStageData->mIndex2D == 25) { // == wraith stage
+			sEditNum = randInt(2);
+		}
+	}
+	OSReport("Edit Num %i\n", sEditNum);
     return sEditNum;
 }
 
