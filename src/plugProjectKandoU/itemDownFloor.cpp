@@ -131,6 +131,10 @@ void Item::onSetPosition()
 
 	mgr->setupPlatform(this);
 
+	if (!mIsDemoBlock) {
+		mIsDemoBlock = gameSystem->mIsInCave;
+	}
+
 	if (mDownFloorType == DFTYPE_PaperBag || mIsDemoBlock) {
 		WPSearchArg searchArg(mPosition, nullptr, false, 10.0f);
 
