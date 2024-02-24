@@ -1430,7 +1430,10 @@ void VsGameSection::initCardGeneration()
  */
 void VsGameSection::updateCardGeneration()
 {
-	if (VsGame::CardCount == 0 || (gTournamentMode && mVsStageData->mIndex2D == 29)) { // champion's court (no cherries)
+	if (gConfig[CHERRY_RATE] == ConfigEnums::RATE_NEVER || (gTournamentMode && mVsStageData->mIndex2D == 29)) { // champion's court (no cherries)
+		return;
+	}
+	if (VsGame::CardCount == 0) {
 		return;
 	}
 
@@ -1517,7 +1520,7 @@ void VsGameSection::updateCardGeneration()
 	int spawnCherries = maxSpawnCherries[0] + maxSpawnCherries[1] + maxSpawnCherries[2] + maxSpawnCherries[3] + 5;
 	if (spawnCherries > mMaxCherries) spawnCherries = mMaxCherries;
 
-	if (mCardCount < 4 || (hasUrgency && mCardCount < spawnCherries) && gConfig[CHERRY_RATE] != ConfigEnums::RATE_NEVER) { // config is never spawn
+	if (mCardCount < 4 || (hasUrgency && mCardCount < spawnCherries)) { // config is never spawn
 		f32 ticking = sys->mDeltaTime;
 		if (hasUrgency) {
 			ticking *= 2.0f;
