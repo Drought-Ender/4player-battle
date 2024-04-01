@@ -101,11 +101,11 @@ EnemyTypeID::EEnemyTypeID GetEnemyFromSet(EnemyTypeID::EEnemyTypeID enemyType, E
 }
 
 EnemyTypeID::EEnemyTypeID MakeReplacementFromGenericEnemy(EnemyTypeID::EEnemyTypeID enemyType) {
-	DebugReport("Enemy In %s\n", EnemyInfoFunc::getEnemyName(enemyType, 0xffff));
+	CaveDebugReport("Enemy In %s\n", EnemyInfoFunc::getEnemyName(enemyType, 0xffff));
 	enemyType = GetEnemyFromSet(enemyType, TankSet);
 	enemyType = GetEnemyFromSet(enemyType, OtakaraSet);
 	enemyType = GetEnemyFromSet(enemyType, HibaSet);
-	DebugReport("Enemy Out %s\n", EnemyInfoFunc::getEnemyName(enemyType, 0xffff));
+	CaveDebugReport("Enemy Out %s\n", EnemyInfoFunc::getEnemyName(enemyType, 0xffff));
 	return enemyType;
 }
 
@@ -323,7 +323,7 @@ MapNode* RandMapScore::getMaxVsScoreRoomMapNode(int count, MapNode** mapNode, Ba
             }
         }
 		if (!doSkip && currNode->mUnitInfo->getUnitKind() == UNITKIND_Room) {
-			DebugReport("Second Score %i\n", currNode->getNodeScore());
+			CaveDebugReport("Second Score %i\n", currNode->getNodeScore());
 			int secondScore = (second) ? absVal(currNode->getVersusScore(SECOND_SCORE)) : currNode->getNodeScore();
 			int nodeScore = -(secondScore * secondScore) + absVal(currNode->getVersusScore(FIRST_SCORE)) + 10;
 			BaseGen* gen  = currNode->mUnitInfo->getBaseGen();
@@ -341,14 +341,14 @@ MapNode* RandMapScore::getMaxVsScoreRoomMapNode(int count, MapNode** mapNode, Ba
 			}
 		}
 	}
-	DebugReport("next\n");
+	CaveDebugReport("next\n");
 	return maxScoreNode;
 }
 
 
 void RandMapScore::clearRoomAndDoorScore()
 {
-	DebugReport("RandMapScore::clearRoomAndDoorScore()\n");
+	CaveDebugReport("RandMapScore::clearRoomAndDoorScore()\n");
 	FOREACH_NODE(MapNode, mGenerator->getPlacedNodes()->mChild, currNode)
 	{
 		currNode->setEnemyScore();
@@ -871,7 +871,7 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 
 	gScoreBias = 0.5f;
 
-	DebugReport("Score Bias %f\n", gScoreBias);
+	CaveDebugReport("Score Bias %f\n", gScoreBias);
 
 	MapNode* nodeList[16];
 	BaseGen* genList[16];
@@ -882,7 +882,7 @@ void RandMapMgr::getItemDropPosition(Vector3f* positions, int count, VsWeights p
 	
 	for (int i = 0; i < count; i++) {
 		VsWeights val = { avg[0], avg[1] };
-		DebugReport("FIRST SCORE %f\n", val[FIRST_SCORE]);
+		CaveDebugReport("FIRST SCORE %f\n", val[FIRST_SCORE]);
 		
 		// if (i == 0) val[FIRST_SCORE] += weight[FIRST_SCORE];
 		// if (i == 1) val[FIRST_SCORE] -= weight[FIRST_SCORE];
@@ -923,7 +923,7 @@ MapNode* RandItemUnit::getItemNormalSetMapNode(BaseGen** outGens)
 
 		if (currMapNode->mUnitInfo->getUnitKind() == UNITKIND_Room) {
 			int firstScore = absVal(currMapNode->getVersusScore(FIRST_SCORE) - skew[FIRST_SCORE] + mMapScore->mVersusHighScore[FIRST_SCORE] + mMapScore->mVersusLowScore[FIRST_SCORE]);
-			DebugReport("First score %i\n", firstScore);
+			CaveDebugReport("First score %i\n", firstScore);
 			int secondScore = absVal(currMapNode->getVersusScore(SECOND_SCORE) - skew[SECOND_SCORE]);
 			
 			int currScore = MAX(firstScore, secondScore);
@@ -1138,15 +1138,15 @@ int RandMapScore::getVersusHighScore(int color) {
 
 void RandEnemyUnit::setEnemySlot()
 {	
-	DebugReport("RandEnemyUnit::setEnemySlot()\n");
+	CaveDebugReport("RandEnemyUnit::setEnemySlot()\n");
 	if (mTotalCount < mMaxEnemies) {
-		DebugReport("RandEnemyUnit::setEnemyTypeC()\n");
+		CaveDebugReport("RandEnemyUnit::setEnemyTypeC()\n");
 		setEnemyTypeC();
-		DebugReport("RandEnemyUnit::setEnemyTypeF()\n");
+		CaveDebugReport("RandEnemyUnit::setEnemyTypeF()\n");
 		setEnemyTypeF();
-		DebugReport("RandEnemyUnit::setEnemyTypeB()\n");
+		CaveDebugReport("RandEnemyUnit::setEnemyTypeB()\n");
 		setEnemyTypeB();
-		DebugReport("RandEnemyUnit::setEnemyTypeA()\n");
+		CaveDebugReport("RandEnemyUnit::setEnemyTypeA()\n");
 		setEnemyTypeA();
 	}
 }
@@ -1218,7 +1218,7 @@ void RandEnemyUnit::setVersusEasyEnemy()
 			}
 			else if (currInfo->mEnemyID == vsEasyIDs[1]) {
 				enemyCounts[1][0] += currInfo->mWeight / 10;
-				DebugReport("Enemy Count 2 %i\n", enemyCounts[1][0]);
+				CaveDebugReport("Enemy Count 2 %i\n", enemyCounts[1][0]);
 				enemyUnits[1] = unit;
 				currNode->del();
 				mainNode->addHead(currNode);
@@ -1229,7 +1229,7 @@ void RandEnemyUnit::setVersusEasyEnemy()
 
 	
 	for (int i = 0; i < 2; i++) {
-		DebugReport("enemyCounts[%i][0] %i\n", i, enemyCounts[i][0]);
+		CaveDebugReport("enemyCounts[%i][0] %i\n", i, enemyCounts[i][0]);
 		if (enemyCounts[i][0] == 0) continue;
 
 
@@ -1241,7 +1241,7 @@ void RandEnemyUnit::setVersusEasyEnemy()
 			for (int j = 0; j < gEffectiveTeamCount; j++) {
 				if (enemyCounts[i][j] != 0) {
 					BaseGen* spawnBaseGen = getVersusEasyEnemyBaseGen(onyonNodes[j], onyonGens[j]);
-					DebugReport("Pelplant spawn basegen %p\n", spawnBaseGen);
+					CaveDebugReport("Pelplant spawn basegen %p\n", spawnBaseGen);
 					if (spawnBaseGen) {
 						makeSetEnemyTypeA(onyonNodes[j], spawnBaseGen, enemyUnits[i], enemyCounts[i][j]);
 					}
@@ -1484,7 +1484,7 @@ void RandEnemyUnit::setSlotEnemyTypeF(int third) {
 
 void RandMapScore::setMapUnitScore()
 {
-	DebugReport("RandMapScore::setMapUnitScore()\n");
+	CaveDebugReport("RandMapScore::setMapUnitScore()\n");
 	clearRoomAndDoorScore();
 	if (!isScoreSetDone()) {
 		for (int i = 0; i < 500; i++) {
@@ -1498,40 +1498,40 @@ void RandMapScore::setMapUnitScore()
 
 void RandMapMgr::create()
 {
-	DebugReport("RandMapMgr::create()\n");
+	CaveDebugReport("RandMapMgr::create()\n");
 	// The CaveGen Function (tm)
 
 	// Round 1: place map tiles + set ship spawn
-	DebugReport("setMapUnit\n");
+	CaveDebugReport("setMapUnit\n");
 	mRandMapUnit->setMapUnit();
-	DebugReport("setStartSlot\n");
+	CaveDebugReport("setStartSlot\n");
 	mRandMapScore->setStartSlot();
-	DebugReport("setMapUnitScore\n");
+	CaveDebugReport("setMapUnitScore\n");
 	// Calculate score after round 1 (just distance score based on map tile layout)
 	mRandMapScore->setMapUnitScore();
 
 	// Round 2: place hole (and geyser), then place enemies
-	DebugReport("setGoalSlot\n");
+	CaveDebugReport("setGoalSlot\n");
 	mRandMapScore->setGoalSlot();
-	DebugReport("setEnemySlot\n");
+	CaveDebugReport("setEnemySlot\n");
 	mRandEnemyUnit->setEnemySlot();
 	// Calculate score after round 2 (now includes enemies as well as distance score)
-	DebugReport("setMapUnitScore\n");
+	CaveDebugReport("setMapUnitScore\n");
 	mRandMapScore->setMapUnitScore();
 
 	// Round 3: place plants, then treasures, then cap enemies
-	DebugReport("setPlantSlot\n");
+	CaveDebugReport("setPlantSlot\n");
 	mRandPlantUnit->setPlantSlot();
-	DebugReport("setItemSlot\n");
+	CaveDebugReport("setItemSlot\n");
 	mRandItemUnit->setItemSlot();
-	DebugReport("setCapEnemySlot\n");
+	CaveDebugReport("setCapEnemySlot\n");
 	mRandCapEnemyUnit->setCapEnemySlot();
 	// Calculate score after round 3 (doesn't get used again though)
-	DebugReport("setMapUnitScore\n");
+	CaveDebugReport("setMapUnitScore\n");
 	mRandMapScore->setMapUnitScore();
 
 	// Round 4: place gates
-	DebugReport("setGateDoor\n");
+	CaveDebugReport("setGateDoor\n");
 	mRandGateUnit->setGateDoor();
 
 	// With all units placed, determine radar texture size + allocate
