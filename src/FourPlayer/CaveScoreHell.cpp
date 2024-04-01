@@ -10,6 +10,18 @@
 #include "Game/Entities/Pelplant.h"
 
 
+#define CAVE_DEBUG 1
+
+inline void CaveDebugReport(const char* msg, ...) {
+	#if CAVE_DEBUG == 1
+    va_list marker;
+
+    va_start(marker, msg);
+    vprintf(msg, marker);
+    va_end(marker);
+    #endif
+}
+
 int gScoreDelegations[2][2] = { {ONYON_TYPE_RED, ONYON_TYPE_BLUE}, {ONYON_TYPE_WHITE, ONYON_TYPE_PURPLE} };
 int gEffectiveTeamCount = 4;
 bool gThreePlayer;
@@ -1045,7 +1057,8 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 			mMapTileList[idx] = nodes[i];
 			mSpawnList[idx]   = gens[i];
 
-			// DebugReport("PLACED AT %i, %i\n", mMapTileList[idx]->getVersusScore(FIRST_SCORE), mMapTileList[idx]->getVersusScore(SECOND_SCORE));
+			CaveDebugReport("PLACED AT %i, %i\n", mMapTileList[idx]->getVersusScore(FIRST_SCORE), mMapTileList[idx]->getVersusScore(SECOND_SCORE));
+
 
 			f32 firstScore = (f32)mMapTileList[idx]->getVersusScore(FIRST_SCORE);
 			f32 secondScore = (f32)mMapTileList[idx]->getVersusScore(SECOND_SCORE);
@@ -1054,20 +1067,22 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** nodes, BaseGen** gens, i
 				return mMapTileList[idx]->getBaseGenGlobalPosition(mSpawnList[idx]);
 			}
 
-			// DebugReport("Scores %f %f\n", firstScore, secondScore);
+			CaveDebugReport("Scores %f %f\n", firstScore, secondScore);
 
 			f32 firstPercentage  = FABS(firstScore) / (FABS(firstScore) + FABS(secondScore));
 			f32 secondPercentage = 1.0f - firstPercentage;
 
-			// DebugReport("Percentages %f\n", firstPercentage);
+			CaveDebugReport("Percentages %f\n", firstPercentage);
 			
 			newScore[FIRST_SCORE]  -= firstScore;
 			newScore[SECOND_SCORE] -= secondScore;
 
-			gScoreBias = (firstPercentage) * 0.25f + gScoreBias * 0.75f;
+			if (gEffectiveTeamCount > 2) {
+				gScoreBias = (firstPercentage) * 0.25f + gScoreBias * 0.75f;
+			}
 
-			// DebugReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
-			DebugReport("Score Bias %f\n", gScoreBias);
+			CaveDebugReport("NEW SCORE %i, %i\n", newScore[FIRST_SCORE], newScore[SECOND_SCORE]);
+			CaveDebugReport("Score Bias %f\n", gScoreBias);
 
 			return mMapTileList[idx]->getBaseGenGlobalPosition(mSpawnList[idx]);
 		}
