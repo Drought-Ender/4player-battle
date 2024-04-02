@@ -7,6 +7,7 @@
 
 struct ResTIMG;
 struct JUTTexture;
+struct Camera;
 struct Graphics;
 
 namespace Game
@@ -22,6 +23,8 @@ struct FloatingIcon : public CNode
     ~FloatingIcon();
 
     void draw(Graphics&);
+
+    f32 calcZ(Camera*);
 
     bool mTextureOwner;
     JUTTexture* mImg;
@@ -40,6 +43,8 @@ struct FloatingIconMgr : public CNode
 
     static void add(FloatingIcon*);
     static void del(FloatingIcon*);
+
+    static bool sDrawOptimize;
 
     Matrixf mViewMatrix;
 

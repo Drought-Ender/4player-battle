@@ -123,7 +123,7 @@ WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 e
     
 }
 
-#define ICON_HEIGHT (70.0f)
+#define ICON_HEIGHT (50.0f)
 
 void WaitEnemySpawn::init() {
     mIconPos = mPosition;

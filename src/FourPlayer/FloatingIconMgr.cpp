@@ -2,6 +2,7 @@
 #include "Sys/DrawBuffers.h"
 #include "Graphics.h"
 #include "Game/Navi.h"
+#include "Game/GameLight.h"
 
 #define DEBUG_FILE 0
 
@@ -39,6 +40,11 @@ FloatingIcon::~FloatingIcon() {
     }
 }
 
+f32 FloatingIcon::calcZ(Camera* camera) {
+    Vector3f position = camera->getPosition();
+    return sqrDistance(*mPosition, position);
+}
+
 void FloatingIcon::setupViewMtx(Graphics& gfx) {
     DebugReport("FloatingIcon::setupViewMtx(Graphics& gfx)\n");
     Viewport* vp = gfx.mCurrentViewport;
@@ -54,7 +60,7 @@ void FloatingIcon::setupViewMtx(Graphics& gfx) {
 	GXLoadPosMtxImm(graph->mPosMtx, 0);
 }
 
-#define ICON_SIZE (32.0f)
+#define ICON_SIZE (40.0f)
 
 void FloatingIcon::draw(Graphics& gfx) {
     DebugReport("FloatingIcon::draw(Graphics& gfx)\n");
@@ -102,10 +108,15 @@ void FloatingIconMgr::setupViewMtx(Graphics& gfx) {
 	mtxTo[2][2] = mtxFrom[2][2] * magnitude;
 }
 
+bool FloatingIconMgr::sDrawOptimize = false;
+
 void FloatingIconMgr::draw(Graphics& gfx) {
     DebugReport("FloatingIconMgr::draw(Graphics& gfx)\n");
     J2DPerspGraph* graph = &gfx.mPerspGraph;
 	Matrixf mtxBackup = graph->mPosMtx;
+    LookAtCamera* cam = gfx.mCurrentViewport->mCamera;
+
+    // gameSystem->mSection->mLightMgr->mFogMgr->set(gfx);
 
     GXSetCullMode(GX_CULL_NONE);
     GXClearVtxDesc();
@@ -114,15 +125,59 @@ void FloatingIconMgr::draw(Graphics& gfx) {
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_F32, 0);
 
+    // goofy tevcolor
+    
+
+    // magic perspective sauce
+    GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
+	GXSetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+    GXSetColorUpdate(GX_TRUE);
+    
+	// GXSetZCompLoc(GX_TRUE);
+
+
     setupViewMtx(gfx);
 
-
-    
-
-    
-    FOREACH_NODE(FloatingIcon, mChild, node) {
-        node->draw(gfx);
+    if (sDrawOptimize) {
+        FOREACH_NODE(FloatingIcon, mChild, node) {
+            node->draw(gfx);
+        }
     }
+    else {
+        int count = getChildCount();
+
+        FloatingIcon** icons = new FloatingIcon*[count];
+        f32* distances = new f32[count];
+        
+        int idx = 0;
+
+        FOREACH_NODE(FloatingIcon, mChild, node) {
+            distances[idx] = node->calcZ(cam);
+            icons[idx] = node;
+            idx++;
+        }
+
+        for (int i = 0; i < count; i++) {
+            int minIdx = 0;
+            f32 maxDistance = 0;
+
+            for (int j = 0; j < count; j++) {
+                if (icons[j] && distances[j] > maxDistance) {
+                    minIdx = j;
+                    maxDistance = distances[j];
+                }
+            }
+
+            icons[minIdx]->draw(gfx);
+            icons[minIdx] = nullptr;
+        }
+
+
+        delete[] icons;
+        delete[] distances;
+    }
+
+    // gameSystem->mSection->mLightMgr->mFogMgr->off(gfx);
 	
     PSMTXCopy(mtxBackup.mMatrix.mtxView, graph->mPosMtx);
 	GXLoadPosMtxImm(graph->mPosMtx, 0);

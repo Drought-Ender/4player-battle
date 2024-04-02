@@ -1013,8 +1013,8 @@ void VsSlotCardMgr::initAllCards() {
     sAllCards[ALL_PLUCK] = new PluckAllCard("fue_pullout.bti");
     sAllCards[PATH_BLOCK] = new HazardBarrierCard("fire_water.bti");
     sAllCards[WARP_HOME] = new WarpHomeCard("warp_home.bti");
-    sAllCards[TEKI_KUMA] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 0.0f, 20.0f, 3.0f), "teki_kuma.bti");
-    sAllCards[BOMB_STORM] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 0.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
+    sAllCards[TEKI_KUMA] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 0.0f, 20.0f, 300.0f), "teki_kuma.bti");
+    sAllCards[BOMB_STORM] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 0.0f, 30.0f, 1.0f, 100.0f), "bombs.bti");
     sAllCards[TEKI_OTAKARA] = new TankOnyonTeki(
         EnemyTypeID::EnemyID_FireOtakara,
         EnemyTypeID::EnemyID_WaterOtakara,
