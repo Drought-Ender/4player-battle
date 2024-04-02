@@ -234,6 +234,8 @@ struct BaseGameSection : public BaseHIOSection {
 
 	void renderNames(Graphics& gfx, Viewport* viewport);
 
+	void directDrawExtras(Graphics& gfx, Viewport*);
+
 	// _00 		= VTBL
 	// _00-_48 	= BaseHIOSection
 	// should there not be another 0x4 here in USA (not demo)? ...

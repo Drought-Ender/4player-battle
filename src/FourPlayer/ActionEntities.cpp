@@ -102,21 +102,52 @@ HazardBarrier::~HazardBarrier() {
 }
 
 
+WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime, JUTTexture* tex) : PositionEntity(position) {
+    mWaitTimer = timer;
+    mExistenceTimer = existenceTime;
+    mEntityID = entityId;
+    mIcon = new FloatingIcon(tex, &mIconPos);
+
+    init();
+}
+
 WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime) : PositionEntity(position) {
     mWaitTimer = timer;
     mExistenceTimer = existenceTime;
     mEntityID = entityId;
+    mIcon = nullptr;
+    
+
+    init();
+
+    
+}
+
+#define ICON_HEIGHT (70.0f)
+
+void WaitEnemySpawn::init() {
+    mIconPos = mPosition;
+    mIconPos.y += ICON_HEIGHT;
 
     mEfx = new efx::THdamaSight;
 
     efx::Arg efxArg (mPosition);
-    mEfx->create(&efxArg);    
+    mEfx->create(&efxArg);
+
+    if (mIcon) {
+        FloatingIconMgr::add(mIcon);
+    }
 }
 
 bool WaitEnemySpawn::update() {
     mWaitTimer -= sys->mDeltaTime;
     
     if (mWaitTimer < 0.0f) {
+        if (mIcon) {
+            FloatingIconMgr::del(mIcon);
+            delete mIcon;
+            mIcon = nullptr;
+        }
         birthFromSky();
         return true;
     }

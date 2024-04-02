@@ -18,6 +18,7 @@
 #include "Game/MoviePlayer.h"
 #include "VsOptions.h"
 #include "Game/Navi.h"
+#include "FloatingIconMgr.h"
 
 const char* message = "drct-post";
 
@@ -89,12 +90,14 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	if (vp && vp->viewable() && gDrawNavi[0]) {
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
+		directDrawExtras(gfx, vp);
 	}
 
 	vp = gfx.getViewport(1);
 	if (vp && vp->viewable() && gDrawNavi[1]) {
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
+		directDrawExtras(gfx, vp);
 	}
 	sys->mTimers->_stop("drct-post");
 	
@@ -103,6 +106,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		if (vp && vp->viewable() && gDrawNavi[2]) {
 			gfx.mCurrentViewport = vp;
 			directDrawPost(gfx, vp);
+			directDrawExtras(gfx, vp);
 		}
 	}
 	if (gNaviNum > 3) {
@@ -110,6 +114,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		if (vp && vp->viewable() && gDrawNavi[3]) {
 			gfx.mCurrentViewport = vp;
 			directDrawPost(gfx, vp);
+			directDrawExtras(gfx, vp);
 		}
 	}
 }
@@ -246,5 +251,13 @@ void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
 	
 }
 
+
+void BaseGameSection::directDrawExtras(Graphics& gfx, Viewport* vp) {
+	// OSReport("BaseGameSection::directDrawExtras(Graphics& gfx, Viewport* vp)\n");
+	
+	if (FloatingIcon::mgr) {
+		FloatingIcon::mgr->FloatingIconMgr::draw(gfx);
+	}
+}
 
 } // namespace Game

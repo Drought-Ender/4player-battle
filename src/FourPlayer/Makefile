@@ -32,6 +32,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/PikiPathfind.o\
 	$(BUILD_DIR)/src/FourPlayer/BingoMgr.o\
 	$(BUILD_DIR)/src/FourPlayer/DebugMemoryForEpoch.o\
+	$(BUILD_DIR)/src/FourPlayer/FloatingIconMgr.o\
 
 
 DEPENDS += $(FOURPLAYER_FILES:.o=.d)

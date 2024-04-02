@@ -44,6 +44,7 @@
 #include "Game/PikiState.h"
 
 #include "Game/Entities/ItemPikihead.h"
+#include "FloatingIconMgr.h"
 
 static int sEditNum;
 
@@ -432,6 +433,8 @@ void VsGameSection::onSetupFloatMemory()
 
 	VsGame::vsSlotCardMgr = new VsGame::VsSlotCardMgr;
 	VsGame::vsSlotCardMgr->generateCards(this);
+
+	FloatingIconMgr::create();
 
 	mTekiMgr->entry(EnemyTypeID::EnemyID_Tobi, 20);
 

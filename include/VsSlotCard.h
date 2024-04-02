@@ -3,7 +3,9 @@
 
 #include "Game/VsGame.h"
 #include "Game/Stickers.h"
+#include "FloatingIconMgr.h"
 
+struct JUTTexture;
 
 namespace efx
 {
@@ -51,6 +53,9 @@ class VsSlotMachineCard
         onUseCard(cardMgr, user);
         onUseCard(cardMgr, user, target);
     }
+
+    protected:
+    JUTTexture* GetTextureFromMgr();
 };
 
 struct ActionEntity : public CNode {
@@ -108,8 +113,12 @@ struct WaitEnemySpawn : PositionEntity {
 
     EnemyBase* birthFromSky();
 
+    
+    WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime, JUTTexture* tex);
     WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime);
     ~WaitEnemySpawn();
+
+    void init();
 
     virtual bool update();
 
@@ -117,6 +126,8 @@ struct WaitEnemySpawn : PositionEntity {
     f32 mWaitTimer;
     f32 mExistenceTimer;
     int mEntityID;
+    Vector3f mIconPos;
+    FloatingIcon* mIcon;
 };
 
 struct ActionEntityMgr : private CNode {

@@ -19,6 +19,17 @@ namespace VsGame
 
 VsSlotCardMgr* vsSlotCardMgr;
 
+JUTTexture* VsSlotMachineCard::GetTextureFromMgr() {
+    OSReport("VsSlotMachineCard::GetTextureFromMgr()\n");
+    CardMgr* classicCardMgr = GetVsGameSection()->mCardMgr;
+    P2ASSERT(classicCardMgr);
+    for (int i = 0; i < classicCardMgr->mSlotNum; i++) {
+        if (VsGame::vsSlotCardMgr->getAt(i) == this) {
+            return classicCardMgr->mSlotTextures[i];
+        }
+    }
+}
+
 struct NaviTekiParams
 {
     inline NaviTekiParams() {
@@ -921,7 +932,7 @@ struct NaviAwaitFallSkyCard : public NaviTekiCard
                 }
                 else {
                     f32 wait = mWaitTimer + randFloat() * mVarience;
-                    WaitEnemySpawn* card = new WaitEnemySpawn(spawnNaviPos, mTekiMgrID, mWaitTimer, mParms.mDespawnTimer);
+                    WaitEnemySpawn* card = new WaitEnemySpawn(spawnNaviPos, mTekiMgrID, mWaitTimer, mParms.mDespawnTimer, GetTextureFromMgr());
                     vsSlotCardMgr->mActionMgr.add(card);
                 }
             }
