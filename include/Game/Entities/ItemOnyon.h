@@ -10,6 +10,7 @@
 #include "efx/Arg.h"
 #include "CollInfo.h"
 #include "Vector3.h"
+#include "FloatingIconMgr.h"
 
 enum OnyonTypes {
 	ONYON_TYPE_BLUE   = 0,
@@ -185,6 +186,7 @@ struct Onyon : public BaseItem {
 	SysShape::Animator* mPMotionList;        // _254, list of pAnim objects
 	f32* mPMotionSpeeds;                     // _258
 	f32 mPropera;                            // _25C, controls speed of one of the ships pMotions
+	OnyonFloatingIcon* mIcon;
 };
 
 namespace ItemOnyon {

@@ -15,26 +15,61 @@ namespace Game
 
 struct FloatingIconMgr;
 
-struct FloatingIcon : public CNode
+struct IFloatingIcon {
+    virtual void draw(Graphics&) = 0;
+    virtual bool satisfy() = 0;
+    virtual f32 getSize() = 0;
+    virtual Vector3f getPosition() = 0;
+    virtual Matrixf setupViewMtx(Graphics&) = 0;
+    virtual bool drawOver() = 0;
+};
+
+struct FloatingIcon : public CNode, public IFloatingIcon
 {
-    FloatingIcon(ResTIMG*, Vector3f*);
     FloatingIcon(JUTTexture*, Vector3f*);
 
     ~FloatingIcon();
 
-    void draw(Graphics&);
+    virtual void draw(Graphics&);
+    virtual bool satisfy() { return true; };
+    virtual f32 getSize();
+    virtual Vector3f getPosition();
+    virtual bool drawOver() { return false; }
 
     f32 calcZ(Camera*);
 
-    bool mTextureOwner;
+    // img owner by upper class (just like real life)
     JUTTexture* mImg;
     Vector3f* mPosition;
 
     static FloatingIconMgr* mgr;
 
-    private:
-    void setupViewMtx(Graphics&);
+    protected:
+    virtual Matrixf setupViewMtx(Graphics&);
 };
+
+struct HoveringFloatingIcon : public FloatingIcon
+{
+    HoveringFloatingIcon(JUTTexture*, Vector3f*, f32);
+
+    virtual Vector3f getPosition();
+
+    f32 mYOffset;
+};
+
+struct OnyonFloatingIcon : public HoveringFloatingIcon
+{
+    inline OnyonFloatingIcon(JUTTexture* a, Vector3f* b, f32 c) 
+    : HoveringFloatingIcon(a, b, c)
+    {
+    }
+    virtual bool satisfy();
+    virtual void draw(Graphics&);
+
+    virtual bool drawOver() { return true; }
+};
+
+
 
 struct FloatingIconMgr : public CNode
 {
@@ -45,6 +80,7 @@ struct FloatingIconMgr : public CNode
     static void del(FloatingIcon*);
 
     static bool sDrawOptimize;
+    static bool sIsEnabled;
 
     Matrixf mViewMatrix;
 

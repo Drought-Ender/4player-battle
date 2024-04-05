@@ -58,8 +58,17 @@ class VsSlotMachineCard
     JUTTexture* GetTextureFromMgr();
 };
 
+static bool isPaused();
+
+enum EntityID {
+    ENTITY_HAZARD,
+    ENTITY_FALL,
+    ENTITY_CALLBACKHOLDER
+};
+
 struct ActionEntity : public CNode {
     virtual bool update() { };
+    virtual EntityID getEntityID() = 0;
 };
 
 struct TeamEntity : public ActionEntity {
@@ -106,6 +115,7 @@ struct HazardBarrier : TeamPositionEntity {
     f32 mEfxTimer;
 
     virtual bool update();
+    virtual EntityID getEntityID() { return ENTITY_HAZARD; }
 };
 
 
@@ -126,11 +136,37 @@ struct WaitEnemySpawn : PositionEntity {
     f32 mWaitTimer;
     f32 mExistenceTimer;
     int mEntityID;
-    Vector3f mIconPos;
+    FloatingIcon* mIcon;
+
+    virtual EntityID getEntityID() { return ENTITY_FALL; }
+};
+
+struct FloatingIconHolderBase : public PositionEntity
+{
+    FloatingIconHolderBase(Vector3f position, JUTTexture* tex);
+    ~FloatingIconHolderBase();
+
+    virtual bool update() = 0;
+
     FloatingIcon* mIcon;
 };
 
-struct ActionEntityMgr : private CNode {
+struct CallbackArgs {};
+
+typedef bool (BoolCallback(const Vector3f&, const CallbackArgs*));
+
+struct FloatingIconHolderCallback : public FloatingIconHolderBase
+{
+    FloatingIconHolderCallback(Vector3f position, JUTTexture* tex, const BoolCallback* callback, const CallbackArgs* args);
+
+    virtual bool update();
+    virtual EntityID getEntityID() { return ENTITY_CALLBACKHOLDER; }
+
+    const BoolCallback* mCallback;
+    const CallbackArgs* mArgs;
+};
+
+struct ActionEntityMgr : public CNode {
 
     void add(ActionEntity* entity);
 

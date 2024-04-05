@@ -669,6 +669,14 @@ void Onyon::onSetPosition()
 
 	mInitSpot = true;
 
+	ResTIMG* img = sCharacters[getTeamFromPelplant(mOnyonType)].mImage;
+
+	JUTTexture* tex = new JUTTexture(img);
+
+	mIcon = new OnyonFloatingIcon(tex, &mPosition, 50.0f);
+
+	// FloatingIconMgr::add(mIcon);
+
 	if (gameSystem->isVersusMode()) {
 		setSpotEffect(true);
 	} else {

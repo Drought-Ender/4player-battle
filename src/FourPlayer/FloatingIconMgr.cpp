@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include "Game/Navi.h"
 #include "Game/GameLight.h"
+#include "efx/TOta.h"
 
 #define DEBUG_FILE 0
 
@@ -17,77 +18,18 @@
 namespace Game
 {
 
-FloatingIconMgr* FloatingIcon::mgr = nullptr;;
+FloatingIconMgr* FloatingIcon::mgr = nullptr;
 
-FloatingIcon::FloatingIcon(ResTIMG* img, Vector3f* chasePos) {
-    DebugReport("FloatingIcon::FloatingIcon(ResTIMG* img, Vector3f* chasePos)\n");
-    mImg = new JUTTexture(img);
-    mPosition = chasePos;
-    mTextureOwner = true;
-}
+bool FloatingIconMgr::sDrawOptimize = false;
 
-FloatingIcon::FloatingIcon(JUTTexture* img, Vector3f* chasePos) {
-    DebugReport("FloatingIcon::FloatingIcon(JUTTexture* img, Vector3f* chasePos)\n");
-    mImg = img;
-    mPosition = chasePos;
-    mTextureOwner = false;
-}
-
-FloatingIcon::~FloatingIcon() {
-    DebugReport("FloatingIcon::setupViewMtx(Graphics& gfx)\n");
-    if (mTextureOwner) {
-        delete mImg;
-    }
-}
-
-f32 FloatingIcon::calcZ(Camera* camera) {
-    Vector3f position = camera->getPosition();
-    return sqrDistance(*mPosition, position);
-}
-
-void FloatingIcon::setupViewMtx(Graphics& gfx) {
-    DebugReport("FloatingIcon::setupViewMtx(Graphics& gfx)\n");
-    Viewport* vp = gfx.mCurrentViewport;
-    J2DPerspGraph* graph = &gfx.mPerspGraph;
-    LookAtCamera* cam = vp->mCamera;
-
-    Matrixf ourMtx;
-    PSMTXCopy(mgr->mViewMatrix.mMatrix.mtxView, ourMtx.mMatrix.mtxView);
-
-    ourMtx.setTranslation(*mPosition);
-
-    PSMTXConcat(cam->mCurViewMatrix.mMatrix.mtxView, ourMtx.mMatrix.mtxView, graph->mPosMtx);
-	GXLoadPosMtxImm(graph->mPosMtx, 0);
-}
-
-#define ICON_SIZE (40.0f)
-
-void FloatingIcon::draw(Graphics& gfx) {
-    DebugReport("FloatingIcon::draw(Graphics& gfx)\n");
-    setupViewMtx(gfx);
-    mImg->load(GX_TEXMAP0);
-    GXBegin(GX_QUADS, GX_VTXFMT0, 0x4);
-
-    f32 distance = ICON_SIZE / 2;
-
-    GXPosition3f32(-distance, -distance, 0.0f);
-    GXTexCoord2f32(0.0f, 0.0f);
-    
-    GXPosition3f32(-distance, distance, 0.0f);
-    GXTexCoord2f32(0.0f, 1.0f);
-
-    GXPosition3f32(distance, distance, 0.0f);
-    GXTexCoord2f32(1.0f, 1.0f);
-
-    GXPosition3f32(distance, -distance, 0.0f);
-    GXTexCoord2f32(1.0f, 0.0f);
-}
+bool FloatingIconMgr::sIsEnabled = true;
 
 void FloatingIconMgr::setupViewMtx(Graphics& gfx) {
     DebugReport("FloatingIconMgr::setupViewMtx(Graphics& gfx)\n");
 	LookAtCamera* cam = gfx.mCurrentViewport->mCamera;
 
 	PSMTXIdentity(mViewMatrix.mMatrix.mtxView);
+
 	float magnitude = 0.8f;
 
 	Mtx& mtxTo = mViewMatrix.mMatrix.mtxView;
@@ -108,13 +50,11 @@ void FloatingIconMgr::setupViewMtx(Graphics& gfx) {
 	mtxTo[2][2] = mtxFrom[2][2] * magnitude;
 }
 
-bool FloatingIconMgr::sDrawOptimize = false;
-
 void FloatingIconMgr::draw(Graphics& gfx) {
     DebugReport("FloatingIconMgr::draw(Graphics& gfx)\n");
     J2DPerspGraph* graph = &gfx.mPerspGraph;
-	Matrixf mtxBackup = graph->mPosMtx;
     LookAtCamera* cam = gfx.mCurrentViewport->mCamera;
+
 
     // gameSystem->mSection->mLightMgr->mFogMgr->set(gfx);
 
@@ -126,7 +66,7 @@ void FloatingIconMgr::draw(Graphics& gfx) {
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_F32, 0);
 
     // goofy tevcolor
-    
+
 
     // magic perspective sauce
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
@@ -140,21 +80,25 @@ void FloatingIconMgr::draw(Graphics& gfx) {
 
     if (sDrawOptimize) {
         FOREACH_NODE(FloatingIcon, mChild, node) {
-            node->draw(gfx);
+            if (node->satisfy()) {
+                node->draw(gfx);
+            }
         }
     }
     else {
-        int count = getChildCount();
+        int totalCount = getChildCount();
 
-        FloatingIcon** icons = new FloatingIcon*[count];
-        f32* distances = new f32[count];
+        FloatingIcon** icons = new FloatingIcon*[totalCount];
+        f32* distances = new f32[totalCount];
         
-        int idx = 0;
+        int count = 0;
 
         FOREACH_NODE(FloatingIcon, mChild, node) {
-            distances[idx] = node->calcZ(cam);
-            icons[idx] = node;
-            idx++;
+            if (node->satisfy()) {
+                distances[count] = node->calcZ(cam);
+                icons[count] = node;
+                count++;
+            }
         }
 
         for (int i = 0; i < count; i++) {
@@ -179,24 +123,30 @@ void FloatingIconMgr::draw(Graphics& gfx) {
 
     // gameSystem->mSection->mLightMgr->mFogMgr->off(gfx);
 	
-    PSMTXCopy(mtxBackup.mMatrix.mtxView, graph->mPosMtx);
 	GXLoadPosMtxImm(graph->mPosMtx, 0);
+
 	
 }
 
 void FloatingIconMgr::add(FloatingIcon* icon) {
     DebugReport("FloatingIconMgr::add(FloatingIcon* icon)\n");
-    FloatingIcon::mgr->CNode::add(icon);
+    if (FloatingIcon::mgr) {
+        FloatingIcon::mgr->CNode::add(icon);
+    }
 }
 
 void FloatingIconMgr::del(FloatingIcon* icon) {
     DebugReport("FloatingIconMgr::del(FloatingIcon* icon)\n");
-    icon->del();
+    if (FloatingIcon::mgr) {
+        icon->del();
+    }
 }
 
 void FloatingIconMgr::create() {
     DebugReport("FloatingIconMgr::create()\n");
-    FloatingIcon::mgr = new FloatingIconMgr;
+    if (sIsEnabled) {
+        FloatingIcon::mgr = new FloatingIconMgr;
+    }
 }
 
 void FloatingIconMgr::destroy() {
@@ -204,6 +154,209 @@ void FloatingIconMgr::destroy() {
     if (FloatingIcon::mgr) {
         delete FloatingIcon::mgr;
         FloatingIcon::mgr = nullptr;
+    }
+}
+
+
+FloatingIcon::FloatingIcon(JUTTexture* img, Vector3f* chasePos) {
+    DebugReport("FloatingIcon::FloatingIcon(JUTTexture* img, Vector3f* chasePos)\n");
+    mImg = img;
+    mPosition = chasePos;
+}
+
+FloatingIcon::~FloatingIcon() {
+    DebugReport("FloatingIcon::setupViewMtx(Graphics& gfx)\n");
+}
+
+Vector3f FloatingIcon::getPosition() {
+    return *mPosition;
+}
+
+f32 FloatingIcon::calcZ(Camera* camera) {
+    Vector3f position = camera->getPosition();
+    Vector3f ourPos = getPosition();
+    return sqrDistance(ourPos, position);
+}
+
+Matrixf FloatingIcon::setupViewMtx(Graphics& gfx) {
+    DebugReport("FloatingIcon::setupViewMtx(Graphics& gfx)\n");
+    Viewport* vp = gfx.mCurrentViewport;
+    J2DPerspGraph* graph = &gfx.mPerspGraph;
+    LookAtCamera* cam = vp->mCamera;
+
+    if (drawOver()) {
+        GXSetZMode(GX_FALSE, GX_LEQUAL, GX_FALSE);
+    }
+    else {
+        GXSetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+    }
+
+    Matrixf ourMtx;
+    PSMTXCopy(mgr->mViewMatrix.mMatrix.mtxView, ourMtx.mMatrix.mtxView);
+
+    Vector3f pos = getPosition();
+
+    ourMtx.setTranslation(pos);
+
+    Matrixf outMtx;
+
+    PSMTXConcat(cam->mCurViewMatrix.mMatrix.mtxView, ourMtx.mMatrix.mtxView, outMtx.mMatrix.mtxView);
+	GXLoadPosMtxImm(outMtx.mMatrix.mtxView, 0);
+    return outMtx;
+}
+
+#define ICON_SIZE (40.0f)
+
+f32 FloatingIcon::getSize() {
+    return ICON_SIZE;
+}
+
+void FloatingIcon::draw(Graphics& gfx) {
+    DebugReport("FloatingIcon::draw(Graphics& gfx)\n");
+    setupViewMtx(gfx);
+    mImg->load(GX_TEXMAP0);
+    GXBegin(GX_QUADS, GX_VTXFMT0, 0x4);
+
+    f32 distance = getSize() * 0.5f;
+
+    GXPosition3f32(-distance, -distance, 0.0f);
+    GXTexCoord2f32(0.0f, 0.0f);
+    
+    GXPosition3f32(-distance, distance, 0.0f);
+    GXTexCoord2f32(0.0f, 1.0f);
+
+    GXPosition3f32(distance, distance, 0.0f);
+    GXTexCoord2f32(1.0f, 1.0f);
+
+    GXPosition3f32(distance, -distance, 0.0f);
+    GXTexCoord2f32(1.0f, 0.0f);
+}
+
+HoveringFloatingIcon::HoveringFloatingIcon(JUTTexture* tex, Vector3f* vec, f32 yoffs)
+    : mYOffset(yoffs), FloatingIcon(tex, vec)
+{
+}
+
+Vector3f HoveringFloatingIcon::getPosition() {
+    return Vector3f(mPosition->x, mPosition->y + mYOffset, mPosition->z);
+}
+
+bool OnyonFloatingIcon::satisfy() {
+    return true;
+    Vector3f naviPos = naviMgr->getAt(sys->mGfx->mCurrentViewport->mVpId)->getPosition();
+    return sqrDistanceXZ(naviPos, *mPosition) > SQUARE(100.0f);
+}
+
+void OnyonFloatingIcon::draw(Graphics& gfx) {
+    Viewport* vp = gfx.mCurrentViewport;
+    LookAtCamera* cam = vp->mCamera;
+    Vector3f pos = getPosition();
+    Sys::Sphere viewSphere (pos, getSize());
+    // if (cam->isVisible(viewSphere)) {
+    //     HoveringFloatingIcon::draw(gfx);
+    //     return;
+    // }
+    // else {
+
+    {
+        if (vp->mVpId != 0) return;
+
+        Vector3f camPos = cam->getPosition();
+
+        // Vector3f oldDelta = camPos - pos;
+        
+
+        // // if the icon is behind us, put it infront of us
+        // f32 atans = pikmin2_atan2f(oldDelta.x, oldDelta.z);
+
+        // Vector3f targetDelta = camPos - cam->getLookAtPosition();
+
+        // f32 theta = pikmin2_atan2f(targetDelta.x, targetDelta.z);
+
+        // OSReport("theta %f, atans %f\n", theta, atans);
+
+        bool flipAfter = false;
+        
+        // if (FABS(angDist(theta, atans)) > PI / 2) {
+            
+        //     flipAfter = true;
+        // }
+
+        
+
+        Matrixf ourMtx;
+        PSMTXCopy(mgr->mViewMatrix.mMatrix.mtxView, ourMtx.mMatrix.mtxView);
+
+
+        Vector3f newPos = DroughtLib::ForceIntoCullPlanes(viewSphere, cam, flipAfter);
+
+        efx::TOtaFire fire;
+        efx::Arg ag(newPos);
+
+        fire.create(&ag);
+
+        
+
+        Vector3f delta = newPos - camPos;
+        delta.normalise();
+        // newPos = camPos + delta * 1000.0f;
+
+        if (flipAfter) {
+           
+        }
+
+        ourMtx.setTranslation(newPos);
+
+        Matrixf outMtx;
+
+        PSMTXConcat(cam->mCurViewMatrix.mMatrix.mtxView, ourMtx.mMatrix.mtxView, outMtx.mMatrix.mtxView);
+        
+
+        // Vector3f pureScreenCords = screenCords - Vector3f(vp->mRect2.p2.x, vp->mRect2.p2.y, 0.0f);
+
+        // Vector2f vec2ScreenCords = Vector2f(screenCords.x / vp->mRect2.getWidth(), screenCords.y / vp->mRect2.getHeight());
+
+        // vec2ScreenCords.normalise(); // force onto screen
+
+        // Vector3f newScreenCords = Vector3f(
+        //     vec2ScreenCords.x * vp->mRect2.getWidth() + vp->mRect2.p2.x,
+        //     vec2ScreenCords.y * vp->mRect2.getHeight() + vp->mRect2.p2.y,
+        //     0.0f  
+        // );
+
+        // GXSetProjection(gfx.mOrthoGraph.mMtx44, GX_ORTHOGRAPHIC);
+        
+        GXLoadPosMtxImm(outMtx.mMatrix.mtxView, 0);
+
+        if (drawOver()) {
+            GXSetZMode(GX_FALSE, GX_LEQUAL, GX_FALSE);
+        }
+        else {
+            GXSetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+        }
+
+
+
+        mImg->load(GX_TEXMAP0);
+        GXBegin(GX_QUADS, GX_VTXFMT0, 0x4);
+
+        f32 distance = getSize() * 0.5f;
+
+        GXPosition3f32(- distance, - distance, 0.0f);
+        GXTexCoord2f32(0.0f, 0.0f);
+        
+        GXPosition3f32(- distance, distance, 0.0f);
+        GXTexCoord2f32(0.0f, 1.0f);
+
+        GXPosition3f32( distance, distance, 0.0f);
+        GXTexCoord2f32(1.0f, 1.0f);
+
+        GXPosition3f32(distance, - distance, 0.0f);
+        GXTexCoord2f32(1.0f, 0.0f);
+
+        // GXSetProjection(gfx.mPerspGraph.mMtx44, GX_PERSPECTIVE);
+        // GXLoadPosMtxImm(gfx.mPerspGraph.mPosMtx, 0);
+        
     }
 }
 

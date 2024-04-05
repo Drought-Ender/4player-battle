@@ -1433,7 +1433,7 @@ void VsGameSection::initCardGeneration()
  */
 void VsGameSection::updateCardGeneration()
 {
-	if (gConfig[CHERRY_RATE] == ConfigEnums::RATE_NEVER || (gTournamentMode && mVsStageData->mIndex2D == 29)) { // champion's court (no cherries)
+	if (gConfig[CHERRY_RATE] == ConfigEnums::RATE_NEVER || (gTournamentMode && mVsStageData->mIndex2D == 27)) { // champion's court (no cherries)
 		return;
 	}
 	if (VsGame::CardCount == 0) {

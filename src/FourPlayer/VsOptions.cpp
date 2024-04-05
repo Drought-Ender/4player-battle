@@ -324,8 +324,14 @@ void Option::SetDefaults() {
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_RED]->varibleForward();
         Game::VsGame::VsSlotCardMgr::sAllCards[Game::VsGame::DOPE_BLACK]->varibleForward();
 
+        for (int i = 0; i < Game::VsGame::VsSlotCardMgr::sTotalCardCount; i++) {
+            Game::VsGame::VsSlotCardMgr::sUsingCards[i] = true;
+        }
+
         Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_RED] = false;
         Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::DOPE_BLACK] = false;
+
+        
     }
     else {
         ShowOption(PLAYER_NAME);
@@ -1072,7 +1078,7 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
-        menu->StartMenu<GamemodeSelect>();
+        menu->StartMenu<VsConfigMenu>();
         return false;
     }
     for (int i = 0; i < ARRAY_SIZE(mControllers); i++) {

@@ -226,6 +226,23 @@ Vector3f CardMgr::getSlotOrigin(int playerIdx)
     }
 }
 
+
+// Scissor__Q44Game6VsGame7CardMgr11SlotMachineFR8Graphicsb
+void CardMgr::SlotMachine::Scissor(Graphics& gfx, bool simple) {
+	// "gfx" INPUTS THE WRONG POINTER!! DON'T USE
+	Viewport* vp = sys->mGfx->getViewport(mPlayerIndex);
+	Rectf box = vp->mRect2;
+	if (simple) {
+		GXSetScissor(box.p1.x, box.p1.y, box.getWidth(), box.getHeight());
+		return;
+	}
+
+	Vector3f origin = mCardMgr->getSlotOrigin(mPlayerIndex);
+	f32 size = (WheelSize) * 2 / PI;
+	f32 minY = origin.y - size / 2;
+	GXSetScissor(box.p1.x, minY, box.getWidth(), size);
+}
+
 void CardMgr::draw(Graphics& gfx) {
     if (!moviePlayer->isActive()) {
 		for (int i = 0; i < 4; i++) {

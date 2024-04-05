@@ -3,6 +3,8 @@
 #include "Game/routeMgr.h"
 #include "Game/MapMgr.h"
 #include "Game/pathfinder.h"
+#include "Game/GameSystem.h"
+#include "Game/Cave/RandMapMgr.h"
 
 namespace PikiAI
 {
@@ -34,6 +36,17 @@ bool ActPathfind::initPathfinding() {
         arg.mInWater = true;
     }
 
+    s16 roomindex = mParent->mRoomIndex;
+    if (Game::gameSystem->mIsInCave) {
+		Sys::Sphere sphere;
+		sphere.mPosition = currPos;
+		sphere.mRadius   = 1.0f;
+
+
+		roomindex = static_cast<Game::RoomMapMgr*>(Game::mapMgr)->findRoomIndex(sphere);
+	}
+    arg.mHandles = nullptr;
+
     Game::WayPoint* start;
     if (Game::mapMgr->mRouteMgr->getNearestEdge(arg)) {
         Game::WayPoint* wp = arg.mWp1;
@@ -54,8 +67,9 @@ bool ActPathfind::initPathfinding() {
     }
 
     mPathCheckID = 0;
+    
 
-    Game::WPSearchArg arg2(mTargetPosition, nullptr, false, 10.0f);
+    Game::WPSearchArg arg2(mTargetPosition, nullptr, false, 100.0f);
     Game::WayPoint* end = Game::mapMgr->mRouteMgr->getNearestWayPoint(arg2);
     if (!end) {
         return 2; // exit state
@@ -117,7 +131,6 @@ int ActPathfind::exec() {
     }
     case 2: {
         if (execMoveGoal()) mState = 4;
-        mState = 4;
         break; 
     }
     case 3: {
@@ -170,6 +183,12 @@ bool ActPathfind::execMoveGoal() {
 
     return deltaPos.sqrMagnitude() < SQUARE(10.0f);
 
+}
+
+void ActPathfind::cleanup() {
+    if (mPathCheckID) {
+        Game::testPathfinder->release(mPathCheckID);
+    }
 }
 
 } // namespace PikiAI

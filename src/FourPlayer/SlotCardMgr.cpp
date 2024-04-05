@@ -948,19 +948,61 @@ struct IdleAlertCard : public VsSlotMachineCard
 {
     IdleAlertCard(const char* texname) : VsSlotMachineCard(texname) {}
 
-    virtual void onUseCard(CardMgr* cardMgr, int user) {
-        Iterator<Piki> iPiki = pikiMgr;
+    struct ColorCallbackArg : public CallbackArgs {
+        ColorCallbackArg(int c) : mColor(c) {}
+        int mColor;
+    };
 
-        OSReport("Test\n");
+    static bool IdlerCallback(const Vector3f& pos, const CallbackArgs* arg) {
+        const ColorCallbackArg* realArg = static_cast<const ColorCallbackArg*>(arg);
+        int pikiColor = realArg->mColor;
+
+        Iterator<Piki> iPiki = pikiMgr;
 
         CI_LOOP(iPiki) {
             Piki* piki = *iPiki;
-            if (piki->isAlive() && piki->mPikiKind == getVsPikiColor(user) && piki->mBrain->mActionId == PikiAI::ACT_Free) {
+            if (piki->isAlive() && piki->mPikiKind == pikiColor && piki->mBrain->mActionId == PikiAI::ACT_Pathfind) {
+                PikiAI::ActPathfind* path = static_cast<PikiAI::ActPathfind*>(piki->mBrain->getCurrAction());
+                if (path->mTargetPosition == pos) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // const ColorCallbackArg sArgs[4] = {
+    //     Red, Blue, White, Purple
+    // };
+
+    virtual void onUseCard(CardMgr* cardMgr, int user) {
+        Iterator<Piki> iPiki = pikiMgr;
+
+        Vector3f pos = naviMgr->getAt(user)->getPosition();
+
+        CI_LOOP(iPiki) {
+            Piki* piki = *iPiki;
+            if (piki->isAlive() && piki->getStateID() == PIKISTATE_Walk 
+            && piki->mPikiKind == getVsPikiColor(user) 
+            && (piki->mBrain->mActionId == PikiAI::ACT_Free)) {
                 PikiAI::PathfindArg arg;
-                arg.mTargetPos = naviMgr->getAt(user)->getPosition();
+                arg.mTargetPos = pos;
                 piki->mBrain->start(PikiAI::ACT_Pathfind, &arg);
             }
         }
+
+        // FOREACH_NODE(ActionEntity, vsSlotCardMgr->mActionMgr.mChild, entity) {
+        //     if (entity->getEntityID() == ENTITY_CALLBACKHOLDER) {
+        //         FloatingIconHolderCallback* iconHolder = static_cast<FloatingIconHolderCallback*>(entity);
+        //         if (static_cast<const ColorCallbackArg*>(iconHolder->mArgs)->mColor == getVsPikiColor(user)) {
+        //             iconHolder->del();
+        //             delete iconHolder;
+        //             break;
+        //         }
+        //     }
+        // }
+
+        vsSlotCardMgr->mActionMgr.add(new FloatingIconHolderCallback(pos, GetTextureFromMgr(), &IdlerCallback, (ColorCallbackArg*)&gVsNaviIndexArray[user]));
     }
 
     virtual const char* getDescription() {
@@ -1013,8 +1055,8 @@ void VsSlotCardMgr::initAllCards() {
     sAllCards[ALL_PLUCK] = new PluckAllCard("fue_pullout.bti");
     sAllCards[PATH_BLOCK] = new HazardBarrierCard("fire_water.bti");
     sAllCards[WARP_HOME] = new WarpHomeCard("warp_home.bti");
-    sAllCards[TEKI_KUMA] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 0.0f, 20.0f, 300.0f), "teki_kuma.bti");
-    sAllCards[BOMB_STORM] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 0.0f, 30.0f, 1.0f, 100.0f), "bombs.bti");
+    sAllCards[TEKI_KUMA] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 0.0f, 20.0f, 3.0f), "teki_kuma.bti");
+    sAllCards[BOMB_STORM] = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 0.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
     sAllCards[TEKI_OTAKARA] = new TankOnyonTeki(
         EnemyTypeID::EnemyID_FireOtakara,
         EnemyTypeID::EnemyID_WaterOtakara,

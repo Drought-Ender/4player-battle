@@ -208,6 +208,8 @@ struct CardMgr {
 			SPIN_END            = 10
 		};
 
+		void Scissor(Graphics&, bool);
+
 		enum EAppearStates { APPEAR_LEAVE = 0, APPEAR_AWAIT = 1, APPEAR_ENTER = 2, APPEAR_RESET = 3 };
 	};
 

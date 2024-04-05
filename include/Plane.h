@@ -23,6 +23,11 @@ struct Plane {
 		c = plane.c;
 	}
 
+	inline Vector3f& getVec() const
+	{
+		return (Vector3f&)a;
+	}
+
 	inline void setDist(Plane& plane) { d = plane.d; }
 	void calcProjection(Vector3f&);
 	void intersectRay(Vector3f&, Vector3f&);

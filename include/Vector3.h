@@ -66,7 +66,7 @@ struct Vector3 {
 	/**
 	 * @fabricated
 	 */
-	inline f32 magnitude() { return x * x + y * y + z * z; }
+	inline f32 magnitude() { return sqrtf(x * x + y * y + z * z); }
 
 	/**
 	 * @fabricated
@@ -165,6 +165,8 @@ inline Vector3f operator*(const Vector3f& a, const f32 b) { return Vector3f(a.x 
 inline Vector3f operator*=(const Vector3f& a, const f32 b) { return Vector3f(a.x * b, a.y * b, a.z * b); }
 
 inline f32 dot(const Vector3f& a, const Vector3f& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+
+inline bool operator==(const Vector3f& a, const Vector3f& b) { return (a.x == b.x && a.y == b.y && a.z == b.z); }
 
 inline void weightVecXZ(Vector3f& vec, f32 weight)
 {

@@ -10,6 +10,11 @@ namespace Game
 namespace VsGame
 {
 
+bool isPaused() {
+    return gameSystem->paused() || GetVsGameSection()->mMenuFlags
+		    || moviePlayer->mDemoState;
+}
+
 efx::TBase* HazardBarrier::MakeEfx(TeamID team) {
     switch (team)
     {
@@ -52,8 +57,10 @@ HazardBarrier::HazardBarrier(int teamID, Vector3f position) : TeamPositionEntity
 
 bool HazardBarrier::update() {
     DebugReport("HazardBarrier::update\n");
-    mTimer    += sys->mDeltaTime;
-    mEfxTimer += sys->mDeltaTime;
+    if (!isPaused()) {
+        mTimer    += sys->mDeltaTime;
+        mEfxTimer += sys->mDeltaTime;
+    }
 
     Sys::Sphere effectSphere (mPosition, 30.0f);
     CellIteratorArg arg = effectSphere;
@@ -101,12 +108,14 @@ HazardBarrier::~HazardBarrier() {
     mEfx->fade();
 }
 
+#define ICON_HEIGHT (50.0f)
+
 
 WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime, JUTTexture* tex) : PositionEntity(position) {
     mWaitTimer = timer;
     mExistenceTimer = existenceTime;
     mEntityID = entityId;
-    mIcon = new FloatingIcon(tex, &mIconPos);
+    mIcon = new HoveringFloatingIcon(tex, &mPosition, ICON_HEIGHT);
 
     init();
 }
@@ -119,15 +128,10 @@ WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 e
     
 
     init();
-
-    
 }
 
-#define ICON_HEIGHT (50.0f)
 
 void WaitEnemySpawn::init() {
-    mIconPos = mPosition;
-    mIconPos.y += ICON_HEIGHT;
 
     mEfx = new efx::THdamaSight;
 
@@ -140,7 +144,9 @@ void WaitEnemySpawn::init() {
 }
 
 bool WaitEnemySpawn::update() {
-    mWaitTimer -= sys->mDeltaTime;
+    if (!isPaused()) {
+        mWaitTimer -= sys->mDeltaTime;
+    }
     
     if (mWaitTimer < 0.0f) {
         if (mIcon) {
@@ -167,6 +173,29 @@ EnemyBase* WaitEnemySpawn::birthFromSky() {
     }
     return enemy;
 }
+
+FloatingIconHolderBase::FloatingIconHolderBase(Vector3f position, JUTTexture* tex) : PositionEntity(position) {
+    mIcon = new HoveringFloatingIcon(tex, &mPosition, CARD_ICON_HEIGHT);
+    FloatingIconMgr::add(mIcon);
+}
+
+
+
+
+FloatingIconHolderBase::~FloatingIconHolderBase() {
+    FloatingIconMgr::del(mIcon);
+    delete mIcon;
+}
+
+FloatingIconHolderCallback::FloatingIconHolderCallback(Vector3f position, JUTTexture* tex, const BoolCallback* callback, const CallbackArgs* args) : FloatingIconHolderBase(position, tex) {
+    mCallback = callback;
+    mArgs = args;
+}
+
+bool FloatingIconHolderCallback::update() {
+    return mCallback(mPosition, mArgs);
+}
+
 
 } // namespace VsGame
 

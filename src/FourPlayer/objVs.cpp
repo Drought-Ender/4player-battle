@@ -349,10 +349,18 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	mScreenIcons->set("obake_icon.blo", 0x1040000, arc);
 
 	J2DPictureEx* paneObake = static_cast<J2DPictureEx*>(mScreenIcons->search('obake'));
-	mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
-	mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP1YOffs, 'obake1P');
-    mPaneObake3P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake2P');
-	mPaneObake4P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP2YOffs, 'obake2P');
+	if (Game::gNaviNum > 2) {
+		mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
+		mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP1YOffs, 'obake2P');
+    	mPaneObake3P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake3P');
+		mPaneObake4P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP2YOffs, 'obake4P');
+	}
+	else {
+		mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
+		mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake2P');
+    	mPaneObake3P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake3P');
+		mPaneObake4P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake4P');
+	}
 	mPaneObake1P->setAlpha(mAlphaObakeP1 * 255.0f);
 	mPaneObake2P->setAlpha(mAlphaObakeP2 * 255.0f);
     mPaneObake3P->setAlpha(mAlphaObakeP1 * 255.0f);

@@ -812,7 +812,7 @@ struct ActPathfind : public Action {
 
 	virtual void init(ActionArg* settings); // _08
 	virtual int exec();                     // _0C
-	virtual void cleanup() {};                 // _10
+	virtual void cleanup();                 // _10
 
 	bool initPathfinding();
 	int execPathfinding();

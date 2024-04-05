@@ -35,6 +35,9 @@ struct Rect {
 		p2.x = 0.0f;
 		p2.y = 0.0f;
 	}
+
+	inline T getWidth() { return p2.x - p1.x; }
+	inline T getHeight() { return p2.y - p1.y; }
 };
 
 typedef Rect<int> Recti;

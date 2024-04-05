@@ -790,6 +790,10 @@ lbl_constructor:
 /* 80238018 00234F58  4B EA CD 05 */	bl GXSetTexCoordGen2
 /* 8023801C 00234F5C  38 60 00 02 */	li r3, 2
 /* 80238020 00234F60  4B EA DB 89 */	bl GXSetCullMode
+mr r3, r23
+mr r4, r24
+li r5, 0
+bl Scissor__Q44Game6VsGame7CardMgr11SlotMachineFR8Graphicsb
 /* 80238024 00234F64  3B 80 00 00 */	li r28, 0
 /* 80238028 00234F68  CB 62 C0 88 */	lfd f27, lbl_8051A3E8@sda21(r2)
 /* 8023802C 00234F6C  C3 82 C1 44 */	lfs f28, lbl_8051A4A4@sda21(r2)
@@ -1388,6 +1392,10 @@ lfs f23, lbl_8051A3D8@sda21(r2)
 /* 80238964 002358A4  C3 E2 C1 78 */	lfs f31, lbl_8051A4D8@sda21(r2)
 /* 80238968 002358A8  EF 6F C8 2A */	fadds f27, f15, f25
 .L_8023896C:
+mr r3, r23
+mr r4, r24
+li r5, 1
+bl Scissor__Q44Game6VsGame7CardMgr11SlotMachineFR8Graphicsb
 /* 8023896C 002358AC  80 17 00 1C */	lwz r0, 0x1c(r23)
 /* 80238970 002358B0  80 75 00 10 */	lwz r3, 0x10(r21)
 /* 80238974 002358B4  7C 18 00 00 */	cmpw r24, r0

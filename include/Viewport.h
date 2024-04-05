@@ -1,9 +1,11 @@
 #ifndef _VIEWPORT_H
 #define _VIEWPORT_H
 
+
 #include "Rect.h"
 #include "types.h"
 #include "CNode.h"
+#include "Camera.h"
 
 struct Camera;
 struct LookAtCamera;
@@ -32,6 +34,15 @@ struct Viewport : CNode {
 	void setViewport();
 	void updateCameraAspect();
 	bool viewable();
+
+	inline Matrixf* getViewMatrix()
+	{
+		if (mCamera) {
+			return mCamera->getViewMatrix(false);
+		}
+
+		return mViewMat;
+	}
 
 	u16 mVpId;             // _18
 	u8 _1A;                // _1A
