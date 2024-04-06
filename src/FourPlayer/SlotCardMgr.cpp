@@ -1113,7 +1113,6 @@ void ActionEntityMgr::update() {
             delete entity;
             entity = prev;
             if (!entity) break;
-            
         }
     }
 }

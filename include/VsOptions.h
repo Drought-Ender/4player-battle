@@ -136,6 +136,7 @@ struct CharacterData
     CharacterData() {
         mCharaterID = -1;
         mName[0] = 0;
+        mImage = nullptr;
     }
 
     const static int sMaxNameSize = 20;
@@ -182,7 +183,7 @@ struct CharacterImage
 
 
 
-    
+    static ResTIMG* loadImage(const char*);
     ResTIMG* loadImage();
 
     void createPicture();
@@ -197,13 +198,17 @@ struct CharacterImage
         draw(mPosition, mSize);
     }
 
+    static void SetupGX(Graphics&);
+
+    static JUTTexture* sLoadingPicture;
+
     void delMembers();
 
     Vector2f mPosition;
     Vector2f mSize;
     int mCharacterID;
     char* mCharacterName;
-    J2DPictureEx* mPicture;
+    JUTTexture* mPicture;
 };
 
 

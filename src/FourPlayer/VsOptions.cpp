@@ -258,7 +258,7 @@ Option gOptions[] = {
         0
     },
     {
-        "Carry Bombs/Eggs",
+        "Bomb/Egg Carry",
         { "Off", "Bombs", "Eggs", "Bombs & Eggs" },
         {
             "Nothing can be carried by players",
@@ -270,7 +270,7 @@ Option gOptions[] = {
         1
     },
     {
-        "Carry Blowhogs",
+        "Blowhog Carry",
         { "Off", "On" },
         {
             "Does not let you carry blowhogs",
@@ -286,7 +286,7 @@ Option gOptions[] = {
             "Does not let you carry any externious objects",
             "Lets you carry cherries",
             "Lets you carry light-weight objects (weighs < 5, exclude bedama)",
-            "Lets you carry anything lmao"
+            "Lets you carry anything, lmao"
         },
         4,
         0
@@ -834,19 +834,23 @@ void VsCardMenu::cleanup() {
     }
 }
 
+JUTTexture* CharacterImage::sLoadingPicture;
+
 
 void CharacterSelect::load() {
     loadAndRead(this, "/player/names.txt");
+
+    CharacterImage::sLoadingPicture = new JUTTexture(CharacterImage::loadImage("/player/loading.bti"));
+    CharacterImage::sLoadingPicture->setCaptureFlag(true);
+
     for (int i = 0; i < mCharacterCount; i++) {
         mCharacters[i].mPicture = nullptr;
     }
 }
 
-ResTIMG* CharacterImage::loadImage() {
-    char buffer[256];
-    sprintf(buffer, "/player/%s/icon.bti", mCharacterName);
+ResTIMG* CharacterImage::loadImage(const char* name) {
 
-    LoadResource::Arg loadArg(buffer);
+    LoadResource::Arg loadArg(name);
 	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
 
 
@@ -858,9 +862,18 @@ ResTIMG* CharacterImage::loadImage() {
     return nullptr;
 }
 
+
+ResTIMG* CharacterImage::loadImage() {
+    char buffer[256];
+    sprintf(buffer, "/player/%s/icon.bti", mCharacterName);
+
+    return loadImage(buffer);
+}
+
 void CharacterImage::createPicture() {
     OSReport("Create Picture\n");
-    mPicture = new J2DPictureEx(loadImage(), 0);
+    mPicture = new JUTTexture(loadImage());
+    mPicture->setCaptureFlag(true);
 }
 
 ResTIMG* CharacterData::loadImage() {
@@ -922,12 +935,74 @@ VsCardMenu::~VsCardMenu() {
     delete[] mCards;
 }
 
+void CharacterImage::SetupGX(Graphics& gfx) {
+    // GXSetCullMode(GX_CULL_NONE);
+    // GXClearVtxDesc();
+
+    // GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+    // GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+    // GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+    // GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_F32, 0);
+
+    // GXSetCurrentMtx(GX_PNMTX0);
+    // GXSetTevOp(GX_TEVSTAGE0, GX_REPLACE);
+	// GXSetNumTexGens(1);
+    // GXSetNumChans(0);
+    // GXSetTevDirect(GX_TEVSTAGE0);
+
+    // Mtx mtx;
+    // PSMTXIdentity(mtx);
+
+    // GXLoadPosMtxImm(gfx.mOrthoGraph.mPosMtx, GX_PNMTX0);
+
+    // gfx.initPrimDraw(nullptr);
+    // GXLoadPosMtxImm(ident, GX_PNMTX0);
+
+    // gfx.mOrthoGraph.setPort();
+
+    GXClearVtxDesc();
+    GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+    GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_F32, 0);
+
+    GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
+
+    GXSetNumTexGens(1);
+    GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEXCOORD0, 0x3c, 0, 0x7d);
+
+    GXSetNumTevStages(1);
+    GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+    
+    GXSetCurrentMtx(GX_PNMTX0);
+
+    // GXLoadPosMtxImm(gfx.mOrthoGraph.mPosMtx, 0);
+    
+}
+
 void CharacterImage::draw(Vector2f& position, Vector2f& size) {
     Vector2f corner2 = position + size;
     JGeometry::TBox2f box (position.x, position.y, corner2.x, corner2.y);
     if (mPicture) {
-        mPicture->drawOut(box, box);
+        mPicture->load(GX_TEXMAP0);
     }
+    else {
+        if (!sLoadingPicture) return;
+
+        sLoadingPicture->load(GX_TEXMAP0);
+    }
+
+    GXBegin(GX_QUADS, GX_VTXFMT0, 4);
+    GXPosition3f32(position.x, position.y, 0.0f);
+    GXPosition2f32(0.0f, 0.0f);
+    GXPosition3f32(position.x + size.x, position.y, 0.0f);
+    GXPosition2f32(1.0f, 0.0f);
+    GXPosition3f32(position.x + size.x, position.y + size.y, 0.0f);
+    GXPosition2f32(1.0f, 1.0f);
+    GXPosition3f32(position.x, position.y + size.y, 0.0f);
+    GXPosition2f32(0.0f, 1.0f);
+    GXEnd();
+
 }
 
 void CharacterImage::read(Stream& stream) {
@@ -990,9 +1065,8 @@ static Vector2f sNamePositions[4] = {
 };
 
 void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
-    for (int i = 0; i < mLoadAt; i++) {
-        mCharacters[i].draw();
-    }
+
+
 
     static JUtility::TColor colors[4] =
     {
@@ -1002,11 +1076,17 @@ void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
         0x00ff00ff
     };
 
+    J2DPrint print (getPikminFont(), 0.0f);
+    print.print(10.0f, 30.0f, "4P-Battle Character Select | Players: %i\n", Game::gNaviNum);
+
+    CharacterImage::SetupGX(gfx);
+    for (int i = 0; i < mCharacterCount; i++) {
+        mCharacters[i].draw();
+    }
+
+
     for (int i = 0; i < Game::gNaviNum; i++) {
-
-        J2DPrint print (getPikminFont(), 0.0f);
-        print.print(10.0f, 30.0f, "4P-Battle Character Select | Players: %i\n", Game::gNaviNum);
-
+        CharacterImage::SetupGX(gfx);
         mCharacters[mCursors[i]].draw(sNamePositions[i], mCharacters[mCursors[i]].mSize);
 
         Vector2f position = mCharacters[mCursors[i]].mPosition;
@@ -1166,7 +1246,11 @@ void CharacterSelect::cleanup() {
         DebugReport("Name %s\n", sCharacters[i].mName);
         strcpy(sCharacters[i].mDispName, mPlayerNames[i]);
         CharacterData::CleanDisplayName(ARRAY_SIZE(sCharacters[i].mDispName), sCharacters[i].mDispName);
-        
+
+        if (sCharacters[i].mImage) {
+            delete[] sCharacters[i].mImage;
+        }
+
         sCharacters[i].mImage = sCharacters[i].loadImage();
     }
 }
@@ -1231,6 +1315,9 @@ void CharacterData::initDefaults() {
             strcpy(sCharacters[i].mName, string);
             DebugReport("Name %i %s %s\n", i, string, sCharacters[i].mName);
             sCharacters[i].makeDisplayName();
+            if (sCharacters[i].mImage) {
+                delete[] sCharacters[i].mImage;
+            }
             sCharacters[i].mImage = sCharacters[i].loadImage();
             sCharacters[i].mCharaterID = i;
         }
@@ -1242,6 +1329,9 @@ void CharacterData::read(Stream& stream) {
     char* string = stream.readString(nullptr, 0);
     strcpy(mName, string);
     makeDisplayName();
+    if (mImage) {
+        delete[] mImage;
+    }
     mImage = loadImage();
 }
 
@@ -1254,12 +1344,17 @@ CharacterSelect::~CharacterSelect() {
     delete[] mCharacters;
 
     for (int i = 1; i < ARRAY_SIZE(mControllers); i++) {
-        delete mControllers[i];    
+        delete mControllers[i];
     }
+
+    delete CharacterImage::sLoadingPicture;
 }
 
 void CharacterData::UpdateImages() {
     for (int i = 0; i < 4; i++) {
+        if (sCharacters[i].mImage) {
+            delete[] sCharacters[i].mImage;
+        }
         sCharacters[i].mImage = sCharacters[i].loadImage();
     }
 }
