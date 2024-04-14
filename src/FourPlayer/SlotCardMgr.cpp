@@ -408,8 +408,10 @@ struct TekiCard : public VsSlotMachineCard {
         return VsSlotMachineCard::getWeight(cardMgr, teamID);
     }
 
+
     virtual void allocate(VsGameSection* section) {
-        mTekiMgrID = allocateTeki(section->mCardMgr->mTekiMgr, mEnemyID);
+        int defaultAlloc = 20 / vsSlotCardMgr->mCardCount;
+        mTekiMgrID = allocateTeki(section->mCardMgr->mTekiMgr, mEnemyID, MAX(2, defaultAlloc));
     }
 
 
@@ -550,7 +552,8 @@ struct NaviTekiCard : public TekiCard
     }
 
     virtual void allocate(VsGameSection* section) {
-        mTekiMgrID = allocateTeki(section->mCardMgr->mTekiMgr, mEnemyID, mParms.mCount * 2);
+        int defaultAlloc = 20 / vsSlotCardMgr->mCardCount;
+        mTekiMgrID = allocateTeki(section->mCardMgr->mTekiMgr, mEnemyID, mParms.mCount * MAX(2, defaultAlloc));
     }
 
     virtual const char* getDescription() {
@@ -580,16 +583,10 @@ struct TankOnyonTeki : public OnyonTekiCard
 
     virtual void allocate(VsGameSection* section) {
         TekiMgr* tekiMgr = section->mCardMgr->mTekiMgr;
-        mTekiMgrID = allocateTeki(tekiMgr, mEnemyID);
-        mWTankId   = allocateTeki(tekiMgr, mWTankTeki);
-        if (isMemoryOverrideOn()) {
-            mGTankId   = allocateTeki(tekiMgr, mGTankTeki);
-            mMTankId   = allocateTeki(tekiMgr, mMTankTeki);
-        }
-        else {
-            mGTankId = -1;
-            mMTankId = -1;
-        }
+        mTekiMgrID = (isTeamActive(TEAM_RED))    ? allocateTeki(tekiMgr, mEnemyID)   : -1;
+        mWTankId   = (isTeamActive(TEAM_BLUE))   ? allocateTeki(tekiMgr, mWTankTeki) : -1;
+        mGTankId   = (isTeamActive(TEAM_WHITE))  ? allocateTeki(tekiMgr, mGTankTeki) : -1;
+        mMTankId   = (isTeamActive(TEAM_PURPLE)) ? allocateTeki(tekiMgr, mMTankTeki) : -1;
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {

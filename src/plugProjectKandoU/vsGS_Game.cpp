@@ -1610,7 +1610,7 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		}
 
 		for (int i = 0; i < 4; i++) {
-			disp.mMiniMarbleCounts[i] = section->mDispMiniCounts[i];
+			disp.mMiniMarbleCounts[i] = section->mDispMiniCounts[getVsTeam(i)];
 		}
 
 		disp.mHideMiniMarble = !section->mHasMiniBedamas;
