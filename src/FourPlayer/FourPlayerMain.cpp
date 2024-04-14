@@ -86,7 +86,7 @@ void BaseGameSection::birthNavis() {
 
 	for (int i = gNaviNum; i < 4; i++) {
 		// hacky solution to remove the navis without the game crashing
-		naviMgr->getAt(i)->mIsAlive = true;
+		naviMgr->getAt(i)->mIsAlive = false;
 		naviMgr->getAt(i)->kill(nullptr);
 		naviMgr->informOrimaDead(i);
 	}
@@ -676,28 +676,30 @@ void BaseGameSection::drawParticle(Graphics& gfx, int viewport)
 {
 	if (BaseHIOParms::sDrawParticle && gDrawNavi[viewport]) {
 		Viewport* port = gfx.getViewport(viewport);
-		if (port->viewable()) {
-			port->setProjection();
-			port->setViewport();
-			if (!gameSystem->isMultiplayerMode() && mPrevNaviIdx != 2) {
-				mLightMgr->mFogMgr->off(gfx);
-				particleMgr->draw(port, 0);
-				mLightMgr->mFogMgr->set(gfx);
-			}
-			if (moviePlayer && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
-				for (int i = 3; i < 6; i++) {
-					particleMgr->draw(port, i);
-				}
-			}
-			particleMgr->draw(port, 1);
-			mLightMgr->mFogMgr->off(gfx);
-			if (moviePlayer && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
-				for (int i = 6; i < 9; i++) {
-					particleMgr->draw(port, i);
-				}
-			}
-			particleMgr->draw(port, 2);
+		if (!port || !port->viewable()) {
+			return;
 		}
+
+		port->setProjection();
+		port->setViewport();
+		if (!gameSystem->isMultiplayerMode() && mPrevNaviIdx != 2) {
+			mLightMgr->mFogMgr->off(gfx);
+			particleMgr->draw(port, 0);
+			mLightMgr->mFogMgr->set(gfx);
+		}
+		if (moviePlayer && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
+			for (u8 i = 3; i <= 5; i++) {
+				particleMgr->draw(port, i);
+			}
+		}
+		particleMgr->draw(port, 1);
+		mLightMgr->mFogMgr->off(gfx);
+		if (moviePlayer && moviePlayer->mFlags & MoviePlayer::IS_ACTIVE) {
+			for (u8 i = 6; i <= 8; i++) {
+				particleMgr->draw(port, i);
+			}
+		}
+		particleMgr->draw(port, 2);
 	}
 }
 
@@ -778,5 +780,56 @@ Navi* NaviMgr::getActiveNavi()
 	return navis[randInt(count)];
 }
 
+void ModelEffect::doEntry()
+{
+	if (mViewportVisibleFlag[0] != 0 || mViewportVisibleFlag[1] != 0 || mViewportVisibleFlag[2] != 0 || mViewportVisibleFlag[3] != 0) {
+		mModel->show();
+	} else {
+		mModel->hide();
+	}
+	changeMaterial();
+	mModel->getJ3DModel()->entry();
+}
+
+void ModelEffect::doAnimation()
+{
+	PSMTXCopy(mMtx.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+	mModel->mJ3dModel->calc();
+
+	if (mCulled) {
+		for (int i = 0; i < sys->mGfx->mViewportCount; i++) {
+			mViewportVisibleFlag[i] = 0;
+		}
+	} else {
+		Sys::Sphere bounds;
+		getLODSphere(bounds);
+
+		Graphics* gfx = sys->mGfx;
+		for (int i = 0; i < gfx->mViewportCount; i++) {
+			Viewport* vp = gfx->getViewport(i);
+
+			if (!vp->viewable()) {
+				mViewportVisibleFlag[i] = false;
+			} else {
+				Camera* cam = vp->mCamera;
+				if (useCylinderLOD()) {
+					Sys::Cylinder cylinder;
+					getLODCylinder(cylinder);
+					if (cam->isCylinderVisible(cylinder)) {
+						mViewportVisibleFlag[i] = true;
+					} else {
+						mViewportVisibleFlag[i] = false;
+					}
+				} else {
+					if (cam->isVisible(bounds)) {
+						mViewportVisibleFlag[i] = true;
+					} else {
+						mViewportVisibleFlag[i] = false;
+					}
+				}
+			}
+		}
+	}
+}
 
 } // namespace Game

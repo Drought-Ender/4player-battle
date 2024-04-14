@@ -887,7 +887,7 @@ struct WarpHomeCard : public VsSlotMachineCard
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user) {
-        Vector3f onyonPos = ItemOnyon::mgr->getOnyon(getVsPikiColor(user))->getSuckPos();
+        Vector3f onyonPos = ItemOnyon::mgr->getOnyon(getVsPikiColor(user))->getPosition();
         WarpAll(user, onyonPos);
     }
 

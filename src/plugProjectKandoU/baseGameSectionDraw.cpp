@@ -65,27 +65,37 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 
 	// Draw particles for both viewports
 	sys->mTimers->_start("part-draw", true);
-	if (gDrawNavi[0]) {
+	if (gDrawNavi[0] || moviePlayer->mFlags & moviePlayer->IS_ACTIVE) {
 		drawParticle(gfx, 0);
-		renderNames(gfx, gfx.getViewport(0));
 	}
 	if (gDrawNavi[1]) {
 		drawParticle(gfx, 1);
-		renderNames(gfx, gfx.getViewport(1));
 	}
 	if (gNaviNum > 2 && gDrawNavi[2]) {
 		drawParticle(gfx, 2);
-		renderNames(gfx, gfx.getViewport(2));
 	}
 	if (gNaviNum > 3 && gDrawNavi[3]) {
 		drawParticle(gfx, 3);
-		renderNames(gfx, gfx.getViewport(3));
 	}
 	sys->mTimers->_stop("part-draw");
+
+	if (gDrawNavi[0]) {
+		renderNames(gfx, gfx.getViewport(0));
+	}
+	if (gDrawNavi[1]) {
+		renderNames(gfx, gfx.getViewport(1));
+	}
+	if (gNaviNum > 2 && gDrawNavi[2]) {
+		renderNames(gfx, gfx.getViewport(2));
+	}
+	if (gNaviNum > 3 && gDrawNavi[3]) {
+		renderNames(gfx, gfx.getViewport(3));
+	}
 
 	// Draw counters for both viewports
 	// (Life gauge & Carry info)
 	sys->mTimers->_start("drct-post", true);
+	mLightMgr->set(gfx);
 	Viewport* vp = gfx.getViewport(0);
 	if (vp && vp->viewable() && gDrawNavi[0]) {
 		gfx.mCurrentViewport = vp;
@@ -93,6 +103,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		directDrawExtras(gfx, vp);
 	}
 
+	mLightMgr->set(gfx);
 	vp = gfx.getViewport(1);
 	if (vp && vp->viewable() && gDrawNavi[1]) {
 		gfx.mCurrentViewport = vp;
@@ -102,6 +113,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	sys->mTimers->_stop("drct-post");
 	
 	if (gNaviNum > 2) {
+		mLightMgr->set(gfx);
 		vp = gfx.getViewport(2);
 		if (vp && vp->viewable() && gDrawNavi[2]) {
 			gfx.mCurrentViewport = vp;
@@ -110,6 +122,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		}
 	}
 	if (gNaviNum > 3) {
+		mLightMgr->set(gfx);
 		vp = gfx.getViewport(3);
 		if (vp && vp->viewable() && gDrawNavi[3]) {
 			gfx.mCurrentViewport = vp;

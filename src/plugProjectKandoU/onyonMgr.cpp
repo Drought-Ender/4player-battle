@@ -492,6 +492,18 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 			gameSystem->mSection->sendMessage(mesg);
 			return true;
 		}
+
+		if (pellet->mPelletFlag == Pellet::FLAG_NAVI_NAPSACK) {
+			for (int i = 0; i < 4; i++) {
+				OSReport("hi\n");
+				Navi* navi = naviMgr->getAt(i);
+				if (navi->mPellet == pellet && !navi->mIsAlive) {
+					OSReport("Revive\n");
+					navi->SetRevive(item->mOnyonType);
+				}
+			}
+			return true;
+		}
 	}
 
 	if (gameSystem->mMode != GSM_VERSUS_MODE) {

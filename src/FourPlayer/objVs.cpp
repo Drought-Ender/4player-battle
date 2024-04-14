@@ -349,17 +349,17 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	mScreenIcons->set("obake_icon.blo", 0x1040000, arc);
 
 	J2DPictureEx* paneObake = static_cast<J2DPictureEx*>(mScreenIcons->search('obake'));
-	if (Game::gNaviNum > 2) {
-		mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
-		mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP1YOffs, 'obake2P');
-    	mPaneObake3P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake3P');
-		mPaneObake4P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP2YOffs, 'obake4P');
-	}
-	else {
+	if (Game::gNaviNum == 2) {
 		mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
 		mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake2P');
     	mPaneObake3P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake3P');
 		mPaneObake4P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake4P');
+	}
+	else {
+		mPaneObake1P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP1YOffs, 'obake1P');
+		mPaneObake2P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP1YOffs, 'obake2P');
+    	mPaneObake3P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs, msVal.mRouletteP2YOffs, 'obake3P');
+		mPaneObake4P            = og::Screen::CopyPictureToPane(paneObake, root, msVal.mRouletteXOffs + 300.0f, msVal.mRouletteP2YOffs, 'obake4P');
 	}
 	mPaneObake1P->setAlpha(mAlphaObakeP1 * 255.0f);
 	mPaneObake2P->setAlpha(mAlphaObakeP2 * 255.0f);
@@ -631,7 +631,7 @@ void FourObjVs::updateCSticks() {
 		if (static_cast<Game::VsGameSection*>(Game::gameSystem->mSection)->mCardMgr->getSlotMachine(Game::getVsTeam(i))->dispCherryTarget(i)) {
 			mCStick[i]->show();
 			mOutCircle[i]->show();
-			for (int j = 0; j < 4; j++) {
+			for (int j = 0; j < Game::gNaviNum; j++) {
 				if (gDrawNavi[j]) {
 					mExtraIcons[i][j]->show();
 				}
@@ -1331,6 +1331,14 @@ void FourObjVs::checkObake()
     mPaneObake3P->rotate(angle3 * cos * 20.0f);
 	mPaneObake4P->rotate(angle4 * cos2 * 20.0f);
 
+	if (Game::gNaviNum == 2) {
+		mPaneObake1P->setOffset(msVal.mRouletteXOffs + (sin * angle1) * msVal._2C,
+	                        msVal.mRouletteP1YOffs + (cos * angle1) * msVal._30);
+		mPaneObake2P->setOffset(msVal.mRouletteXOffs + (sin2 * angle2) * msVal._2C,
+	                        msVal.mRouletteP2YOffs + (cos2 * angle2) * msVal._30);
+	}
+	else {
+
 	mPaneObake1P->setOffset(msVal.mRouletteXOffs + (sin * angle1) * msVal._2C,
 	                        msVal.mRouletteP1YOffs + (cos * angle1) * msVal._30);
 	mPaneObake2P->setOffset(300.0f + msVal.mRouletteXOffs + (sin2 * angle2) * msVal._2C,
@@ -1339,6 +1347,7 @@ void FourObjVs::checkObake()
 	                        msVal.mRouletteP2YOffs + (sin * angle3) * msVal._30);
 	mPaneObake4P->setOffset(300.0f + msVal.mRouletteXOffs + (cos2 * angle4) * msVal._2C,
 	                        msVal.mRouletteP2YOffs + (sin2 * angle4) * msVal._30);
+	}
 
 	mPaneObake1P->updateScale(msVal.mRouletteScale);
 	mPaneObake2P->updateScale(msVal.mRouletteScale);

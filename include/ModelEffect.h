@@ -41,8 +41,7 @@ struct ModelEffect {
 
 	inline ModelEffect()
 	{
-		_39     = 1;
-		_38     = 1;
+		for (int i = 0; i < 4; i++) mViewportVisibleFlag[i] = 1;
 		mCulled = 0;
 	}
 
@@ -61,8 +60,7 @@ struct ModelEffect {
 	// _00 VTBL
 	SysShape::Model* mModel; // _04
 	Matrixf mMtx;            // _08
-	u8 _38;                  // _38
-	u8 _39;                  // _39
+	u8 mViewportVisibleFlag[4]; // _38
 	bool mCulled;            // _3A
 };
 

@@ -223,6 +223,9 @@ struct Navi : public FakePiki, virtual public PelletView {
 
 	bool isInvisible();
 
+	void MakePellet();
+	void SetRevive(int color);
+
 	// _000      = VTBL
 	// _000-_250 = FakePiki
 	// _250      = ptr to PelletView
@@ -303,6 +306,7 @@ struct NaviMgr : public MonoObjectMgr<Navi>, public JKRDisposer {
 	Navi* getAliveOrima(int);
 	Navi* getDeadOrima(int);
 	void informOrimaDead(int);
+	void informOrimaLive(int);
 	void load();
 	void loadResources_float();
 	void setMovieDraw(bool);

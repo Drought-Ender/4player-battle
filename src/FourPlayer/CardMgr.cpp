@@ -73,10 +73,10 @@ VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* te
 void VsGame::CardMgr::update()
 {
 	if (!gameSystem->paused()) {
-		mSlotMachines[0].update();
-		mSlotMachines[1].update();
-		mNewSlotMachines[0].update();
-		mNewSlotMachines[1].update();
+		if (gDrawNavi[0]) mSlotMachines[0].update();
+		if (gDrawNavi[1]) mSlotMachines[1].update();
+		if (gDrawNavi[2]) mNewSlotMachines[0].update();
+		if (gDrawNavi[3]) mNewSlotMachines[1].update();
 	}
 }
 
@@ -226,18 +226,19 @@ Vector3f CardMgr::getSlotOrigin(int playerIdx)
     }
 }
 
+static int sCurrentCarder = 0;
 
 // Scissor__Q44Game6VsGame7CardMgr11SlotMachineFR8Graphicsb
 void CardMgr::SlotMachine::Scissor(Graphics& gfx, bool simple) {
 	// "gfx" INPUTS THE WRONG POINTER!! DON'T USE
-	Viewport* vp = sys->mGfx->getViewport(mPlayerIndex);
+	Viewport* vp = sys->mGfx->getViewport(sCurrentCarder);
 	Rectf box = vp->mRect2;
 	if (simple) {
 		GXSetScissor(box.p1.x, box.p1.y, box.getWidth(), box.getHeight());
 		return;
 	}
 
-	Vector3f origin = mCardMgr->getSlotOrigin(mPlayerIndex);
+	Vector3f origin = mCardMgr->getSlotOrigin(sCurrentCarder);
 	f32 size = (WheelSize) * 2 / PI;
 	f32 minY = origin.y - size / 2;
 	GXSetScissor(box.p1.x, minY, box.getWidth(), size);
@@ -257,16 +258,20 @@ void CardMgr::draw(Graphics& gfx) {
         Vector3f p4SlotPos     = getSlotOrigin(3);
         
 		if (machines[getVsTeam(0)]->mSpinState && gDrawNavi[0]) {
+			sCurrentCarder = 0;
 			drawSlot(gfx, olimarSlotPos, *machines[getVsTeam(0)]);
 		}
 		if (machines[getVsTeam(1)]->mSpinState && gDrawNavi[1]) {
+			sCurrentCarder = 1;
 			drawSlot(gfx, louieSlotPos, *machines[getVsTeam(1)]);
 		}
         if (gNaviNum >= 3) {
             if (machines[getVsTeam(2)]->mSpinState && gDrawNavi[2]) {
+				sCurrentCarder = 2;
                 drawSlot(gfx, p3SlotPos, *machines[getVsTeam(2)]);
             }
             if (gNaviNum == 4 && machines[getVsTeam(3)]->mSpinState && gDrawNavi[3]) {
+				sCurrentCarder = 3;
                 drawSlot(gfx, p4SlotPos, *machines[getVsTeam(3)]);
             }
         }
@@ -287,7 +292,9 @@ void CardMgr::gotPlayerCard(int user)
 {
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 	if (machines[user]->mSpinState == 0) {
-		machines[user]->start();
+		if (gDrawNavi[user]) {
+			machines[user]->start();
+		}
 		machines[user]->_18 = 0;
 	} else if (machines[user]->mCherryStock < 4) {
         for (int i = 0; i < 4; i++) {
@@ -300,7 +307,7 @@ void CardMgr::gotPlayerCard(int user)
 
                 efx2d::ArgScaleColorColor spraysetArg(&panePos, 0.4f, color1, color2);
                 efx2d::T2DSprayset_forVS vsSpraySet;
-
+				
                 vsSpraySet.create(&spraysetArg);
                 PSSystem::spSysIF->playSystemSe(PSSE_SY_2P_SLOT_STOC, 0);
                 

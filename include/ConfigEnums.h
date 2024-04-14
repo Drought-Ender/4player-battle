@@ -166,5 +166,9 @@ enum EMiscCarry {
     MISCCARRY_ALL
 };
 
+enum ECaptainCorpse {
+    CORPSE_OFF,
+    COPRSE_ON
+};
 
 } // namespace ConfigEnums

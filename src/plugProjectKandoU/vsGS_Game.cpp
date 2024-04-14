@@ -1237,7 +1237,6 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 			gDrawNavi[p2] = false;
 			onOrimaDownDone(p2);
 			return;
-			JUT_PANICLINE(1279, "cannot happen !\n");
 
 		} else {
 			GameStat::alivePikis.clear();
@@ -1306,6 +1305,12 @@ void GameState::onNextFloor(VsGameSection* section, ItemHole::Item* hole)
 void GameState::onOrimaDown(VsGameSection* section, int idx)
 {
 	int teamIdx = getVsTeam(idx);
+
+	if (gConfig[CAPTAIN_CORPSE] == ConfigEnums::COPRSE_ON) {
+		naviMgr->getAt(idx)->setDeadLaydown();
+		return;
+	}
+
 	mOrimaDownState[idx] = 1;
 
 	P2ASSERTBOUNDSLINE(1341, 0, teamIdx, 4);

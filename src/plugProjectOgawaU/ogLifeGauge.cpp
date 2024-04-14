@@ -249,7 +249,7 @@ void CallBack_LifeGauge::update()
 			              0.0f);
 			mPin2->updateScale(scale);
 			mPin2->setAlpha(-(timerScale * 255.0f - 255.0f));
-			if (mNaviLifeRatio <= 0.0f) {
+			if (mNaviLifeRatio <= 0.0f && gConfig[CAPTAIN_CORPSE] == ConfigEnums::CORPSE_OFF) {
 				mNa_i->hide();
 				mLi_i->hide();
 			} else {

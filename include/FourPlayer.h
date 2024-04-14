@@ -116,7 +116,8 @@ enum OptionsEnum {
     RESERVOIR,
     CARRY_BOMB,
     CARRY_BLOWHOG,
-    CARRY_MISC
+    CARRY_MISC,
+    CAPTAIN_CORPSE
 };
 
 namespace ConfigEnums {

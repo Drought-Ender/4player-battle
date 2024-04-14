@@ -162,7 +162,7 @@ Option gOptions[] = {
     {
         "Friendly Fire",
         { "Off", "On" },
-        { "Cherries can target you and your teammates", "Cherries cannot target you or your teammates" },
+        { "Cherries cannot target you or your teammates", "Cherries can target you and your teammates" },
         2,
         0
     },
@@ -281,15 +281,23 @@ Option gOptions[] = {
     },
     {
         "Carry Objects",
-        { "Off", "Cherries", "Light Enemies/Pellets", "ALL"},
+        { "Off", "Cherries", "Light Enemies/Pellets", "ALL" },
         {
             "Does not let you carry any externious objects",
             "Lets you carry cherries",
-            "Lets you carry light-weight objects (weighs < 5, exclude bedama)",
+            "Lets you carry light-weight objects (weighs < 5, excluding marbles)",
             "Lets you carry anything, lmao"
         },
         4,
         0
+    },
+    {
+        "Captain Corpses",
+        { "Off", "On" },
+        {
+            "Captain Corpses are off",
+            "Carry a captain's corpse back to revive them"
+        }
     }
 };
 
