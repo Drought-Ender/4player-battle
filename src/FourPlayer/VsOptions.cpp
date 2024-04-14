@@ -297,7 +297,9 @@ Option gOptions[] = {
         {
             "Captain Corpses are off",
             "Carry a captain's corpse back to revive them"
-        }
+        },
+        2,
+        0
     }
 };
 
