@@ -86,7 +86,8 @@ void BaseGameSection::birthNavis() {
 
 	for (int i = gNaviNum; i < 4; i++) {
 		// hacky solution to remove the navis without the game crashing
-		naviMgr->getAt(i)->mIsAlive = false;
+		naviMgr->getAt(i)->setAlive(false);
+		naviMgr->getAt(i)->mIsAlive = true;
 		naviMgr->getAt(i)->kill(nullptr);
 		naviMgr->informOrimaDead(i);
 	}
