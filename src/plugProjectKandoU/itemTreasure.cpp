@@ -139,7 +139,7 @@ void ItemTreasure::Item::releasePellet()
 			GameMessageVsBirthTekiTreasure mesg;
 			mesg.mPosition = mPosition;
 			mesg._14       = false;
-			mesg._10       = (int)test + 1;
+			mesg.mTobiCount       = (int)test + 1;
 			gameSystem->mSection->sendMessage(mesg);
 		}
 

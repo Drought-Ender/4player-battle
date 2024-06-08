@@ -92,9 +92,13 @@ Option gOptions[] = {
     },
     {
         "Shearwigs",
-        { "Spawn", "Don't Spawn" },
-        { "Shearwigs will spawn from marbles as normal", "Shearwigs will not spawn from marbles" },
-        2,
+        { "Spawn", "Don't Spawn", "Player Marbles" },
+        {
+            "Shearwigs will spawn from marbles as normal", 
+            "Shearwigs will not spawn from marbles",
+            "Shearwigs will also spawn from player marbles"
+        },
+        3,
         0
     },
     {

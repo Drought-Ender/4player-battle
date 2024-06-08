@@ -5,7 +5,11 @@
 #include "Game/Entities/PelletOtakara.h"
 #include "Game/Entities/PelletItem.h"
 #include "PSM/Otakara.h"
+#include "Game/Entities/ItemTreasure.h"
 #include "VsOptions.h"
+#include "efx/TOtakara.h"
+#include "Dolphin/rand.h"
+#include "PSM/WorkItem.h"
 
 namespace Game
 {
@@ -337,31 +341,31 @@ bool PelletMgr::makePelletInitArg(PelletInitArg& arg, PelletMgr::OtakaraItemCode
 bool PelletOtakara::Object::setBedamaColor() {
     PSM::PelletItem* obj = (PSM::PelletItem*)mSoundMgr;
 	if (mPelletFlag == FLAG_VS_BEDAMA_RED) {
-		mBedamaColor = 3;
+		mBedamaColor = Red;
         obj->_70 = 4;
 		return true;
 	}
 	if (mPelletFlag == FLAG_VS_BEDAMA_BLUE) {
-		mBedamaColor = 3;
+		mBedamaColor = Blue;
         obj->_70 = 4;
 		return true;
 	}
     if (mPelletFlag == FLAG_VS_BEDAMA_WHITE) {
-        mBedamaColor = 3;
+        mBedamaColor = White;
         obj->_70 = 4;
         return true;
     }
     if (mPelletFlag == FLAG_VS_BEDAMA_PURPLE) {
-        mBedamaColor = 3;
+        mBedamaColor = Purple;
         obj->_70 = 4;
         return true;
     }
 	if (mPelletFlag == FLAG_VS_BEDAMA_MINI) {
-		mBedamaColor = 3;
+		mBedamaColor = 5;
         obj->_70 = 4;
 		return true;
 	}
-	mBedamaColor = 3;
+	mBedamaColor = Yellow;
 	obj->_70 = 4;
 	return true;
 }
@@ -405,5 +409,50 @@ void MultiplyPelletMove(Pellet* pellet, Vector3f& move) {
     move *= pellet->getMoveMultiplier();
 }
 
+
+void ItemTreasure::Item::releasePellet()
+{
+	if (mPellet) {
+		mPellet->endCapture();
+		TexCaster::Caster* caster = mPellet->mCaster;
+		if (caster) {
+			caster->fadein(0.5f);
+		}
+
+		f32 scale = mPellet->getPickRadius();
+
+		efx::ArgScale arg(mPosition, scale);
+		efx::TOtakaraAp efx;
+		efx.create(&arg);
+
+		mSoundObj->startSound(PSSE_EV_TREASURE_JUMP_OUT, 0);
+
+		Vector3f velocity;
+		velocity.x = 10.0f * (randFloat() - 0.5f);
+		velocity.z = 10.0f * (randFloat() - 0.5f);
+		velocity.y = 15.0f;
+
+		mPellet->setVelocity(velocity);
+
+		if (gameSystem->isVersusMode()) {
+			s32 color = mPellet->getBedamaColor();
+			bool isColoredMarble = color >= Blue && color <= White && color != Yellow;
+
+			GameMessageVsBirthTekiTreasure mesg;
+			mesg.mPosition = mPosition;
+			mesg.mIsBaseMarble    = isColoredMarble;
+			mesg.mTobiCount       = randInt(3) + 1;
+			gameSystem->mSection->sendMessage(mesg);
+		}
+
+		mSoundEvent.finish();
+
+		P2ASSERTLINE(327, mSoundObj->getCastType() == PSM::CCT_WorkItem);
+		static_cast<PSM::WorkItem*>(mSoundObj)->eventFinish();
+
+		setAlive(false);
+		mPellet = nullptr;
+	}
+}
 
 } // namespace Game

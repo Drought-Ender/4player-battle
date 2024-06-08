@@ -25,7 +25,7 @@ namespace Game
 
     void Navi::setDeadLaydown()
     {
-        if (isAlive() && gConfig[CAPTAIN_CORPSE] == ConfigEnums::COPRSE_ON) {
+        if (mNaviIndex < gNaviNum && isAlive() && gConfig[CAPTAIN_CORPSE] == ConfigEnums::COPRSE_ON) {
             mIsAlive = false;
             MakePellet();
         } else {

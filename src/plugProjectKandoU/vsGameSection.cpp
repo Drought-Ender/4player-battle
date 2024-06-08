@@ -1243,7 +1243,11 @@ bool GameMessageEnemyDead::actVs(VsGameSection* section) {
  */
 bool GameMessageVsBirthTekiTreasure::actVs(VsGameSection* section)
 {
+	OSReport("Is Base Marble %i\n", mIsBaseMarble);
 	if (gConfig[SPAWN_SHEARWIG] == ConfigEnums::SHEARWIG_DONTSPAWN) {
+		return false;
+	}
+	if (mIsBaseMarble && gConfig[SPAWN_SHEARWIG] != ConfigEnums::SHEARWIG_COLORSPAWN) {
 		return false;
 	}
 
@@ -1279,10 +1283,10 @@ bool GameMessageVsBirthTekiTreasure::actVs(VsGameSection* section)
 	f32 tobiChance = 0.2f;
 
 	if (tobiFactor > 0.8f) {
-		_10 += 2;
+		mTobiCount += 2;
 		tobiChance = 0.8f;
 	} else if (tobiFactor > 0.5f) {
-		_10 += 1;
+		mTobiCount += 1;
 		tobiChance = 0.5f;
 	} else if (tobiFactor > 0.1f) {
 		tobiChance = 0.2f;
@@ -1295,16 +1299,17 @@ bool GameMessageVsBirthTekiTreasure::actVs(VsGameSection* section)
 	} else {
 		tobiChance = 0.01f;
 	}
-	if (!(randFloat() > tobiChance)) {
+	if ((gConfig[SPAWN_SHEARWIG] == ConfigEnums::SHEARWIG_COLORSPAWN && mIsBaseMarble) || randFloat() < tobiChance) {
 		int nodes = section->mTekiMgr->mNodeCount - 1;
-		for (int i = 0; i < _10; i++) {
-			EnemyBase* enemy = section->mTekiMgr->birth(nodes, mPosition, _14);
+		for (int i = 0; i < mTobiCount; i++) {
+			EnemyBase* enemy = section->mTekiMgr->birth(nodes, mPosition, false);
 			if (enemy) {
 				enemy->setAnimSpeed(30.0f);
 			}
 		}
 		return true;
 	}
+	return false;
 }
 
 /*

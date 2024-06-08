@@ -76,8 +76,8 @@ struct GameMessageVsBirthTekiTreasure : public GameMessage {
 
 	// _00 = VTBL
 	Vector3f mPosition; // _04
-	int _10;            // _10
-	bool _14;           // _14
+	int mTobiCount;     // _10
+	bool mIsBaseMarble; // _14
 };
 
 struct GameMessageVsGetDoping : public GameMessage {

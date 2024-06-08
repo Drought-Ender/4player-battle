@@ -45,7 +45,8 @@ enum EBitterType {
 
 enum ESpawnShearwig {
     SHEARWIG_SPAWN,
-    SHEARWIG_DONTSPAWN
+    SHEARWIG_DONTSPAWN,
+    SHEARWIG_COLORSPAWN
 };
 
 enum EEggDrops {
