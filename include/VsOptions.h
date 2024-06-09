@@ -29,6 +29,26 @@ static const f32 sSprayTimers[] = {
     0.0f    // infinite
 };
 
+static const f32 sAttackPowers[] = {
+    0.25f,
+    0.5f,
+    1.0f,
+    1.5f,
+    2.0f,
+    3.0f,
+    5.0f
+};
+
+static const f32 sSpeeds[] = {
+    0.25f,
+    0.5f,
+    1.0f,
+    1.5f,
+    2.0f,
+    3.0f,
+    5.0f
+};
+
 struct VsOptionsMenuMgr {
     VsOptionsMenuMgr();
     ~VsOptionsMenuMgr();

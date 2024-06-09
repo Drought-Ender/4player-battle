@@ -5,6 +5,7 @@
 #include "Game/Navi.h"
 #include "Game/NaviState.h"
 #include "Game/PikiState.h"
+#include "VsOptions.h"
 
 namespace Game {
 
@@ -12,11 +13,11 @@ f32 Piki::getAttackDamage()
 {
 	P2ASSERT(this);
 	if (doped()) {
-		return pikiMgr->mParms->mPikiParms.mDopeAttackDamage.mValue;
+		return pikiMgr->mParms->mPikiParms.mDopeAttackDamage.mValue * (sAttackPowers[gConfig[ATTACK_POWER]] / 1.5f);
 	}
 
-	if (gameSystem && gameSystem->mMode == GSM_VERSUS_MODE) {
-		return pikiMgr->mParms->mPikiParms.mRedAttackDamage.mValue;
+	if (gameSystem && gameSystem->isVersusMode()) {
+		return pikiMgr->mParms->mPikiParms.mBlueAttackDamage.mValue * sAttackPowers[gConfig[ATTACK_POWER]];
 	}
 
 	switch ((int)mPikiKind) {
@@ -64,7 +65,7 @@ f32 Piki::getPelletCarryPower()
 		carryPower += pikiMgr->mParms->mPikiParms.mBudCarrySpeedBonus.mValue;
 	}
 
-	return carryPower;
+	return carryPower * sSpeeds[gConfig[CARRY_SPEED]];
 }
 
 f32 Piki::getBaseScale()
@@ -75,7 +76,7 @@ f32 Piki::getBaseScale()
 f32 Piki::getSpeed(f32 multiplier)
 {
 	if (doped()) {
-		return pikiMgr->mParms->mPikiParms.mDopeRunSpeed.mValue;
+		return pikiMgr->mParms->mPikiParms.mDopeRunSpeed.mValue * sSpeeds[gConfig[PIKMIN_SPEED]];
 	}
 
 	f32 baseSpeed = scaleValue(1.0f, pikiMgr->mParms->mPikiParms.mRunSpeed.mValue);
@@ -90,7 +91,7 @@ f32 Piki::getSpeed(f32 multiplier)
 	f32 drag     = scaleValue(1.0f, pikiMgr->mParms->mPikiParms.mWalkSpeed.mValue);
 	f32 speed    = multiplier * (baseSpeed - drag) + drag;
 
-	return speed;
+	return speed * sSpeeds[gConfig[PIKMIN_SPEED]];
 }
 
 void Piki::setSpeed(f32 multiplier, Vector3f& vec)

@@ -119,7 +119,10 @@ enum OptionsEnum {
     CARRY_BOMB,
     CARRY_BLOWHOG,
     CARRY_MISC,
-    CAPTAIN_CORPSE
+    CAPTAIN_CORPSE,
+    ATTACK_POWER,
+    PIKMIN_SPEED,
+    CARRY_SPEED
 };
 
 namespace ConfigEnums {

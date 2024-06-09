@@ -319,6 +319,51 @@ Option gOptions[] = {
         },
         2,
         0
+    },
+    {
+        "Attack Power",
+        { "x0.25", "x0.5", "x1.0", "x1.5", "x2.0", "x3.0", "x5.0" },
+        {
+            "Pikmin have x0.25 attack power",
+            "Pikmin have x0.5 attack power",
+            "Pikmin have x1.0 attack power",
+            "Pikmin have x1.5 attack power (default)",
+            "Pikmin have x2.0 attack power",
+            "Pikmin have x3.0 attack power",
+            "Pikmin have x5.0 attack power"
+        },
+        7,
+        3
+    },
+    {
+        "Movement Speed",
+        { "x0.25", "x0.5", "x1.0", "x1.5", "x2.0", "x3.0", "x5.0" },
+        {
+            "Pikmin and Captains move at x0.25 speed",
+            "Pikmin and Captains move at x0.5 speed",
+            "Pikmin and Captains move at x1.0 speed (default)",
+            "Pikmin and Captains move at x1.5 speed",
+            "Pikmin and Captains move at x2.0 speed",
+            "Pikmin and Captains move at x3.0 speed",
+            "Pikmin and Captains move at x5.0 speed"
+        },
+        7,
+        2
+    },
+    {
+        "Carry Speed",
+        { "x0.25", "x0.5", "x1.0", "x1.5", "x2.0", "x3.0", "x5.0" },
+        {
+            "Pikmin carry at x0.25 speed",
+            "Pikmin carry at x0.5 speed",
+            "Pikmin carry at x1.0 speed (default)",
+            "Pikmin carry at x1.5 speed",
+            "Pikmin carry at x2.0 speed",
+            "Pikmin carry at x3.0 speed",
+            "Pikmin carry at x5.0 speed"
+        },
+        7,
+        2
     }
 };
 
