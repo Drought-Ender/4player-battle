@@ -21,6 +21,7 @@ bool sNameOverride[4] = { false, false, false, false };
 
 f32 gPassiveSpicy;
 f32 gPassiveBitter;
+f32 gPassiveCherry;
 
 void SetOption(OptionsEnum option, int value, bool hide = false) {
     gOptions[option].value = value;
@@ -205,7 +206,7 @@ Option gOptions[] = {
     },
     {
         "Passive Bitters",
-        { "Off", "5 Minutes", "3 Minutes", "1 Minutes", "30 Seconds", "Infinite" },
+        { "Off", "5 Minutes", "3 Minutes", "1 Minute", "30 Seconds", "Infinite" },
         {
             "Controls the rate at which all players gain bitters natrually",
             "Controls the rate at which all players gain bitters natrually",
@@ -219,7 +220,7 @@ Option gOptions[] = {
     },
     {
         "Passive Spicys",
-        { "Off", "5 Minutes", "3 Minutes", "1 Minutes", "30 Seconds", "Infinite" },
+        { "Off", "5 Minutes", "3 Minutes", "1 Minute", "30 Seconds", "Infinite" },
         {
             "Controls the rate at which all players gain spicys natrually",
             "Controls the rate at which all players gain spicys natrually",
@@ -227,6 +228,20 @@ Option gOptions[] = {
             "Controls the rate at which all players gain spicys natrually",
             "Controls the rate at which all players gain spicys natrually",
             "Controls the rate at which all players gain spicys natrually"
+        },
+        6,
+        0
+    },
+    {
+        "Passive Cherries",
+        { "Off", "5 Minutes", "3 Minutes", "1 Minute", "30 Seconds", "Infinite" },
+        {
+            "Controls the rate at which all players gain a cherry natrually",
+            "Controls the rate at which all players gain a cherry natrually",
+            "Controls the rate at which all players gain a cherry natrually",
+            "Controls the rate at which all players gain a cherry natrually",
+            "Controls the rate at which all players gain a cherry natrually",
+            "Controls the rate at which all players gain a cherry natrually"
         },
         6,
         0
@@ -444,7 +459,6 @@ void VsOptionsMenuMgr::init() {
 }
 
 VsOptionsMenuMgr::~VsOptionsMenuMgr() {
-    OSReport("Options Menu dtor called!\n");
     for (int i = 0; i < ARRAY_SIZE(mMenus); i++) {
         delete mMenus[i];
         mMenus[i] = nullptr;

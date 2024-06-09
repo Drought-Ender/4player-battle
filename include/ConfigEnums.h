@@ -172,4 +172,9 @@ enum ECaptainCorpse {
     COPRSE_ON
 };
 
+enum ECherryPassive {
+    CHERRYPASSIVE_OFF = 0,
+    CHERRYPASSIVE_INF = 5
+};
+
 } // namespace ConfigEnums

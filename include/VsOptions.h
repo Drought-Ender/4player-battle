@@ -18,6 +18,7 @@ extern bool sNameOverride[4];
 
 extern f32 gPassiveSpicy;
 extern f32 gPassiveBitter;
+extern f32 gPassiveCherry;
 
 static const f32 sSprayTimers[] = {
     3.402823466e+38f,

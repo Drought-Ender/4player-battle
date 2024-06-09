@@ -105,6 +105,7 @@ void GameState::init(VsGameSection* section, StateArg* stateArg)
 
 	gPassiveBitter = sSprayTimers[gConfig[BITTER_PASSIVE]];
 	gPassiveSpicy  = sSprayTimers[gConfig[SPICY_PASSIVE]];
+	gPassiveCherry = sSprayTimers[gConfig[CHERRY_PASSIVE]];
 
 	mTimeLeft = VS_TIMER_START_TIME; // 8 minutes default timer
 }
@@ -344,6 +345,16 @@ void GameState::exec(VsGameSection* section)
 				if (gPassiveBitter <= 0.0f) {
 					gPassiveBitter += sSprayTimers[gConfig[BITTER_PASSIVE]];
 					incAllGlobalDope(SPRAY_TYPE_BITTER);
+				}
+			}
+			if (gConfig[CHERRY_PASSIVE] != ConfigEnums::CHERRYPASSIVE_OFF) {
+				gPassiveCherry -= sys->mDeltaTime;
+				if (gPassiveCherry <= 0.0f) {
+					gPassiveCherry += sSprayTimers[gConfig[CHERRY_PASSIVE]];
+					if (isTeamActive(0)) section->mCardMgr->gotPlayerCard(0);
+					if (isTeamActive(1)) section->mCardMgr->gotPlayerCard(1);
+					if (isTeamActive(2)) section->mCardMgr->gotPlayerCard(2);
+					if (isTeamActive(3)) section->mCardMgr->gotPlayerCard(3);
 				}
 			}
 

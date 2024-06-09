@@ -146,6 +146,11 @@ bool CardMgr::SlotMachine::dispCherryTarget(int user) {
 
 bool CardMgr::usePlayerCard(int teamUser, TekiMgr* tekiMgr)
 {
+
+	if (gUseCardNavi == -1) {
+		gUseCardNavi = getRandomAliveTeamate(teamUser);
+	}
+
 	tekiMgr    = mTekiMgr;
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 	int slotID = machines[teamUser]->mSlotID;
@@ -639,6 +644,7 @@ void VsGame::CardMgr::SlotMachine::update()
 		if (gGameConfig.mParms.mVsY.mData == 1) {
 			mSpinTimer -= sys->mDeltaTime;
 			if (mSpinTimer <= 0.0f) {
+				gUseCardNavi = -1;
 				mCardMgr->usePlayerCard(mPlayerIndex, nullptr); // nice tekimgr dumbass
 			}
 		}

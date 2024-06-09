@@ -1,11 +1,12 @@
-#ifndef _FOURPLAYER_H
-#define _FOURPLAYER_H
+#ifndef _FOURPLAYER_H_
+#define _FOURPLAYER_H_
 
 #include "Game/CameraMgr.h"
 #include "JSystem/J2D/J2DPrint.h"
 #include "ConfigEnums.h"
 #include "types.h"
 #include "P2JME/P2JME.h"
+#include "Dolphin/rand.h"
 
 typedef f32 VsWeights[2]; // delegations
 
@@ -111,6 +112,7 @@ enum OptionsEnum {
     HAZARD_TIMER,
     BITTER_PASSIVE,
     SPICY_PASSIVE,
+    CHERRY_PASSIVE,
     STALEMATE_TIMER,
     GLOBAL_SPICY,
     RESERVOIR,
@@ -350,6 +352,19 @@ bool doesTeamHavePlayers(int idx) {
         }
     }
     return false;
+}
+
+int getRandomAliveTeamate(int teamIdx) {
+    int list[4];
+    int count = 0;
+
+    for (int i = 0; i < Game::gNaviNum; i++) {
+        if (getVsTeam(i) == teamIdx) {
+            list[count++] = i;
+        }
+    }
+
+    return list[randInt(count)];
 }
 
 bool isTeamLouie(int teamID);
