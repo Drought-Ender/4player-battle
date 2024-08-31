@@ -304,7 +304,7 @@ void BingoMgr::BingoCard::Generate(ObjectKey& key) {
 
             mObjects[x][y] = entryArray[randIdx];
             mActive[x][y]  = false;
-            mDisp[x][y] = false;
+            mDisp[x][y]    = false;
 
             totalEntries--;
 

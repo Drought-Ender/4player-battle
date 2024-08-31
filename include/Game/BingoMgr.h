@@ -93,7 +93,6 @@ struct BingoMgr
         bool CheckLine(int min, LineData& data, bool disp=false);
         int CheckLine(int min, LineData* data, int arraySize, bool disp=false);
         bool PelletSuckProcedure(ObjectKey& key, Pellet* pellet);
-
         bool isImpossible(ObjectKey& key, int x, int y);
 
         void Swap(int idx1, int idx2);
