@@ -150,7 +150,7 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 
 	setLifeMax();
 
-	_26A = 0;
+	mPluckingCounter = 0;
 	_269 = 0;
 	Vector3f navi_scale; // navi model scale
 	navi_scale = Vector3f(1.3f);
@@ -290,7 +290,7 @@ void Navi::onStickEnd(Creature* creature)
 bool Navi::procActionButton()
 {
 	f32 minDist;
-	if (_26A) {
+	if (mPluckingCounter) {
 		minDist = naviMgr->mNaviParms->mNaviParms.mP060.mValue; // 'continuous extraction distance' - autoplucking range?
 	} else {
 		minDist = naviMgr->mNaviParms->mNaviParms.mP000.mValue; // 'action radius' - first pluck range

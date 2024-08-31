@@ -346,8 +346,12 @@ struct NaviFlickState : public NaviState {
 };
 
 struct NaviFollowArg : public StateArg {
-	bool _00; // _00
-	bool _01; // _01
+	inline NaviFollowArg(bool isNewToParty)
+	    : mIsNewToParty(isNewToParty)
+	{
+	}
+
+	bool mIsNewToParty; // _00, true if whistled/bumped into, false if just swapped control from or coming out of plucking state
 };
 
 struct NaviFollowState : public NaviState {
@@ -449,6 +453,10 @@ struct NaviNukuAdjustState : public NaviState {
 	u8 _4C[0x14]; // _3C, unknown
 };
 
+struct NaviNukuArg : public StateArg {
+	u8 mIsFollowing; // _00
+};
+
 struct NaviNukuState : public NaviState {
 	inline NaviNukuState()
 	    : NaviState(NSID_Nuku)
@@ -458,12 +466,19 @@ struct NaviNukuState : public NaviState {
 	virtual void init(Navi*, StateArg*);                       // _08
 	virtual void exec(Navi*);                                  // _0C
 	virtual void cleanup(Navi*);                               // _10
-	virtual bool invincible();                                 // _20 (weak)
+	virtual bool invincible() { return true; }                 // _20 (weak)
 	virtual void onKeyEvent(Navi*, const SysShape::KeyEvent&); // _24
 
 	// _00     = VTBL
 	// _00-_10 = NaviState
-	u8 _10[0xC]; // _10, unknown
+	u16 mCounter;   // _10
+	u8 mDidPluckSE; // _12
+	u8 mDidPressA;  // _13
+	u8 mIsActive;   // _14
+	u8 _15;         // _15
+	s16 mAnimID;    // _16
+	u8 mIsFollower; // _18
+	u8 mIsStopAutopluck;
 };
 
 struct NaviPathMoveState : public NaviState {

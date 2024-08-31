@@ -230,7 +230,7 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 
 	setLifeMax();
 
-	_26A = 0;
+	mPluckingCounter = 0;
 	_269 = 0;
 	Vector3f navi_scale; // navi model scale
 	navi_scale = Vector3f(1.3f);

@@ -112,7 +112,7 @@ namespace Game {
     void autopluck(NaviWalkState* walkstate, Navi* captain)
     // performs Pikmin 3-style autopluck of pikmin seeds
     {
-        if (gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_ON) {
+        if (gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_ON || gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_CANCEL) {
             captain->procActionButton();
         }
         
@@ -152,7 +152,7 @@ namespace Game {
 
 // canAutopluck__Fv
 bool canAutopluck() {
-    return gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_ON;
+    return gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_ON || gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_CANCEL;
 }
 
 
@@ -164,11 +164,9 @@ namespace ConfigEnums
         Iterator<Game::Piki> iPiki = Game::pikiMgr;
         CI_LOOP(iPiki) {
             Game::Piki* piki = *iPiki;
+            Game::InteractDope dope(navi, SPRAY_TYPE_SPICY);
             if (piki->isAlive() && piki->mPikiKind == pikiKind) {
-                bool tried = piki->startDope(piki->doped());
-                if (!tried) {
-                    piki->extendDopeTime();
-                }
+                piki->stimulate(dope);
             }
         } 
     }

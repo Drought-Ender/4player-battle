@@ -117,10 +117,10 @@ Option gOptions[] = {
     },
     {
         "Autopluck",
-        { "On", "Off" },
-        { "Enables Pikmin 3 style autopluck", "Plucking will be the same as normal Pikmin 2" },
-        2,
-        1
+        { "On", "Pluck Cancling", "Off" },
+        { "Enables Pikmin 4 style autopluck", "Enables Pikmin 3 style autopluck", "Plucking will be the same as normal Pikmin 2" },
+        3,
+        2
     },
     {
         "Card Use",

@@ -5,6 +5,7 @@
 #include "Game/Navi.h"
 #include "Game/NaviState.h"
 #include "Game/PikiState.h"
+#include "PSM/Navi.h"
 #include "VsOptions.h"
 
 namespace Game {
@@ -140,10 +141,80 @@ int Piki::getDownfloorMass()
 
 void endPluck(NaviNukuState* state, Navi* navi) {
     if (navi && navi->mController1 && navi->mController1->isButtonDown(PAD_BUTTON_B)) {
-        navi->transit(NSID_Walk, nullptr);
-        navi->_26A = false;
+		if (gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_CANCEL) {
+        	navi->transit(NSID_Walk, nullptr);
+        	navi->mPluckingCounter = false;
+		}
+		else {
+			state->mDidPressA = false;
+			state->mIsActive  = false;
+			state->mIsStopAutopluck = true;
+		}
     }
 }
+
+void NaviNukuState::init(Navi* navi, StateArg* stateArg)
+{
+	if (stateArg != nullptr) {
+		mIsFollower = static_cast<NaviNukuArg*>(stateArg)->mIsFollowing;
+	} else {
+		mIsFollower = 0;
+	}
+	if (navi->mPluckingCounter != 0) {
+		mAnimID = IPikiAnims::NUKU3;
+	} else {
+		mAnimID = IPikiAnims::NUKU;
+	}
+	navi->startMotion(mAnimID, mAnimID, navi, nullptr);
+	mCounter = static_cast<NaviParms*>(navi->mParms)->mNaviParms.mP042;
+	navi->mSoundObj->startSound(PSSE_PL_PULLING_PIKI, 0);
+	mDidPluckSE 	 = 0;
+	mIsActive   	 = 0;
+	mDidPressA  	 = 0;
+	mIsStopAutopluck = false;
+	_15         	 = 0;
+	navi->mMass 	 = 0.0f;
+}
+
+
+/**
+ * @note Address: 0x80181D70
+ * @note Size: 0x18C
+ */
+void NaviNukuState::exec(Navi* navi)
+{
+	endPluck(this, navi);
+
+	if (moviePlayer && moviePlayer->mDemoState != 0) {
+		if (mIsFollower) {
+			NaviFollowArg followArg(false); // not new to party
+			transit(navi, NSID_Follow, &followArg);
+			return;
+		}
+		transit(navi, NSID_Walk, nullptr);
+		return;
+	}
+	navi->mVelocity       = 0.0f;
+	navi->mSimVelocity    = 0.0f;
+	if (!navi->assertMotion(mAnimID)) {
+		if (mIsFollower != 0) {
+			NaviFollowArg followArg(false); // not new to party
+			transit(navi, NSID_Follow, &followArg);
+		} else {
+			transit(navi, NSID_Walk, nullptr);
+		}
+		navi->mPluckingCounter = 0;
+	} else if (mIsFollower == 0) {
+		if (mDidPressA == 0 && ((canAutopluck() && !mIsStopAutopluck) || navi->mController1->isButtonHeld(JUTGamePad::PRESS_A))) {
+			mDidPressA = 1;
+		}
+		if (mDidPressA != 0 && !navi->mController1->isButtonHeld(JUTGamePad::PRESS_A)) {
+			mIsActive = 1;
+			navi->mPluckingCounter++;
+		}
+	}
+}
+
 
 }
 

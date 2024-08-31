@@ -1,4 +1,6 @@
 
+bool canAutopluck();
+
 namespace ConfigEnums
 {
 
@@ -59,6 +61,7 @@ enum EEggDrops {
 
 enum EAutopluck {
     AUTOPLUCK_ON,
+    AUTOPLUCK_CANCEL,
     AUTOPLUCK_OFF
 };
 
