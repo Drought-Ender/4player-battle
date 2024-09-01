@@ -268,6 +268,19 @@ int getTruePelletColor(int pikiColor) {
     return reinterpret_cast<int*>(gScoreDelegations)[teamID];
 }
 
+
+void lookupScoreDelegation(int teamColor, int& scoreColor, int& scoreHighLow) {
+    for (scoreColor = 0; scoreColor < 2; scoreColor++) {
+        for (scoreHighLow = 0; scoreHighLow < 2; scoreHighLow++) {
+            if (teamColor == gScoreDelegations[scoreColor][scoreHighLow]) {
+                return;
+            }
+        }
+    }
+    scoreColor   = -1;
+    scoreHighLow = -1;
+}
+
 int getPikiFromTeamEnum(int);
 
 int getTeamCount() {

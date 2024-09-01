@@ -10,7 +10,7 @@
 #include "Game/Entities/Pelplant.h"
 
 
-#define CAVE_DEBUG 0
+#define CAVE_DEBUG 1
 
 inline void CaveDebugReport(const char* msg, ...) {
 	#if CAVE_DEBUG == 1
@@ -1254,232 +1254,648 @@ void RandEnemyUnit::setVersusEasyEnemy()
 	gPelplantsPerBunch = enemyCounts[0][0];
 }
 
-void RandEnemyUnit::setSlotEnemyTypeA(int& first, int& second, int third) {
-	int maxGenScore;
-	int maxGenTeam;
-	Vector3f positions[4];
-	for (int i = 0; i < 4; i++) {
-		MapNode* onyonNode = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
-		BaseGen* onyonGen = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
-		if (onyonNode) {
-			positions[i] = onyonNode->getBaseGenGlobalPosition(onyonGen);
+
+void RandEnemyUnit::setEnemyTypeA()
+{
+	if (mTypeCount[TEKITYPE_A] < mTypeMax[TEKITYPE_A]) {
+		if (mGenerator->mIsVersusMode) {
+			setVersusEasyEnemy();
+			setVersusEnemyTypeA();
 		}
-		if (i == 0 && third == 0) {
-			maxGenScore = onyonNode->getVersusScore();
-			maxGenTeam = -1;
-		}
-		if (i == 1 && third == 1) {
-			maxGenScore = onyonNode->getVersusScore();
-			maxGenTeam = 1;
+		if (mTypeCount[TEKITYPE_A] < mTypeMax[TEKITYPE_A]) {
+			for (int i = 0; i < 100; i++) {
+				int max   = 0;
+				int min   = 0;
+				int count = 0;
+				setSlotEnemyTypeA(max, min, -1);
+				setUnitRandEnemyTypeA(count, max, min);
+				if (mMapTile && mSpawn && mEnemyUnit && count) {
+					makeSetEnemyTypeA(mMapTile, mSpawn, mEnemyUnit, count);
+					if (mTypeCount[TEKITYPE_A] < mTypeMax[TEKITYPE_A]) {
+						continue;
+					}
+					return;
+				}
+				return;
+			}
 		}
 	}
-
-	BaseGen* validGens[128];
-	MapNode* validNodes[128];
-	int scores[128];
-	int currScore = 0;
+}
+void RandEnemyUnit::setVersusEnemyTypeA()
+{
 	int count = 0;
+	FOREACH_NODE(EnemyNode, mGenerator->mMainEnemies->mChild, currEnemy)
+	{
+		TekiInfo* info = currEnemy->getTekiInfo();
+		if (info && info->mType == BaseGen::TekiA__Easy) {
+			count += info->mWeight / 10;
+			if (count > mTypeCount[TEKITYPE_A]) {
+				int max = (count - mTypeCount[TEKITYPE_A]);
 
-	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode) {
-		if (currNode->mUnitInfo->getUnitKind() != UNITKIND_Room) continue;
-		BaseGen* firstGen = currNode->mUnitInfo->getBaseGen();
-		if (!firstGen) continue;
-		
-		FOREACH_NODE(BaseGen, firstGen->mChild, currGen) {
-			if (currGen->mSpawnType != BaseGen::TekiA__Easy || isEnemySetGen(currNode, currGen)) continue;
-			bool genLegal = true;
+				int vsColor = randInt(4);
 
-			for (int i = 0; i < 4; i++) {
-				Vector3f genPos = currNode->getBaseGenGlobalPosition(currGen);
-				if (_distanceBetween(positions[i], genPos) < 400.0f) {
-					genLegal = false;
-					break;
+				for (int i = 0; i < max; i++, vsColor++) {
+					
+					vsColor &= 0x3;
+
+					if (vsColor == White && gEffectiveTeamCount == 2) {
+						vsColor = Blue;
+					}
+
+					if (count <= mTypeCount[TEKITYPE_A]) {
+						continue;
+					}
+
+					int max = 0;
+					int min = 0;
+					setSlotEnemyTypeA(max, min, vsColor);
+
+					max = (max < count - mTypeCount[TEKITYPE_A]) ? max : count - mTypeCount[TEKITYPE_A];
+
+					int enemiesToMake = (max <= min) ? max : min + randInt(max - min + 1);
+
+					if (mMapTile && mSpawn && enemiesToMake) {
+						makeSetEnemyTypeA(mMapTile, mSpawn, currEnemy->mEnemyUnit, enemiesToMake);
+						continue;
+					}
+					return;
 				}
 			}
-
-			if (genLegal) {
-				validGens[count]  = currGen;
-				validNodes[count] = currNode;
-				int score = maxGenTeam * (currNode->getVersusScore() + maxGenScore);
-				if (score < 1) {
-					score = 1;
-				}
-				currScore += score;
-				scores[count] = score;
-				count++;
-			}
-		}
-
-		
-	}
-
-	mMapTile = nullptr;
-	mSpawn   = nullptr;
-	if (count == 0) return;
-
-	int randScore = randFloat() * currScore;
-	int newCurrScore = 0;
-	for (int i = 0; i < count; i++) {
-		newCurrScore += scores[i];
-		if (newCurrScore > randScore) {
-			mMapTile = validNodes[i];
-			mSpawn   = validGens[i];
-			first = validGens[i]->mMaximum;
-			second = validGens[i]->mMinimum;
-			return;
 		}
 	}
 }
 
-void RandEnemyUnit::setSlotEnemyTypeB(int third) {
-	int maxGenScore;
-	int maxGenTeam;
-	Vector3f positions[4];
-	for (int i = 0; i < 4; i++) {
-		MapNode* onyonNode = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
-		BaseGen* onyonGen = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
-		if (onyonNode) {
-			positions[i] = onyonNode->getBaseGenGlobalPosition(onyonGen);
+void RandEnemyUnit::setSlotEnemyTypeA(int& min, int& max, int vsColor) {
+	MapNode* nodeList[128];
+	BaseGen* spawnList[128];
+	int scoreList[2][128];
+	Vector3f vecArray[4];
+	f32 floatArray[4] = { 400.0f, 400.0f, 400.0f, 400.0f }; // 0x2C
+
+	int counter      = 0;
+	
+	int vsScore[4] = { 0, 0, 0, 0 };
+
+	int otherVsScore = 0;
+	int vsSign       = 0;
+	int vsColor2     = -1;
+	int spawnCounter = 0;
+	int scoreTally[2] = { 0, 0 };
+
+	MapNode* placedNodes = mGenerator->getPlacedNodes();
+	if (mGenerator->mIsVersusMode) {
+		MapNode* onyon;
+		BaseGen* onyonSpawn;
+		for (int i = FIXNODE_VsRedOnyon; i <= FIXNODE_VsPurpleOnyon; i++) {
+			onyon      = mMapScore->getFixObjNode(i);
+			onyonSpawn = mMapScore->getFixObjGen(i);
+			
+			if (!onyon) {
+				continue;
+			}
+
+			
+
+			vsScore[counter] = onyon->getVersusScore(counter / 2);
+			CaveDebugReport("Vs Score %i : %i\n", counter, vsScore[counter]);
+
+			Vector3f spawnPos = onyon->getBaseGenGlobalPosition(onyonSpawn);
+			vecArray[counter] = spawnPos;
+
+			if (vsColor == Blue && counter == 0) {
+				vsSign  = -1;
+				vsColor2 = 0;
+			} else if (vsColor == Red && counter == 1) {
+				vsSign  = 1;
+				vsColor2 = 0;
+			} else if (vsColor == White && counter == 2) {
+				vsSign  = -1;
+				vsColor2 = 1;
+			} else if (vsColor == Purple && counter == 3) {
+				vsSign  = 1;
+				vsColor2 = 1;
+			}
+			counter++;
 		}
-		if (i == 0 && third == 0) {
-			maxGenScore = onyonNode->getVersusScore();
-			maxGenTeam = -1;
-		}
-		if (i == 1 && third == 1) {
-			maxGenScore = onyonNode->getVersusScore();
-			maxGenTeam = 1;
+	} else {
+		MapNode* start      = mMapScore->getFixObjNode(FIXNODE_Pod);
+		BaseGen* startSpawn = mMapScore->getFixObjGen(FIXNODE_Pod);
+		if (start) {
+			Vector3f spawnPos   = start->getBaseGenGlobalPosition(startSpawn);
+			vecArray[counter]   = spawnPos;
+			floatArray[counter] = 300.0f;
+			counter++;
 		}
 	}
 
-	BaseGen* validGens[128];
-	MapNode* validNodes[128];
-	int scores[128];
-	int currScore = 0;
-	int count = 0;
-
-	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode) {
-		if (currNode->mUnitInfo->getUnitKind() != UNITKIND_Room) continue;
-		BaseGen* firstGen = currNode->mUnitInfo->getBaseGen();
-		if (!firstGen) continue;
-		
-		FOREACH_NODE(BaseGen, firstGen->mChild, currGen) {
-			if (currGen->mSpawnType != BaseGen::TekiB__Hard || isEnemySetGen(currNode, currGen)) continue;
-			bool genLegal = true;
-
-			for (int i = 0; i < 4; i++) {
-				Vector3f genPos = currNode->getBaseGenGlobalPosition(currGen);
-				if (_distanceBetween(positions[i], genPos) < 400.0f) {
-					genLegal = false;
-					break;
-				}
-			}
-
-			if (genLegal) {
-				validGens[count]  = currGen;
-				validNodes[count] = currNode;
-				int score = maxGenTeam * (currNode->getVersusScore() + maxGenScore);
-				if (score < 1) {
-					score = 1;
-				}
-				currScore += score;
-				scores[count] = score;
-				count++;
-			}
+	FOREACH_NODE(MapNode, placedNodes->mChild, node)
+	{
+		if (node->mUnitInfo->getUnitKind() != UNITKIND_Room) {
+			continue;
 		}
 
-		
+		BaseGen* spawnRoot = node->mUnitInfo->getBaseGen();
+		if (!spawnRoot) {
+			continue;
+		}
+
+		FOREACH_NODE(BaseGen, spawnRoot->mChild, spawn)
+		{
+			if (spawn->mSpawnType != BaseGen::TekiA__Easy) {
+				continue;
+			}
+
+			if (isEnemySetGen(node, spawn)) {
+				continue;
+			}
+
+			bool check = true;
+			for (int i = 0; i < counter; i++) {
+				if (check) {
+					Vector3f spawnPos = node->getBaseGenGlobalPosition(spawn);
+					if (spawnPos.distance(vecArray[i]) < floatArray[i]) {
+						check = false;
+					}
+				}
+			}
+
+			if (check) {
+				nodeList[spawnCounter]  = node;
+				spawnList[spawnCounter] = spawn;
+				scoreList[0][spawnCounter] = nodeList[spawnCounter]->getVersusScore(0);
+				scoreList[1][spawnCounter] = nodeList[spawnCounter]->getVersusScore(1);
+
+				scoreTally[0] += scoreList[0][spawnCounter];
+				scoreTally[1] += scoreList[1][spawnCounter];
+				spawnCounter++;
+			}
+		}
 	}
 
 	mMapTile = nullptr;
 	mSpawn   = nullptr;
-	if (count == 0) return;
 
-	int randScore = randFloat() * currScore;
-	int newCurrScore = 0;
-	for (int i = 0; i < count; i++) {
-		newCurrScore += scores[i];
-		if (newCurrScore > randScore) {
-			mMapTile = validNodes[i];
-			mSpawn   = validGens[i];
-			return;
+	if (spawnCounter == 0) {
+		return;
+	}
+
+	// int randScoreThreshold = (f32)scoreTally * randFloat();
+	// int scoreCounter       = 0;
+
+	f32 zero[2];
+	zero[0] = (f32)scoreTally[0] / (f32)spawnCounter;
+	zero[1] = (f32)scoreTally[1] / (f32)spawnCounter;
+
+	CaveDebugReport("Zero %f %f\n", zero[0], zero[1]);
+
+	f32 clostestScore = MAXFLOAT;
+	int minIndex = -1;
+
+	for (int i = 0; i < spawnCounter; i++) {
+		f32 score0 = FABS(scoreList[0][i] - zero[0]);
+		f32 score1 = FABS(scoreList[1][i] - zero[1]);
+		f32 max = MAX(score0, score1);
+		if (max < clostestScore) {
+			minIndex = i;
+			clostestScore = max;
+		}
+	}
+
+	int minIndicies[100];
+	int count = 0;
+
+	for (int i = 0; i < spawnCounter; i++) {
+		f32 score0 = FABS(scoreList[0][i] - zero[0]);
+		f32 score1 = FABS(scoreList[1][i] - zero[1]);
+		f32 max = MAX(score0, score1);
+		if (max == clostestScore) {
+			minIndicies[count++] = i;
+		}
+	}
+
+	minIndex = minIndicies[randInt(count)];
+
+
+	CaveDebugReport("Selected Score %f %f\n", scoreList[0][minIndex], scoreList[1][minIndex]);
+
+	mMapTile = nodeList[minIndex];
+	mSpawn   = spawnList[minIndex];
+
+	max = spawnList[minIndex]->mMaximum;
+	min = spawnList[minIndex]->mMinimum;
+	return;
+		
+	
+}
+
+void RandEnemyUnit::setVersusEnemyTypeF()
+{
+	int count = 0;
+	FOREACH_NODE(EnemyNode, mGenerator->mMainEnemies->mChild, currEnemy)
+	{
+		TekiInfo* info = currEnemy->getTekiInfo();
+		if (info && info->mType == BaseGen::TekiF__Special) {
+			count += info->mWeight / 10;
+			if (count > mTypeCount[TEKITYPE_F]) {
+				int altNum     = (count - mTypeCount[TEKITYPE_F]) % 2;
+				int roundedMax = ((count - mTypeCount[TEKITYPE_F]) / 2) * 2;
+
+				int randIdx = randInt(4);
+				for (int i = 0; i < roundedMax; i++, randIdx++) {
+					
+					randIdx &= 3;
+					if (randIdx == White && gEffectiveTeamCount == 2) {
+						randIdx = Blue;
+					}
+
+					int slot = -1;
+					setSlotEnemyTypeF(randIdx);
+
+					if (mMapTile && mSpawn) {
+						makeSetEnemyTypeF(mMapTile, mSpawn, currEnemy->mEnemyUnit);
+						continue;
+					}
+					return;
+				}
+
+				if (altNum) {
+					int slot = -1;
+					setSlotEnemyTypeF(slot);
+
+					if (mMapTile && mSpawn) {
+						makeSetEnemyTypeF(mMapTile, mSpawn, currEnemy->mEnemyUnit);
+						continue;
+					}
+					return;
+				}
+			}
 		}
 	}
 }
 
-void RandEnemyUnit::setSlotEnemyTypeF(int third) {
-	int maxGenScore;
-	int maxGenTeam;
-	Vector3f positions[4];
-	for (int i = 0; i < 4; i++) {
-		MapNode* onyonNode = mMapScore->getFixObjNode(FIXNODE_VsRedOnyon + i);
-		BaseGen* onyonGen = mMapScore->getFixObjGen(FIXNODE_VsRedOnyon + i);
-		
-		if (onyonNode) {
-			positions[i] = onyonNode->getBaseGenGlobalPosition(onyonGen);
+void RandEnemyUnit::setVersusEnemyTypeB()
+{
+	int count = 0;
+	FOREACH_NODE(EnemyNode, mGenerator->mMainEnemies->mChild, currEnemy)
+	{
+		TekiInfo* info = currEnemy->getTekiInfo();
+		if (info && info->mType == BaseGen::TekiB__Hard) {
+			count += info->mWeight / 10;
+			if (count > mTypeCount[TEKITYPE_B]) {
+				int altNum     = (count - mTypeCount[TEKITYPE_B]) % 2;
+				int roundedMax = ((count - mTypeCount[TEKITYPE_B]) / 2) * 2;
+
+				int randIdx = randInt(4);
+				for (int i = 0; i < roundedMax; i++, randIdx++) {
+					
+					randIdx &= 3;
+					if (randIdx == White && gEffectiveTeamCount == 2) {
+						randIdx = Blue;
+					}
+
+					setSlotEnemyTypeB(randIdx);
+
+					if (mMapTile && mSpawn) {
+						makeSetEnemyTypeB(mMapTile, mSpawn, currEnemy->mEnemyUnit);
+						continue;
+					}
+					return;
+				}
+
+				if (altNum) {
+					int slot = -1;
+					setSlotEnemyTypeB(slot);
+
+					if (mMapTile && mSpawn) {
+						makeSetEnemyTypeB(mMapTile, mSpawn, currEnemy->mEnemyUnit);
+						continue;
+					}
+					return;
+				}
+			}
 		}
-		if (i == 0 && third == 0) {
-			maxGenScore = onyonNode->getVersusScore();
-			maxGenTeam = -1;
+	}
+}
+
+void RandEnemyUnit::setSlotEnemyTypeB(int vsColor)
+{
+	MapNode* nodeList[128];
+	BaseGen* spawnList[128];
+	int scoreList[2][128];
+	Vector3f vecArray[4];
+	f32 floatArray[4] = { 400.0f, 400.0f, 400.0f, 400.0f }; // 0x2C
+
+	int counter      = 0;
+	
+	int vsScore[4] = { 0, 0, 0, 0 };
+
+	int otherVsScore = 0;
+	int vsSign       = 0;
+	int vsColor2     = -1;
+	int spawnCounter = 0;
+	int scoreTally[2] = { 0, 0 };
+
+	MapNode* placedNodes = mGenerator->getPlacedNodes();
+	if (mGenerator->mIsVersusMode) {
+		MapNode* onyon;
+		BaseGen* onyonSpawn;
+		for (int i = FIXNODE_VsRedOnyon; i <= FIXNODE_VsPurpleOnyon; i++) {
+			onyon      = mMapScore->getFixObjNode(i);
+			onyonSpawn = mMapScore->getFixObjGen(i);
+			
+			if (!onyon) {
+				continue;
+			}
+
+			
+
+			vsScore[counter] = onyon->getVersusScore(counter / 2);
+			CaveDebugReport("Vs Score %i : %i\n", counter, vsScore[counter]);
+
+			Vector3f spawnPos = onyon->getBaseGenGlobalPosition(onyonSpawn);
+			vecArray[counter] = spawnPos;
+
+			if (vsColor == Blue && counter == 0) {
+				vsSign  = -1;
+				vsColor2 = 0;
+			} else if (vsColor == Red && counter == 1) {
+				vsSign  = 1;
+				vsColor2 = 0;
+			} else if (vsColor == White && counter == 2) {
+				vsSign  = -1;
+				vsColor2 = 1;
+			} else if (vsColor == Purple && counter == 3) {
+				vsSign  = 1;
+				vsColor2 = 1;
+			}
+			counter++;
 		}
-		if (i == 1 && third == 1) {
-			maxGenScore = onyonNode->getVersusScore();
-			maxGenTeam = 1;
+	} else {
+		MapNode* start      = mMapScore->getFixObjNode(FIXNODE_Pod);
+		BaseGen* startSpawn = mMapScore->getFixObjGen(FIXNODE_Pod);
+		if (start) {
+			Vector3f spawnPos   = start->getBaseGenGlobalPosition(startSpawn);
+			vecArray[counter]   = spawnPos;
+			floatArray[counter] = 300.0f;
+			counter++;
 		}
 	}
 
-	BaseGen* validGens[128];
-	MapNode* validNodes[128];
-	int scores[128];
-	int currScore = 0;
-	int count = 0;
-
-	FOREACH_NODE(MapNode, mGenerator->mPlacedMapNodes->mChild, currNode) {
-		if (currNode->mUnitInfo->getUnitKind() != UNITKIND_Room) continue;
-		BaseGen* firstGen = currNode->mUnitInfo->getBaseGen();
-		if (!firstGen) continue;
-		
-		FOREACH_NODE(BaseGen, firstGen->mChild, currGen) {
-			if (currGen->mSpawnType != BaseGen::TekiF__Special || isEnemySetGen(currNode, currGen)) continue;
-			bool genLegal = true;
-
-			for (int i = 0; i < 4; i++) {
-				Vector3f genPos = currNode->getBaseGenGlobalPosition(currGen);
-				if (_distanceBetween(positions[i], genPos) < 400.0f) {
-					genLegal = false;
-					break;
-				}
-			}
-
-			if (genLegal) {
-				validGens[count]  = currGen;
-				validNodes[count] = currNode;
-				int score = maxGenTeam * (currNode->getVersusScore() + maxGenScore);
-				if (score < 1) {
-					score = 1;
-				}
-				currScore += score;
-				scores[count] = score;
-				count++;
-			}
+	FOREACH_NODE(MapNode, placedNodes->mChild, node)
+	{
+		if (node->mUnitInfo->getUnitKind() != UNITKIND_Room) {
+			continue;
 		}
 
-		
+		BaseGen* spawnRoot = node->mUnitInfo->getBaseGen();
+		if (!spawnRoot) {
+			continue;
+		}
+
+		FOREACH_NODE(BaseGen, spawnRoot->mChild, spawn)
+		{
+			if (spawn->mSpawnType != BaseGen::TekiB__Hard) {
+				continue;
+			}
+
+			if (isEnemySetGen(node, spawn)) {
+				continue;
+			}
+
+			bool check = true;
+			for (int i = 0; i < counter; i++) {
+				if (check) {
+					Vector3f spawnPos = node->getBaseGenGlobalPosition(spawn);
+					if (spawnPos.distance(vecArray[i]) < floatArray[i]) {
+						check = false;
+					}
+				}
+			}
+
+			if (check) {
+				nodeList[spawnCounter]  = node;
+				spawnList[spawnCounter] = spawn;
+				scoreList[0][spawnCounter] = nodeList[spawnCounter]->getVersusScore(0);
+				scoreList[1][spawnCounter] = nodeList[spawnCounter]->getVersusScore(1);
+
+				scoreTally[0] += scoreList[0][spawnCounter];
+				scoreTally[1] += scoreList[1][spawnCounter];
+				spawnCounter++;
+			}
+		}
 	}
 
 	mMapTile = nullptr;
 	mSpawn   = nullptr;
-	if (count == 0) return;
 
-	int randScore = randFloat() * currScore;
-	int newCurrScore = 0;
-	for (int i = 0; i < count; i++) {
-		newCurrScore += scores[i];
-		if (newCurrScore > randScore) {
-			mMapTile = validNodes[i];
-			mSpawn   = validGens[i];
-			return;
+	if (spawnCounter == 0) {
+		return;
+	}
+
+	// int randScoreThreshold = (f32)scoreTally * randFloat();
+	// int scoreCounter       = 0;
+
+	f32 zero[2];
+	zero[0] = (f32)scoreTally[0] / (f32)spawnCounter;
+	zero[1] = (f32)scoreTally[1] / (f32)spawnCounter;
+
+	CaveDebugReport("Zero %f %f\n", zero[0], zero[1]);
+
+	f32 clostestScore = MAXFLOAT;
+	int minIndex = -1;
+
+	for (int i = 0; i < spawnCounter; i++) {
+		f32 score0 = FABS(scoreList[0][i] - zero[0]);
+		f32 score1 = FABS(scoreList[1][i] - zero[1]);
+		f32 max = MAX(score0, score1);
+		if (max < clostestScore) {
+			minIndex = i;
+			clostestScore = max;
 		}
 	}
+
+	int minIndicies[100];
+	int count = 0;
+
+	for (int i = 0; i < spawnCounter; i++) {
+		f32 score0 = FABS(scoreList[0][i] - zero[0]);
+		f32 score1 = FABS(scoreList[1][i] - zero[1]);
+		f32 max = MAX(score0, score1);
+		if (max == clostestScore) {
+			minIndicies[count++] = i;
+		}
+	}
+
+	minIndex = minIndicies[randInt(count)];
+
+
+	CaveDebugReport("Selected Score %f %f\n", scoreList[0][minIndex], scoreList[1][minIndex]);
+
+	mMapTile = nodeList[minIndex];
+	mSpawn   = spawnList[minIndex];
+	return;
+		
+	
+}
+
+void RandEnemyUnit::setSlotEnemyTypeF(int vsColor) {
+	MapNode* nodeList[128];
+	BaseGen* spawnList[128];
+	int scoreList[2][128];
+	Vector3f vecArray[4];
+	f32 floatArray[4] = { 400.0f, 400.0f, 400.0f, 400.0f }; // 0x2C
+
+	int counter      = 0;
+	
+	int vsScore[4] = { 0, 0, 0, 0 };
+
+	int otherVsScore = 0;
+	int vsSign       = 0;
+	int vsColor2     = -1;
+	int spawnCounter = 0;
+	int scoreTally[2] = { 0, 0 };
+
+	MapNode* placedNodes = mGenerator->getPlacedNodes();
+	if (mGenerator->mIsVersusMode) {
+		MapNode* onyon;
+		BaseGen* onyonSpawn;
+		for (int i = FIXNODE_VsRedOnyon; i <= FIXNODE_VsPurpleOnyon; i++) {
+			onyon      = mMapScore->getFixObjNode(i);
+			onyonSpawn = mMapScore->getFixObjGen(i);
+			
+			if (!onyon) {
+				continue;
+			}
+
+			
+
+			vsScore[counter] = onyon->getVersusScore(counter / 2);
+			CaveDebugReport("Vs Score %i : %i\n", counter, vsScore[counter]);
+
+			Vector3f spawnPos = onyon->getBaseGenGlobalPosition(onyonSpawn);
+			vecArray[counter] = spawnPos;
+
+			if (vsColor == Blue && counter == 0) {
+				vsSign  = -1;
+				vsColor2 = 0;
+			} else if (vsColor == Red && counter == 1) {
+				vsSign  = 1;
+				vsColor2 = 0;
+			} else if (vsColor == White && counter == 2) {
+				vsSign  = -1;
+				vsColor2 = 1;
+			} else if (vsColor == Purple && counter == 3) {
+				vsSign  = 1;
+				vsColor2 = 1;
+			}
+			counter++;
+		}
+	} else {
+		MapNode* start      = mMapScore->getFixObjNode(FIXNODE_Pod);
+		BaseGen* startSpawn = mMapScore->getFixObjGen(FIXNODE_Pod);
+		if (start) {
+			Vector3f spawnPos   = start->getBaseGenGlobalPosition(startSpawn);
+			vecArray[counter]   = spawnPos;
+			floatArray[counter] = 300.0f;
+			counter++;
+		}
+	}
+
+	FOREACH_NODE(MapNode, placedNodes->mChild, node)
+	{
+		if (node->mUnitInfo->getUnitKind() != UNITKIND_Room) {
+			continue;
+		}
+
+		BaseGen* spawnRoot = node->mUnitInfo->getBaseGen();
+		if (!spawnRoot) {
+			continue;
+		}
+
+		FOREACH_NODE(BaseGen, spawnRoot->mChild, spawn)
+		{
+			if (spawn->mSpawnType != BaseGen::TekiF__Special) {
+				continue;
+			}
+
+			if (isEnemySetGen(node, spawn)) {
+				continue;
+			}
+
+			bool check = true;
+			for (int i = 0; i < counter; i++) {
+				if (check) {
+					Vector3f spawnPos = node->getBaseGenGlobalPosition(spawn);
+					if (spawnPos.distance(vecArray[i]) < floatArray[i]) {
+						check = false;
+					}
+				}
+			}
+
+			if (check) {
+				nodeList[spawnCounter]  = node;
+				spawnList[spawnCounter] = spawn;
+				scoreList[0][spawnCounter] = nodeList[spawnCounter]->getVersusScore(0);
+				scoreList[1][spawnCounter] = nodeList[spawnCounter]->getVersusScore(1);
+
+				scoreTally[0] += scoreList[0][spawnCounter];
+				scoreTally[1] += scoreList[1][spawnCounter];
+				spawnCounter++;
+			}
+		}
+	}
+
+	mMapTile = nullptr;
+	mSpawn   = nullptr;
+
+	if (spawnCounter == 0) {
+		return;
+	}
+
+	// int randScoreThreshold = (f32)scoreTally * randFloat();
+	// int scoreCounter       = 0;
+
+	f32 zero[2];
+	zero[0] = (f32)scoreTally[0] / (f32)spawnCounter;
+	zero[1] = (f32)scoreTally[1] / (f32)spawnCounter;
+
+	CaveDebugReport("Zero %f %f\n", zero[0], zero[1]);
+
+	f32 clostestScore = MAXFLOAT;
+	int minIndex = -1;
+
+	for (int i = 0; i < spawnCounter; i++) {
+		f32 score0 = FABS(scoreList[0][i] - zero[0]);
+		f32 score1 = FABS(scoreList[1][i] - zero[1]);
+		f32 max = MAX(score0, score1);
+		if (max < clostestScore) {
+			minIndex = i;
+			clostestScore = max;
+		}
+	}
+
+	int minIndicies[100];
+	int count = 0;
+
+	for (int i = 0; i < spawnCounter; i++) {
+		f32 score0 = FABS(scoreList[0][i] - zero[0]);
+		f32 score1 = FABS(scoreList[1][i] - zero[1]);
+		f32 max = MAX(score0, score1);
+		if (max == clostestScore) {
+			minIndicies[count++] = i;
+		}
+	}
+
+	minIndex = minIndicies[randInt(count)];
+
+
+	CaveDebugReport("Selected Score %f %f\n", scoreList[0][minIndex], scoreList[1][minIndex]);
+
+	mMapTile = nodeList[minIndex];
+	mSpawn   = spawnList[minIndex];
+	return;
+		
+	
 }
 
 void RandMapScore::setMapUnitScore()
