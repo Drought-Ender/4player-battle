@@ -247,6 +247,55 @@ bool OnyonFloatingIcon::satisfy() {
     return sqrDistanceXZ(naviPos, *mPosition) > SQUARE(100.0f);
 }
 
+Vector3f ProjectAsGX(Vector3f in, Mtx44 pm, GXProjectionType type)
+{
+    f32 wc;
+
+    Vector3f out;
+
+    if (type == GX_ORTHOGRAPHIC) {
+        out.x = (in.x * pm[0][0]) + (in.z * pm[0][3]);
+        out.y = (in.y * pm[1][1]) + (in.z * pm[1][3]);
+        out.z = pm[2][3] + (in.z * pm[2][2]);
+        wc = 1.0f / -in.z;
+    } else {
+        out.x = pm[0][2] + (in.x * pm[0][0]);
+        out.y = pm[1][2] + (in.y * pm[1][1]);
+        out.z = pm[2][3] + (in.z * pm[2][2]);
+        wc = 1.0f;
+    }
+
+    out *= wc;
+    return out;
+}
+
+Vector3f UnProjectAsGX(Vector3f out, Mtx44 pm, GXProjectionType type)
+{
+    Vector3f in;
+
+    if (type == GX_ORTHOGRAPHIC) {
+        
+
+        in.z = -pm[2][3] / (out.z + pm[2][2]);
+
+        out *= -in.z;
+
+
+        in.x = (out.x - (in.z * pm[0][3])) / pm[0][0];
+        in.y = (out.y - (in.z * pm[1][3])) / pm[1][1];
+
+        
+    }
+    else {
+        in.x = (out.x - pm[0][2]) / pm[0][0];
+        in.y = (out.y - pm[1][2]) / pm[1][1];
+        in.z = (out.z - pm[2][2]) / pm[2][2];
+    }
+
+    return in;
+
+}
+
 void OnyonFloatingIcon::draw(Graphics& gfx) {
     Viewport* vp = gfx.mCurrentViewport;
     LookAtCamera* cam = vp->mCamera;
@@ -263,71 +312,73 @@ void OnyonFloatingIcon::draw(Graphics& gfx) {
 
         Vector3f camPos = cam->getPosition();
 
-        // Vector3f oldDelta = camPos - pos;
         
-
-        // // if the icon is behind us, put it infront of us
-        // f32 atans = pikmin2_atan2f(oldDelta.x, oldDelta.z);
-
-        // Vector3f targetDelta = camPos - cam->getLookAtPosition();
-
-        // f32 theta = pikmin2_atan2f(targetDelta.x, targetDelta.z);
-
-        // OSReport("theta %f, atans %f\n", theta, atans);
-
-        bool flipAfter = false;
-        
-        // if (FABS(angDist(theta, atans)) > PI / 2) {
-            
-        //     flipAfter = true;
-        // }
-
-        
-
-        Matrixf ourMtx;
-        PSMTXCopy(mgr->mViewMatrix.mMatrix.mtxView, ourMtx.mMatrix.mtxView);
+        // cam->mCurViewMatrix;
+        // Matrixf viewMtx = setupViewMtx(gfx);
 
 
-        Vector3f newPos = DroughtLib::ForceIntoCullPlanes(viewSphere, cam, flipAfter);
+        Matrixf inverseViewMtx;
+        PSMTXInverse(cam->mCurViewMatrix.mMatrix.mtxView, inverseViewMtx.mMatrix.mtxView);        
 
-        efx::TOtaFire fire;
-        efx::Arg ag(newPos);
+        Vector3f interPos;
+        PSMTXMultVec(cam->mCurViewMatrix.mMatrix.mtxView, (Vec*)&pos, (Vec*)&interPos);
 
-        fire.create(&ag);
 
-        
+        Vector3f screenPos = ProjectAsGX(interPos, cam->mProjectionMtx, GX_ORTHOGRAPHIC);
 
-        Vector3f delta = newPos - camPos;
-        delta.normalise();
-        // newPos = camPos + delta * 1000.0f;
-
-        if (flipAfter) {
-           
+        if (screenPos.x > 0.95f) {
+            screenPos.x = 0.95f;
+        }
+        else if (screenPos.x < -0.95f) {
+            screenPos.x = -0.95f;
         }
 
-        ourMtx.setTranslation(newPos);
-
-        Matrixf outMtx;
-
-        PSMTXConcat(cam->mCurViewMatrix.mMatrix.mtxView, ourMtx.mMatrix.mtxView, outMtx.mMatrix.mtxView);
         
 
-        // Vector3f pureScreenCords = screenCords - Vector3f(vp->mRect2.p2.x, vp->mRect2.p2.y, 0.0f);
+        if (screenPos.y > 0.9f) {
+            screenPos.y = 0.9f;
 
-        // Vector2f vec2ScreenCords = Vector2f(screenCords.x / vp->mRect2.getWidth(), screenCords.y / vp->mRect2.getHeight());
+            screenPos.x *= 0.001f / FABS(screenPos.z);
 
-        // vec2ScreenCords.normalise(); // force onto screen
+        }
+        else if (screenPos.y < -0.9f) {
+            screenPos.y = -0.9f;
 
-        // Vector3f newScreenCords = Vector3f(
-        //     vec2ScreenCords.x * vp->mRect2.getWidth() + vp->mRect2.p2.x,
-        //     vec2ScreenCords.y * vp->mRect2.getHeight() + vp->mRect2.p2.y,
-        //     0.0f  
-        // );
+            screenPos.x *= 0.001f / FABS(screenPos.z);
+        }
 
-        // GXSetProjection(gfx.mOrthoGraph.mMtx44, GX_ORTHOGRAPHIC);
+        OSReport("old z: %f\n", screenPos.z);
+
+        if (screenPos.z > 0.0f) {
+            screenPos.x = -screenPos.x;
+            screenPos.y = -screenPos.y;
+        }
+
+        screenPos.z = -0.001f;
+
         
-        GXLoadPosMtxImm(outMtx.mMatrix.mtxView, 0);
+        
 
+        OSReport("Screen Pos : %f %f %f\n", screenPos.x, screenPos.y, screenPos.z);
+
+        OSReport("A : %f %f %f\n", interPos.x, interPos.y, interPos.z);
+
+        interPos = UnProjectAsGX(screenPos, cam->mProjectionMtx, GX_ORTHOGRAPHIC);
+
+
+        f32 x = interPos.x;
+        f32 y = interPos.y;
+        f32 z = interPos.z;
+        
+        // screenPos.y = 0.0f;
+
+        Mtx identity;
+        PSMTXIdentity(identity);
+        GXLoadPosMtxImm(identity, 0);
+        
+
+        OSReport("B : %f %f %f\n", interPos.x, interPos.y, interPos.z);
+        
         if (drawOver()) {
             GXSetZMode(GX_FALSE, GX_LEQUAL, GX_FALSE);
         }
@@ -342,17 +393,21 @@ void OnyonFloatingIcon::draw(Graphics& gfx) {
 
         f32 distance = getSize() * 0.5f;
 
-        GXPosition3f32(- distance, - distance, 0.0f);
+        GXPosition3f32(x + distance, y + distance, z);
         GXTexCoord2f32(0.0f, 0.0f);
         
-        GXPosition3f32(- distance, distance, 0.0f);
+        GXPosition3f32(x + distance, y - distance, z);
         GXTexCoord2f32(0.0f, 1.0f);
 
-        GXPosition3f32( distance, distance, 0.0f);
+        GXPosition3f32(x - distance, y - distance, z);
         GXTexCoord2f32(1.0f, 1.0f);
 
-        GXPosition3f32(distance, - distance, 0.0f);
+        GXPosition3f32(x - distance, y + distance, z);
         GXTexCoord2f32(1.0f, 0.0f);
+
+        GXEnd();
+
+        
 
         // GXSetProjection(gfx.mPerspGraph.mMtx44, GX_PERSPECTIVE);
         // GXLoadPosMtxImm(gfx.mPerspGraph.mPosMtx, 0);

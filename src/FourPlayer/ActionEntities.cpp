@@ -4,6 +4,7 @@
 #include "Game/MapMgr.h"
 #include "efx/THdama.h"
 
+#define HAZARD_BARRIER_DURATION (10.0f)
 
 namespace Game
 {
@@ -101,7 +102,7 @@ bool HazardBarrier::update() {
         mEfx->create(&efxArg);
     }
 
-    return mTimer > 30.0f;
+    return mTimer > HAZARD_BARRIER_DURATION;
 }
 
 HazardBarrier::~HazardBarrier() {
@@ -178,9 +179,6 @@ FloatingIconHolderBase::FloatingIconHolderBase(Vector3f position, JUTTexture* te
     mIcon = new HoveringFloatingIcon(tex, &mPosition, CARD_ICON_HEIGHT);
     FloatingIconMgr::add(mIcon);
 }
-
-
-
 
 FloatingIconHolderBase::~FloatingIconHolderBase() {
     FloatingIconMgr::del(mIcon);

@@ -38,7 +38,7 @@ struct FloatingIcon : public CNode, public IFloatingIcon
 
     f32 calcZ(Camera*);
 
-    // img owner by upper class (just like real life)
+    // img owned by upper class (just like real life)
     JUTTexture* mImg;
     Vector3f* mPosition;
 

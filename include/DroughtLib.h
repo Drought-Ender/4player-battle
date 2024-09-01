@@ -430,9 +430,9 @@ namespace DroughtLib
 
              (recal ^x = x / |x|)
 
-             f = a + rx / |x|
+             f = a + rv / |v|
 
-             f = -v(d + p * v) / |v|^2 + p + rx / |x|
+             f = -v(d + p * v) / |v|^2 + p + rv / |v|
 
              combine everything for performance
 
@@ -444,6 +444,11 @@ namespace DroughtLib
         }
         
         return point;
+    }
+
+    inline f32 getSign(f32& obj) {
+        u32 one = 0x3f800000 | (0x80000000 & *(u32*)&obj);
+        return *(f32*)&one;
     }
 
 } // namespace DroughtLib
