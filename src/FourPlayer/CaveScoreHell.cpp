@@ -10,7 +10,7 @@
 #include "Game/Entities/Pelplant.h"
 
 
-#define CAVE_DEBUG 1
+#define CAVE_DEBUG 0
 
 inline void CaveDebugReport(const char* msg, ...) {
 	#if CAVE_DEBUG == 1
