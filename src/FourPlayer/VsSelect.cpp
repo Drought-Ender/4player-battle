@@ -115,6 +115,17 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
     mPurplePikis = new TVsPiki(pikiPurpleLeft, pikiPurpleRight, pikiPurpleFlower);
 
+    if (gWidescreenActive) {
+        mWhitePikis->mPikminFlower->mOffset.x -= 30.0f;
+        mWhitePikis->mPikminLeft->mOffset.x -= 30.0f;
+        mWhitePikis->mPikminRight->mOffset.x -= 30.0f;
+
+        mPurplePikis->mPikminFlower->mOffset.x -= 30.0f;
+        mPurplePikis->mPikminLeft->mOffset.x -= 30.0f;
+        mPurplePikis->mPikminRight->mOffset.x -= 30.0f;
+    }
+    
+
     if (isTeamIDActive(Game::TEAM_WHITE)) {
         mDispWhitePikiNum  = mWhitePikiNum * 5;
         mWhitePikis->setupPosinfo(mWhitePikiNum);
@@ -184,7 +195,6 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     mNaviNames[2] = static_cast<J2DTextBoxEx*>(mMainScreen->mScreenObj->search('PresName'));
     mNaviNames[3] = static_cast<J2DTextBoxEx*>(mMainScreen->mScreenObj->search('WifeName'));
 
-
     mNewWinCallbacks[0] = new og::Screen::CallBack_CounterRV(const_cast<char**>(og::Screen::SujiTex32), 2, 4,  mArchive);
     mNewWinCallbacks[0]->init(mMainScreen->mScreenObj, 'Pori2_r', 'Pori2_l', 'Pori2_c', &mNewWinValues[0], true);
 
@@ -220,8 +230,8 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
     J2DPane* redPane = mMainScreen->mScreenObj->search('PICT_RED');
     J2DPane* bluePane = mMainScreen->mScreenObj->search('PICT_BLU');
 
-    if (redPane)  redPane->move(-200.0f, 0.0f);
-    if (bluePane) bluePane->move(-200.0f, 0.0f);
+    if (redPane)  redPane->move(-500.0f, 0.0f);
+    if (bluePane) bluePane->move(-500.0f, 0.0f);
 
     
     for (int i = 0; i < 4; i++) {        
@@ -240,11 +250,14 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         mNaviImages[i]->updateScale(0.5f);
         mNaviImages[i]->changeTexture(sCharacters[i].mImage, 0);
 
-        mNaviNames[i]->mOffset = JGeometry::TVec2f(baseX + 35.0f, baseY);
-        mNaviNames[i]->updateScale(0.6f, 0.7f);
-        if (i == 2) {
-            mNaviNames[i]->updateScale(0.4f, 0.7f);
+        mNaviNames[i]->mOffset = JGeometry::TVec2f(baseX + 10.0f, baseY - 2.0f);
+
+        if (gWidescreenActive) {
+            mNaviNames[i]->mOffset.x *= 1.333f;
+            mNaviNames[i]->mOffset.x -= 100.0f;
         }
+
+        mNaviNames[i]->updateScale(1.0f, 0.8f);
 
         mNewWinCallbacks[i]->mPane->mOffset = JGeometry::TVec2f(baseX + 77.5f, baseY - 5.0f);
         mNewWinCallbacks[i]->update();
@@ -261,6 +274,9 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         mNaviBoxes[i]->setWhite(color);
         mWinBoxes[i] = og::Screen::CopyPictureToPane(outlineBox, root, boxX + 37.5f, boxY, 'Ph_or');
         mWinBoxes[i]->updateScale(0.6f, 0.4f);
+
+
+        
         
     }
 
@@ -471,7 +487,14 @@ bool TFourVsSelect::doUpdate() {
 
         mNaviImages[i]->setOffset(mNaviBasePos[i].x - 20.0f, mNaviBasePos[i].y - 20.0f);
 
-        mNaviNames[i]->setOffset(mNaviBasePos[i].x + 35.0f, mNaviBasePos[i].y);
+        mNaviNames[i]->setOffset(mNaviBasePos[i].x + 10.0f, mNaviBasePos[i].y - 2.0f);
+
+        if (gWidescreenActive) {
+            mNaviNames[i]->mOffset.x /= 1.333f;
+            mNaviNames[i]->mOffset.x += 85.0f;
+
+            mNaviNames[i]->calcMtx();
+        }
 
         mNewWinCallbacks[i]->mPane->mOffset = JGeometry::TVec2f(mNaviBasePos[i].x + 77.5f, mNaviBasePos[i].y - 5.0f);
         if (*mNewWinCallbacks[i]->mCountPtr < 10) {
@@ -536,7 +559,6 @@ bool TFourVsSelect::doUpdate() {
     return check;
 }
 
-bool visable[4];
 
 // TVsPikiDraw__Q28Morimura13TFourVsSelectFR8Graphics
 void TFourVsSelect::TVsPikiDraw(Graphics& gfx) {
@@ -545,8 +567,7 @@ void TFourVsSelect::TVsPikiDraw(Graphics& gfx) {
 
     for (int i = 0; i < 4; i++) {
 
-        if (visable[i]) {
-            mNaviNames[i]->show();
+        if (mNaviNames[i]->isVisible()) {
             
             J2DTextBoxEx* text = mNaviNames[i];
             JUTFont* font = nullptr;
@@ -558,18 +579,24 @@ void TFourVsSelect::TVsPikiDraw(Graphics& gfx) {
                 font = getPikminFont();
             }
 
-			text->makeMatrix(mNaviNames[i]->getGlbVtx(2).x - 15.0f, mNaviNames[i]->getGlbVtx(2).y + 0.5f, 0.0f, 0.0f);
+			
 
             
             J2DPrint print(font, JUtility::TColor(0xffffffff), JUtility::TColor(0x807700ff));
             size_t size = strlen(sCharacters[i].mDispName);
             float sizeX = 15.0f;
+            if (gWidescreenActive) {
+                sizeX /= 1.33333f;
+            }
             if (size > 6) {
                 sizeX = 85.0f / size;
             }
-            print.setFontSize(sizeX, 15.0f);
+            print.setFontSize(sizeX, text->mFontSize.y);
 
-            print.print(mNaviNames[i]->getGlbVtx(2).x - 15.0f, mNaviNames[i]->getGlbVtx(2).y + 0.5f, 255, "%s", sCharacters[i].mDispName);
+            GXLoadPosMtxImm(text->mGlobalMtx, 0);
+
+            print.printReturn(sCharacters[i].mDispName, mNaviNames[i]->mBounds.getWidth() + 50.0f, mNaviNames[i]->mBounds.getHeight(), 
+            mNaviNames[i]->getHBinding(), mNaviNames[i]->getVBinding(), mNaviNames[i]->_10C, mNaviNames[i]->_110, 255);
 			
         }
     }
@@ -581,16 +608,8 @@ void TFourVsSelect::doDraw(Graphics& gfx) {
         return;
     }
 
-    
 
-    for (int i = 0; i < 4; i++) {
-        visable[i] = false;
-        if (mNaviNames[i]->isVisible()) {
-            visable[i] = true;
-            mNaviNames[i]->hide();
-        }
-    }
-    
+
     
 
     TVsSelect::doDraw(gfx);

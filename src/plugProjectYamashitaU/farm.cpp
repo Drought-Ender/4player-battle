@@ -83,16 +83,10 @@ void Obstacle::doDebugDraw(Graphics& gfx)
 {
 	Vector3f creaturePos = mCreature->getPosition();
 
-	gfx._084 = 255;
-	gfx._085 = 255;
-	gfx._086 = 255;
-	gfx._087 = 255;
+	gfx._084 = Color4(0xff, 0xff, 0xff, 0xff);
 	gfx.drawSphere(creaturePos, mVtxColorControl->_10);
 
-	gfx._084  = 255;
-	gfx._085  = 55;
-	gfx._086  = 55;
-	gfx._087  = 255;
+	gfx._084 = Color4(0xff, 55, 55, 0xff);
 	f32 power = mVtxColorControl->mPower;
 	power     = mVtxColorControl->_10 * power;
 	gfx.drawSphere(creaturePos, power);

@@ -835,50 +835,6 @@ lbl_constructor:
 /* 803BB80C 003B874C  4E 80 00 20 */	blr 
 .endfn setXfb__11ParticleMgrFPC7ResTIMG
 
-.fn draw__11ParticleMgrFP8ViewportUc, global
-/* 803BB810 003B8750  94 21 FF 70 */	stwu r1, -0x90(r1)
-/* 803BB814 003B8754  7C 08 02 A6 */	mflr r0
-/* 803BB818 003B8758  90 01 00 94 */	stw r0, 0x94(r1)
-/* 803BB81C 003B875C  DB E1 00 80 */	stfd f31, 0x80(r1)
-/* 803BB820 003B8760  F3 E1 00 88 */	psq_st f31, 136(r1), 0, qr0
-/* 803BB824 003B8764  DB C1 00 70 */	stfd f30, 0x70(r1)
-/* 803BB828 003B8768  F3 C1 00 78 */	psq_st f30, 120(r1), 0, qr0
-/* 803BB82C 003B876C  93 E1 00 6C */	stw r31, 0x6c(r1)
-/* 803BB830 003B8770  93 C1 00 68 */	stw r30, 0x68(r1)
-/* 803BB834 003B8774  80 C4 00 44 */	lwz r6, 0x44(r4)
-/* 803BB838 003B8778  7C 7E 1B 78 */	mr r30, r3
-/* 803BB83C 003B877C  7C 83 23 78 */	mr r3, r4
-/* 803BB840 003B8780  7C BF 2B 78 */	mr r31, r5
-/* 803BB844 003B8784  C3 C6 00 2C */	lfs f30, 0x2c(r6)
-/* 803BB848 003B8788  38 80 00 01 */	li r4, 1
-/* 803BB84C 003B878C  C3 E6 00 28 */	lfs f31, 0x28(r6)
-/* 803BB850 003B8790  48 06 99 0D */	bl getMatrix__8ViewportFb
-/* 803BB854 003B8794  38 81 00 08 */	addi r4, r1, 8
-/* 803BB858 003B8798  4B D2 EA 75 */	bl PSMTXCopy
-/* 803BB85C 003B879C  C0 62 13 90 */	lfs f3, lbl_8051F6F0@sda21(r2)
-/* 803BB860 003B87A0  FC 20 F8 90 */	fmr f1, f31
-/* 803BB864 003B87A4  FC 40 F0 90 */	fmr f2, f30
-/* 803BB868 003B87A8  C0 82 13 94 */	lfs f4, lbl_8051F6F4@sda21(r2)
-/* 803BB86C 003B87AC  FC A0 18 90 */	fmr f5, f3
-/* 803BB870 003B87B0  38 61 00 38 */	addi r3, r1, 0x38
-/* 803BB874 003B87B4  FC C0 18 90 */	fmr f6, f3
-/* 803BB878 003B87B8  4B D2 F2 0D */	bl C_MTXLightPerspective
-/* 803BB87C 003B87BC  80 7E 00 98 */	lwz r3, 0x98(r30)
-/* 803BB880 003B87C0  7F E5 FB 78 */	mr r5, r31
-/* 803BB884 003B87C4  38 81 00 08 */	addi r4, r1, 8
-/* 803BB888 003B87C8  4B CD 51 C1 */	bl draw__17JPAEmitterManagerFPC11JPADrawInfoUc
-/* 803BB88C 003B87CC  E3 E1 00 88 */	psq_l f31, 136(r1), 0, qr0
-/* 803BB890 003B87D0  CB E1 00 80 */	lfd f31, 0x80(r1)
-/* 803BB894 003B87D4  E3 C1 00 78 */	psq_l f30, 120(r1), 0, qr0
-/* 803BB898 003B87D8  CB C1 00 70 */	lfd f30, 0x70(r1)
-/* 803BB89C 003B87DC  83 E1 00 6C */	lwz r31, 0x6c(r1)
-/* 803BB8A0 003B87E0  80 01 00 94 */	lwz r0, 0x94(r1)
-/* 803BB8A4 003B87E4  83 C1 00 68 */	lwz r30, 0x68(r1)
-/* 803BB8A8 003B87E8  7C 08 03 A6 */	mtlr r0
-/* 803BB8AC 003B87EC  38 21 00 90 */	addi r1, r1, 0x90
-/* 803BB8B0 003B87F0  4E 80 00 20 */	blr 
-.endfn draw__11ParticleMgrFP8ViewportUc
-
 .fn "create__11ParticleMgrFUsR10Vector3<f>Uc", global
 /* 803BB8B4 003B87F4  94 21 FF E0 */	stwu r1, -0x20(r1)
 /* 803BB8B8 003B87F8  7C 08 02 A6 */	mflr r0

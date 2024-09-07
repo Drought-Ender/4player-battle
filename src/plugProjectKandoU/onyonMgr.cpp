@@ -591,26 +591,26 @@ void Onyon::doDirectDraw(Graphics& gfx)
 	if (mOnyonType == ONYON_TYPE_SHIP) {
 		gfx.initPrimDraw(0);
 		Vector3f pos = getInStart_UFO();
-		gfx._084     = 0;
-		gfx._085     = 255;
-		gfx._086     = 0;
-		gfx._087     = 255;
+		gfx._084.r     = 0;
+		gfx._084.g     = 255;
+		gfx._084.b     = 0;
+		gfx._084.a     = 255;
 		gfx.drawSphere(pos, 5.0);
 		pos      = getOutStart_UFO();
-		gfx._084 = 100;
-		gfx._085 = 255;
-		gfx._086 = 0;
-		gfx._087 = 255;
+		gfx._084.r = 100;
+		gfx._084.g = 255;
+		gfx._084.b = 0;
+		gfx._084.a = 255;
 		gfx.drawSphere(pos, 5.0);
 		SysShape::Joint* jnt = mModel->getJoint("start1");
 		Matrixf* mtx         = jnt->getWorldMatrix();
 		pos.x                = mtx->mMatrix.structView.tx;
 		pos.y                = mtx->mMatrix.structView.ty;
 		pos.z                = mtx->mMatrix.structView.tz;
-		gfx._084             = 100;
-		gfx._085             = 255;
-		gfx._086             = 0;
-		gfx._087             = 255;
+		gfx._084.r             = 100;
+		gfx._084.b             = 255;
+		gfx._084.g             = 0;
+		gfx._084.a             = 255;
 		gfx.drawSphere(pos, 20.0);
 	}
 

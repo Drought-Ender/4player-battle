@@ -35,6 +35,13 @@ void ShowOption(OptionsEnum option) {
 
 Option gOptions[] = {
     {
+        "Widescreen",
+        { "Off", "On" },
+        { "Disable Widescreen mode", "Enables Widescreen mode (Requires dolphin widescreen hack)"},
+        2,
+        0
+    },
+    {
         "Display Names",
         { "Off", "On" },
         { "Player names will not appear in-game", "player names will appear in game" },
@@ -564,7 +571,7 @@ void VsConfigMenu::init(VsOptionsMenuMgr* menu) {
 
 void VsConfigMenu::cleanup() {
     for (int i = 0; i < ARRAY_SIZE(gConfig); i++) {
-        gConfig[i] = gOptions[i].getValue();        
+        gConfig[i] = gOptions[i].getValue();
     }
     Game::gGameConfig.mParms.mVsHiba.mData = gConfig[VS_HIBA] != ConfigEnums::VSHIBA_OFF;
     Game::gGameConfig.mParms.mVsY.mData    = gConfig[VS_Y];
@@ -572,6 +579,9 @@ void VsConfigMenu::cleanup() {
         Game::VsGame::VsSlotCardMgr::sUsingCards[Game::VsGame::RESET_BEDAMA] = false;
     }
     Game::NaviDopeArg::wasteable = ConfigEnums::isGlobalSpicy();
+
+    gWidescreenActive = gConfig[WIDESCREEN];
+    
 }
 
 bool VsConfigMenu::update(VsOptionsMenuMgr* menu) {

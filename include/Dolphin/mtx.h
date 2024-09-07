@@ -37,10 +37,10 @@ void PSMTXMultVecSR(Mtx, Vec*, Vec*);
 void PSMTXMultVecArraySR(Mtx, f32*, f32*, f32*);
 void PSMTX44Copy(Mtx44, Mtx44);
 
-void C_MTXPerspective(f32, f32, f32, f32, Mtx);
+void C_MTXPerspective(Mtx44 mtx, f32 fovY, f32 aspect, f32 n, f32 f);
 void C_MTXOrtho(Mtx44, f32, f32, f32, f32, f32, f32);
 void C_MTXLookAt(Mtx, const Vec*, const Vec*, const Vec*);
-void C_MTXLightPerspective(f32, f32, f32, f32, f32, f32, Mtx);
+void C_MTXLightPerspective(Mtx mtx, f32 fovY, f32 aspect, f32 scaleS, f32 scaleT, f32 transS, f32 transT);
 
 #ifdef __cplusplus
 }

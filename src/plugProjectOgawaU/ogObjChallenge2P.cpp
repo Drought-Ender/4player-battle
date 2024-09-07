@@ -6,10 +6,9 @@
 namespace og {
 namespace newScreen {
 
-/*
- * --INFO--
- * Address:	8031EBE8
- * Size:	000064
+/**
+ * @note Address: 0x8031EBE8
+ * @note Size: 0x64
  */
 ObjChallenge2P::ObjChallenge2P(const char* name)
 {
@@ -19,17 +18,15 @@ ObjChallenge2P::ObjChallenge2P(const char* name)
 	mPokoScreen = nullptr;
 }
 
-/*
- * --INFO--
- * Address:	8031EC4C
- * Size:	000068
+/**
+ * @note Address: 0x8031EC4C
+ * @note Size: 0x68
  */
 ObjChallenge2P::~ObjChallenge2P() { }
 
-/*
- * --INFO--
- * Address:	8031ECB4
- * Size:	0006C4
+/**
+ * @note Address: 0x8031ECB4
+ * @note Size: 0x6C4
  */
 void ObjChallenge2P::doCreate(JKRArchive* arc)
 {
@@ -64,59 +61,58 @@ void ObjChallenge2P::doCreate(JKRArchive* arc)
 	counter = og::Screen::setCallBack_CounterRV(mPokoScreen, 'Ptime1', &mTimeLeftInt, 6, 1, 1, arc);
 	counter->setCenteringMode(og::Screen::CallBack_CounterRV::ECM_Unknown1);
 
-	J2DPane* pane = mPokoScreen->search('Nmenu01');
-	msVal.mMenu01 = pane;
-	msVal._48     = pane->mOffset.x;
-	msVal._4C     = pane->mOffset.y;
-	msVal._50     = pane->mScale.x;
-	msVal._54     = pane->mScale.y;
-	msVal._58     = 0.0f;
-	msVal._5C     = 0.0f;
-	msVal._60     = 1.0f;
-	msVal._64     = 1.0f;
+	J2DPane* pane         = mPokoScreen->search('Nmenu01');
+	msVal.mMenu01         = pane;
+	msVal.mTimerXPos      = pane->mOffset.x;
+	msVal.mTimerYPos      = pane->mOffset.y;
+	msVal.mTimerXScale    = pane->mScale.x;
+	msVal.mTimerYScale    = pane->mScale.y;
+	msVal.mTimerXOffset   = 0.0f;
+	msVal.mTimerYOffset   = 0.0f;
+	msVal.mTimerXScaleMod = 1.0f;
+	msVal.mTimerYScaleMod = 1.0f;
 	if (pane) {
-		pane->setOffset(msVal._48, 0.0f, msVal._4C, 0.0f);
-		msVal.mMenu01->updateScale(msVal._50 * msVal._60, msVal._54 * msVal._64);
+		pane->setOffset(msVal.mTimerXPos, 0.0f, msVal.mTimerYPos, 0.0f);
+		msVal.mMenu01->updateScale(msVal.mTimerXScale * msVal.mTimerXScaleMod, msVal.mTimerYScale * msVal.mTimerYScaleMod);
 	}
 
-	J2DPane* pane2 = mPokoScreen->search('Nmenu00');
-	msVal.mMenu00  = pane2;
-	msVal._24      = pane2->mOffset.x;
-	msVal._28      = pane2->mOffset.y;
-	msVal._2C      = pane2->mScale.x;
-	msVal._30      = pane2->mScale.y;
-	msVal._34      = 0.0f;
-	msVal._38      = 0.0f;
-	msVal._3C      = 1.0f;
-	msVal._40      = 1.0f;
+	J2DPane* pane2       = mPokoScreen->search('Nmenu00');
+	msVal.mMenu00        = pane2;
+	msVal.mPokoXPos      = pane2->mOffset.x;
+	msVal.mPokoYPos      = pane2->mOffset.y;
+	msVal.mPokoXScale    = pane2->mScale.x;
+	msVal.mPokoYScale    = pane2->mScale.y;
+	msVal.mPokoXOffset   = 0.0f;
+	msVal.mPokoYOffset   = 0.0f;
+	msVal.mPokoXScaleMod = 1.0f;
+	msVal.mPokoYScaleMod = 1.0f;
 	if (pane2) {
-		pane2->setOffset(msVal._24, 0.0f, msVal._28, 0.0f);
-		msVal.mMenu00->updateScale(msVal._2C * msVal._3C, msVal._30 * msVal._40);
+		pane2->setOffset(msVal.mPokoXPos, 0.0f, msVal.mPokoYPos, 0.0f);
+		msVal.mMenu00->updateScale(msVal.mPokoXScale * msVal.mPokoXScaleMod, msVal.mPokoYScale * msVal.mPokoYScaleMod);
 	}
 
-	J2DPane* pane3 = mPokoScreen->search('Nmenu02');
-	msVal.mMenu02  = pane3;
-	msVal._6C      = pane3->mOffset.x;
-	msVal._70      = pane3->mOffset.y;
-	msVal._74      = pane3->mScale.x;
-	msVal._78      = pane3->mScale.y;
-	msVal._7C      = 0.0f;
-	msVal._80      = 0.0f;
-	msVal._84      = 1.0f;
-	msVal._88      = 1.0f;
+	J2DPane* pane3        = mPokoScreen->search('Nmenu02');
+	msVal.mMenu02         = pane3;
+	msVal.mPikisXPos      = pane3->mOffset.x;
+	msVal.mPikisYPos      = pane3->mOffset.y;
+	msVal.mPikisXScale    = pane3->mScale.x;
+	msVal.mPikisYScale    = pane3->mScale.y;
+	msVal.mPikisXOffset   = 0.0f;
+	msVal.mPikisYOffset   = 0.0f;
+	msVal.mPikisXScaleMod = 1.0f;
+	msVal.mPikisYScaleMod = 1.0f;
 	if (pane3) {
-		pane3->setOffset(msVal._6C, 0.0f, msVal._70, 0.0f);
-		msVal.mMenu02->updateScale(msVal._74 * msVal._84, msVal._78 * msVal._88);
+		pane3->setOffset(msVal.mPikisXPos, 0.0f, msVal.mPikisYPos, 0.0f);
+		msVal.mMenu02->updateScale(msVal.mPikisXScale * msVal.mPikisXScaleMod, msVal.mPikisYScale * msVal.mPikisYScaleMod);
 	}
 
 	setSubLevel(mDisp->mDataGame.mFloorNum);
 	doCreateAfter(arc, counter);
 }
 
-/*
- * --INFO--
- * Address:	8031F378
- * Size:	0002BC
+/**
+ * @note Address: 0x8031F378
+ * @note Size: 0x2BC
  */
 void ObjChallenge2P::ScreenSet::init(og::Screen::DataNavi* data, JKRArchive* arc, og::Screen::DispMemberChallenge2P* disp)
 {
@@ -149,10 +145,9 @@ void ObjChallenge2P::ScreenSet::init(og::Screen::DataNavi* data, JKRArchive* arc
 	og::Screen::setCallBack_DrawAfter(mScreen, 'mete');
 }
 
-/*
- * --INFO--
- * Address:	........
- * Size:	0000EC
+/**
+ * @note Address: N/A
+ * @note Size: 0xEC
  */
 void ObjChallenge2P::ScreenSet::update(og::Screen::DataNavi& data)
 {
@@ -173,17 +168,16 @@ void ObjChallenge2P::ScreenSet::update(og::Screen::DataNavi& data)
 	dope->update();
 }
 
-/*
- * --INFO--
- * Address:	8031F634
- * Size:	000260
+/**
+ * @note Address: 0x8031F634
+ * @note Size: 0x260
  */
 void ObjChallenge2P::commonUpdate()
 {
 	mScreenP1->update(mDisp->mOlimarData);
 	mScreenP2->update(mDisp->mLouieData);
 
-	f32 calc = (pikmin2_cosf(mScale * PI) + 1.0f) / 2;
+	f32 calc = (cosf(mScale * PI) + 1.0f) / 2;
 	mScreenP1->mScreen->setXY(0.0f, calc * -300.0f);
 	mScreenP2->mScreen->setXY(0.0f, calc * 300.0f);
 	mPokoScreen->setXY(calc * 300.0f, 0.0f);
@@ -192,10 +186,9 @@ void ObjChallenge2P::commonUpdate()
 	mBloGroup->update();
 }
 
-/*
- * --INFO--
- * Address:	8031F894
- * Size:	000024
+/**
+ * @note Address: 0x8031F894
+ * @note Size: 0x24
  */
 bool ObjChallenge2P::doUpdate()
 {
@@ -203,99 +196,92 @@ bool ObjChallenge2P::doUpdate()
 	return false;
 }
 
-/*
- * --INFO--
- * Address:	8031F8B8
- * Size:	0001F8
+/**
+ * @note Address: 0x8031F8B8
+ * @note Size: 0x1F8
  */
 void ObjChallenge2P::doDraw(Graphics& gfx)
 {
 	J2DPerspGraph* graf = &gfx.mPerspGraph;
 	graf->setPort();
 
-	JUtility::TColor color1 = msVal._20;
+	JUtility::TColor color1 = msVal.mDividerBarColor;
 	int test                = (f32)color1.a * mScale;
 	color1.a                = test;
 	graf->setColor(color1);
 
-	JGeometry::TBox2f box = getBox1();
+	JGeometry::TBox2f box = getDividerBar();
 	graf->fillBox(box);
 
-	JGeometry::TBox2f box2 = getBox2();
+	JGeometry::TBox2f box2 = getDividerBar2();
 	graf->fillBox(box2);
 
 	mBloGroup->draw(graf);
 }
 
-/*
- * --INFO--
- * Address:	8031FAB0
- * Size:	000004
+/**
+ * @note Address: 0x8031FAB0
+ * @note Size: 0x4
  */
 void ObjChallenge2P::doUpdateFadeinFinish() { }
 
-/*
- * --INFO--
- * Address:	8031FAB4
- * Size:	00000C
+/**
+ * @note Address: 0x8031FAB4
+ * @note Size: 0xC
  */
 void ObjChallenge2P::doUpdateFinish() { mFadeLevel = 0.0f; }
 
-/*
- * --INFO--
- * Address:	8031FAC0
- * Size:	000004
+/**
+ * @note Address: 0x8031FAC0
+ * @note Size: 0x4
  */
 void ObjChallenge2P::doUpdateFadeoutFinish() { }
 
-/*
- * --INFO--
- * Address:	8031FAC4
- * Size:	000074
+/**
+ * @note Address: 0x8031FAC4
+ * @note Size: 0x74
  */
 bool ObjChallenge2P::doUpdateFadein()
 {
 	bool check = false;
 	mFadeLevel += sys->mDeltaTime;
 
-	if (mFadeLevel > msVal._00) {
-		mFadeLevel = msVal._00;
+	if (mFadeLevel > msVal.mFadeinTime) {
+		mFadeLevel = msVal.mFadeinTime;
 		check      = true;
 	}
-	mScale = mFadeLevel / msVal._00;
+	mScale = mFadeLevel / msVal.mFadeinTime;
 	commonUpdate();
 	return check;
 }
 
-/*
- * --INFO--
- * Address:	8031FB38
- * Size:	00007C
+/**
+ * @note Address: 0x8031FB38
+ * @note Size: 0x7C
  */
 bool ObjChallenge2P::doUpdateFadeout()
 {
 	bool check = false;
 	mFadeLevel += sys->mDeltaTime;
-	if (mFadeLevel > msVal._04) {
-		mFadeLevel = msVal._04;
+	if (mFadeLevel > msVal.mFadeoutTime) {
+		mFadeLevel = msVal.mFadeoutTime;
 		check      = true;
 	}
-	mScale = 1.0f - mFadeLevel / msVal._04;
+	mScale = 1.0f - mFadeLevel / msVal.mFadeoutTime;
 	commonUpdate();
 	return check;
 }
 
-/*
- * --INFO--
- * Address:	8031FBB4
- * Size:	000074
+/**
+ * @note Address: 0x8031FBB4
+ * @note Size: 0x74
  */
 bool ObjChallenge2P::doStart(::Screen::StartSceneArg const* arg)
 {
 	ObjChallengeBase::doStart(arg);
 	if (arg && arg->getSceneType() == SCENE_CHALLENGE_2P) {
 		SArgChallenge2P* challArg = static_cast<SArgChallenge2P*>((::Screen::StartSceneArg*)(arg));
-		mIncTimeLeftDelay         = (challArg->_04);
+		mIncTimeLeftDelay         = challArg->_04;
 	} else {
 		mIncTimeLeftDelay = 0.0f;
 	}

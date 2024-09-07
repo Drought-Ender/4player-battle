@@ -34,6 +34,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/DebugMemoryForEpoch.o\
 	$(BUILD_DIR)/src/FourPlayer/FloatingIconMgr.o\
 	$(BUILD_DIR)/src/FourPlayer/NaviModifier.o\
+	$(BUILD_DIR)/src/FourPlayer/Widescreen.o\
 
 
 

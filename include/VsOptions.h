@@ -10,6 +10,8 @@ inline bool isMemoryOverrideOn() {
 
 void DrawDebugMemory(Graphics& gfx);
 
+extern bool gWidescreenActive;
+
 struct IMenu;
 
 static const char* cBackgroundName = "/background.bti";

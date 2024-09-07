@@ -23,6 +23,13 @@ struct Plane {
 		c = plane.c;
 	}
 
+	inline void updatePlane(const Vector3f& position, Vec newPoint) // don't ask me why this is Vec and not Vector3f
+	{
+		getVec() = newPoint;
+		d = dot(getVec(), position);
+	}
+
+
 	inline Vector3f& getVec() const
 	{
 		return (Vector3f&)a;

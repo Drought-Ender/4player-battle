@@ -91,6 +91,7 @@ extern Option gOptions[];
 extern int gConfig[];
 
 enum OptionsEnum {
+    WIDESCREEN,
     PLAYER_NAME,
     MARBLE_BURY,
     MARBLE_CARRY,

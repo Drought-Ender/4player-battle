@@ -58,6 +58,8 @@ struct CullFrustum : public CullPlane {
 	virtual Vector3f getPosition();                              // _4C
 	virtual void updatePlanes();                                 // _50
 
+	inline f32 getFOV(f32 viewAngle) { return (f32)atan(mAspectRatio * (f32)tan(viewAngle)); }
+
 	Vector3f getSideVector();
 	Vector3f getUpVector();
 	Vector3f getViewVector();

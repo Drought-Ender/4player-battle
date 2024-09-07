@@ -301,7 +301,9 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 
 	mBedamaScale = (Game::gNaviNum <= 2) ? 1.0f : 0.75f;
 
-    f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : 220.0f;
+
+    f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : (gWidescreenActive) ? 300.0f : 220.0f;
+
     f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs + (20.0f - 20.0f * mBedamaScale);
 
 	J2DPane* root = scrn1->search('ROOT');
@@ -382,7 +384,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	J2DPane* roots[4] = { root, root2, root3, root4 };
 	J2DPictureEx* naviIcons[4] = { olimarPicture, louiePicture, presidentPicture, wifePicture };
 
-	const float xoff = (Game::gNaviNum > 2) ? 125.0f : 425.0f;
+	const float xoff = (Game::gNaviNum > 2) ? (gWidescreenActive) ? 190.0f : 125.0f : 425.0f;
 
 	for (int i = 0; i < 4; i++) {
 		mOutCircle[i] = og::Screen::CopyPictureToPane(paneOutStick, roots[i], msVal.mRouletteXOffs + xoff, msVal.mRouletteP1YOffs + 150.0f, 'CtrlBb00' + i);
@@ -390,7 +392,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 		mCStickBasePos[i] = Vector2f(mCStick[i]->mOffset.x, mCStick[i]->mOffset.y);
 		for (int j = 0; j < 4; j++) {
 			mExtraIcons[i][j] = og::Screen::CopyPictureToPane(naviIcons[j], roots[i], 
-			msVal.mRouletteXOffs + 125.0f + positions[j].x, 
+			msVal.mRouletteXOffs + xoff + positions[j].x, 
 			msVal.mRouletteP1YOffs + 150.0f + positions[j].y, 
 			'NaviIcn0' + i * 4 + j
 			);
@@ -430,6 +432,9 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	for (int i = 0; i < 4; i++) {
 		P2DScreen::Node& node1 = screens[i]->mScreen->_118;
 		mLifeGaugeAfter[i] = (og::Screen::CallBack_DrawAfter*)node1.getChildAt(node1.getChildCount() - 1);
+		if (gWidescreenActive) {
+			mLifeGaugeAfter[i]->mIsVisible = false;
+		}
 	}
 
 	if (gConfig[SPICY_PASSIVE] == ConfigEnums::SPICYPASSIVE_INF) {
@@ -674,26 +679,51 @@ void FourObjVs::doUpdateCommon() {
 	}
 	mDisp->mDoneState = mDoneState;
     f32 scale = (pikmin2_cosf(mScale * PI) + 1.0f) * 0.5f;
+
     if (mDisp->mTwoPlayer) {
-        mScreenP3->mScreen->hide();
-		
-        mScreenP4->mScreen->hide();
-		mScreenP3->mScreen->setXY(-300.0f, 0.0f);
-		mScreenP4->mScreen->setXY(-300.0f, 0.0f); // hacky way to fix life gaudges
-        mScreenP1->mScreen->setXY(0.0f, scale * -300.0f);
-        mScreenP2->mScreen->setXY(0.0f, scale * 300.0f + 205.0f);
+		if (gWidescreenActive) {
+			mScreenP3->mScreen->hide();
+			
+			mScreenP4->mScreen->hide();
+			mScreenP3->mScreen->setXY(-300.0f, 0.0f);
+			mScreenP4->mScreen->setXY(-300.0f, 0.0f); // hacky way to fix life gaudges
+
+			mScreenP1->mScreen->setXY(-110.0f, scale * -320.0f);
+			mScreenP2->mScreen->setXY(-110.0f, scale * 320.0f + 205.0f);
+		}
+		else {
+			mScreenP3->mScreen->hide();
+			
+			mScreenP4->mScreen->hide();
+			mScreenP3->mScreen->setXY(-300.0f, 0.0f);
+			mScreenP4->mScreen->setXY(-300.0f, 0.0f); // hacky way to fix life gaudges
+			mScreenP1->mScreen->setXY(0.0f, scale * -300.0f);
+			mScreenP2->mScreen->setXY(0.0f, scale * 300.0f + 205.0f);
+		}
     }
     else {
-        mScreenP3->update(mDisp->mP3Data);
-        mScreenP4->update(mDisp->mP4Data);
-        mScreenP1->mScreen->setXY(-10.0f, scale * -300.0f);
-        mScreenP2->mScreen->setXY(295.0f, scale * -300.0f);
-        mScreenP3->mScreen->setXY(-10.0f, scale * 300.0f + 225.0f);
-        mScreenP4->mScreen->setXY(295.0f, scale * 300.0f + 225.0f);
-        if (mDisp->mHideP4) {
-            mScreenP4->mScreen->hide();
-        }
+		if (gWidescreenActive) {
+			mScreenP3->update(mDisp->mP3Data);
+			mScreenP4->update(mDisp->mP4Data);
+			mScreenP1->mScreen->setXY(-10.0f - 70.0f, scale * -300.0f);
+			mScreenP2->mScreen->setXY(295.0f + 20.0f, scale * -300.0f);
+			mScreenP3->mScreen->setXY(-10.0f - 70.0f, scale * 300.0f + 225.0f);
+			mScreenP4->mScreen->setXY(295.0f + 20.0f, scale * 300.0f + 225.0f);
+		}
+		else {
+			mScreenP3->update(mDisp->mP3Data);
+			mScreenP4->update(mDisp->mP4Data);
+			mScreenP1->mScreen->setXY(-10.0f, scale * -300.0f);
+			mScreenP2->mScreen->setXY(295.0f, scale * -300.0f);
+			mScreenP3->mScreen->setXY(-10.0f, scale * 300.0f + 225.0f);
+			mScreenP4->mScreen->setXY(295.0f, scale * 300.0f + 225.0f);
+			if (mDisp->mHideP4) {
+				mScreenP4->mScreen->hide();
+			}
+		}
     }
+
+
 	ScreenSet* screens[] = { mScreenP1, mScreenP2, mScreenP3, mScreenP4 };
 	for (int i = 0; i < ARRAY_SIZE(screens); i++) {
 		if (i >= Game::gNaviNum) {
@@ -762,7 +792,7 @@ void FourObjVs::doDraw(Graphics& gfx) {
         J2DPerspGraph* graf = &gfx.mPerspGraph;
         graf->setPort();
 
-        JUtility::TColor color1 = ObjChallenge2P::msVal._20;
+        JUtility::TColor color1 = ObjChallenge2P::msVal.mDividerBarColor;
         int test                = (f32)color1.a * mScale;
         color1.a                = test;
         graf->setColor(color1);
@@ -774,6 +804,23 @@ void FourObjVs::doDraw(Graphics& gfx) {
 
         graf->fillBox(box);
     }
+
+	if (gWidescreenActive) {
+		J2DPerspGraph* graf = &gfx.mPerspGraph;
+		graf->setPort();
+
+		JUtility::TColor color1 = ObjChallenge2P::msVal.mDividerBarColor;
+		int test                = (f32)color1.a * mScale;
+		color1.a                = test;
+		graf->setColor(color1);
+
+		f32 baseY = (f32)ObjChallenge2P::msVal.mDividerBarYPos;
+		JGeometry::TBox2f box(-120.0f, baseY, 780.0f, baseY + (f32)ObjChallenge2P::msVal.mDividerBarHeight);
+
+		graf->fillBox(box);
+
+	}
+
     ObjVs::doDraw(gfx);
 	mTimerScreen->draw(gfx, gfx.mPerspGraph);
 	if (gGameModeID == MAINGAME_BINGO) {

@@ -48,11 +48,8 @@ struct PerspPrintfInfo {
 struct _GraphicsParent {
 	u16 mPrimitiveDrawCount;    // _000
 	char* mTokens[0x20];        // _004
-	u8 _084;                    // _084
-	u8 _085;                    // _085
-	u8 _086;                    // _086
-	u8 _087;                    // _087
-	u8 _088[4];                 // _088
+	Color4 _084;                // _084
+	Color4 _088;                // _088
 	Matrixf _08C;               // _08C
 	J2DOrthoGraph mOrthoGraph;  // _0BC
 	J2DPerspGraph mPerspGraph;  // _190
@@ -65,6 +62,8 @@ struct _GraphicsParent {
 // Size: 0x2A0
 struct Graphics : public _GraphicsParent {
 	Graphics();
+
+	static char* lastTokenName;
 
 	virtual void doJ3DDrawInit() { }   // _08 (weak)
 	virtual void doJ3DDraw(int) { }    // _0C (weak)
@@ -88,7 +87,6 @@ struct Graphics : public _GraphicsParent {
 	int findTokenIndex(char*);
 	u16 getToken();
 	char* getTokenName(u16);
-	void graphicsTokenCallback(u16);
 	void setToken(char*);
 
 	void drawAxis(f32, Matrixf*);
