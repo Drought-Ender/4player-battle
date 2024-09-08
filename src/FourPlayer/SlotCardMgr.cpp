@@ -402,7 +402,7 @@ struct TekiCard : public VsSlotMachineCard {
     }
 
     virtual int getWeight(CardMgr* cardMgr, int teamID) {
-        if (checkAllocLeft() == 0) {
+        if (checkAllocLeft() == 0 || getAliveTeamCount() == 1) {
             return 0;
         }
         return VsSlotMachineCard::getWeight(cardMgr, teamID);
@@ -446,6 +446,9 @@ struct OnyonTekiCard : public TekiCard
     int calcOnyonEnemies(int teamID) {
         int enemies = 0;
         Onyon* userOnyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(teamID));
+        
+        P2ASSERT(userOnyon);
+
         Vector3f onyonPos = userOnyon->getPosition();
 
         Sys::Sphere onyonSphere (onyonPos, 300.0f);
@@ -471,7 +474,7 @@ struct OnyonTekiCard : public TekiCard
         float averageOnionEnemies = 0.0f;
         int count = 0;
         for (int i = 0; i < 4; i++) {
-            if (i != teamID && ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(i))) {
+            if (i != teamID && ItemOnyon::mgr && ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(i))) {
                 averageOnionEnemies += calcOnyonEnemies(i);
                 count++;
             } 

@@ -59,6 +59,10 @@ void initScoreDelegations() {
 				gScoreDelegations[1][deleID++] = (OnyonTypes)Game::getPikiFromTeamEnum(i);
 			}
 		}
+
+		if (gScoreDelegations[0][0] == gScoreDelegations[0][1]) {
+			gScoreDelegations[0][1] ^= 1;
+		}
 	}
 }
 
@@ -180,11 +184,15 @@ void RandMapScore::setVersusOnyon()
 			calcNodeScore(targetNode);
 
 			onyonNodes[0] = getMaxScoreRoomMapNode(targetNode, &onyonGens[0]);
+			JUT_ASSERT(onyonNodes[0], "NO ROOM FOR RED ONYON");
+			JUT_ASSERT(onyonGens[0], "NO GEN FOR RED ONYON");
 			calcNodeScore(onyonNodes[0]);
 			copyNodeScore(FIRST_SCORE);
 
 
 			onyonNodes[1] = getMaxScoreRoomMapNode(onyonNodes[0], &onyonGens[1]);
+			JUT_ASSERT(onyonNodes[1], "NO ROOM FOR BLIE ONYON");
+			JUT_ASSERT(onyonGens[1], "NO GEN FOR BLUE ONYON");
 			calcNodeScore(onyonNodes[1]);
 			subNodeScore(FIRST_SCORE);
 

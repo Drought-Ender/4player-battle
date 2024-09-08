@@ -297,7 +297,7 @@ void CardMgr::gotPlayerCard(int user)
 {
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 	if (machines[user]->mSpinState == 0) {
-		if (gDrawNavi[user]) {
+		if (isTeamAlive(user)) {
 			machines[user]->start();
 		}
 		machines[user]->_18 = 0;
