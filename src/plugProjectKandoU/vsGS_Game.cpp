@@ -1627,8 +1627,15 @@ void GameState::update_GameChallenge(VsGameSection* section)
 			dispSum += disp.mMiniMarbleCounts[i];
 		}
 
-		for (int i = 0; i < 4; i++) {
-			disp.mMiniImpossible[i] = ((int)section->mMiniBedamaRemainingCount < 5 - disp.mMiniMarbleCounts[i]);
+		if (gConfig[CAPTURE_MARBLE] == ConfigEnums::CAPTURE_STEALMARBLE) {
+			for (int i = 0; i < 4; i++) {
+				disp.mMiniImpossible[i] = ((int)section->mMiniBedamaRemainingCount < 5 - dispSum);
+			}
+		}
+		else {
+			for (int i = 0; i < 4; i++) {
+				disp.mMiniImpossible[i] = ((int)section->mMiniBedamaRemainingCount < 5 - disp.mMiniMarbleCounts[i]);
+			}
 		}
 
 		
