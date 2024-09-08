@@ -178,6 +178,7 @@ struct FourObjVs : public ObjVs {
 	void CheckWindama(int idx, int player, bool b, bool& isWin);
 	void CheckBedama(int idx, int player, bool doEfx, f32 scale, bool& isWin);
 	void CheckMiniBedama(int idx, int player, bool doEfx, f32 scale);
+	void MiniBedamaAnimation(int player);
 	void CheckBedamaWin(int player, bool doEfx, bool& isWin);
 	void DrawThreeInARow(Graphics& gfx);
 
@@ -285,7 +286,7 @@ struct FourObjVs : public ObjVs {
 	
 	void UpdateBingoCardTextures();
 
-	BingoCard mBingoCards[4];
+	BingoCard* mBingoCards[4];
 
 	J2DPictureEx* mPaneBingoGet;
 	J2DPictureEx* mPaneBingoImpossible;
@@ -295,6 +296,9 @@ struct FourObjVs : public ObjVs {
 	
 	float mDoesNotExistTimer;
 	bool mDoesNotExistActive;
+
+	f32 mMinidamaTimers[4];
+	bool mMiniImpossibleFlags[4];
 	
 
 	void doUpdateCommon();

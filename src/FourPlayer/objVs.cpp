@@ -25,6 +25,12 @@ namespace og
 namespace newScreen
 {
 
+
+
+static const f32 cMiniBedamaSingleMarbleAnimLength = 1.0f;
+static const f32 cMiniBedamaMarbleAnimTimeOffset   = 0.25f;
+static const f32 cMiniBedamaAnimLength             = cMiniBedamaSingleMarbleAnimLength + 4 * cMiniBedamaMarbleAnimTimeOffset;
+
 bool FourObjVs::sFlickerDNE = false;
 
 FourObjVs::~FourObjVs() {
@@ -147,12 +153,12 @@ void FourObjVs::UpdateBingoCardTextures() {
 		for (int x = 0; x < 4; x++) {
 			for (int y = 0; y < 4; y++) {
 				if ((!FourObjVs::sFlickerDNE || mDoesNotExistActive) && card.isImpossible(key, x, y)) {
-					//mBingoCards[i].mPaneItem[x][y]->changeTexture(key.mObjectEntries[card.mObjects[x][y]].mObjectTexture, 0);
+					//mBingoCards[i]->mPaneItem[x][y]->changeTexture(key.mObjectEntries[card.mObjects[x][y]].mObjectTexture, 0);
 					
-					mBingoCards[i].mPaneItem[x][y]->changeTexture(mPaneBingoImpossible->getTIMG(0), 0);
+					mBingoCards[i]->mPaneItem[x][y]->changeTexture(mPaneBingoImpossible->getTIMG(0), 0);
 				}
 				else {
-					mBingoCards[i].mPaneItem[x][y]->changeTexture(key.mObjectEntries[card.mObjects[x][y]].mObjectTexture, 0);
+					mBingoCards[i]->mPaneItem[x][y]->changeTexture(key.mObjectEntries[card.mObjects[x][y]].mObjectTexture, 0);
 				}
 			}
 		}
@@ -214,6 +220,12 @@ inline void FourObjVs::SetupBedamaPanes(J2DPane* root, int player, J2DPictureEx*
 			xoffs += incSize;
 		}
 
+	}
+
+	mMinidamaTimers[player] = 0.0f;
+	mMiniImpossibleFlags[player] = mDisp->mHideMiniMarble || mDisp->mMiniImpossible[player];
+	if (mMiniImpossibleFlags[player]) {
+		mMinidamaTimers[player] = cMiniBedamaAnimLength;
 	}
 }
 
@@ -312,33 +324,31 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	J2DPane* root4 = scrn4->search('ROOT');
 
 	if (gGameModeID == MAINGAME_BEDAMA) {
-		
 		SetupBedamaPanes(root, 0, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
-
-		
 		SetupBedamaPanes(root2, 1, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
-
-		
 		SetupBedamaPanes(root3, 2, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
-
-		
 		SetupBedamaPanes(root4, 3, paneBdamaY, panePcup, paneBdamaR, paneMiniDama, baseOffs, baseYOffs);
 	}
 	else if (gGameModeID == MAINGAME_BINGO) {
+
+		for (int i = 0; i < 4; i++) {
+			mBingoCards[i] = new BingoCard;
+		}
+
 		OSReport("bingo game\n");
 		baseYOffs -= (Game::gNaviNum <= 2) ? 70.0f : 50.0f;
 
 		baseOffs += (Game::gNaviNum <= 2) ? -10.0f : 35.0f;
 		
-		mBingoCards[0].Setup(root,  paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 0);
-		mBingoCards[1].Setup(root2, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 1);
-		mBingoCards[2].Setup(root3, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 2);
-		mBingoCards[3].Setup(root4, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 3);
+		mBingoCards[0]->Setup(root,  paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 0);
+		mBingoCards[1]->Setup(root2, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 1);
+		mBingoCards[2]->Setup(root3, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 2);
+		mBingoCards[3]->Setup(root4, paneBingobase, paneBingoItem, mBedamaScale, baseOffs, baseYOffs, 3);
 
 		OSReport("Setup Done\n");
 
 		for (int i = 0; i < 4; i++) {
-			mBingoCards[i].SetColor(teamColors[Game::getVsTeam_s(i)]);
+			mBingoCards[i]->SetColor(teamColors[Game::getVsTeam_s(i)]);
 		}
 
 		mDoesNotExistTimer  = 3.0f;
@@ -787,10 +797,11 @@ void FourObjVs::doUpdateFadeoutFinish() {
 }
 
 void FourObjVs::doDraw(Graphics& gfx) {
-
+	J2DPerspGraph* graf = &gfx.mPerspGraph;
+	graf->setPort();
     if (!mDisp->mTwoPlayer) {
-        J2DPerspGraph* graf = &gfx.mPerspGraph;
-        graf->setPort();
+        
+        
 
         JUtility::TColor color1 = ObjChallenge2P::msVal.mDividerBarColor;
         int test                = (f32)color1.a * mScale;
@@ -805,23 +816,35 @@ void FourObjVs::doDraw(Graphics& gfx) {
         graf->fillBox(box);
     }
 
+
+
+	JUtility::TColor color1 = ObjChallenge2P::msVal.mDividerBarColor;
+	int test                = (f32)color1.a * mScale;
+	color1.a                = test;
+	graf->setColor(color1);
+
+	f32 baseY = (f32)ObjChallenge2P::msVal.mDividerBarYPos;
+
 	if (gWidescreenActive) {
-		J2DPerspGraph* graf = &gfx.mPerspGraph;
-		graf->setPort();
-
-		JUtility::TColor color1 = ObjChallenge2P::msVal.mDividerBarColor;
-		int test                = (f32)color1.a * mScale;
-		color1.a                = test;
-		graf->setColor(color1);
-
-		f32 baseY = (f32)ObjChallenge2P::msVal.mDividerBarYPos;
 		JGeometry::TBox2f box(-120.0f, baseY, 780.0f, baseY + (f32)ObjChallenge2P::msVal.mDividerBarHeight);
 
 		graf->fillBox(box);
 
 	}
+	else {
+		JGeometry::TBox2f box(0.0f, baseY, 640.0f, baseY + (f32)ObjChallenge2P::msVal.mDividerBarHeight);
 
-    ObjVs::doDraw(gfx);
+		graf->fillBox(box);
+	}
+
+    for (int i = 0; i < Game::gNaviNum; i++) {
+		Rectf rect = gfx.getViewport(i)->mRect1;
+		GXSetScissor(rect.p1.x, rect.p1.y, rect.getWidth(), rect.getHeight());
+		mBloGroup->mScreens[i]->draw(gfx, *graf);
+	}
+
+	GXSetScissor(0.0f, 0.0f, 640.0f, 480.0f);
+
 	mTimerScreen->draw(gfx, gfx.mPerspGraph);
 	if (gGameModeID == MAINGAME_BINGO) {
 		DrawThreeInARow(gfx);
@@ -858,8 +881,8 @@ void FourObjVs::DrawThreeInARow(Graphics& gfx) {
 			Vector2f pos1;
 			Vector2f pos2;
 
-			og::Screen::calcGlbCenter(mBingoCards[player].mPaneBase[x1][y1], &pos1);
-			og::Screen::calcGlbCenter(mBingoCards[player].mPaneBase[x2][y2], &pos2);
+			og::Screen::calcGlbCenter(mBingoCards[player]->mPaneBase[x1][y1], &pos1);
+			og::Screen::calcGlbCenter(mBingoCards[player]->mPaneBase[x2][y2], &pos2);
 
 			JGeometry::TVec2f first = pos1;
 			JGeometry::TVec2f second = pos2;
@@ -964,9 +987,39 @@ inline void FourObjVs::CheckBedama(int idx, int playerID, bool doEfx, f32 scale,
 
 }
 
+
+
+
+inline void FourObjVs::MiniBedamaAnimation(int playerID) {
+	if (mDisp->mMiniImpossible[playerID] && !mMiniImpossibleFlags[playerID]) {
+		mMiniImpossibleFlags[playerID] = true;
+		mMinidamaTimers[playerID] = 0.0f;
+	}
+
+	
+
+	
+
+	if (mMiniImpossibleFlags[playerID] && mMinidamaTimers[playerID] < cMiniBedamaAnimLength) {
+		mMinidamaTimers[playerID] += sys->mDeltaTime;
+
+		for (int i = 0; i < 4; i++) {
+			if (mMinidamaTimers[playerID] < i * cMiniBedamaMarbleAnimTimeOffset || mMinidamaTimers[playerID] > cMiniBedamaSingleMarbleAnimLength + i * cMiniBedamaMarbleAnimTimeOffset) {
+				continue;
+			}
+			f32 velocity = sinf((mMinidamaTimers[i] - i * cMiniBedamaMarbleAnimTimeOffset - 0.4f) * PI / 2.0f) 
+			* (mMinidamaTimers[i] - i * cMiniBedamaMarbleAnimTimeOffset) * 20.0f;
+
+			mPane_mininodama[playerID][i]->mOffset.y += velocity;
+			mPane_minibedama[playerID][i]->mOffset.y += velocity;
+		}
+
+	}
+}
+
 inline void FourObjVs::CheckMiniBedama(int idx, int playerID, bool doEfx, f32 scale) {
 
-	if (mDisp->mHideMiniMarble) {
+	if (mDisp->mHideMiniMarble || mMinidamaTimers[playerID] >= cMiniBedamaAnimLength) {
 		mPane_mininodama[playerID][idx]->hide();
 		mPane_minibedama[playerID][idx]->hide();
 		return;
@@ -1069,6 +1122,10 @@ void FourObjVs::setOnOffBdama4P(bool doEfx)
 		}
 	}
 
+	for (int player = 0; player < 4; player++) {
+		MiniBedamaAnimation(player);
+	}
+
     CheckBedamaWin(0, doEfx, P1win);
 	CheckBedamaWin(1, doEfx, P2win);
 	CheckBedamaWin(2, doEfx, P3win);
@@ -1123,19 +1180,19 @@ void FourObjVs::setOnOffBingo(bool doEfx) {
 		for (int x = 0; x < 4; x++) {
 			for (int y = 0; y < 4; y++) {
 
-				f32 scale = mBingoCards[i].mScaleMgrs[x][y]->calc();
-				mBingoCards[i].mPaneBase[x][y]->updateScale(scale * mBedamaScale);
-				mBingoCards[i].mPaneItem[x][y]->updateScale(scale * mBedamaScale);
+				f32 scale = mBingoCards[i]->mScaleMgrs[x][y]->calc();
+				mBingoCards[i]->mPaneBase[x][y]->updateScale(scale * mBedamaScale);
+				mBingoCards[i]->mPaneItem[x][y]->updateScale(scale * mBedamaScale);
 
-				if (card.mDisp[x][y] && !mBingoCards[i].mFlags[x][y]) {
-					mBingoCards[i].mFlags[x][y] = true;
+				if (card.mDisp[x][y] && !mBingoCards[i]->mFlags[x][y]) {
+					mBingoCards[i]->mFlags[x][y] = true;
 
-					mBingoCards[i].mPaneBase[x][y]->changeTexture(mPaneBingoGet->getTIMG(0), 0);
-					mBingoCards[i].mPaneBase[x][y]->setWhite(gBingoGetColors[team]);
+					mBingoCards[i]->mPaneBase[x][y]->changeTexture(mPaneBingoGet->getTIMG(0), 0);
+					mBingoCards[i]->mPaneBase[x][y]->setWhite(gBingoGetColors[team]);
 
 
 					if (doEfx) {
-						mBingoCards[i].mScaleMgrs[x][y]->up();
+						mBingoCards[i]->mScaleMgrs[x][y]->up();
 						og::ogSound->setSE(PSSE_SY_EQUIP_LADER);
 					}
 					
@@ -1181,10 +1238,10 @@ void FourObjVs::setWinBingoBounce() {
 		for (int i = 0; i < 4; i++) {
 			int x = lineData.mXValues[i];
 			int y = lineData.mYValues[i];
-			mBingoCards[player].mScaleMgrs[x][y]->up();
+			mBingoCards[player]->mScaleMgrs[x][y]->up();
 
 			Vector2f pos;
-			og::Screen::calcGlbCenter(mBingoCards[player].mPaneBase[x][y], &pos);
+			og::Screen::calcGlbCenter(mBingoCards[player]->mPaneBase[x][y], &pos);
 			const TColorPair& colors = gGetMarbleColors[team];
 			efx2d::ArgScaleColorColor arg(&pos, 0.325f * mBedamaScale, colors[0], colors[1]);
 			efx2d::T2DSprayset_forVS efx;

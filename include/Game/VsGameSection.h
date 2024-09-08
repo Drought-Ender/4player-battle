@@ -170,6 +170,7 @@ struct VsGameSection : public BaseGameSection {
 	int mRealMiniCounts[4];
 
 	Pellet* mMarbleMini[MINI_MARBLE_COUNT];
+	u32 mMiniBedamaRemainingCount;
 	bool mHasMiniBedamas;
 
 	VsGame::BingoMgr* mBingoMgr;

@@ -46,6 +46,8 @@
 #include "Game/Entities/ItemPikihead.h"
 #include "FloatingIconMgr.h"
 
+#include "Game/generalEnemyMgr.h"
+
 static int sEditNum;
 
 namespace Game {
@@ -1128,6 +1130,8 @@ bool GameMessageVsGetMiniOtakara::actVs(VsGameSection* section)
 		section->mDispMiniCounts[mTeamColor]++;
 		section->mState->onMiniBedamaGet(section);
 
+		section->mMiniBedamaRemainingCount--;
+
 		if (section->mDispMiniCounts[mTeamColor] >= 5) {
 			section->mDispMiniCounts[mTeamColor] = 0;
 			section->mDispMarbleCounts[mTeamColor]++;
@@ -1705,10 +1709,11 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	}
 
 	PelletInitArg miniPelletArg;
+	char* mininame = const_cast<char*>(VsOtakaraName::cBedamaMini);
 
 	{
 		PelletList::cKind miniKind;
-		char* mininame = const_cast<char*>(VsOtakaraName::cBedamaMini);
+		
 		
 
 		PelletConfig* miniConfig = PelletList::Mgr::getConfigAndKind(mininame, miniKind);
@@ -1748,6 +1753,20 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		Vector3f pos   = positions[bedamas + j];
 		pellet->setPosition(pos, false);
 		mMarbleMini[j] = pellet;
+	}
+
+	mMiniBedamaRemainingCount = miniBedamas;
+
+	GeneralMgrIterator<EnemyBase> iterator(generalEnemyMgr);
+
+	PelletMgr::OtakaraItemCode code;
+	pelletMgr->makeOtakaraItemCode(mininame, code);
+
+	CI_LOOP(iterator) {
+		EnemyBase* enemy = *iterator;
+		if (enemy->mPelletDropCode == code) {
+			mMiniBedamaRemainingCount++;
+		}
 	}
 
 	if (gThreePlayer) {

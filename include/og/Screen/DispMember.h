@@ -740,6 +740,7 @@ struct DispMemberVs : public DispMemberBase {
 	int mMiniMarbleCounts[4];
 
 	bool mHideMiniMarble;
+	bool mMiniImpossible[4];
 
 	Game::VsGame::BingoMgr* mBingoMgr;
 };
