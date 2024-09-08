@@ -42,7 +42,7 @@ void CullFrustum::updatePlanes()
 void ParticleMgr::draw(Viewport* vp, u8 flag)
 {
 	f32 x, y;
-	y = vp->mCamera->mAspectRatio * (gWidescreenActive) ? sWidescreenConstant : 1.0f;
+	y = vp->mCamera->mAspectRatio * ((gWidescreenActive) ? sWidescreenConstant : 1.0f);
 	x = vp->mCamera->mViewAngle;
 	JPADrawInfo info;
 	PSMTXCopy(vp->getMatrix(1)->mMatrix.mtxView, info.mtx1);
@@ -56,7 +56,14 @@ void Camera::setProjection()
 	Mtx44* matrix = &mProjectionMtx;
 	f32 near      = getNear();
 
-	C_MTXPerspective(*matrix, mViewAngle, mAspectRatio * (gWidescreenActive) ? sWidescreenConstant : 1.0f, near, far);
+	if (gWidescreenActive && false) {
+		C_MTXPerspective(*matrix, mViewAngle, mAspectRatio * sWidescreenConstant, near, far);
+	}
+	else {
+		C_MTXPerspective(*matrix, mViewAngle, mAspectRatio, near, far);
+	}
+
+	
 	GXSetProjection(mProjectionMtx, GX_PERSPECTIVE);
 }
 
@@ -65,7 +72,13 @@ void P2DScreen::Mgr_tuning::draw(Graphics& gfx, J2DGrafContext& context)
 	u16 frameBufferWidth  = System::getRenderModeObj()->fbWidth;
 	u16 frameBufferHeight = System::getRenderModeObj()->efbHeight;
 
-	rotate(frameBufferWidth * 0.5f * (gWidescreenActive) ? sWidescreenConstant : 1.0f, frameBufferHeight * 0.5f, J2DROTATE_Z, 0.0f);
+	if (gWidescreenActive) {
+		rotate(frameBufferWidth * 0.5f * sWidescreenConstant, frameBufferHeight * 0.5f, J2DROTATE_Z, 0.0f);
+	}
+	else {
+		rotate(frameBufferWidth * 0.5f, frameBufferHeight * 0.5f, J2DROTATE_Z, 0.0f);
+	}
+	
 	updateScale(mScreenScaleX, mScreenScaleY);
 	setOffset(mSomeX, mSomeY);
 

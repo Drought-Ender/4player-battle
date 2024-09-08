@@ -302,7 +302,7 @@ void FourObjVs::doCreate(JKRArchive* arc) {
 	mBedamaScale = (Game::gNaviNum <= 2) ? 1.0f : 0.75f;
 
 
-    f32 baseOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleBaseXOffs : (gWidescreenActive) ? 300.0f : 220.0f;
+    f32 baseOffs = (Game::gNaviNum <= 2) ? (gWidescreenActive) ? 720.0f : msVal.mMarbleBaseXOffs : (gWidescreenActive) ? 300.0f : 220.0f;
 
     f32 baseYOffs = (Game::gNaviNum <= 2) ? msVal.mMarbleP1YOffs : msVal.mMarbleP1YOffs + (20.0f - 20.0f * mBedamaScale);
 
@@ -688,8 +688,8 @@ void FourObjVs::doUpdateCommon() {
 			mScreenP3->mScreen->setXY(-300.0f, 0.0f);
 			mScreenP4->mScreen->setXY(-300.0f, 0.0f); // hacky way to fix life gaudges
 
-			mScreenP1->mScreen->setXY(-110.0f, scale * -320.0f);
-			mScreenP2->mScreen->setXY(-110.0f, scale * 320.0f + 205.0f);
+			mScreenP1->mScreen->setXY(-120.0f, scale * -320.0f);
+			mScreenP2->mScreen->setXY(-120.0f, scale * 320.0f + 205.0f);
 		}
 		else {
 			mScreenP3->mScreen->hide();
@@ -705,10 +705,10 @@ void FourObjVs::doUpdateCommon() {
 		if (gWidescreenActive) {
 			mScreenP3->update(mDisp->mP3Data);
 			mScreenP4->update(mDisp->mP4Data);
-			mScreenP1->mScreen->setXY(-10.0f - 70.0f, scale * -300.0f);
-			mScreenP2->mScreen->setXY(295.0f + 20.0f, scale * -300.0f);
-			mScreenP3->mScreen->setXY(-10.0f - 70.0f, scale * 300.0f + 225.0f);
-			mScreenP4->mScreen->setXY(295.0f + 20.0f, scale * 300.0f + 225.0f);
+			mScreenP1->mScreen->setXY(-10.0f - 80.0f, scale * -300.0f);
+			mScreenP2->mScreen->setXY(295.0f + 10.0f, scale * -300.0f);
+			mScreenP3->mScreen->setXY(-10.0f - 80.0f, scale * 300.0f + 225.0f);
+			mScreenP4->mScreen->setXY(295.0f + 10.0f, scale * 300.0f + 225.0f);
 		}
 		else {
 			mScreenP3->update(mDisp->mP3Data);

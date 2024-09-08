@@ -1443,8 +1443,18 @@ void RandEnemyUnit::setSlotEnemyTypeA(int& min, int& max, int vsColor) {
 	// int scoreCounter       = 0;
 
 	f32 zero[2];
-	zero[0] = (f32)scoreTally[0] / (f32)spawnCounter;
-	zero[1] = (f32)scoreTally[1] / (f32)spawnCounter;
+	zero[0] = (f32)scoreTally[0];
+	zero[1] = (f32)scoreTally[1];
+
+	if (zero[0] == 0.0f && (getTeamCount() == 2 || zero[1] == 0.0f)) {
+		f32 valueA = randFloat();
+
+
+		zero[0] = valueA * (vsScore[0] - vsScore[1]) + vsScore[1];
+
+		f32 valueB = randFloat();
+		zero[1] = valueB * (vsScore[2] - vsScore[3]) + vsScore[3];
+	}
 
 	CaveDebugReport("Zero %f %f\n", zero[0], zero[1]);
 
@@ -1696,8 +1706,19 @@ void RandEnemyUnit::setSlotEnemyTypeB(int vsColor)
 	// int scoreCounter       = 0;
 
 	f32 zero[2];
-	zero[0] = (f32)scoreTally[0] / (f32)spawnCounter;
-	zero[1] = (f32)scoreTally[1] / (f32)spawnCounter;
+	zero[0] = (f32)scoreTally[0];
+	zero[1] = (f32)scoreTally[1];
+
+	if (zero[0] == 0.0f && (getTeamCount() == 2 || zero[1] == 0.0f)) {
+		f32 valueA = randFloat();
+
+
+		zero[0] = valueA * (vsScore[0] - vsScore[1]) + vsScore[1];
+
+		f32 valueB = randFloat();
+
+		zero[1] = valueB * (vsScore[2] - vsScore[3]) + vsScore[3];
+	}
 
 	CaveDebugReport("Zero %f %f\n", zero[0], zero[1]);
 
@@ -1856,8 +1877,18 @@ void RandEnemyUnit::setSlotEnemyTypeF(int vsColor) {
 	// int scoreCounter       = 0;
 
 	f32 zero[2];
-	zero[0] = (f32)scoreTally[0] / (f32)spawnCounter;
-	zero[1] = (f32)scoreTally[1] / (f32)spawnCounter;
+	zero[0] = (f32)scoreTally[0];
+	zero[1] = (f32)scoreTally[1];
+
+	if (zero[0] == 0.0f && (getTeamCount() == 2 || zero[1] == 0.0f)) {
+		f32 valueA = randFloat();
+
+
+		zero[0] = valueA * (vsScore[0] - vsScore[1]) + vsScore[1];
+
+		f32 valueB = randFloat();
+		zero[1] = valueB * (vsScore[2] - vsScore[3]) + vsScore[3];
+	}
 
 	CaveDebugReport("Zero %f %f\n", zero[0], zero[1]);
 
