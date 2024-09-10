@@ -337,6 +337,10 @@ struct TFourVsSelect : public TVsSelect
 
 	void TVsPikiDraw(Graphics&);
 
+	void demoStart();
+
+	bool canEnterStage();
+
 	J2DPictureEx* mNaviImages[4];
 	J2DPictureEx* mNaviBoxes[4];
 

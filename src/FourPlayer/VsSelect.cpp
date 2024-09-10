@@ -63,6 +63,105 @@ const f32 boxXOffs[2] = {381.0f, 515.0f};
 const f32 boxYOffs[4] = {146.0f, 166.0f, 186.0f, 206.0f};
 
 
+// demoStart__Q28Morimura13TFourVsSelectFv
+void TFourVsSelect::demoStart() {
+    OSReport("demoStart__Q28Morimura13TFourVsSelectFv\n");
+    if (!canEnterStage()) {
+        PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
+        return;
+    }
+    PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+    OSReport("TVsSelect::demoStart()\n");
+    TVsSelect::demoStart();
+}
+
+
+bool TFourVsSelect::canEnterStage() {
+    OSReport("TFourVsSelect::canEnterStage()\n");
+    
+    Game::VsGame::StageData* data = GetVsGameSection()->mVsStageList->getStageData(mIndexPaneList[mCurrentSelect]->getIndex());
+
+    char caveInfo[256];
+    char editfile[256];
+
+
+    char caveInfo2[256];
+    char editfile2[256];
+
+    char caveInfoFinal[256];
+    char editfileFinal[256];
+
+    const char* caveinfoBase = "/user/Mukki/mapunits/caveinfo";
+    const char* editinfoBase = "/user/Abe/vs";
+
+    strcpy(caveInfo, caveinfoBase);
+    strcpy(editfile, editinfoBase);
+
+    // bad practice but IDC
+    if (Game::getTeamCount() > 2) {
+        sprintf(caveInfo2, "%s/four", caveInfo); 
+        sprintf(editfile2, "%s/four", editfile); 
+    }
+    else {
+        strcpy(caveInfo2, caveInfo);
+        strcpy(editfile2, editfile);
+    }
+
+    if (gGameModeID == MAINGAME_BINGO) {
+        sprintf(caveInfo, "%s/bingo", caveInfo2); 
+        sprintf(editfile, "%s/bingo", editfile2); 
+    }
+    else {
+        strcpy(caveInfo, caveInfo2);
+        strcpy(editfile, editfile2);
+    }
+
+    sprintf(caveInfoFinal, "%s/%s", caveInfo, data->mCaveInfoFilename);
+    sprintf(editfileFinal, "%s/%s", editfile, data->mStageLayoutFilePath);
+
+    s32 caveinfoEntrynum = DVDConvertPathToEntrynum(caveInfoFinal);
+    s32 editinfoEntrynum = DVDConvertPathToEntrynum(editfileFinal);
+
+
+    if (caveinfoEntrynum == -1) {
+        OSReport("Entry failed, %s missing!\n", caveInfoFinal);
+        return false;
+    }
+
+    if (editinfoEntrynum == -1) {
+        OSReport("Entry failed, %s missing!\n", editfileFinal);
+        return false;
+    }
+    
+    if (gGameModeID == MAINGAME_BINGO) {
+        int lastChar = strlen(data->mStageLayoutFilePath);
+
+        char properCaveName[32];
+
+        strncpy(properCaveName, data->mStageLayoutFilePath, lastChar - 4);
+        properCaveName[lastChar - 4] = nullptr;
+
+        char filepath[128];
+        
+        if (Game::getTeamCount() > 2) {
+            sprintf(filepath, "/user/drought/bingocard/bingo/four/%s/0.txt", properCaveName);
+        }
+        else {
+            sprintf(filepath, "/user/drought/bingocard/bingo/%s/0.txt", properCaveName);
+        }
+
+        s32 bingoPathEntrynum = DVDConvertPathToEntrynum(filepath);
+
+        if (bingoPathEntrynum == -1) {
+            OSReport("Entry failed, %s missing!\n", filepath);
+            return false;
+        }
+
+    }
+
+    return true;
+}
+
 void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
     CharacterData::UpdateImages();

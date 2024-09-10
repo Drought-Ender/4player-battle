@@ -4806,7 +4806,7 @@ bl setSelectTextures__Q28Morimura9TVsSelectFv
 /* 8039D250 0039A190  38 00 00 00 */	li r0, 0
 /* 8039D254 0039A194  7F C3 F3 78 */	mr r3, r30
 /* 8039D258 0039A198  98 0D 99 C0 */	stb r0, mForceDemoStart__Q28Morimura9TVsSelect@sda21(r13)
-/* 8039D25C 0039A19C  48 00 31 D5 */	bl demoStart__Q28Morimura9TVsSelectFv
+/* 8039D25C 0039A19C  48 00 31 D5 */	bl demoStart__Q28Morimura13TFourVsSelectFv
 .L_8039D260:
 /* 8039D260 0039A1A0  80 7E 00 D4 */	lwz r3, 0xd4(r30)
 /* 8039D264 0039A1A4  3B E0 00 00 */	li r31, 0
@@ -5012,12 +5012,12 @@ b .L_8039D46C
 /* 8039D544 0039A484  38 00 00 01 */	li r0, 1
 /* 8039D548 0039A488  7F C3 F3 78 */	mr r3, r30
 /* 8039D54C 0039A48C  98 1E 02 28 */	stb r0, 0x228(r30)
-/* 8039D550 0039A490  48 00 2E E1 */	bl demoStart__Q28Morimura9TVsSelectFv
+/* 8039D550 0039A490  48 00 2E E1 */	bl demoStart__Q28Morimura13TFourVsSelectFv
 .L_8039D554:
 /* 8039D554 0039A494  80 6D 98 58 */	lwz r3, spSysIF__8PSSystem@sda21(r13)
 /* 8039D558 0039A498  38 80 18 00 */	li r4, 0x1800
 /* 8039D55C 0039A49C  38 A0 00 00 */	li r5, 0
-/* 8039D560 0039A4A0  4B F9 B0 D1 */	bl playSystemSe__Q28PSSystem5SysIFFUlUl
+/* 8039D560 0039A4A0  4B F9 B0 D1 */	# bl playSystemSe__Q28PSSystem5SysIFFUlUl
 /* 8039D564 0039A4A4  80 7E 00 D4 */	lwz r3, 0xd4(r30)
 /* 8039D568 0039A4A8  48 00 64 ED */	bl closeWindow__Q28Morimura24TSelectExplanationWindowFv
 /* 8039D56C 0039A4AC  48 00 01 E0 */	b .L_8039D74C

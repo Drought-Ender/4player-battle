@@ -17,6 +17,8 @@ VsOptionsMenuMgr* gOptionMenu;
 
 bool gTournamentMode = false;
 
+static bool sBingoTest = false;
+
 bool sNameOverride[4] = { false, false, false, false };
 
 f32 gPassiveSpicy;
@@ -873,6 +875,10 @@ bool VsCardMenu::update(VsOptionsMenuMgr* menu) {
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
+        if (sBingoTest) {
+            menu->StartMenu<GamemodeSelect>();
+            return false;
+        } 
         menu->StartMenu<CharacterSelect>();
         return false;
     }
@@ -1477,7 +1483,7 @@ bool GamemodeSelect::update(VsOptionsMenuMgr* menu) {
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
-        menu->StartMenu<VsConfigMenu>();
+        menu->StartMenu<CharacterSelect>();
         return false;
     }
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_START)) {
