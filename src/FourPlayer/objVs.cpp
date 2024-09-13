@@ -539,7 +539,7 @@ void FourObjVs::Clock::update() {
     second->update();
     
     setColors();
-    MemoryReport();
+    // MemoryReport();
 }
 
 void FourObjVs::Clock::setColors() {

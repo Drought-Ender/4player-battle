@@ -11,6 +11,7 @@ struct VsOtakaraName {
 	static const char* cBedamaPurple;
 	static const char* cBedamaWhite;
 	static const char* cBedamaMini;
+	static const char* cBingoRandom;
 	static f32 cBedamaYellowDepth;
 	static f32 cBedamaRedBlueDepth;
 	static f32 cBedamaMiniDepth;

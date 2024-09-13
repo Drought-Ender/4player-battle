@@ -309,37 +309,39 @@ bool VsGameSection::doUpdate()
 
 	mFsm->exec(this);
 
-	if (gameSystem->isVersusMode()) {
+	// ------ code does nothing ------- // 
 
-		int redPikmins  = GameStat::getMapPikmins(1) - (mOlimarHandicap - 3);
-		int bluePikmins = GameStat::getMapPikmins(0) - (mLouieHandicap - 3);
-		if (redPikmins < 0) {
-			redPikmins = 1;
-		}
-		if (bluePikmins < 0) {
-			bluePikmins = 1;
-		}
-		if (!redPikmins || !bluePikmins) {
-			if (!redPikmins) {
-				mPikminCountTimer = 1.0f;
-			} else if (!bluePikmins) {
-				mPikminCountTimer = 0.0f;
-			}
+	// if (gameSystem->isVersusMode()) {
 
-		} else {
-			if (bluePikmins > redPikmins) {
-				mPikminRatio = (f32)bluePikmins / (f32)redPikmins;
-			} else {
-				mPikminRatio = (f32)redPikmins / (f32)bluePikmins;
-			}
+	// 	int redPikmins  = GameStat::getMapPikmins(1) - (mOlimarHandicap - 3);
+	// 	int bluePikmins = GameStat::getMapPikmins(0) - (mLouieHandicap - 3);
+	// 	if (redPikmins < 0) {
+	// 		redPikmins = 1;
+	// 	}
+	// 	if (bluePikmins < 0) {
+	// 		bluePikmins = 1;
+	// 	}
+	// 	if (!redPikmins || !bluePikmins) {
+	// 		if (!redPikmins) {
+	// 			mPikminCountTimer = 1.0f;
+	// 		} else if (!bluePikmins) {
+	// 			mPikminCountTimer = 0.0f;
+	// 		}
 
-			mPikminCountTimer = log(mPikminRatio, 50.0);
+	// 	} else {
+	// 		if (bluePikmins > redPikmins) {
+	// 			mPikminRatio = (f32)bluePikmins / (f32)redPikmins;
+	// 		} else {
+	// 			mPikminRatio = (f32)redPikmins / (f32)bluePikmins;
+	// 		}
 
-			if (redPikmins < bluePikmins) {
-				mPikminCountTimer = -mPikminCountTimer;
-			}
-		}
-	}
+	// 		mPikminCountTimer = log(mPikminRatio, 50.0);
+
+	// 		if (redPikmins < bluePikmins) {
+	// 			mPikminCountTimer = -mPikminCountTimer;
+	// 		}
+	// 	}
+	// }
 
 	return mIsMainActive;
 }
@@ -417,6 +419,20 @@ void VsGameSection::initPlayData()
 	playData->mNaviLifeMax[1] = naviMgr->mNaviParms->mNaviParms.mMaxHealth.mValue;
 }
 
+void VsGameSection::setupBedamaUse(const char* name) {
+	PelletInitArg initArg;
+	PelletList::cKind cKind;
+
+	PelletConfig* pelletConfig = PelletList::Mgr::getConfigAndKind(const_cast<char*>(name), cKind);
+
+	JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
+
+	initArg.mPelletIndex             = pelletConfig->mParams.mIndex;
+	initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
+	initArg.mPelletType     = cKind;
+	pelletMgr->setUse(&initArg);
+}
+
 /*
  * --INFO--
  * Address:	801C18A0
@@ -441,11 +457,11 @@ void VsGameSection::onSetupFloatMemory()
 	mTekiMgr->entry(EnemyTypeID::EnemyID_Tobi, 20);
 
 	mCardMgr->loadResource();
-	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaYellow, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaMini };
+	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite };
 
 	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
 
-		if (isMemoryOverrideOn() || i < 3) {
+		if (isMemoryOverrideOn() || i < 2) {
 
 			PelletInitArg initArg;
 			PelletList::cKind cKind;
@@ -454,11 +470,24 @@ void VsGameSection::onSetupFloatMemory()
 
 			JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
 
-			initArg._10             = pelletConfig->mParams.mIndex;
+			initArg.mPelletIndex             = pelletConfig->mParams.mIndex;
 			initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
 			initArg.mPelletType     = cKind;
 			pelletMgr->setUse(&initArg);
 		}
+	}
+
+	if (gGameModeID == MAINGAME_BEDAMA) {
+
+		const char* bedamaGame[] = { VsOtakaraName::cBedamaYellow, VsOtakaraName::cBedamaMini };
+
+		for (int i = 0; i < ARRAY_SIZE(bedamaGame); i++) {
+			setupBedamaUse(bedamaGame[i]);
+		}
+	}
+	else if (gGameModeID == MAINGAME_BINGO) {
+
+		setupBedamaUse(VsOtakaraName::cBingoRandom);
 	}
 
 
@@ -488,6 +517,8 @@ void VsGameSection::postSetupFloatMemory()
 			createYellowBedamas(7);
 		}
 
+		initCardPellets();
+
 		if (gGameModeID == MAINGAME_BINGO) {
 			mBingoMgr = new VsGame::BingoMgr; // if ctor isn't here than it causes problems for pellet birth buffer
 			mBingoMgr->init(this);
@@ -496,7 +527,7 @@ void VsGameSection::postSetupFloatMemory()
 		else {
 			mBingoMgr = nullptr;
 		}
-		initCardPellets();
+		
 	}
 
 	BaseGameSection::postSetupFloatMemory();
@@ -1401,7 +1432,7 @@ void VsGameSection::initCardPellets()
 
 	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
 	JUT_ASSERTLINE(1796, config, "zannenn\n"); // 'disappointing'
-	arg._10             = config->mParams.mIndex;
+	arg.mPelletIndex             = config->mParams.mIndex;
 	arg.mTextIdentifier = config->mParams.mName.mData;
 	arg.mPelletType     = kind;
 	arg.mMinCarriers    = 1;
@@ -1575,10 +1606,10 @@ Pellet* VsGameSection::createCardPellet()
 
 	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
 	JUT_ASSERTLINE(1759, config, "zannenn\n");
-	pelletArg._10             = config->mParams.mIndex;
+	pelletArg.mPelletIndex             = config->mParams.mIndex;
 	pelletArg.mTextIdentifier = config->mParams.mName.mData;
 	pelletArg.mPelletType     = kind;
-	pelletArg._1C             = 1;
+	pelletArg.mDoSkipCreateModel             = 1;
 	pelletArg.mMinCarriers    = 1;
 	pelletArg.mMaxCarriers    = 1;
 
@@ -1700,7 +1731,7 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
 		JUT_ASSERTLINE(2154, config, "zannenn\n"); // 'disappointing'
 
-		pelletArg._10 = config->mParams.mIndex;
+		pelletArg.mPelletIndex = config->mParams.mIndex;
 
 		pelletArg.mTextIdentifier = config->mParams.mName.mData;
 		pelletArg.mPelletType     = kind;
@@ -1719,7 +1750,7 @@ void VsGameSection::createYellowBedamas(int bedamas)
 		PelletConfig* miniConfig = PelletList::Mgr::getConfigAndKind(mininame, miniKind);
 		JUT_ASSERTLINE(2154, miniConfig, "zannenn\n"); // 'disappointing'
 
-		miniPelletArg._10 = miniConfig->mParams.mIndex;
+		miniPelletArg.mPelletIndex = miniConfig->mParams.mIndex;
 
 		miniPelletArg.mTextIdentifier = miniConfig->mParams.mName.mData;
 		miniPelletArg.mPelletType     = miniKind;
@@ -1867,7 +1898,7 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 		char* name           = const_cast<char*>(marbles[i]);
 		PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
 		JUT_ASSERTLINE(2211, config, "zannenn\n"); // 'disappointing'
-		pelletArg._10             = config->mParams.mIndex;
+		pelletArg.mPelletIndex             = config->mParams.mIndex;
 		pelletArg.mTextIdentifier = config->mParams.mName.mData;
 		pelletArg.mPelletType     = kind;
 		pelletArg.mMinCarriers    = 1;

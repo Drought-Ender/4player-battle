@@ -141,7 +141,7 @@ struct PelletIterator {
 struct PelletInitArg : public CreatureInitArg {
 	PelletInitArg()
 	{
-		_1C                   = 0;
+		mDoSkipCreateModel                   = 0;
 		mState                = 0;
 		mPelletType           = 0xFF;
 		_18                   = nullptr;
@@ -166,12 +166,12 @@ struct PelletInitArg : public CreatureInitArg {
 	bool _04;                 // _04
 	char* mTextIdentifier;    // _08
 	int _0C;                  // _0C
-	int _10;                  // _10
+	int mPelletIndex;                  // _10
 	u16 mState;               // _14
 	u8 mPelletType;           // _16
 	u8 _17;                   // _17
 	PelletView* _18;          // _18
-	u8 _1C;                   // _1C
+	u8 mDoSkipCreateModel;                   // _1C
 	u8 mAdjustWeightForSquad; // _1D, should Item decrease weight for piki squads that are less than minimum carry weight
 	u8 _1E;                   // _1E
 	u8 mFromEnemy;            // _1F
@@ -209,7 +209,8 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 		FLAG_VS_BEDAMA_YELLOW = 6,
 		FLAG_VS_BEDAMA_WHITE  = 7,
 		FLAG_VS_BEDAMA_PURPLE = 8,
-		FLAG_VS_BEDAMA_MINI   = 9
+		FLAG_VS_BEDAMA_MINI   = 9,
+		FLAG_VS_BINGO_ITEM    = 10
 	};
 
 	int getBedamaPikiColor();

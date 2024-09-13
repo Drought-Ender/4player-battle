@@ -72,6 +72,8 @@ struct VsGameSection : public BaseGameSection {
 	virtual void onSetSoundScene();                                    // _128
 	virtual void onClearHeap();                                        // _130
 
+	void setupBedamaUse(const char* name);
+
 	void calcVsScores();
 	void clearCaveMenus();
 	void clearGetCherryCount();

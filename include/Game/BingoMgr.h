@@ -82,6 +82,8 @@ struct BingoMgr
         bool mActive[4][4];
         bool mDisp[4][4];
 
+        s8 mSlotQueue[5]; // exists because there's no nice way of figuring out the random marbles' value
+
         void Generate(ObjectKey& key);
         void ReweighCardByLineShuffle(ObjectKey& key); // depricated
         void ReweighCardByObjShuffle(ObjectKey& key); // depricated
@@ -96,6 +98,9 @@ struct BingoMgr
         bool isImpossible(ObjectKey& key, int x, int y);
 
         void Swap(int idx1, int idx2);
+
+        void addSlotQueue(s8);
+        s8 popSlotQuque();
 
         LineWeightReport ReportWeight(ObjectKey& key);
         LineWeightReport ReportWeightVerbose(ObjectKey& key);
@@ -113,12 +118,26 @@ struct BingoMgr
     void informDeath(Pellet*);
     void informDeath(EnemyBase*);
     void init(VsGameSection*);
+    void exec(VsGameSection*);
+
+    void createBingoPellets();
+    Pellet* dropBingoChanceItem();
+    Pellet* createBingoChanceItem();
+
+    enum BingoState {
+        BINGOSTATE_NORMAL,
+        BINGOSTATE_BINGOITEM
+    };
 
     ObjectKey mKey;
     BingoCard* mCards; // array
     int mWinner;
     bool mDeathInformed;
     bool mBedamaSound[2];
+    f32 mBingoTimer; // always counts down
+    BingoState mBingoState;
+    static size_t sBingoItemSize;
+    Pellet** mBingoItems;
 };
 
 

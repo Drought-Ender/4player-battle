@@ -65,7 +65,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	mPikminCount[5] = 0;
 	mPikminCount[6] = 0;
 	_414            = 0;
-	mPelletSizeType            = (u16) static_cast<PelletInitArg*>(initArg)->_10;
+	mPelletSizeType            = (u16) static_cast<PelletInitArg*>(initArg)->mPelletIndex;
 
 	mConfig = mMgr->mConfigList->getPelletConfig(static_cast<PelletInitArg*>(initArg)->mTextIdentifier);
 
@@ -116,9 +116,11 @@ void Pellet::onInit(CreatureInitArg* initArg)
         mPelletFlag = FLAG_VS_BEDAMA_PURPLE;
     } else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaMini) == 0 && gGameModeID == MAINGAME_BEDAMA) {
 		mPelletFlag = FLAG_VS_BEDAMA_MINI;
+	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBingoRandom) == 0 && gGameModeID == MAINGAME_BINGO) {
+		mPelletFlag = FLAG_VS_BINGO_ITEM;
 	}
 
-	if (static_cast<PelletInitArg*>(initArg)->_1C == 0) {
+	if (static_cast<PelletInitArg*>(initArg)->mDoSkipCreateModel == 0) {
 		mModel = mMgr->createShape(mPelletSizeType, mSlotIndex);
 		onCreateShape();
 	}
@@ -225,7 +227,7 @@ bool PelletMgr::makePelletInitArg(PelletInitArg& arg, char* identifier)
 
 	arg.mTextIdentifier = identifier;
 	arg.mPelletType     = mgr->getMgrID();
-	arg._10             = config->mParams.mIndex;
+	arg.mPelletIndex             = config->mParams.mIndex;
 	arg._18             = 0;
 
 	makeVsCarryMinMax(arg, identifier);
@@ -331,7 +333,7 @@ bool PelletMgr::makePelletInitArg(PelletInitArg& arg, PelletMgr::OtakaraItemCode
 
 	arg.mTextIdentifier = config->mParams.mName.mData;
 	arg.mPelletType     = itemCode.mValue >> 8;
-	arg._10             = itemCode.mValue & 0xFF;
+	arg.mPelletIndex             = itemCode.mValue & 0xFF;
 	arg._18             = 0;
 	makeVsCarryMinMax(arg, arg.mTextIdentifier);
 	return true;

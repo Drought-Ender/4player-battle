@@ -288,6 +288,11 @@ void GameState::exec(VsGameSection* section)
 
 	section->BaseGameSection::doUpdate();
 
+	if (section->mBingoMgr) {
+		section->mBingoMgr->exec(section);
+	}
+
+
 	for (int i = 0; i < 4; i++) {
 		if (mNaviStatus[i] != -1) {
 			naviMgr->getAt(i)->disableController();

@@ -161,7 +161,7 @@ Pellet* PelletView::becomePellet(PelletViewArg* viewArg)
 	PelletInitArg initArg;
 	initArg.mTextIdentifier = viewArg->mEnemyName;
 	initArg._0C             = 0;
-	initArg._10             = -1;
+	initArg.mPelletIndex             = -1;
 	initArg.mPelletType     = PELTYPE_CARCASS;
 	initArg._18             = this;
 
@@ -1048,7 +1048,7 @@ PelletIndexInitArg::PelletIndexInitArg(int idx)
 	PelletConfig* config = newPelletMgr->getPelletConfig(code);
 
 	mTextIdentifier = config->mParams.mName.mData;
-	_10             = code;
+	mPelletIndex             = code;
 	_0C             = (int)(3.0f * randFloat());
 }
 
@@ -1062,23 +1062,23 @@ PelletNumberInitArg::PelletNumberInitArg(int p1, int p2)
 	switch (p1) {
 	case PELLET_NUMBER_ONE:
 		mTextIdentifier = "number1";
-		_10             = 0;
+		mPelletIndex             = 0;
 		break;
 	case PELLET_NUMBER_FIVE:
 		mTextIdentifier = "number5";
-		_10             = 1;
+		mPelletIndex             = 1;
 		break;
 	case PELLET_NUMBER_TEN:
 		mTextIdentifier = "number10";
-		_10             = 2;
+		mPelletIndex             = 2;
 		break;
 	case PELLET_NUMBER_TWENTY:
 		mTextIdentifier = "number20";
-		_10             = 3;
+		mPelletIndex             = 3;
 		break;
 	default:
 		mTextIdentifier = "number1";
-		_10             = 0;
+		mPelletIndex             = 0;
 		break;
 	}
 
@@ -1231,7 +1231,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	mPikminCount[5] = 0;
 	mPikminCount[6] = 0;
 	_414            = 0;
-	_43C            = (u16) static_cast<PelletInitArg*>(initArg)->_10;
+	_43C            = (u16) static_cast<PelletInitArg*>(initArg)->mPelletIndex;
 
 	mConfig = mMgr->mConfigList->getPelletConfig(static_cast<PelletInitArg*>(initArg)->mTextIdentifier);
 
@@ -1277,7 +1277,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 		mPelletFlag = FLAG_VS_CHERRY;
 	}
 
-	if (static_cast<PelletInitArg*>(initArg)->_1C == 0) {
+	if (static_cast<PelletInitArg*>(initArg)->mDoSkipCreateModel == 0) {
 		mModel = mMgr->createShape(_43C, mSlotIndex);
 		onCreateShape();
 	}
@@ -6214,7 +6214,7 @@ Pellet* PelletMgr::birth(PelletInitArg* arg)
 	if (gameSystem->mMode != GSM_PIKLOPEDIA && gameSystem->mMode != GSM_VERSUS_MODE && !PelletMgr::mDebug && !arg->_17) {
 		config = mgr->mConfigList->getPelletConfig(arg->mTextIdentifier);
 		if (strcmp("yes", config->mParams.mUnique.mData) == 0) {
-			int unk = arg->_10;
+			int unk = arg->mPelletIndex;
 			if (arg->mPelletType == PelletList::OTAKARA) {
 				u8* result = playData->_B0->mOtakara(unk);
 				if (*result & 2) {
@@ -6237,7 +6237,7 @@ Pellet* PelletMgr::birth(PelletInitArg* arg)
 		pellet = mgr->birthFromTeki(config);
 		if (pellet) {
 			mgr->setComeAlive(pellet->mSlotIndex);
-			arg->_1C = 1;
+			arg->mDoSkipCreateModel = 1;
 			pellet->init(arg);
 			return pellet;
 		}
@@ -6273,7 +6273,7 @@ bool PelletMgr::setUse(PelletInitArg* arg)
 	if (gameSystem->mMode != GSM_PIKLOPEDIA && !arg->_17) {
 		config = mgr->mConfigList->getPelletConfig(arg->mTextIdentifier);
 		if (strcmp("yes", config->mParams.mUnique.mData) == 0) {
-			int unk = arg->_10;
+			int unk = arg->mPelletIndex;
 			if (arg->mPelletType == PelletList::OTAKARA) {
 				u8* result = playData->_B0->mOtakara(unk);
 				if (*result & 2) {
@@ -6290,7 +6290,7 @@ bool PelletMgr::setUse(PelletInitArg* arg)
 		}
 	}
 
-	int index = arg->_10;
+	int index = arg->mPelletIndex;
 
 	bool validIndex = false;
 	if (index >= 0 && index < mgr->mEntries) {
@@ -6376,7 +6376,7 @@ bool PelletMgr::makePelletInitArg(PelletInitArg& arg, char* identifier)
 
 	arg.mTextIdentifier = identifier;
 	arg.mPelletType     = mgr->getMgrID();
-	arg._10             = config->mParams.mIndex;
+	arg.mPelletIndex             = config->mParams.mIndex;
 	arg._18             = 0;
 
 	makeVsCarryMinMax(arg, identifier);
@@ -6445,7 +6445,7 @@ bool PelletMgr::makePelletInitArg(PelletInitArg& arg, PelletMgr::OtakaraItemCode
 
 	arg.mTextIdentifier = config->mParams.mName.mData;
 	arg.mPelletType     = itemCode.mValue >> 8;
-	arg._10             = itemCode.mValue & 0xFF;
+	arg.mPelletIndex             = itemCode.mValue & 0xFF;
 	arg._18             = 0;
 	makeVsCarryMinMax(arg, arg.mTextIdentifier);
 	return true;

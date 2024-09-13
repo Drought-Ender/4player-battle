@@ -5,8 +5,17 @@
 #include "Game/VsGame.h"
 #include "Game/generalEnemyMgr.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
+#include "Game/Entities/PelletOtakara.h"
 #include "DroughtLib.h"
+#include "VsOtakaraName.h"
+#include "Game/Cave/RandMapMgr.h"
+#include "efx/TEnemyApsmoke.h"
 #include "utilityU.h"
+
+#define BINGO_INITIAL_WAIT (600.0f) 
+
+#define BINGO_NEXT_MINIMUM (30.0f)
+#define BINGO_NEXT_MAXIMUM (120.0f)
 
 namespace Game
 {
@@ -27,6 +36,11 @@ JKRArchive* matobaArchive = nullptr;
 
 void BingoMgr::init(VsGameSection* section) {
     DebugReport("BingoMgr::init(VsGameSection*)\n");
+
+    mBingoTimer = 60.0f;
+    mBingoState = BINGOSTATE_NORMAL;
+    createBingoPellets();
+
     mWinner = -1;
     mBedamaSound[0] = false;
     mBedamaSound[1] = false;
@@ -65,6 +79,9 @@ void BingoMgr::init(VsGameSection* section) {
         matobaArchive->unmount();
     }
     DebugReport("All is well\n");
+
+
+
 }
 
 bool BingoMgr::BingoCard::CheckLine(const int min, bool disp) {
@@ -280,6 +297,10 @@ void BingoMgr::BingoCard::Generate(ObjectKey& key) {
     ObjectKey ourCopy = key;
 
     int totalEntries = 0;
+
+    for (int i = 0; i < ARRAY_SIZE(mSlotQueue); i++) {
+        mSlotQueue[i] = -1;
+    }
 
 
     for (int i = 0; i < ourCopy.mObjectNum; i++) {
@@ -778,10 +799,7 @@ void BingoMgr::GenerateCards() {
 void BingoMgr::TeamReceivePellet(int team, Pellet* pellet) {
     int idx = mCards[team].ReceiveDispPellet(mKey, pellet);
     if (idx == -1) {
-        mCards[team].ReceivePellet(mKey, pellet);
-        mCards[team].ReceiveDispPellet(mKey, pellet);
-        
-        
+        return;
     }
 
     bool isOlimar = !isTeamLouie(team);
@@ -834,12 +852,35 @@ int BingoMgr::ObjectKey::FindEnemy(EnemyBase* enemy) {
 /// @brief Updates bingo card for recieving a pellet
 /// @param key ObjectKey from the bingoMgr
 /// @param pellet The Pellet Recieved
-/// @return The changed id from 0 to 15
+/// @return The changed id from 0 to 15, or -1 if nothing was changed
 int BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
+
+
+    if (pellet->mPelletFlag == Pellet::FLAG_VS_BINGO_ITEM) {
+        int matchingIDs[16];
+        int count = 0;
+        for (int i = 0; i < 4 * 4; i++) {
+            if (!reinterpret_cast<bool*>(mActive)[i]) {
+                matchingIDs[count++] = i;
+            }
+        }
+
+        if (count == 0) return -1;
+
+        int selectedID = matchingIDs[(int)(count * randFloat())];
+
+        addSlotQueue(selectedID);
+
+        DebugReport("Updating %i %i!\n", selectedID / 4, selectedID % 4);
+
+        reinterpret_cast<bool*>(mActive)[selectedID] = true;
+
+        return selectedID;
+    }
 
     int configIdx = key.FindPellet(pellet);
 
-    if (configIdx == -1) return;
+    if (configIdx == -1) return -1;
 
     int matchingIDs[16];
     int count = 0;
@@ -849,7 +890,7 @@ int BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
         }
     }
 
-    if (count == 0) return;
+    if (count == 0) return -1;
 
     int selectedID = matchingIDs[(int)(count * randFloat())];
 
@@ -860,9 +901,37 @@ int BingoMgr::BingoCard::ReceivePellet(ObjectKey& key, Pellet* pellet) {
     return selectedID;
 }
 
-int BingoMgr::BingoCard::ReceiveDispPellet(ObjectKey& key, Pellet* pellet) {
+void BingoMgr::BingoCard::addSlotQueue(s8 data) {
+    for (int i = ARRAY_SIZE(mSlotQueue) - 1; i > 0; i--) {
+        mSlotQueue[i] = mSlotQueue[i - 1];
+    }
 
+    mSlotQueue[0] = data;
+}
+
+s8 BingoMgr::BingoCard::popSlotQuque() {
+    for (int i = ARRAY_SIZE(mSlotQueue) - 1; i >= 0; i--) {
+        if (mSlotQueue[i] != -1) {
+            s8 v = mSlotQueue[i];
+            mSlotQueue[i] = -1;
+            return v;
+        }
+    }
+    return -1;
+}
+
+int BingoMgr::BingoCard::ReceiveDispPellet(ObjectKey& key, Pellet* pellet) {
+    
     int configIdx = key.FindPellet(pellet);
+
+    if (pellet->mPelletFlag == Pellet::FLAG_VS_BINGO_ITEM) {
+        
+        s8 queueValue = popSlotQuque();
+
+        DebugReport("Disp pellet debug item %i\n", queueValue);
+        
+        configIdx = reinterpret_cast<u8*>(mObjects)[queueValue];
+    }
 
     for (int i = 0; i < 4 * 4; i++) {
         if (reinterpret_cast<u8*>(mObjects)[i] == configIdx && reinterpret_cast<bool*>(mActive)[i] && !reinterpret_cast<bool*>(mDisp)[i]) {
@@ -877,6 +946,7 @@ int BingoMgr::BingoCard::ReceiveDispPellet(ObjectKey& key, Pellet* pellet) {
 bool BingoMgr::BingoCard::PelletSuckProcedure(ObjectKey& key, Pellet* pellet) {
     int changedID = ReceivePellet(key, pellet);
     DebugReport("Changed id %i\n", changedID);
+    if (changedID == -1) return false;
     bool success = CheckLine(4);
 
     return success;
@@ -958,6 +1028,9 @@ void BingoMgr::ObjectKey::Object::CountExists() {
 }
 
 void BingoMgr::informDeath(Pellet* pelt) {
+
+    if (GetVsGameSection()->mState->mId != VsGame::VGS_Game) return;
+
     mKey.informDeath(pelt);
     mDeathInformed = true;
 }
@@ -980,6 +1053,144 @@ void BingoMgr::ObjectKey::informDeath(EnemyBase* enemy) {
 bool BingoMgr::BingoCard::isImpossible(ObjectKey& key, int x, int y) {
     u8 idx = mObjects[x][y];
     return !mActive[x][y] && key.mObjectEntries[idx].mExistCount <= 0;
+}
+
+size_t BingoMgr::sBingoItemSize = 5;
+
+void BingoMgr::createBingoPellets() {
+    
+    mBingoItems = new Pellet*[sBingoItemSize];
+
+    char* name = const_cast<char*>(VsOtakaraName::cBingoRandom);
+	PelletList::cKind kind;
+	PelletInitArg arg;
+
+	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
+	JUT_ASSERTLINE(1796, config, "zannenn\n"); // 'disappointing'
+	arg.mPelletIndex    = config->mParams.mIndex;
+    DebugReport("Pellet Index %i\n", arg.mPelletIndex);
+	arg.mTextIdentifier = config->mParams.mName.mData;
+	arg.mPelletType     = kind;
+	arg.mMinCarriers    = 1;
+	arg.mMaxCarriers    = 8;
+
+	for (int j = 0; j < sBingoItemSize; j++) {
+		Pellet* pellet = pelletMgr->birth(&arg);
+		if (pellet) {
+			Vector3f position = Vector3f(0.0f);
+			pellet->setPosition(position, false);
+			mBingoItems[j] = pellet;
+		} else {
+			JUT_PANIC("birth failed !\n");
+		}
+	}
+
+	for (int i = 0; i < sBingoItemSize; i++) {
+		mBingoItems[i]->kill(nullptr);
+	}
+}
+
+
+void BingoMgr::exec(VsGameSection* section) {
+    
+    if (gameSystem->paused() || section->mTimeLimit <= 0.0f || section->mMenuFlags
+		    || !gameSystem->isFlag(GAMESYS_Unk6) || gameSystem->paused_soft()
+		    || moviePlayer->mDemoState) {
+        return;
+    }
+
+    
+    mBingoTimer -= sys->mDeltaTime;
+
+
+
+    // DebugReport("Bingo Timer %f\n", mBingoTimer);
+
+    if (mBingoState == BINGOSTATE_NORMAL) {
+        
+        if (mBingoTimer <= 0.0f) {
+            
+            // start spawning bingo items
+            mBingoState = BINGOSTATE_BINGOITEM;
+
+            DebugReport("Into Item Droping\n");
+            
+        }
+    }
+
+    if (mBingoState == BINGOSTATE_BINGOITEM) {
+
+        if (mBingoTimer <= 0.0f) {
+
+            DebugReport("Drop Item\n");
+            dropBingoChanceItem();
+
+            mBingoTimer = randFloat() * (BINGO_NEXT_MAXIMUM - BINGO_NEXT_MINIMUM) + BINGO_NEXT_MINIMUM;
+        }
+    }
+}
+
+Pellet* BingoMgr::createBingoChanceItem() {
+    PelletList::cKind kind;
+	char* name = const_cast<char*>(VsOtakaraName::cBingoRandom);
+	PelletInitArg pelletArg;
+
+	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
+	JUT_ASSERTLINE(1759, config, "zannenn\n");
+	pelletArg.mPelletIndex    = config->mParams.mIndex;
+	pelletArg.mTextIdentifier = config->mParams.mName.mData;
+	pelletArg.mPelletType     = kind;
+	pelletArg.mDoSkipCreateModel = true;
+	pelletArg.mMinCarriers    = 1;
+	pelletArg.mMaxCarriers    = 8;
+
+	for (int i = 0; i < sBingoItemSize; i++) {
+		Pellet* pellet = mBingoItems[i];
+		if (!pellet->isAlive() && !pellet->getStateID()) {
+			PelletOtakara::mgr->setComeAlive(pellet->mSlotIndex);
+			pellet->init(&pelletArg);
+			return pellet;
+		}
+	}
+	return nullptr;
+}
+
+
+Pellet* BingoMgr::dropBingoChanceItem() {
+
+    VsGameSection::DropCardArg arg;
+    arg.mMinDists[0] = 0.45f;
+    arg.mMinDists[1] = 0.45f;
+    arg.mMaxDists[0] = 0.55f;
+    arg.mMaxDists[1] = 0.55f;    
+
+    Vector3f spawn;
+	Cave::randMapMgr->getItemDropPosition(spawn, arg.mMinDists, arg.mMaxDists);
+	f32 radius = (randFloat() * 20.0f);
+	f32 angle  = randFloat() * TAU;
+
+	spawn += Vector3f(radius * pikmin2_sinf(angle), 0.0f, radius * pikmin2_cosf(angle));
+
+	Pellet* pellet = createBingoChanceItem();
+    DebugReport("Bedama chance item %p\n", pellet);
+
+	if (pellet) {
+		spawn.y += 140.0f;
+		pellet->setPosition(spawn, false);
+		efx::TEnemyApsmoke smoke;
+		efx::ArgEnemyType smokeArg(spawn, EnemyTypeID::EnemyID_Kochappy, 1.0f);
+		smoke.create(&smokeArg);
+
+		Vector3f newRand = Vector3f(0.0f, randFloat() * TAU, 0.0f);
+		Matrixf mat;
+		mat.makeTR(Vector3f::zero, newRand);
+		pellet->setOrientation(mat);
+	}
+    else {
+        DebugReport("Bedama chance item spawn failed\n");
+    }
+
+    return pellet;
 }
 
 } // namespace VsGame
