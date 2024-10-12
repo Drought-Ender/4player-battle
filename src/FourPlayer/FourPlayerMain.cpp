@@ -833,4 +833,47 @@ void ModelEffect::doAnimation()
 	}
 }
 
+void BaseGameSection::setDefaultPSSceneInfo(PSGame::SceneInfo& sceneInfo)
+{
+	P2ASSERTLINE(3197, mOlimarCamera);
+	P2ASSERTLINE(3198, mLouieCamera);
+	P2ASSERT(gCameraP3);
+	P2ASSERT(gCameraP4);
+
+	sceneInfo.mCameras                     = 4;
+	sceneInfo.mCam1Position[NAVIID_Olimar] = mOlimarCamera->getSoundPositionPtr();
+	sceneInfo.mCam2Position[NAVIID_Olimar] = mOlimarCamera->getSoundPositionPtr();
+	sceneInfo.mCameraMtx[NAVIID_Olimar]    = mOlimarCamera->getSoundMatrixPtr();
+	sceneInfo.mCam1Position[NAVIID_Louie]  = mLouieCamera->getSoundPositionPtr();
+	sceneInfo.mCam2Position[NAVIID_Louie]  = mLouieCamera->getSoundPositionPtr();
+	sceneInfo.mCameraMtx[NAVIID_Louie]     = mLouieCamera->getSoundMatrixPtr();
+
+	if (gCameraP3) {
+		sceneInfo.mCam1Position[2] = gCameraP3->getSoundPositionPtr();
+		sceneInfo.mCam2Position[2] = gCameraP3->getSoundPositionPtr();
+		sceneInfo.mCameraMtx[2]    = gCameraP3->getSoundMatrixPtr();
+	}
+
+	if (gCameraP4) {
+		sceneInfo.mCam1Position[3] = gCameraP4->getSoundPositionPtr();
+		sceneInfo.mCam2Position[3] = gCameraP4->getSoundPositionPtr();
+		sceneInfo.mCameraMtx[3]    = gCameraP4->getSoundMatrixPtr();
+	}
+
+	
+	BoundBox box;
+
+	mapMgr->getBoundBox(box);
+
+	Vector3f min = box.mMin;
+	Vector3f max = box.mMax;
+
+	sceneInfo.mBounds.mMin.x = min.x;
+	sceneInfo.mBounds.mMin.y = min.y;
+	sceneInfo.mBounds.mMin.z = min.z;
+	sceneInfo.mBounds.mMax.x = max.x;
+	sceneInfo.mBounds.mMax.y = max.y;
+	sceneInfo.mBounds.mMax.z = max.z;
+}
+
 } // namespace Game

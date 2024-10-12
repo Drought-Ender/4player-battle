@@ -70,22 +70,37 @@ struct TOmake : public TScreenBase {
 // TODO: Data members.
 struct TOmakeCardE : public TScreenBase {
 	TOmakeCardE();
-	~TOmakeCardE();
+	~TOmakeCardE() { }
 
-	virtual void doSetArchive(JKRArchive*); // _24
-	virtual void doOpenScreen(ArgOpen*);    // _28
-	virtual void doCloseScreen(ArgClose*);  // _2C
-	virtual void doInitWaitState();         // _34
-	virtual bool doUpdateStateOpen();       // _38
-	virtual bool doUpdateStateWait();       // _3C
-	virtual bool doUpdateStateClose();      // _40
-	virtual void doDraw();                  // _44
-	virtual char* getName();                // _48
+	enum CardEState { MainMenu, InZoomed, ExitingZoomed, EnteringZoomed };
+
+	virtual void doSetArchive(JKRArchive*);           // _24
+	virtual void doOpenScreen(ArgOpen*);              // _28
+	virtual void doCloseScreen(ArgClose*);            // _2C
+	virtual void doInitWaitState();                   // _34
+	virtual bool doUpdateStateOpen();                 // _38
+	virtual bool doUpdateStateWait();                 // _3C
+	virtual bool doUpdateStateClose();                // _40
+	virtual void doDraw();                            // _44
+	virtual char* getName() { return "TOmakeCardE"; } // _48
 
 	// _00     = VTBL
-	// _00-_08 = TScreenBase
-	u8 _0C[0x164];
+	// _00-_0C = TScreenBase
+	Controller* mInput;                        // _0C
+	bool mExitState;                           // _10 (false when press A to continue, true when press B to exit)
+	P2DScreen::Mgr_tuning* mScreenObj;         // _14
+	J2DPane* mPaneArrowUp;                     // _18
+	J2DPane* mPaneArrowDown;                   // _1C
+	E2DCallBack_AnmBase mAnimationEnter;       // _20
+	E2DCallBack_AnmBase mAnimationIdle;        // _5C
+	E2DCallBack_AnmBase mAnimationExit;        // _98
+	E2DCallBack_AnmBase mAnimationChange;      // _D4
+	E2DCallBack_AnmBase mAnimationColor;       // _110
+	E2DCallBack_CalcAnimation mAnimCalc;       // _14C
+	void* mMesgScroll; // _16C
+	int mState;                                // _170
 };
+
 
 // TODO: Data members.
 struct TOmakeGame : public TScreenBase {

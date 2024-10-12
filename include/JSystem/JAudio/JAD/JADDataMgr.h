@@ -6,6 +6,7 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JAudio/JAD/JADUtility.h"
 #include "JSystem/JAudio/JAD/JADStr.h"
+#include "Dolphin/string.h"
 
 namespace JADUtility {
 
@@ -24,39 +25,61 @@ struct DataMgrBase : public JKRDisposer {
 	u32 _1C;      // _1C - unknown
 };
 
-// idk if this should exist, but _00 in DataLoadMgrNode needs to be a DataMgrBase*
-// rather than a vtable so...
-struct _DataLoadMgrBase {
-	DataMgrBase* _00; // _00
-};
-
 /**
  * @size = 0x234 - could be wrong, inheritance is confusing
  */
-struct DataLoadMgrNode : public _DataLoadMgrBase {
-	virtual ~DataLoadMgrNode();                 // _08 (weak)
-	virtual void isTempBuffaMode();             // _0C (weak)
-	virtual void init();                        // _10 (weak)
-	virtual void getObjHeap()              = 0; // _14
-	virtual void getDataHeap()             = 0; // _18
-	virtual void initInstance(void*, long) = 0; // _1C
-	virtual void initInstance()            = 0; // _20
-	virtual void getPath()                 = 0; // _24
-	virtual void setPath(char*)            = 0; // _28
+struct DataLoadMgrNode : virtual public DataMgrBase {
+	enum ObjStatus {};
 
-	void initInstanceExt(void*, long);
+	DataLoadMgrNode();
+
+	virtual ~DataLoadMgrNode();                      // _08 (weak)
+	virtual bool isTempBuffaMode() { return false; } // _0C (weak)
+	virtual void init()
+	{
+		mFlagState = 0;
+		DataMgrBase::init();
+	} // _10 (weak)
+
+	virtual JKRHeap* getObjHeap()         = 0; // _14
+	virtual JKRHeap* getDataHeap()        = 0; // _18
+	virtual bool initInstance(void*, s32) = 0; // _1C
+	virtual bool initInstance()           = 0; // _20
+
+	bool initInstanceExt(void*, s32);
 	void setFlagsAsExternal(void*);
 
-	// _00      = DataMgrBase*
-	// _04      = VTABLE
-	int _08;          // _08
-	char _0C[0x100];  // _0C - path buffer?
-	char _10C[0x100]; // _10C - string buffer?
+	// unused/inlined:
+	void setLoadPath(char const* path)
+	{
+		if (strlen(path) <= 0xFF) {
+			strcpy(mLoadPath, path);
+		}
+	}
 
-private:
-	u8 _20C[0x8];     // _20C - unknown
-	DataMgrBase _214; // _214
+	void load(JADUtility::DataLoadMgrNode::ObjStatus, bool);
+	// bool initInstanceExt();
+	// void loadDvd(u32*);
+
+	/** @fabricated */
+	inline void setPath(char const* path)
+	{
+		if (strlen(path) <= 0xFF) {
+			strcpy(mPath, path);
+		}
+	}
+
+	// _00 = DataMgrBase*
+	// _04 = VTABLE
+	int mFlagState;        // _08
+	char mPath[0x100];     // _0C
+	char mLoadPath[0x100]; // _10C, best guess as to name
+	u32 _20C;              // _20C
+	u32 _210;              // _210
+
+	// _214 - _234 = DataMgrBase (virtual)
 };
+
 
 /**
  * @size = 0x270
@@ -64,39 +87,60 @@ private:
 struct DataMgrNode : public DataLoadMgrNode {
 	DataMgrNode();
 
-	virtual ~DataMgrNode();                     // _08 (weak)
-	virtual void init();                        // _10 (weak)
-	virtual void getObjHeap()              = 0; // _14
-	virtual void getDataHeap()             = 0; // _18
-	virtual void initInstance(void*, long) = 0; // _1C
-	virtual void initInstance()            = 0; // _20
-	virtual void getPath();                     // _24 (weak)
-	virtual void setPath(char*);                // _28 (weak)
-	                                            // virtual void _2C() = 0;                     // _2C - maybe
-	                                            // virtual void _30() = 0;                     // _30 - maybe
+	// virtual ~DataMgrNode() { }                                           // _08 (weak)
+	virtual void init() { DataLoadMgrNode::init(); }                     // _10 (weak)
+	virtual JKRHeap* getObjHeap()         = 0;                           // _14
+	virtual JKRHeap* getDataHeap()        = 0;                           // _18
+	virtual bool initInstance(void*, s32) = 0;                           // _1C
+	virtual bool initInstance()           = 0;                           // _20
+	virtual char* getPath() { return mPath; }                            // _24 (weak)
+	virtual void setPath(char* path) { DataLoadMgrNode::setPath(path); } // _28 (weak)
 
 	// _00      = DataMgrBase*
 	// _04      = VTABLE
-	// _08-_20C = DataLoadMgrNode
-	u32 _20C;         // _20C
-	int _210;         // _210
-	StrPrm _214;      // _214
-	u32 _244;         // _244
-	u32 _248;         // _248
-	int _24C;         // _24C
-	DataMgrBase _250; // _250
+	// _08-_214 = DataLoadMgrNode
+	StrPrm _214; // _214
+
+	// _250 - _270 = DataMgrBase (virtual)
 };
 
 template <typename A, typename B>
 struct PrmDataMgrNode : public DataMgrNode {
-	virtual ~PrmDataMgrNode<A, B>();        // _08 (weak)
-	virtual void isTempBuffaMode() = 0;     // _0C
-	virtual void init()            = 0;     // _10
-	virtual void getObjHeap();              // _14 (weak)
-	virtual void getDataHeap();             // _18 (weak)
-	virtual void initInstance(void*, long); // _1C (weak)
-	virtual void initInstance();            // _20 (weak)
-};
+	inline PrmDataMgrNode(B* data)
+	    : mPrmSetRc(nullptr)
+	    , _254(data)
+	{
+	}
 
+	virtual ~PrmDataMgrNode<A, B>() { } // _08 (weak)
+	virtual JKRHeap* getObjHeap();      // _14 (weak)
+	virtual JKRHeap* getDataHeap();     // _18 (weak)
+	virtual bool initInstance(void* buffer, s32 bufferLength)
+	{
+		if (initInstance()) {
+			JSUMemoryInputStream input(buffer, bufferLength);
+			// input.setBuffer(buffer, bufferLength);
+			mPrmSetRc->load(input);
+			return true;
+		}
+		return false;
+	}                           // _1C (weak)
+	virtual bool initInstance() // _20 (weak)
+	{
+		if (!mPrmSetRc) {
+			mPrmSetRc = new (getObjHeap(), 0) A(_254, 0);
+			return true;
+		}
+
+		return false;
+	}
+
+	// _00      = DataMgrBase*
+	// _04      = VTBL
+	// _08-_250 = DataMgrNode
+	A* mPrmSetRc; // _250
+	B* _254;      // _254, unknown
+	              // _258-_278 = DataMgrBase (virtual)
+};
 } // namespace JADUtility
 #endif

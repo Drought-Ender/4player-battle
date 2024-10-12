@@ -9,6 +9,8 @@
 
 namespace PSSystem {
 
+struct JumpBgmPort;
+
 /**
  * @size 0x1
  */
@@ -66,7 +68,7 @@ struct SeqTrackRoot : public SeqTrackBase {
 	int _38;                       // _38 - unknown
 	BeatMgr mBeatMgr;              // _3C
 	u8 _3D;                        // _3D - possibly padding or part of BeatMgr
-	u16 _3E;                       // _3E
+	u16 mBeatInterval;                       // _3E
 	TaskEntry_Tempo _40;           // _40
 	TaskEntry_OuterParam _100;     // _100
 	TaskEntry_PitMod _16C;         // _16C
@@ -75,8 +77,12 @@ struct SeqTrackRoot : public SeqTrackBase {
 };
 
 struct SeqTrackRoot_JumpBgm : public SeqTrackRoot {
+	SeqTrackRoot_JumpBgm(JumpBgmPort* port) { mJumpPort = port; }
 	virtual void onBeatTop(); // _18
+
+	JumpBgmPort* mJumpPort; // _2C4
 };
+
 
 /**
  * @size 0x27C

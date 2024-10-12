@@ -18,7 +18,7 @@ struct SysFactory {
 	JKRHeap* mHeap;        // _00
 	u32 mHeapSize;         // _04
 	void* mAafFile;        // _08
-	void (*mMakeSeFunc)(); // _0C
+	PSM::SeSound* (*mMakeSeFunc)(); // _0C
 
 	virtual PSM::SceneMgr* newSceneMgr() = 0; // _08
 

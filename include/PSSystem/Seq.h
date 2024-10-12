@@ -9,6 +9,10 @@
 #include "PSSystem/PSBgmTask.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
 #include "PSSystem/Reservator.h"
+#include "PSSystem/SeqSound.h"
+
+
+#define P2_STREAM_SOUND_ID(soundID) (JAISoundID_Type_Stream | 0x10000 | soundID)
 
 namespace PSSystem {
 struct SeqPlayReservator;
@@ -19,11 +23,20 @@ struct Scene;
 /**
  * @size 0x68
  */
-struct SeqBase : JSULink<SeqBase> {
+struct SeqBase : public JSULink<SeqBase> {
+	enum CastType {
+		TYPE_BgmSeq      = 0,
+		TYPE_StreamBgm   = 1,
+		TYPE_DirectedBgm = 2,
+		TYPE_AutoBgm     = 3,
+		TYPE_JumpBgmSeq  = 4,
+		TYPE_SeSeq       = 5,
+	};
+
 	// need to work out what these are
 	enum PauseMode { MODE0 = 0, MODE1 = 1, MODE2 = 2, MODE3 = 3, MODE4 = 4 };
 
-	SeqBase(const char*, const JAInter::SoundInfo&);
+	SeqBase(const char* bmsFileName, const JAInter::SoundInfo& info);
 
 	virtual ~SeqBase();                  // _08
 	virtual void init();                 // _0C
@@ -32,52 +45,61 @@ struct SeqBase : JSULink<SeqBase> {
 	virtual void stopSeq(u32);           // _18
 	virtual void pauseOn(PauseMode);     // _1C
 	virtual void pauseOff();             // _20
-	virtual void getCastType() = 0;      // _24
-	virtual void getSeqType()  = 0;      // _28
+	virtual u8 getCastType() = 0;        // _24
+	virtual u32 getSeqType() = 0;        // _28
 	virtual void exec();                 // _2C
 	virtual void onPlayingFrame();       // _30
-	virtual void isPlaying();            // _34
-	virtual void seqLoadAfter();         // _38 (weak)
-	virtual void getHandleP() = 0;       // _3C
+	virtual bool isPlaying();            // _34
+	virtual void seqLoadAfter() { }      // _38 (weak)
+	virtual JAISound** getHandleP() = 0; // _3C
 	virtual void setConfigVolume();      // _40
 
-	void getFileEntry();
+	inline bool isDirectedType()
+	{
+		return (getCastType() == TYPE_DirectedBgm || getCastType() == TYPE_AutoBgm || getCastType() == TYPE_JumpBgmSeq);
+	}
+
+	JAISound* getHandle() { return *getHandleP(); }
+
+	void* getFileEntry();
 
 	// _00-_10  = JSULink<SeqBase>
 	// _10      = VTABLE
 	char* mBmsFileName;                 // _14
-	JAInter::SoundInfo* mSoundInfo;     // _18
+	JAInter::SoundInfo mSoundInfo;      // _18
 	SeqHeap* mSeqHeap;                  // _28
 	SeqPlayReservator mPlayRes;         // _2C
 	SeqPauseOffReservator mPauseOffRes; // _38
 	PauseMode mPauseMode;               // _44 - enum maybe? 0x4 size
-	u8 _48;                             // _48 - unknown
-	u8 _49[0x3];                        // _49 - possibly padding
-	u32 _4C;                            // _4C - unknown
+	u8 mPausedMinVolume;                // _48
+	SeqSound* mSeqSound;                // _4C
 	OSMutex mMutex;                     // _50
 };
+
 
 /**
  * @size 0x18
  */
 struct SeqHeap {
+	SeqHeap(u32, PSSystem::SeqBase*); // unused/inlined
+
 	virtual ~SeqHeap();                      // _08
 	virtual void loadSeqAsync(TaskChecker*); // _0C
 
-	void requestCallback(u32, u16, JAISequence*);
-	void loadedCallback(u32, u32);
+	static JAInter::SequenceMgr::CustomHeapInfo requestCallback(u32, u16, JAISequence*);
+	static void loadedCallback(u32, u32);
 
-	u32 _04;          // _04 - unknown
-	uint _08;         // _08 - unknown
-	u8* _0C;          // _0C - string?
-	SeqBase* _10;     // _10
-	TaskChecker* _14; // _14
+	SeqHeap* mOwner;    // _04
+	uint mSize;         // _08
+	u8* mFileData;      // _0C
+	SeqBase* mOwnerSeq; // _10
+	TaskChecker* mTask; // _14
 };
 
 /**
  * @size 0x18
  */
-struct SeqMgr : JSULink<SeqBase> {
+struct SeqMgr : JSUList<SeqBase> {
 	virtual ~SeqMgr(); // _08
 
 	void isPlaying();
@@ -94,28 +116,31 @@ struct SeqMgr : JSULink<SeqBase> {
 	void getFirstSeqA();
 	void getSeq(u32);
 
-	// _00-_10  = JSULink<SeqBase>
-	// _10      = VTABLE
-	Scene* mScene; // _14
+	// _00-_0C  = JSUList<SeqBase>
+	// _0C      = VTABLE
+	Scene* mScene; // _10
 };
 
 /**
  * @size 0x18
  */
 struct SeSeq : public SeqBase {
-	virtual ~SeSeq();               // _08
-	virtual void stopSeq(u32);      // _18
-	virtual void getCastType();     // _24 (weak)
-	virtual void getSeqType();      // _28 (weak)
-	virtual void seqLoadAfter();    // _38
-	virtual void getHandleP();      // _3C (weak)
-	virtual void setConfigVolume(); // _40
+	SeSeq(const char* bmsFileName, const JAInter::SoundInfo& info)
+	    : SeqBase(bmsFileName, info)
+	{
+	}
+	virtual ~SeSeq();                                                                   // _08
+	virtual void stopSeq(u32);                                                          // _18
+	virtual u8 getCastType() { return TYPE_SeSeq; }                                     // _24 (weak)
+	virtual u32 getSeqType() { return 0x80000800; }                                     // _28 (weak)
+	virtual void seqLoadAfter();                                                        // _38
+	virtual JAISound** getHandleP(); // _3C (weak)
+	virtual void setConfigVolume();                                                     // _40
 
 	// _00-_10  = JSULink<SeqBase>
 	// _10      = VTABLE
 	// _14-_68  = SeqBase
 };
-
 } // namespace PSSystem
 
 #endif

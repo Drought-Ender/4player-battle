@@ -8,49 +8,95 @@
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
 
+struct PSBankData {
+	u8 mData[3]; // _00
+};
+
 namespace PSAutoBgm {
+
+struct AutoBgm;
 
 /**
  * @size = 0x11C
  */
-struct Conductor : JADUtility::PrmSetRC<PSAutoBgm::Track> {
-	virtual ~Conductor();        // _08
-	virtual void getEraseLink(); // _1C (weak)
+struct Conductor : public JADUtility::PrmSetRc<PSAutoBgm::Track> {
+	Conductor(AutoBgm*, int);
 
-	void removeCallback(u8, void*);
-	void seqCpuSync_AutoBgm(JASTrack*, u16, u32, JASTrack*);
+	virtual ~Conductor();                                // _08
+	virtual void* getEraseLink() { return &mEraseLink; } // _1C (weak)
+
+	static void removeCallback(u8 idx, void* conductor);
+	u32 seqCpuSync_AutoBgm(JASTrack*, u16, u32, JASTrack*);
 	void createTables(JASTrack*);
+
+	// unused/inlined:
+	void onBeatProc();
 
 	// _00      = VTABLE
 	// _04-_98  = PrmSetRc
-	JSUPtrLink _98;                     // _98
-	u8 _A8[0x10];                       // _A8 - unknown
-	JADUtility::PrmSlider<u8> _B8;      // _B8
-	JADUtility::PrmRadioButton<u8> _E8; // _E8
-	u8 _118[0x4];                       // _118 - unknown
+	JSULink<Conductor> mEraseLink;          // _98
+	PSBankData* mBankData;                  // _A8
+	PSBankData* mWsData;                    // _AC
+	u32 _B0;                                // _B0 - unknown
+	AutoBgm* mBgmSeq;                       // _B4
+	JADUtility::PrmSlider<u8> mTempoSlider; // _B8
+	JADUtility::PrmRadioButton<u8> _E8;     // _E8
+	u8 mTempo;                              // _118
 };
+
 
 /**
  * @size = 0x8
  */
 struct ConductorArcMgr {
-	virtual ~ConductorArcMgr(); // _08 (weak)
+	ConductorArcMgr()
+	{
+		mArchive = nullptr;
+		mArchive = JKRMountArchive("/AudioRes/Conductor.arc", JKRArchive::EMM_Dvd, JKRGetCurrentHeap(), JKRArchive::EMD_Head);
+		P2ASSERTLINE(746, mArchive);
+	}
+
+	static void createInstance()
+	{
+		P2ASSERTLINE(726, !sInstance);
+		sInstance = new ConductorArcMgr;
+		P2ASSERTLINE(728, sInstance);
+	}
+
+	static ConductorArcMgr* getInstance()
+	{
+		P2ASSERTLINE(734, sInstance);
+		return sInstance;
+	}
+
+	virtual ~ConductorArcMgr() { sInstance = nullptr; } // _08 (weak)
 
 	JKRArchive* mArchive; // _04
+
+	static ConductorArcMgr* sInstance;
 };
 
 /**
  * @size = 0x270
  */
-struct ConductorMgr : JADUtility::PrmDataMgrNode<PSAutoBgm::Conductor, PSAutoBgm::AutoBgm> {
-	virtual ~ConductorMgr();        // _08 (weak)
-	virtual void getObjHeap();      // _14 (weak)
-	virtual void getDataHeap();     // _18 (weak)
-	virtual void getSaveTempHeap(); // _2C (weak)
-	                                // virtual void _30() = 0;         // _30 - possibly
-	                                // virtual void _34() = 0;         // _34 - possibly
-};
+struct ConductorMgr : public JADUtility::PrmDataMgrNode<PSAutoBgm::Conductor, PSAutoBgm::AutoBgm> {
+	inline ConductorMgr(PSAutoBgm::AutoBgm* bgm)
+	    : JADUtility::PrmDataMgrNode<PSAutoBgm::Conductor, PSAutoBgm::AutoBgm>(bgm)
+	{
+	}
 
+	virtual ~ConductorMgr() { }                          // _08 (weak)
+	virtual JKRHeap* getObjHeap() { return sHeap; }      // _14 (weak)
+	virtual JKRHeap* getDataHeap() { return sHeap; }     // _18 (weak)
+	virtual JKRHeap* getSaveTempHeap() { return sHeap; } // _2C (weak)
+
+	static JKRHeap* sHeap;
+
+	// _00       = DataMgrBase*
+	// _04       = VTBL
+	// _08-_258  = PrmDataMgrNode
+	// _258-_278 = DataMgrBase (virtual)
+};
 } // namespace PSAutoBgm
 
 #endif

@@ -37,11 +37,11 @@ bool MeloArrMgr::isToAvoid(MeloArrArg& meloArg)
 {
 	MeloArrBase* currLink;
 	meloArg.assertCheck();
-	if (!_12) {
+	if (!mIsActive) {
 		return false;
 	}
 	bool check = false;
-	if ((_10 >> meloArg._00) & 1) {
+	if ((mTrackMaskIds >> meloArg._00) & 1) {
 		currLink = static_cast<MeloArrBase*>(mList.mHead);
 		for (currLink; currLink; currLink = static_cast<MeloArrBase*>(currLink->mNext)) {
 			MeloArrBase* randAvoid = static_cast<MeloArrBase*>(currLink->mValue);

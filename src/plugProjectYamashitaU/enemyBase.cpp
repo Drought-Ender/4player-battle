@@ -47,7 +47,7 @@
 #include "nans.h"
 
 JKRArchive* Game::gParmArc;
-PSGame::BASARC* PSSystem::ArcMgr<PSGame::BASARC>::sInstance;
+PSSystem::ArcMgr<PSGame::BASARC>* PSSystem::ArcMgr<PSGame::BASARC>::sInstance;
 PSM::BossBgmFader::Mgr* PSSystem::SingletonBase<PSM::BossBgmFader::Mgr>::sInstance;
 PSM::ObjCalcBase* PSSystem::SingletonBase<PSM::ObjCalcBase>::sInstance;
 PSM::CreaturePrm* PSSystem::SingletonBase<PSM::CreaturePrm>::sInstance;

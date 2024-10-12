@@ -268,4 +268,15 @@ struct JKRDvdArchive : public JKRArchive {
 	JKRDvdFile* mDvdFile;            // _68
 };
 
+inline JKRArchive* JKRMountArchive(const char* path, JKRArchive::EMountMode mountMode, JKRHeap* heap,
+                                   JKRArchive::EMountDirection mountDirection)
+{
+	return JKRArchive::mount(path, mountMode, heap, mountDirection);
+}
+
+inline JKRArchive* JKRMountArchive(void* inBuf, JKRHeap* heap, JKRArchive::EMountDirection mountDirection)
+{
+	return JKRArchive::mount(inBuf, heap, mountDirection);
+}
+
 #endif

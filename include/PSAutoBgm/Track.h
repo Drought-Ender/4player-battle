@@ -8,6 +8,8 @@
 #include "JSystem/JAudio/JAS/JASTrack.h"
 
 namespace PSAutoBgm {
+
+struct CycleBase;
 /**
  * @size = 2C4
  */

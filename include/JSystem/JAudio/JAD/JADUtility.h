@@ -28,7 +28,7 @@ struct NodeTree {
 };
 
 // TODO: this
-struct AccessMode;
+enum AccessMode { MODE_0 };
 
 /**
  * @size = 0x1C
@@ -48,7 +48,7 @@ struct PrmSetBase {
 	virtual void load(JSUMemoryInputStream&);           // _10
 	virtual void afterRemovingChildButton(PrmSetBase*); // _14 (weak)
 	virtual void afterRemovingThisButton(PrmSetBase*);  // _18 (weak)
-	virtual void getEraseLink();                        // _1C (weak)
+	virtual void* getEraseLink();                        // _1C (weak)
 	virtual void afterGetFromFree();                    // _20 (weak)
 
 	u8 _04[0x14];   // _04 - unknown

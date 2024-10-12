@@ -11,6 +11,7 @@
 #include "SysShape/AnimMgr.h"
 #include "Game/EnemyBase.h"
 #include "JSystem/J3D/J3DModelLoader.h"
+#include "PSGame/SoundCreatureMgr.h"
 #include "Vector3.h"
 
 struct CollPartFactory;

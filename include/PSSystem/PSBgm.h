@@ -21,9 +21,9 @@ struct BgmSeq : public SeqBase {
 	BgmSeq(const char*, const JAInter::SoundInfo&);
 
 	virtual ~BgmSeq();          // _08
-	virtual void getCastType(); // _24 (weak)
-	virtual void getSeqType();  // _28 (weak)
-	virtual void getHandleP();  // _3C (weak)
+	virtual u8 getCastType(); // _24 (weak)
+	virtual u32 getSeqType();  // _28 (weak)
+	virtual JAISound** getHandleP();  // _3C (weak)
 
 	// _00-_10  = JSULink<SeqBase>
 	// _10      = VTABLE
@@ -35,28 +35,43 @@ struct BgmSeq : public SeqBase {
  * @size = 0xB8
  */
 struct DirectedBgm : public BgmSeq {
-	DirectedBgm(const char*, const JAInter::SoundInfo&, DirectorMgrBase*);
+	DirectedBgm(const char* bmsFileName, const JAInter::SoundInfo& info, DirectorMgrBase* directorMgr);
 
-	virtual ~DirectedBgm();                           // _08 (weak)
-	virtual void init();                              // _0C
-	virtual void startSeq();                          // _14
-	virtual void stopSeq(u32);                        // _18
-	virtual void getCastType();                       // _24 (weak)
-	virtual void onPlayingFrame();                    // _30
-	virtual void newSeqTrackRoot();                   // _44
-	virtual void newSeqTrackChild(u8, SeqTrackRoot&); // _48
+	virtual ~DirectedBgm() { }                                  // _08 (weak)
+	virtual void init();                                        // _0C
+	virtual void startSeq();                                    // _14
+	virtual void stopSeq(u32);                                  // _18
+	virtual u8 getCastType() { return TYPE_DirectedBgm; }       // _24 (weak)
+	virtual void onPlayingFrame();                              // _30
+	virtual SeqTrackRoot* newSeqTrackRoot();                    // _44
+	virtual SeqTrackChild* newSeqTrackChild(u8, SeqTrackRoot&); // _48
 
 	void initRootTrack_onPlaying(JASTrack*);
 	void initChildTrack_onPlaying(JASTrack*, u8);
-	void getDirectorP(u8);
+	DirectorBase* getDirectorP(u8);
+
+	// unused/inlined:
+	void getDirector(u8);
+
+	inline void assertValidTrack()
+	{
+		bool check = mIsInitialized == 1 && mRootTrack;
+		P2ASSERTLINE(415, check);
+	}
+
+	inline SeqTrackChild* getChildTrack(int i)
+	{
+		P2ASSERTLINE(419, i < 16);
+		return mChildTracks[i];
+	}
 
 	// _00-_10  = JSULink<SeqBase>
 	// _10      = VTABLE
 	// _14-_6C  = BgmSeq
-	DirectorMgrBase* _6C;   // _6C
-	SeqTrackRoot* _70;      // _70
-	SeqTrackChild* _74[16]; // _74
-	u8 _B4;                 // _B4 - unknown
+	DirectorMgrBase* mDirectorMgr;   // _6C
+	SeqTrackRoot* mRootTrack;        // _70
+	SeqTrackChild* mChildTracks[16]; // _74
+	u8 mIsInitialized;               // _B4
 };
 
 /**
@@ -67,9 +82,9 @@ struct JumpBgmSeq : public DirectedBgm {
 
 	virtual ~JumpBgmSeq();                     // _08 (weak)
 	virtual void startSeq();                   // _14
-	virtual void getCastType();                // _24 (weak)
+	virtual u8 getCastType();                // _24 (weak)
 	virtual void onPlayingFrame();             // _30
-	virtual void newSeqTrackRoot();            // _44
+	virtual PSSystem::SeqTrackRoot* newSeqTrackRoot();            // _44
 	virtual void getSeqStartPoint();           // _4C
 	virtual void requestJumpBgmQuickly(u16);   // _50
 	virtual void requestJumpBgmOnBeat(u16);    // _54
@@ -97,6 +112,32 @@ struct JumpBgmSeq : public DirectedBgm {
 	u32 _12C;         // _12C
 	short _130;       // _130
 };
+
+
+struct JumpBgmPort {
+	JumpBgmPort(JumpBgmSeq*);
+
+	void onBeatTop(struct BeatMgr&);
+
+	// unused/inlined:
+	void requestQuickly(u16);
+	void requestOnBeat(u16);
+	void requestEveryBeat(u16);
+	u16 output();
+
+	OSMutex mMutex1;     // _00
+	u16 _18;             // _18
+	OSMutex mMutex2;     // _1C
+	u16 _34;             // _34
+	OSMutex mMutex3;     // _38
+	u16 _50;             // _50
+	OSMutex mMutex4;     // _54
+	u16 _64;             // _64
+	JumpBgmSeq* mOwner;  // _68
+	u32 mAvoidJumpTimer; // _6C
+	u16 _70;             // _70
+};
+
 
 } // namespace PSSystem
 

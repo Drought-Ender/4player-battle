@@ -381,11 +381,11 @@ void VsGameSection::onSetSoundScene()
 
 	if (gameSystem->isChallengeMode()) {
 		floorInfo.mSceneType = PSGame::SceneInfo::CHALLENGE_MODE;
-		floorInfo._40        = getCurrFloor();
-		floorInfo._49        = mChallengeStageNum;
+		floorInfo.mFloorNum        = getCurrFloor();
+		floorInfo.mChallengeModeStageNum        = mChallengeStageNum;
 	} else {
 		floorInfo.mSceneType = PSGame::SceneInfo::TWO_PLAYER_BATTLE;
-		floorInfo._40        = mVsStageNum;
+		floorInfo.mFloorNum        = mVsStageNum;
 	}
 
 	floorInfo.mAlphaType = static_cast<RoomMapMgr*>(mapMgr)->mFloorInfo->mParms.mFloorAlphaType.mValue;
@@ -399,7 +399,7 @@ void VsGameSection::onSetSoundScene()
 
 	setDefaultPSSceneInfo(floorInfo);
 	PSSystem::SceneMgr* sceneMgr = PSSystem::getSceneMgr();
-	static_cast<PSGame::PikSceneMgr*>(sceneMgr)->newAndSetCurrentScene(&floorInfo);
+	static_cast<PSGame::PikSceneMgr*>(sceneMgr)->newAndSetCurrentScene(floorInfo);
 	sceneMgr = PSSystem::getSceneMgr();
 	sceneMgr->checkScene();
 	sceneMgr->mScenes->mChild->scene1stLoadSync();

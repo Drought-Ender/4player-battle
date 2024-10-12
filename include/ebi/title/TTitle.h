@@ -154,7 +154,27 @@ struct TTitleLightMgr : public LightMgr {
 };
 
 struct TTitleMgr : public CNode {
-	enum enumState { UNKNOWN };
+	enum enumState {
+		TITLE_Inactive,     // 0
+		TITLE_Normal,       // 1
+		TITLE_StartWind,    // 2
+		TITLE_Enemy,        // 3
+		TITLE_BoidDisperse, // 4
+		TITLE_BoidRegroup,  // 5
+		TITLE_BoidSwirl,    // 6
+	};
+
+	enum levelSetting {
+		LEVEL_Spring, // 0
+		LEVEL_Summer, // 1
+		LEVEL_Autumn, // 2
+		LEVEL_Winter, // 3
+	};
+
+	enum CoordType {
+		COORD_Main, // 0
+		COORD_Sub,  // 1
+	};
 
 	TTitleMgr();
 

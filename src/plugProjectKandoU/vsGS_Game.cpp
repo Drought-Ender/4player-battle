@@ -1111,7 +1111,7 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 
 		scene = (scene->isGameScene()) ? scene : nullptr;
 
-		scene->_10.stopAllSound(15);
+		scene->mSeqMgr.stopAllSound(15);
 	}
 	else if (config->is("x19_vs_bedama")) {
 		for (int i = 0; i < 4; i++) {
@@ -1144,7 +1144,7 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 
 			scene = (scene->isGameScene()) ? scene : nullptr;
 
-			scene->_10.stopAllSound(15);
+			scene->mSeqMgr.stopAllSound(15);
 			
 		}
 		else {

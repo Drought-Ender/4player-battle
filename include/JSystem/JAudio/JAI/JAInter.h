@@ -284,18 +284,17 @@ struct SeqParameter : MoveParaSet {
 	JASOuterParam mOuterParam; // _62C
 };
 
+
 struct SoundInfo {
-	int unk1; // _00
-	union count_t {
-		unsigned long v1;
-		unsigned char v2[4];
-		unsigned short v3[2];
-	} count;   // _04
-	f32 pitch; // _08
-	union volume_t {
-		unsigned long v1;
-		unsigned char v2;
-	} volume; // _0C
+	u32 mFlag;     // _00
+	u8 mPriority;  // _04
+	u8 _05;        // _05
+	u16 mOffsetNo; // _06
+	u32 mPitch;    // _08
+	union Volume {
+		u32 typeView;
+		u8 byteView[4];
+	} mVolume; // _0C
 };
 
 namespace SoundTable {

@@ -35,6 +35,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/FloatingIconMgr.o\
 	$(BUILD_DIR)/src/FourPlayer/NaviModifier.o\
 	$(BUILD_DIR)/src/FourPlayer/Widescreen.o\
+	$(BUILD_DIR)/src/FourPlayer/PSGame2.o\
 
 
 

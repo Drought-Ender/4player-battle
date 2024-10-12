@@ -26,4 +26,10 @@ inline PSGame::SeMgr* getSeMgrInstance()
 }
 }; // namespace PSSystem
 
+namespace PSGame
+{
+u16 seqCpuSync(JASTrack* track, u16 command);
+} // namespace PsGame
+
+
 #endif

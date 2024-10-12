@@ -264,7 +264,7 @@ void CommonSaveData::Mgr::setBgmVolume(f32 volume)
 			newCalc = calc - 0.5f;
 		}
 		mMusicVol = newCalc;
-		PSSystem::getSysIF()->setConfigVol_Bgm(volume);
+		PSSystem::spSysIF->setConfigVol_Bgm(volume);
 	}
 	OSEnableScheduler();
 	OSRestoreInterrupts(temp);
@@ -299,7 +299,7 @@ void CommonSaveData::Mgr::setSeVolume(f32 volume)
 			newCalc = calc - 0.5f;
 		}
 		mSeVol = newCalc;
-		PSSystem::getSysIF()->setConfigVol_Se(volume);
+		PSSystem::spSysIF->setConfigVol_Se(volume);
 	}
 
 	OSEnableScheduler();

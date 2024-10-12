@@ -276,10 +276,39 @@ struct TaskEntryMgr : MutexList<TaskEntry> {
 };
 
 struct TaskChecker {
-	OSMutex _00;
-	u8 _18;
+	inline void advanceTask()
+	{
+		OSLockMutex(&mMutex);
+		mTaskIndex++;
+		OSUnlockMutex(&mMutex);
+	}
+
+	inline void rewindTask()
+	{
+		OSLockMutex(&mMutex);
+		mTaskIndex--;
+		OSUnlockMutex(&mMutex);
+	}
+
+	OSMutex mMutex; // _00
+	u8 mTaskIndex;  // _18
 };
 
 } // namespace PSSystem
+
+
+inline void PSAdvanceTask(PSSystem::TaskChecker* task)
+{
+	if (task) {
+		task->advanceTask();
+	}
+}
+
+inline void PSRewindTask(PSSystem::TaskChecker* task)
+{
+	if (task) {
+		task->rewindTask();
+	}
+}
 
 #endif

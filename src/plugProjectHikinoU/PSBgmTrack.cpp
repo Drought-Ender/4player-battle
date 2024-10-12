@@ -51,7 +51,7 @@ TaskEntryMgr* SeqTrackBase::getTaskEntryList() { return &mTaskEntryMgr; }
 SeqTrackRoot::SeqTrackRoot()
     : _34(2.0f)
     , _38(0)
-    , _3E(0x3C)
+    , mBeatInterval(60)
     , _100(2)
 {
 }
@@ -132,7 +132,7 @@ u16 SeqTrackRoot::beatUpdate()
 	}
 	mTaskEntryMgr._24->setTempo(_2E);
 	onBeatTop();
-	return _3E;
+	return mBeatInterval;
 }
 
 /*

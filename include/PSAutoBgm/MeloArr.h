@@ -42,14 +42,22 @@ struct MeloArrBase : public JSULink<MeloArrBase>, JADHioNode {
  * @size = 0x10
  */
 struct MeloArrMgr : public JADHioNode {
-	virtual ~MeloArrMgr(); // _08 (weak)
+	MeloArrMgr()
+	    : JADHioNode(nullptr)
+	    , mList()
+	    , mTrackMaskIds(0)
+	    , mIsActive(0)
+	{
+	}
+
+	virtual ~MeloArrMgr() { } // _08 (weak)
 
 	bool isToAvoid(MeloArrArg&);
 
 	// _00 = VTABLE
-	JSUPtrList mList; // _04
-	u16 _10;          // _10
-	u8 _12;           // _12
+	JSUList<MeloArrBase> mList; // _04
+	u16 mTrackMaskIds;          // _10
+	u8 mIsActive;               // _12
 };
 
 /**

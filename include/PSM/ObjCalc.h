@@ -48,7 +48,7 @@ struct ObjCalc_2PGame : public ObjCalcBase {
 	virtual u8 getPlayerNo(Vec&);             // _10
 	virtual bool is1PGame() { return false; } // _18 (weak)
 
-	void newInstance_2PGame();
+	static void newInstance_2PGame();
 
 	// _00     = VTBL
 	// _00-_08 = ObjCalcBase

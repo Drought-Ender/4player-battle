@@ -136,9 +136,10 @@ struct FSMState_WorldMapInfoWindow : public FSMState {
 };
 
 struct TMgr {
+	typedef FSMState StateType;
 	TMgr();
 
-	~TMgr();
+	~TMgr() { }
 
 	void draw();
 	int getStateID();
@@ -152,14 +153,15 @@ struct TMgr {
 	void forceQuit();
 	void showInfo();
 
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
+
 	Screen::TOption mOptionScreen; // _000
 	ebi::Save::TMgr* mSaveMgr;     // _F18
 	Controller* mController;       // _F1C
-	u8 _F20;                       // _F20
+	bool mIsFinished;              // _F20
 	FSMStateMachine mStateMachine; // _F24
-	u8 _F28;                       // _F28
-	u32 _F2C;                      // _F2C
-	u32 _F30;                      // _F30
+	FSMState* mCurrentState;       // _F3C
 };
 } // namespace Option
 } // namespace ebi
