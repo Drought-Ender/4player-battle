@@ -8,6 +8,12 @@
 #include "PS.h"
 
 
+#define NAVI_BOX_OFFS_X (-20.0f)
+#define NAVI_BOX_OFFS_Y (-12.0f)
+
+#define WIN_BOX_OFFS_X (65.0f)
+#define WIN_BOX_OFFS_Y (-7.5f)
+
 int mRealWinCounts[4];
 bool gDrawVsMenu = true;
 
@@ -286,7 +292,6 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         "wife_large.bti"
     };
 
-    J2DPictureEx* outlineBox = static_cast<J2DPictureEx*>(mMainScreen->mScreenObj->search('NaviBox'));
     J2DPane* root = mMainScreen->mScreenObj->search('ROOT');
 
     mNaviNames[0] = static_cast<J2DTextBoxEx*>(mMainScreen->mScreenObj->search('OliName'));
@@ -325,13 +330,6 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
 
     // mWinCounts[0]->hide();
     // mWinCounts[1]->hide();
-
-    J2DPane* redPane = mMainScreen->mScreenObj->search('PICT_RED');
-    J2DPane* bluePane = mMainScreen->mScreenObj->search('PICT_BLU');
-
-    if (redPane)  redPane->move(-500.0f, 0.0f);
-    if (bluePane) bluePane->move(-500.0f, 0.0f);
-
     
     for (int i = 0; i < 4; i++) {        
         f32 baseX = baseXOffs[mTeamIDs[i]];
@@ -344,7 +342,7 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         mNaviBasePos[i] = Vector2f(baseX, baseY);
 
         mNaviImages[i] = og::Screen::CopyPictureToPane(static_cast<J2DPictureEx*>(mOrimaPikiIcon),
-        root, baseX, baseY, 'Ph_or');
+        root, baseX, baseY, 'ORI0' + i);
         
         mNaviImages[i]->updateScale(0.5f);
         mNaviImages[i]->changeTexture(sCharacters[i].mImage, 0);
@@ -368,15 +366,14 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         f32 boxX = boxXOffs[mTeamIDs[i]];
         f32 boxY = boxYOffs[i];
 
-        mNaviBoxes[i] = og::Screen::CopyPictureToPane(outlineBox, root, boxX, boxY, 'Ph_or');
-        mNaviBoxes[i]->updateScale(3.0f, 0.6f);
+
+        mNaviBoxes[i] = static_cast<J2DPictureEx*>(mMainScreen->mScreenObj->search('NaviBox0' + i));
+        P2ASSERT(mNaviBoxes[i]);
         mNaviBoxes[i]->setWhite(color);
-        mWinBoxes[i] = og::Screen::CopyPictureToPane(outlineBox, root, boxX + 37.5f, boxY, 'Ph_or');
-        mWinBoxes[i]->updateScale(0.6f, 0.4f);
+        mWinBoxes[i] = static_cast<J2DPictureEx*>(mMainScreen->mScreenObj->search('WinBox0' + i));
 
-
-        
-        
+        mNaviBoxes[i]->setOffset(mNaviBasePos[i].x + NAVI_BOX_OFFS_X, mNaviBasePos[i].y + NAVI_BOX_OFFS_Y);
+        mWinBoxes[i]->setOffset(mNaviBasePos[i].x + WIN_BOX_OFFS_X, mNaviBasePos[i].y + WIN_BOX_OFFS_Y);        
     }
 
     for (int i = Game::gNaviNum; i < 4; i++) {
@@ -387,7 +384,6 @@ void TFourVsSelect::doCreate(JKRArchive* rarc) {
         mNaviNames[i]->hide();
     }
 
-    outlineBox->hide();
     mOrimaPikiIcon->hide();
     mLoozyPikiIcon->hide();
 
@@ -605,11 +601,10 @@ bool TFourVsSelect::doUpdate() {
         }
         mNewWinCallbacks[i]->update();
 
-        mNaviBoxes[i]->setOffset(mNaviBasePos[i].x + 20.0f, mNaviBasePos[i].y - 20.0f);
+        mNaviBoxes[i]->setOffset(mNaviBasePos[i].x + NAVI_BOX_OFFS_X, mNaviBasePos[i].y + NAVI_BOX_OFFS_Y);
         mNaviBoxes[i]->setWhite(mLerpColors[i]);
         
-        mWinBoxes[i]->setOffset(mNaviBasePos[i].x + 57.5f, mNaviBasePos[i].y - 20.0f);
-        mWinBoxes[i]->calcMtx();
+        mWinBoxes[i]->setOffset(mNaviBasePos[i].x + WIN_BOX_OFFS_X, mNaviBasePos[i].y + WIN_BOX_OFFS_Y);
     
     }
 
@@ -633,7 +628,7 @@ bool TFourVsSelect::doUpdate() {
 
     for (int i = Game::gNaviNum; i < 4; i++) {
         mNaviImages[i]->hide();
-        mNaviBoxes[i]->hide();
+        // mNaviBoxes[i]->hide();
         mWinBoxes[i]->hide();
         mNewWinCallbacks[i]->hide();
         mNaviNames[i]->hide();
