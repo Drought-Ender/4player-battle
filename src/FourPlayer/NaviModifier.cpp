@@ -1,6 +1,7 @@
 #include "Game/Navi.h"
 #include "Game/NaviState.h"
 #include "Game/MoviePlayer.h"
+#include "PSM/Navi.h"
 #include "Game/NaviParms.h"
 
 namespace Game
@@ -125,5 +126,4 @@ namespace Game
             mCursorModel->mJ3dModel->entry();
         }
     }
-
 } // namespace Game

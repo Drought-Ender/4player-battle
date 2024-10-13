@@ -49,7 +49,7 @@ struct PluckSpeedBuff : public NaviBuffBase
     virtual void draw(Graphics&);
     virtual void update();
     
-    f32 getSpeedBuff();
+    f32 getSpeedBuff() const;
     
     u8 mType;
     f32 mAnimationTimer;
@@ -67,6 +67,8 @@ struct NaviBuffData
 
     void draw(u8 vp, Graphics&);
     void update();
+
+    const NaviBuffBase* findBuff(const char* name);
 };
 
 struct BuffMgr

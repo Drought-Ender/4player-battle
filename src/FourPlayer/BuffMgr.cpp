@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "VsOptions.h"
 #include "FourPlayer.h"
+#include "Dolphin/string.h"
 
 namespace Game
 {
@@ -192,7 +193,7 @@ void NaviBuffData::update() {
     }
 }
 
-f32 PluckSpeedBuff::getSpeedBuff() {
+f32 PluckSpeedBuff::getSpeedBuff() const {
     switch (mType)
     {
     case WEAK:
@@ -237,6 +238,15 @@ void PluckSpeedBuff::draw(Graphics& gfx) {
     GXTexCoord2f32(1.0f, 1.0f);
     GXEnd();
 
+}
+
+const NaviBuffBase* NaviBuffData::findBuff(const char* name) {
+    FOREACH_NODE(NaviBuffBase, mContainer.mChild, node) {
+        if (!strcmp(name, node->getName())) {
+            return node;
+        }
+    }
+    return nullptr;
 }
 
 } // namespace Game

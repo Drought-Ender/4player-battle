@@ -1211,7 +1211,7 @@ init__Q24Game7NaviFSMFPQ24Game4Navi:
 .L_8017D72C:
 /* 8017D72C 0017A66C  7F E3 FB 78 */	mr r3, r31
 /* 8017D730 0017A670  48 00 BB 75 */	bl "registerState__Q24Game26StateMachine<Q24Game4Navi>FPQ24Game22FSMState<Q24Game4Navi>"
-/* 8017D734 0017A674  38 60 00 1C */	li r3, 0x1c
+/* 8017D734 0017A674  38 60 00 1C */	li r3, 0x20
 /* 8017D738 0017A678  4B EA 67 6D */	bl __nw__FUl
 /* 8017D73C 0017A67C  7C 64 1B 79 */	or. r4, r3, r3
 /* 8017D740 0017A680  41 82 00 38 */	beq .L_8017D778
@@ -5962,20 +5962,6 @@ execMove__Q24Game17NaviPathMoveStateFPQ24Game4Navi:
 execMoveGoal__Q24Game17NaviPathMoveStateFPQ24Game4Navi:
 /* 80181C84 0017EBC4  38 60 00 00 */	li r3, 0
 /* 80181C88 0017EBC8  4E 80 00 20 */	blr 
-
-.global cleanup__Q24Game13NaviNukuStateFPQ24Game4Navi
-cleanup__Q24Game13NaviNukuStateFPQ24Game4Navi:
-/* 80181EFC 0017EE3C  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 80181F00 0017EE40  7C 08 02 A6 */	mflr r0
-/* 80181F04 0017EE44  C0 02 A8 E8 */	lfs f0, lbl_80518C48@sda21(r2)
-/* 80181F08 0017EE48  7C 83 23 78 */	mr r3, r4
-/* 80181F0C 0017EE4C  90 01 00 14 */	stw r0, 0x14(r1)
-/* 80181F10 0017EE50  D0 04 01 18 */	stfs f0, 0x118(r4)
-/* 80181F14 0017EE54  4B FC 2C 4D */	bl startThrowDisable__Q24Game4NaviFv
-/* 80181F18 0017EE58  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 80181F1C 0017EE5C  7C 08 03 A6 */	mtlr r0
-/* 80181F20 0017EE60  38 21 00 10 */	addi r1, r1, 0x10
-/* 80181F24 0017EE64  4E 80 00 20 */	blr 
 
 .global onKeyEvent__Q24Game13NaviNukuStateFPQ24Game4NaviRCQ28SysShape8KeyEvent
 onKeyEvent__Q24Game13NaviNukuStateFPQ24Game4NaviRCQ28SysShape8KeyEvent:

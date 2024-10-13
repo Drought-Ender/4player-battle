@@ -7,6 +7,7 @@
 #include "Game/PikiState.h"
 #include "PSM/Navi.h"
 #include "VsOptions.h"
+#include "Game/BuffMgr.h"
 
 namespace Game {
 
@@ -165,6 +166,17 @@ void NaviNukuState::init(Navi* navi, StateArg* stateArg)
 	} else {
 		mAnimID = IPikiAnims::NUKU;
 	}
+
+	mAnimSpeed = 30.0f;
+
+	const PluckSpeedBuff* buff = static_cast<const PluckSpeedBuff*>(naviBuffMgr->mBuffData[navi->mNaviIndex].findBuff("PluckSpeedBuff"));
+	if (buff) {
+		//OSReport("pluck speed buff %f\n", buff->getSpeedBuff());
+		mAnimSpeed = 30.0f * buff->getSpeedBuff();
+		navi->mAnimSpeed = mAnimSpeed;
+		OSReport("Anim Speed Initial %f\n", navi->mAnimSpeed);
+	}
+
 	navi->startMotion(mAnimID, mAnimID, navi, nullptr);
 	mCounter = static_cast<NaviParms*>(navi->mParms)->mNaviParms.mP042;
 	navi->mSoundObj->startSound(PSSE_PL_PULLING_PIKI, 0);
@@ -174,6 +186,10 @@ void NaviNukuState::init(Navi* navi, StateArg* stateArg)
 	mIsStopAutopluck = false;
 	_15         	 = 0;
 	navi->mMass 	 = 0.0f;
+
+	
+
+	
 }
 
 
@@ -184,6 +200,8 @@ void NaviNukuState::init(Navi* navi, StateArg* stateArg)
 void NaviNukuState::exec(Navi* navi)
 {
 	endPluck(this, navi);
+
+	navi->mAnimSpeed = mAnimSpeed;
 
 	if (moviePlayer && moviePlayer->mDemoState != 0) {
 		if (mIsFollower) {
@@ -213,6 +231,12 @@ void NaviNukuState::exec(Navi* navi)
 			navi->mPluckingCounter++;
 		}
 	}
+}
+
+void NaviNukuState::cleanup(Navi* navi)
+{
+	navi->mMass = 1.0f;
+	navi->startThrowDisable();
 }
 
 

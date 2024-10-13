@@ -479,6 +479,7 @@ struct NaviNukuState : public NaviState {
 	s16 mAnimID;    // _16
 	u8 mIsFollower; // _18
 	u8 mIsStopAutopluck;
+	f32 mAnimSpeed;
 };
 
 struct NaviPathMoveState : public NaviState {
