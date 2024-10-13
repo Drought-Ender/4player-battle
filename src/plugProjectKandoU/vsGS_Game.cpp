@@ -22,6 +22,7 @@
 #include "Radar.h"
 #include "nans.h"
 #include "FourPlayer.h"
+#include "Game/BuffMgr.h"
 #include "VsOptions.h"
 
 namespace Game {
@@ -290,6 +291,12 @@ void GameState::exec(VsGameSection* section)
 
 	if (section->mBingoMgr) {
 		section->mBingoMgr->exec(section);
+	}
+
+	if (gameSystem->isVersusMode() && !mFlags.typeView && !moviePlayer->mDemoState) {
+		if (naviBuffMgr) {
+			naviBuffMgr->update();
+		}
 	}
 
 
@@ -754,6 +761,9 @@ void GameState::pre2dDraw(Graphics& gfx, VsGameSection* section)
 {
 	if (gameSystem->isVersusMode() && !mFlags.typeView && !moviePlayer->mDemoState) {
 		section->mCardMgr->draw(gfx);
+		if (naviBuffMgr) {
+			naviBuffMgr->draw(gfx);
+		}
 	}
 }
 

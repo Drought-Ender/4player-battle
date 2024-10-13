@@ -180,4 +180,10 @@ enum ECherryPassive {
     CHERRYPASSIVE_INF = 5
 };
 
+enum EAutobalance {
+    AUTOBALANCE_OFF    = 0,
+    AUTOBALANCE_WEAK   = 1,
+    AUTOBALANCE_STRONG = 2
+};
+
 } // namespace ConfigEnums

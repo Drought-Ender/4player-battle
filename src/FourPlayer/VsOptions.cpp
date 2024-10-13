@@ -51,6 +51,17 @@ Option gOptions[] = {
         0
     },
     {
+        "Pluck Odds",
+        { "Off", "Weak", "Strong" },
+        {
+            "Smaller teams will receive no assistance",
+            "For each team member missing, there will be an additional x0.5 pluck speed",
+            "For each team member missing, there will be an additional x1.0 pluck speed"
+        },
+        3,
+        0
+    },
+    {
         "Onion Marbles",
         { "Vanilla", "Buried", "Removed" },
         { "Red and Blue marbles will spawn like in vanilla", "Red and Blue marbles will spawn buried", "Red and Blue marbles will not be spawned" },

@@ -93,6 +93,7 @@ extern int gConfig[];
 enum OptionsEnum {
     WIDESCREEN,
     PLAYER_NAME,
+    AUTO_BALENECE,
     MARBLE_BURY,
     MARBLE_CARRY,
     CHERRY_RATE,

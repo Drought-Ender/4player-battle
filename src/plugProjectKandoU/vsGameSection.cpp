@@ -44,6 +44,7 @@
 #include "Game/PikiState.h"
 
 #include "Game/Entities/ItemPikihead.h"
+#include "Game/BuffMgr.h"
 #include "FloatingIconMgr.h"
 
 #include "Game/generalEnemyMgr.h"
@@ -453,6 +454,8 @@ void VsGameSection::onSetupFloatMemory()
 	VsGame::vsSlotCardMgr->generateCards(this);
 
 	FloatingIconMgr::create();
+
+	BuffMgr::init();
 
 	mTekiMgr->entry(EnemyTypeID::EnemyID_Tobi, 20);
 
