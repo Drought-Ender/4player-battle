@@ -457,4 +457,35 @@ void ItemTreasure::Item::releasePellet()
 	}
 }
 
+void PelletReturnState::exec(Pellet* pelt)
+{
+	bool end = false;
+	switch (mState) {
+	case 0:
+		int check = execPathfinding(pelt);
+		if (check == 2) {
+			end = true;
+		}
+		break;
+	case 1:
+		check = execMove(pelt);
+		if (check == 2) {
+			end = true;
+		} else if (check == 1) {
+			end = true;
+		}
+		break;
+	case 2:
+		check = execMoveGoal(pelt);
+		if (check == 2) {
+			end = true;
+		}
+		break;
+	}
+
+	if (end) {
+		transit(pelt, (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_BURY) ? PELSTATE_BounceBury : PELSTATE_Normal, nullptr);
+	}
+}
+
 } // namespace Game

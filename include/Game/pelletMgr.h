@@ -733,8 +733,8 @@ struct PelletBounceBuryState : public PelletState {
 	void flickNearby(Pellet*);
 	void doEfx(Pellet*);
 
-	float m_airTime;
-	bool m_isFalling;
+	float mAirTime;
+	bool mIsFalling;
 };
 
 extern PelletMgr* pelletMgr;

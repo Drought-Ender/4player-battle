@@ -12,7 +12,6 @@
 #include "Game/VsGame.h"
 #include "LoadResource.h"
 #include "Game/NaviState.h"
-#include "Drought/Encryption.h"
 
 VsOptionsMenuMgr* gOptionMenu;
 
@@ -1005,8 +1004,6 @@ void* CharacterData::loadModel() {
         sprintf(buffer, "/player/%s/model.bmd", mName);
     }
 
-    
-
     LoadResource::Arg loadArg(buffer);
 	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
 
@@ -1015,14 +1012,10 @@ void* CharacterData::loadModel() {
     if (resource) {
 		model = (resource->mFile);
 
-        
-
         if (model) return model;
 	}
 
     JUT_ASSERT("%s Missing!\n", buffer);
-    
-    
 }
 
 void* CharacterData::loadAST() {

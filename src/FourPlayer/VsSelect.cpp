@@ -628,7 +628,7 @@ bool TFourVsSelect::doUpdate() {
 
     for (int i = Game::gNaviNum; i < 4; i++) {
         mNaviImages[i]->hide();
-        // mNaviBoxes[i]->hide();
+        mNaviBoxes[i]->hide();
         mWinBoxes[i]->hide();
         mNewWinCallbacks[i]->hide();
         mNaviNames[i]->hide();

@@ -22,8 +22,8 @@ namespace Game {
     float PelletBounceBuryState::mBurryRadius = 25.0f;
 
     PelletBounceBuryState::PelletBounceBuryState() : PelletState(PELSTATE_BounceBury) {
-        m_airTime = 0.0f;
-        m_isFalling = false;
+        mAirTime = 0.0f;
+        mIsFalling = false;
     }
 
     void PelletBounceBuryState::init(Pellet* pellet, StateArg* arg) {
@@ -60,25 +60,27 @@ namespace Game {
 		    }
         }
         pellet->endPick(false);
-        Iterator<Creature> iCreature = bounceArg->mHeldPikis;
-        CI_LOOP(iCreature) {
-            Creature* currCreature = *iCreature;
-            if (currCreature->isPiki() && currCreature->isAlive()) {
-                Piki* piki = static_cast<Piki*>(currCreature);
-                piki->endStick();
-                BlowStateArg blowState (launch, 0.0f, false, 2, pellet);
-                piki->mFsm->transit(piki, PIKISTATE_Blow, &blowState);
+        if (bounceArg) {
+            Iterator<Creature> iCreature = bounceArg->mHeldPikis;
+            CI_LOOP(iCreature) {
+                Creature* currCreature = *iCreature;
+                if (currCreature->isPiki() && currCreature->isAlive()) {
+                    Piki* piki = static_cast<Piki*>(currCreature);
+                    piki->endStick();
+                    BlowStateArg blowState (launch, 0.0f, false, 2, pellet);
+                    piki->mFsm->transit(piki, PIKISTATE_Blow, &blowState);
+                }
             }
-        } 
+        }
         PSSystem::spSysIF->playSystemSe(PSSE_PK_CARROT_THROW, 0);
         pellet->setVelocity(launch);
     }
 
     void PelletBounceBuryState::exec(Pellet* pellet) {
-        m_airTime += sys->mDeltaTime;
+        mAirTime += sys->mDeltaTime;
         float pelHeight = pellet->mPelletPosition.y;
         float minY = mapMgr->getMinY(pellet->mPelletPosition);
-        if (m_airTime > 0.7f && FABS(pelHeight - minY) <= 30.0f) {
+        if (mAirTime > 0.7f && FABS(pelHeight - minY) <= 30.0f) {
             bury(pellet);
             PelletBounceBuryState::doEfx(pellet);
             PSSystem::spSysIF->playSystemSe(PSSE_EN_ROCK_BREAK, 0);
@@ -87,8 +89,8 @@ namespace Game {
         }
         else {
             flickNearby(pellet);
-            if (pellet->getVelocity().y < 0.0f && !m_isFalling) {
-                m_isFalling = true;
+            if (pellet->getVelocity().y < 0.0f && !mIsFalling) {
+                mIsFalling = true;
                 PSSystem::spSysIF->playSystemSe(PSSE_EN_ROCK_FALL, 0);
                 
             }
@@ -157,8 +159,8 @@ namespace Game {
     }
 
     void PelletBounceBuryState::cleanup(Pellet* pellet) {
-        m_airTime = 0.0f;
-        m_isFalling = false;
+        mAirTime = 0.0f;
+        mIsFalling = false;
     }
 
     bool PelletBounceBuryState::isBuried() { return false; }
