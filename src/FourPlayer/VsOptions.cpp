@@ -12,6 +12,7 @@
 #include "Game/VsGame.h"
 #include "LoadResource.h"
 #include "Game/NaviState.h"
+#include "Drought/Encryption.h"
 
 VsOptionsMenuMgr* gOptionMenu;
 
@@ -997,7 +998,14 @@ CharacterData sCharacters[4];
 void* CharacterData::loadModel() {
     char buffer[256];
     DebugReport("Name %s\n", mName);
-    sprintf(buffer, "/player/%s/model.bmd", mName);
+    sprintf(buffer, "/player/%s/model.bmd.bde", mName);
+
+    int entrynum = DVDConvertPathToEntrynum(buffer);
+    if (entrynum == -1) {
+        sprintf(buffer, "/player/%s/model.bmd", mName);
+    }
+
+    
 
     LoadResource::Arg loadArg(buffer);
 	LoadResource::Node* resource = gLoadResourceMgr->load(loadArg);
@@ -1006,6 +1014,9 @@ void* CharacterData::loadModel() {
 
     if (resource) {
 		model = (resource->mFile);
+
+        
+
         if (model) return model;
 	}
 

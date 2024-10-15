@@ -5,6 +5,7 @@
 #include "Dolphin/vi.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JKernel/JKRDecomp.h"
+#include "Drought/Encryption.h"
 #include "JSystem/JKernel/JKRFile.h"
 #include "types.h"
 
@@ -192,10 +193,18 @@ void* JKRDvdRipper::loadToMainRAM(JKRDvdFile* jkrDvdFile, u8* file, JKRExpandSwi
 				VIWaitForRetrace();
 			}
 
+			bool b;
+			void* fileNew = Drought::DecryptFile(file, b);
+
+			if (b) {
+				DCInvalidateRange(file, 32);
+				size -= 32;
+			}
+
 			if (newSize) {
 				*newSize = size;
 			}
-			return file;
+			return fileNew;
 
 		} else if (compression2 == COMPRESSION_YAZ0) {
 			JKRDecompressFromDVD(jkrDvdFile, file, fileSizeAligned, fileSize, 0, startOffset, newSize);

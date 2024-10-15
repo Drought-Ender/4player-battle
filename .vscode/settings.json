@@ -20,5 +20,6 @@
     "dvd.h": "c",
     "osutil.h": "c",
     "hw_regs.h": "c"
-  }
+  },
+  "makefile.configureOnOpen": false
 }
