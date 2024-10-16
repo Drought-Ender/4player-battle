@@ -28,6 +28,12 @@ struct DvdThreadCommand {
 	OSMessageQueue mMsgQueue;        // _38
 	void* mMsgBuffer;                // _58
 	JSULink<DvdThreadCommand> mLink; // _5C
+
+	enum CommandMode {
+		CM_Initialized = 0,
+		CM_Processing  = 1,
+		CM_Completed   = 2,
+	};
 };
 
 struct DvdThread : public AppThread {

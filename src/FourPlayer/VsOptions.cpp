@@ -1018,6 +1018,28 @@ void* CharacterData::loadModel() {
     JUT_ASSERT("%s Missing!\n", buffer);
 }
 
+u32 CharacterData::loadRenderFlags() {
+    char buffer[256];
+    sprintf(buffer, "/player/%s/render_flag.bin", mName);
+
+    int entrynum = DVDConvertPathToEntrynum(buffer);
+    if (entrynum == -1) {
+        return 0x20000030;
+    }
+
+    void* file = JKRLoadToMainRAM(buffer);
+    
+    RamStream stream(file, -1);
+    stream.resetPosition(false, STREAM_MODE_BINARY);
+    
+    u32 value = stream.readInt();
+
+
+    delete[] file;
+
+    return value;
+}
+
 void* CharacterData::loadAST() {
     char buffer[256];
     sprintf(buffer, "/player/%s/theme.ast", mName);
@@ -1455,6 +1477,9 @@ void CharacterData::write(Stream& stream) {
 }
 
 CharacterSelect::~CharacterSelect() {
+    mCharacterCount = 0;
+    while (mDvdThread.mMode != DvdThreadCommand::CM_Completed) { }
+
     delete[] mCharacters;
 
     for (int i = 1; i < ARRAY_SIZE(mControllers); i++) {

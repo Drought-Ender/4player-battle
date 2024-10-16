@@ -125,13 +125,16 @@ Navi* NaviMgr::getAliveOrima(int idx) {
 void NaviMgr::loadResources_float() {
 	JKRArchive* pikiArc = JKRArchive::mount("user/Kando/piki/pikis.szs", JKRArchive::EMM_Mem, sys->mSysHeap, JKRArchive::EMD_Head);
 	void* models[4];
-	models[0] = sCharacters[0].loadModel();
-	models[1] = sCharacters[1].loadModel();
-	models[2] = sCharacters[2].loadModel();
-	models[3] = sCharacters[3].loadModel();
+	u32 renderFlags[4];
+
+	for (int i = 0; i < 4; i++) {
+		models[i] = sCharacters[i].loadModel();
+		renderFlags[i] = sCharacters[i].loadRenderFlags();
+	}
+
 	J3DModelData* modelData[4];
 	for (int i = 0; i < 4; i++) {
-		modelData[i] = J3DModelLoaderDataBase::load(models[i], 0x20000030);
+		modelData[i] = J3DModelLoaderDataBase::load(models[i], renderFlags[i]);
 		for (int j = 0; j < modelData[i]->mShapeTable.mCount; j++) {
 			u32& bitfield = modelData[i]->mShapeTable.mItems[j]->mFlags;
 			bitfield &= ~0xF000;

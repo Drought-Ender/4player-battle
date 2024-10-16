@@ -2028,37 +2028,6 @@ __ct__Q34Game9ItemHoney3MgrFv:
 /* 801D40A0 001D0FE0  38 21 00 10 */	addi r1, r1, 0x10
 /* 801D40A4 001D0FE4  4E 80 00 20 */	blr 
 
-.global onCreateModel__Q34Game9ItemHoney3MgrFPQ28SysShape5Model
-onCreateModel__Q34Game9ItemHoney3MgrFPQ28SysShape5Model:
-/* 801D40A8 001D0FE8  94 21 FF F0 */	stwu r1, -0x10(r1)
-/* 801D40AC 001D0FEC  7C 08 02 A6 */	mflr r0
-/* 801D40B0 001D0FF0  90 01 00 14 */	stw r0, 0x14(r1)
-/* 801D40B4 001D0FF4  93 E1 00 0C */	stw r31, 0xc(r1)
-/* 801D40B8 001D0FF8  7C 9F 23 78 */	mr r31, r4
-/* 801D40BC 001D0FFC  3C 80 01 00 */	lis r4, 0x01000200@ha
-/* 801D40C0 001D1000  80 7F 00 08 */	lwz r3, 8(r31)
-/* 801D40C4 001D1004  38 84 02 00 */	addi r4, r4, 0x01000200@l
-/* 801D40C8 001D1008  4B E9 26 11 */	bl newDifferedDisplayList__8J3DModelFUl
-/* 801D40CC 001D100C  80 7F 00 08 */	lwz r3, 8(r31)
-/* 801D40D0 001D1010  81 83 00 00 */	lwz r12, 0(r3)
-/* 801D40D4 001D1014  81 8C 00 10 */	lwz r12, 0x10(r12)
-/* 801D40D8 001D1018  7D 89 03 A6 */	mtctr r12
-/* 801D40DC 001D101C  4E 80 04 21 */	bctrl 
-/* 801D40E0 001D1020  80 7F 00 08 */	lwz r3, 8(r31)
-/* 801D40E4 001D1024  81 83 00 00 */	lwz r12, 0(r3)
-/* 801D40E8 001D1028  81 8C 00 14 */	lwz r12, 0x14(r12)
-/* 801D40EC 001D102C  7D 89 03 A6 */	mtctr r12
-/* 801D40F0 001D1030  4E 80 04 21 */	bctrl 
-/* 801D40F4 001D1034  80 7F 00 08 */	lwz r3, 8(r31)
-/* 801D40F8 001D1038  4B E9 28 2D */	bl makeDL__8J3DModelFv
-/* 801D40FC 001D103C  80 7F 00 08 */	lwz r3, 8(r31)
-/* 801D4100 001D1040  4B E9 26 F5 */	bl lock__8J3DModelFv
-/* 801D4104 001D1044  80 01 00 14 */	lwz r0, 0x14(r1)
-/* 801D4108 001D1048  83 E1 00 0C */	lwz r31, 0xc(r1)
-/* 801D410C 001D104C  7C 08 03 A6 */	mtlr r0
-/* 801D4110 001D1050  38 21 00 10 */	addi r1, r1, 0x10
-/* 801D4114 001D1054  4E 80 00 20 */	blr 
-
 .global onLoadResources__Q34Game9ItemHoney3MgrFv
 onLoadResources__Q34Game9ItemHoney3MgrFv:
 /* 801D4118 001D1058  94 21 FF E0 */	stwu r1, -0x20(r1)
@@ -2081,6 +2050,7 @@ onLoadResources__Q34Game9ItemHoney3MgrFv:
 /* 801D415C 001D109C  38 9F 00 54 */	addi r4, r31, 0x54
 /* 801D4160 001D10A0  38 A0 00 00 */	li r5, 0
 /* 801D4164 001D10A4  3C C0 00 02 */	lis r6, 2
+ori r6, r6, 0x30
 /* 801D4168 001D10A8  4B FF 8D E9 */	bl loadBmd__Q24Game11BaseItemMgrFPciUl
 /* 801D416C 001D10AC  80 7D 00 1C */	lwz r3, 0x1c(r29)
 /* 801D4170 001D10B0  3C 80 00 04 */	lis r4, 4

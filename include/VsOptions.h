@@ -174,6 +174,7 @@ struct CharacterData
     void makeDisplayName();
 
     void* loadModel();
+    u32 loadRenderFlags();
     void* loadAST();
     ResTIMG* loadImage();
     
