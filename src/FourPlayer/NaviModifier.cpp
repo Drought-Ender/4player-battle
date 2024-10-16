@@ -75,7 +75,7 @@ namespace Game
     {
         FakePiki::doEntry();
         if (!isAlive() && mIsAlive) {
-            RESET_FLAG(mLod.mFlags, 0x34);
+            RESET_FLAG(mLod.mFlags, 0xF4);
         }
 
         if (mController1 == nullptr)  {
