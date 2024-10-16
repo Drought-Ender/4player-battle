@@ -235,6 +235,9 @@ struct CharacterImage
 };
 
 
+struct CharacterSelectThread;
+
+
 struct CharacterSelect : public IMenu
 {
     CharacterSelect() {
@@ -242,14 +245,15 @@ struct CharacterSelect : public IMenu
         mControllers[1] = nullptr;
         mControllers[2] = nullptr;
         mControllers[3] = nullptr;
+
     }
 
     const static int sRowSize = 12;
-
     const static int sMenuID = 2;
 
     void load();
     void read(Stream&);
+
 
     virtual void init(VsOptionsMenuMgr*);
     virtual bool update(VsOptionsMenuMgr*);
@@ -267,6 +271,20 @@ struct CharacterSelect : public IMenu
 
     char mPlayerNames[4][CharacterData::sMaxNameSize];
     bool mSelectingCharactor[4];
+
+    Delegate<CharacterSelect>* mDelegateLoadIcons;
+    DvdThreadCommand mDvdThread;
+
+    void dvdload_icons();
+};
+
+struct CharacterSelectThread : public JKRThread
+{
+    CharacterSelectThread(CharacterSelect* owner);
+
+    virtual void* run();
+
+    CharacterSelect* mOwner;
 };
 
 enum EMainGamemodes {

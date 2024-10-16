@@ -17,7 +17,7 @@ VsOptionsMenuMgr* gOptionMenu;
 
 bool gTournamentMode = false;
 
-static bool sBingoTest = true;
+static bool sBingoTest = false;
 
 bool sNameOverride[4] = { false, false, false, false };
 
@@ -1123,9 +1123,10 @@ void CharacterSelect::read(Stream& stream) {
 }
 
 void CharacterSelect::init(VsOptionsMenuMgr* menu) {
+    mLoadAt = 0;
     load();
 
-    mLoadAt = 0;
+    
 
     mControllers[0] = menu->mController;
     for (int i = 1; i < 4; i++) {
@@ -1155,6 +1156,11 @@ void CharacterSelect::init(VsOptionsMenuMgr* menu) {
         mCharacters[i].mPosition.y = startOffset.y + (spaceBetween.y + cardSize.y) * y;
         mCharacters[i].mSize = cardSize;
     }
+
+    mDelegateLoadIcons = new Delegate<CharacterSelect>(this, dvdload_icons);
+
+    sys->dvdLoadUseCallBack(&mDvdThread, mDelegateLoadIcons);
+
 }
 
 char* CharacterImage::getDisplayName() {
@@ -1253,12 +1259,16 @@ void CharacterSelect::draw(VsOptionsMenuMgr* menu, Graphics& gfx) {
     }
 }
 
-bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
 
-    if (mLoadAt < mCharacterCount) {
+void CharacterSelect::dvdload_icons() {
+    while (mLoadAt < mCharacterCount) {
         mCharacters[mLoadAt].createPicture();
         mLoadAt++;
+        OSReport("Loading...\n");
     }
+}
+
+bool CharacterSelect::update(VsOptionsMenuMgr* menu) {
 
     if (menu->mController->isButtonDown(JUTGamePad::PRESS_Z)) {
         PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
@@ -1452,6 +1462,7 @@ CharacterSelect::~CharacterSelect() {
     }
 
     delete CharacterImage::sLoadingPicture;
+
 }
 
 void CharacterData::UpdateImages() {
