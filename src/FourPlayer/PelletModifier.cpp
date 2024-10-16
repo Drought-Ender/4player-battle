@@ -463,6 +463,7 @@ void PelletReturnState::exec(Pellet* pelt)
 	switch (mState) {
 	case 0:
 		int check = execPathfinding(pelt);
+		pelt->endPick(false);
 		if (check == 2) {
 			end = true;
 		}
