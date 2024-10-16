@@ -235,9 +235,6 @@ struct CharacterImage
 };
 
 
-struct CharacterSelectThread;
-
-
 struct CharacterSelect : public IMenu
 {
     CharacterSelect() {
@@ -278,14 +275,6 @@ struct CharacterSelect : public IMenu
     void dvdload_icons();
 };
 
-struct CharacterSelectThread : public JKRThread
-{
-    CharacterSelectThread(CharacterSelect* owner);
-
-    virtual void* run();
-
-    CharacterSelect* mOwner;
-};
 
 enum EMainGamemodes {
     MAINGAME_BEDAMA,
