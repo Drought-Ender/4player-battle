@@ -38,6 +38,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/PSGame2.o\
 	$(BUILD_DIR)/src/FourPlayer/BuffMgr.o\
 	$(BUILD_DIR)/src/FourPlayer/Encryption.o\
+	$(BUILD_DIR)/src/FourPlayer/FastPathfinder.o\
 
 
 
