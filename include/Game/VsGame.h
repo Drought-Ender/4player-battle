@@ -125,8 +125,8 @@ enum eCardType { // official enum name
 struct CardSelector {
 	CardSelector(int);
 	~CardSelector() {
-		delete mValues;
-		delete mCumulative;
+		delete[] mValues;
+		delete[] mCumulative;
 	}
 	int getTotalWeight();
 	int selectCard();

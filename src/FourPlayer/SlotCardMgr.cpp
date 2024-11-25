@@ -384,9 +384,9 @@ struct TekiCard : public VsSlotMachineCard {
     {
     }
 
-    int checkAllocLeft() {
-        // The enemy mgr will allways be allocated, so we don't have to worry about check if it exists
+    virtual int checkAllocLeft() {
         EnemyMgrBase* ourEnemyMgr = generalEnemyMgr->getEnemyMgr(mEnemyID); 
+        P2ASSERT(ourEnemyMgr);
         return ourEnemyMgr->mObjLimit - ourEnemyMgr->mNumObjects;
     }
 
@@ -444,6 +444,7 @@ struct OnyonTekiCard : public TekiCard
     }
 
     int calcOnyonEnemies(int teamID) {
+        OSReport("OnyonTekiCard::calcOnyonEnemies(%i)\n", teamID);
         int enemies = 0;
         Onyon* userOnyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(teamID));
         
@@ -471,10 +472,11 @@ struct OnyonTekiCard : public TekiCard
     }
 
     virtual int getWeight(CardMgr* cardMgr, int teamID) {
+        OSReport("OnyonTekiCard::getWeight(%p, %i)\n", cardMgr, teamID);
         float averageOnionEnemies = 0.0f;
         int count = 0;
         for (int i = 0; i < 4; i++) {
-            if (i != teamID && ItemOnyon::mgr && ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(i))) {
+            if (i != teamID && isTeamActive(i) && ItemOnyon::mgr && ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(i))) {
                 averageOnionEnemies += calcOnyonEnemies(i);
                 count++;
             } 
@@ -485,7 +487,7 @@ struct OnyonTekiCard : public TekiCard
         float enemyMultiplier = (3.2f - averageOnionEnemies) / 3.2f;
 
         if (enemyMultiplier < 0.0f) enemyMultiplier = 0.0f;
-        
+        OSReport("End Getweight\n");
         return TekiCard::getWeight(cardMgr, teamID) * enemyMultiplier;
     }
 
@@ -590,6 +592,19 @@ struct TankOnyonTeki : public OnyonTekiCard
         mWTankId   = (isTeamActive(TEAM_BLUE))   ? allocateTeki(tekiMgr, mWTankTeki) : -1;
         mGTankId   = (isTeamActive(TEAM_WHITE))  ? allocateTeki(tekiMgr, mGTankTeki) : -1;
         mMTankId   = (isTeamActive(TEAM_PURPLE)) ? allocateTeki(tekiMgr, mMTankTeki) : -1;
+    }
+
+    virtual int getWeight(CardMgr* cardMgr, int teamID) {
+        EnemyTypeID::EEnemyTypeID FTankId = mEnemyID;
+
+        EnemyTypeID::EEnemyTypeID enemyMgrId[4] = { FTankId, mWTankTeki, mGTankTeki, mMTankTeki };
+
+        mEnemyID = enemyMgrId[teamID];
+
+        int weight = OnyonTekiCard::getWeight(cardMgr, teamID);
+
+        mEnemyID = FTankId;
+        return weight;
     }
 
     virtual void onUseCard(CardMgr* cardMgr, int user, int target) {

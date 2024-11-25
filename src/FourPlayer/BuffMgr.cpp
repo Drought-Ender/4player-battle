@@ -35,7 +35,7 @@ void BuffMgr::setInitialBuff() {
 
 
     int highest = 0;
-    for (int i = 0; i < gNaviNum; i++) {
+    for (int i = 0; i < 4; i++) {
         if (teamCounts[i] > teamCounts[highest]) {
             highest = i;
         }
