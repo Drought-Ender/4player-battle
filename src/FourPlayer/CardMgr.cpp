@@ -717,7 +717,27 @@ void VsGame::CardMgr::initDraw()
 	}
 }
 
+void CardMgr::informMovieDone() {
+	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 
+	for (int i = 0; i < 4; i++) {
+		if (machines[i]->mSpinState == SlotMachine::SPIN_UNSTARTED || machines[i]->_18) {
+			if (machines[i]->mCherryStock > 0) {
+				machines[i]->mCherryStock--;
+				machines[i]->start();
+				machines[i]->_18 = 0;
+			}
+			else {
+				machines[i]->mSpinSpeed   = 0.0f;
+				machines[i]->mSpinAccel   = 0.0f;
+				machines[i]->mAppearState = 2;
+				machines[i]->mSlotID      = UNRESOLVED;
+				machines[i]->startZoomUse();
+				machines[i]->_18 = 1;
+			}
+		}
+	}
+}
 
 } // namespace VsGame
 

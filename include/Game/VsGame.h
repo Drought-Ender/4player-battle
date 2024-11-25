@@ -224,6 +224,8 @@ struct CardMgr {
 	void initDraw();
 	void drawSlot(Graphics&, Vector3f&, SlotMachine&);
 
+	void informMovieDone();
+
 	SlotMachine* getSlotMachine(int i);
 
 	Vector3f getSlotOrigin(int);

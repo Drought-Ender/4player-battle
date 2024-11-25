@@ -1097,6 +1097,8 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 p1,
 		section->setCamController();
 	}
 
+	section->mCardMgr->informMovieDone();
+
 	RoomMapMgr* mgr   = static_cast<RoomMapMgr*>(mapMgr);
 	int currFloor     = mgr->mSublevel;
 	int floorMax      = mgr->mCaveInfo->getFloorMax();
