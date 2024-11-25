@@ -425,7 +425,6 @@ int CardSelector::selectCard()
 
 void CardMgr::SlotMachine::start()
 {
-	OSReport("CardMgr::SlotMachine::start()\n");
 	_51 = false;
 
 	int cardCount = vsSlotCardMgr->mCardCount;
@@ -436,16 +435,11 @@ void CardMgr::SlotMachine::start()
 	
     
     for (int i = 0; i < cardCount; i++) {
-		OSReport("Get Weight %i\n", i);
         cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getWeight(mCardMgr, mPlayerIndex);
-		OSReport("Set Weight %i\n", i);
     }
 
-	OSReport("Start fix broken Weight\n");
 	
     cardSelector.fixBrokenWeights();
-
-	OSReport("Weighted\n");
 
 
     int totalMeasure = cardSelector.getTotalWeight();
@@ -472,17 +466,14 @@ void CardMgr::SlotMachine::start()
             mSpinSpeed = 72.0f * DEG2RAD;
             mSpinState = SPIN_WAIT_START;
             mSpinAccel = -TAU;
-			OSReport("CardMgr::SlotMachine::start() DONE\n");
             return;
         case SPIN_WAIT_START:
         case SPIN_START:
             break;
         default:
             mSpinState = SPIN_START;
-			OSReport("CardMgr::SlotMachine::start() DONE\n");
             return;
     }
-	OSReport("CardMgr::SlotMachine::start() DONE\n");
 }
 
 inline int CardMgr::SlotMachine::getNextCard(int card) { return (CardCount + card + 1) % CardCount; }
