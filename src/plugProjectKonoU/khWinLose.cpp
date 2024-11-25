@@ -199,6 +199,7 @@ void ObjWinLose::doDraw(Graphics& gfx)
 
 		mScreenB[i]->draw(gfx, gfx.mOrthoGraph);
 	}
+	GXSetScissor(0, 0, System::getRenderModeObj()->fbWidth, System::getRenderModeObj()->efbHeight);
 }
 
 /*
