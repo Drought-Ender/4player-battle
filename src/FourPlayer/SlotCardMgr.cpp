@@ -444,7 +444,6 @@ struct OnyonTekiCard : public TekiCard
     }
 
     int calcOnyonEnemies(int teamID) {
-        OSReport("OnyonTekiCard::calcOnyonEnemies(%i)\n", teamID);
         int enemies = 0;
         Onyon* userOnyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(teamID));
         
@@ -472,7 +471,6 @@ struct OnyonTekiCard : public TekiCard
     }
 
     virtual int getWeight(CardMgr* cardMgr, int teamID) {
-        OSReport("OnyonTekiCard::getWeight(%p, %i)\n", cardMgr, teamID);
         float averageOnionEnemies = 0.0f;
         int count = 0;
         for (int i = 0; i < 4; i++) {
@@ -487,7 +485,6 @@ struct OnyonTekiCard : public TekiCard
         float enemyMultiplier = (3.2f - averageOnionEnemies) / 3.2f;
 
         if (enemyMultiplier < 0.0f) enemyMultiplier = 0.0f;
-        OSReport("End Getweight\n");
         return TekiCard::getWeight(cardMgr, teamID) * enemyMultiplier;
     }
 
