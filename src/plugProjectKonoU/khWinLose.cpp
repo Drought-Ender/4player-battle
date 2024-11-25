@@ -160,6 +160,40 @@ void ObjWinLose::doDraw(Graphics& gfx)
 	gfx.mOrthoGraph.setPort();
 
 	for (int i = 0; i < mScreenNum; i++) {
+		u16 y0 = 0;
+		u16 y2 = System::getRenderModeObj()->efbHeight;
+		u16 y1 = y2;
+
+		u16 x0 = 0;
+		u16 x1 = System::getRenderModeObj()->fbWidth;
+		u16 x2 = x1;
+		int type = (Game::gNaviNum > 2) ? i + 3 : i + 1;
+		switch (type) {
+		case 1: // top
+			y1 = y2 / 2;
+			break;
+		case 2: // bottom
+			y0 = y2 / 2;
+			break;
+		case 3: // top left
+			y1 = y2 / 2;
+			x1 = x2 / 2;
+			break;
+		case 4: // top right
+			y1 = y2 / 2;
+			x0 = x2 / 2;
+			break;
+		case 5: // bottom left
+			y0 = y2 / 2;
+			x1 = x2 / 2;
+			break;
+		case 6: // bottom right
+			y0 = y2 / 2;
+			x0 = x2 / 2;
+		}
+
+		GXSetScissor(x0, y0, x1, y1);
+
 		if (mScreenA[i])
 			mScreenA[i]->draw(gfx, gfx.mOrthoGraph);
 

@@ -77,27 +77,46 @@ void TGameOverBase::doDraw(Graphics& gfx)
 		u16 y0 = 0;
 		u16 y2 = System::getRenderModeObj()->efbHeight;
 		u16 y1 = y2;
+
+		u16 x0 = 0;
+		u16 x1 = System::getRenderModeObj()->fbWidth;
+		u16 x2 = x1;
 		switch (mType) {
-		case 1:
+		case 1: // top
 			y1 = y2 / 2;
 			break;
-		case 2:
+		case 2: // bottom
 			y0 = y2 / 2;
 			break;
+		case 3: // top left
+			y1 = y2 / 2 - 10;
+			x1 = x2 / 2 - 10;
+			break;
+		case 4: // top right
+			y1 = y2 / 2 - 10;
+			x0 = x2 / 2 + 10;
+			break;
+		case 5: // bottom left
+			y0 = y2 / 2 + 10;
+			x1 = x2 / 2 - 10;
+			break;
+		case 6: // bottom right
+			y0 = y2 / 2 + 10;
+			x0 = x2 / 2 + 10;
 		}
-		GXSetScissor(0, y0, System::getRenderModeObj()->fbWidth, y1);
+		GXSetScissor(x0, y0, x1, y1);
 
 		GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 
-		GXPosition3u16(0, y0, 0);
-		GXPosition3u16(System::getRenderModeObj()->fbWidth, y0, 0);
+		GXPosition3u16(x0, y0, 0);
+		GXPosition3u16(x1, y0, 0);
 
-		GXPosition3u16(System::getRenderModeObj()->fbWidth, y1, 0);
-		GXPosition3u16(0, y1, 0);
+		GXPosition3u16(x1, y1, 0);
+		GXPosition3u16(x0, y1, 0);
 
 		GXSetDstAlpha(GX_FALSE, mFadeAlpha);
 		persp->setPort();
-		GXSetScissor(0, y0, System::getRenderModeObj()->fbWidth, y1);
+		GXSetScissor(x0, y0, x1, y1);
 
 		if (mGameOverScreen) {
 			mGameOverScreen->draw(gfx, persp);

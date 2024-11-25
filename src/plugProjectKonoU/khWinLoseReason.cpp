@@ -80,7 +80,8 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 	DispWinLoseReason* disp = static_cast<DispWinLoseReason*>(mDispMember);
 	for (int i = 0; i < 4; i++) {
 		mOutcome[i]             = disp->mOutcomeNavis[i];
-		f32 posY = (i < 2) ? ObjWinLoseReason::msVal.mYOffsetP1 : ObjWinLoseReason::msVal.mYOffsetP2;
+		OSReport("Outcome[%i] %i\n", i, mOutcome[i]);
+		f32 posY = (i < 2 && (i == 0 || Game::gNaviNum > 2)) ? ObjWinLoseReason::msVal.mYOffsetP1 : ObjWinLoseReason::msVal.mYOffsetP2;
 		f32 posX = 0.0f;
 		if (Game::gNaviNum > 2) posX = (i & 1) ? 160.0f : -160.0f;
 		switch (mOutcome[i]) {
@@ -92,7 +93,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 			P2ASSERTLINE(149, screen);
 			screen->mGameOverScreen->setPosXY(posX, posY);
 			if (Game::gNaviNum > 2) screen->mGameOverScreen->mScreen->scaleScreen(0.5f);
-			screen->mType      = i + 1;
+			screen->mType      = (Game::gNaviNum > 2) ? i + 3 : i + 1;
 			screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
 			break;
 		}
@@ -104,7 +105,7 @@ void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 			P2ASSERTLINE(159, screen);
 			screen->mGameOverScreen->setPosXY(posX, posY);
 			if (Game::gNaviNum > 2) screen->mGameOverScreen->mScreen->scaleScreen(0.5f);
-			screen->mType      = i + 1;
+			screen->mType      = (Game::gNaviNum > 2) ? i + 3 : i + 1;
 			screen->mTimeSpeed = ObjWinLoseReason::msVal._18;
 			break;
 		}
