@@ -2,6 +2,7 @@
 #include "ObjectMgr.h"
 #include "Dolphin/math.h"
 
+// Adapted from https://github.com/woodfrog/FibonacciHeap/tree/master by Drought
 
 namespace Drought {
 
