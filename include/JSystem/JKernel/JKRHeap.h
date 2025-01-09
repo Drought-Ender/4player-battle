@@ -1,3 +1,4 @@
+// modifications originally by https://github.com/Mr-Brocoli
 #ifndef _JSYSTEM_JKR_JKRHEAP_H
 #define _JSYSTEM_JKR_JKRHEAP_H
 
@@ -13,7 +14,7 @@ struct JKRHeap : public JKRDisposer {
 		HEAPALLOC_Unk1 = 1,
 	};
 
-	struct TState { // NB: this struct doesn't agree with TP's struct
+	struct TState {
 		struct TLocation {
 			TLocation()
 			    : _00(nullptr)
@@ -21,15 +22,15 @@ struct JKRHeap : public JKRDisposer {
 			{
 			}
 
-			void* _00; // _00
+			char* _00; // _00
 			int _04;   // _04
 		};
 
 		struct TArgument {
-			TArgument(const JKRHeap* heap, u32 p2, bool p3)
+			TArgument(const JKRHeap* heap, u32 id, bool compareOnDestruct)
 			    : mHeap((heap) ? heap : JKRHeap::sCurrentHeap)
-			    , mId(p2)
-			    , mIsCompareOnDestructed(p3)
+			    , mId(id)
+			    , mIsCompareOnDestructed(compareOnDestruct)
 			{
 			}
 
@@ -54,8 +55,8 @@ struct JKRHeap : public JKRDisposer {
 		}
 
 		~TState();
-		// void dump() const { mArgument.mHeap->state_dump(this); }
-		bool isVerbose() { return bVerbose_; };
+		void dump() const { mArgument.mHeap->state_dump(*this); }
+		static inline bool isVerbose() { return bVerbose_; };
 		bool isCompareOnDestructed() const { return mArgument.mIsCompareOnDestructed; };
 		u32 getUsedSize() const { return mUsedSize; }
 		u32 getCheckCode() const { return mCheckCode; }
@@ -84,7 +85,7 @@ struct JKRHeap : public JKRDisposer {
 	virtual void callAllDisposer();                                 // _0C
 	virtual u32 getHeapType() = 0;                                  // _10
 	virtual bool check()      = 0;                                  // _14
-	virtual bool dump_sort();                                       // _18 (weak)
+	virtual bool dump_sort() { return true; }                       // _18 (weak)
 	virtual bool dump()                = 0;                         // _1C
 	virtual void do_destroy()          = 0;                         // _20
 	virtual void* do_alloc(u32, int)   = 0;                         // _24
@@ -97,8 +98,8 @@ struct JKRHeap : public JKRDisposer {
 	virtual u32 do_getFreeSize()       = 0;                         // _40
 	virtual void* do_getMaxFreeBlock() = 0;                         // _44
 	virtual u32 do_getTotalFreeSize()  = 0;                         // _48
-	virtual u8 do_changeGroupID(u8);                                // _4C (weak)
-	virtual u8 do_getCurrentGroupId();                              // _50 (weak)
+	virtual u8 do_changeGroupID(u8) { return 0; }                   // _4C (weak)
+	virtual u8 do_getCurrentGroupId() { return 0; }                 // _50 (weak)
 	virtual void state_register(TState*, u32) const;                // _54
 	virtual bool state_compare(const TState&, const TState&) const; // _58
 	virtual void state_dump(const TState&) const;                   // _5C
@@ -115,11 +116,13 @@ struct JKRHeap : public JKRDisposer {
 	void freeTail();
 	int resize(void*, u32);
 	u32 getFreeSize();
+	void* getMaxFreeBlock();
 	u32 getTotalFreeSize();
 	u8 changeGroupID(u8);
 	u8 getCurrentGroupId();
 	u32 getMaxAllocatableSize(int);
 	JKRHeap* find(void*) const;
+	void dispose_subroutine(u32 begin, u32 end);
 	u32 dispose(void*, u32);
 	void dispose(void*, void*);
 	void dispose();
@@ -188,19 +191,19 @@ struct JKRHeap : public JKRDisposer {
 	static JKRHeap* sCurrentHeap;
 	static JKRHeap* sRootHeap;
 	static JKRHeapErrorHandler* mErrorHandler;
-	static u8* mCodeStart;
-	static u8* mCodeEnd;
-	static u8* mUserRamStart;
-	static u8* mUserRamEnd;
+	static void* mCodeStart;
+	static void* mCodeEnd;
+	static void* mUserRamStart;
+	static void* mUserRamEnd;
 	static u32 mMemorySize;
 	static u32 sParentHeapFreeSize_Last;
 	static u32 sParentHeapFreeSize;
 
 	// _00     = VTBL
 	// _00-_18 = JKRDisposer
-	OSMutex mMutex;                     // _18
-	void* mStartAddress;                // _30
-	void* mEndAddress;                  // _34
+	mutable OSMutex mMutex;             // _18
+	u8* mStartAddress;                  // _30
+	u8* mEndAddress;                    // _34
 	u32 mHeapSize;                      // _38
 	u8 mFillFlag;                       // _3C
 	u8 mFillCheckFlag;                  // _3D
@@ -213,31 +216,6 @@ struct JKRHeap : public JKRDisposer {
 };
 
 struct JKRExpHeap : public JKRHeap {
-	struct CMemBlock {
-		CMemBlock* allocBack(u32, u8, u8, u8, u8);
-		CMemBlock* allocFore(u32, u8, u8, u8, u8);
-		void* free(JKRExpHeap*);
-		static CMemBlock* getHeapBlock(void*);
-		void initiate(CMemBlock*, CMemBlock*, u32, u8, u8);
-
-		void newGroupId(u8 groupId) { mGroupID = groupId; }
-		bool isValid() const { return mUsageHeader == 'HM'; }
-		bool _isTempMemBlock() const { return (mFlags & 0x80) ? true : false; }
-		int getAlignment() const { return mFlags & 0x7f; }
-		void* getContent() const { return (void*)(this + 1); }
-		CMemBlock* getPrevBlock() const { return mPrev; }
-		CMemBlock* getNextBlock() const { return mNext; }
-		u32 getSize() const { return mAllocatedSpace; }
-		u8 getGroupId() const { return mGroupID; }
-		static CMemBlock* getBlock(void* data) { return (CMemBlock*)((u32)data + -0x10); }
-
-		u16 mUsageHeader;    // _00
-		u8 mFlags;           // _02, a|bbbbbbb = a=temp, b=aln
-		u8 mGroupID;         // _03
-		int mAllocatedSpace; // _04
-		CMemBlock* mPrev;    // _08
-		CMemBlock* mNext;    // _0C
-	};
 
 	JKRExpHeap(void*, u32, JKRHeap*, bool);
 
@@ -266,20 +244,10 @@ struct JKRExpHeap : public JKRHeap {
 	void* allocFromHead(u32);
 	void* allocFromTail(u32, int);
 	void* allocFromTail(u32);
-	void appendUsedList(CMemBlock*);
 	static JKRExpHeap* create(u32, JKRHeap*, bool);
 	static JKRExpHeap* createRoot(int, bool);
 	int freeGroup(u8 groupID);
-	void joinTwoBlocks(CMemBlock*);
-	void recycleFreeBlock(CMemBlock*);
-	void removeFreeBlock(CMemBlock*);
-	void setFreeBlock(CMemBlock*, CMemBlock*, CMemBlock*);
 
-	// unused/inlined:
-	void removeUsedBlock(CMemBlock*);
-	s32 getUsedSize(u8 groupId) const;
-
-	CMemBlock* getHeadUsedList() const { return mHeadUsedList; }
 	void setAllocationMode(EAllocMode mode) { mCurrentAllocMode = mode; }
 
 	static s32 getUsedSize_(JKRExpHeap* expHeap)
@@ -291,16 +259,12 @@ struct JKRExpHeap : public JKRHeap {
 
 	// _00     = VTBL
 	// _00-_6C = JKRHeap
-	u8 mCurrentAllocMode;     // _6C
-	u8 mCurrentGroupID;       // _6D
-	u8 _6E;                   // _6E
-	u8 _70[8];                // _70
-	CMemBlock* mHead;         // _78, free list
-	CMemBlock* mTail;         // _7C, free list
-	CMemBlock* mHeadUsedList; // _80
-	CMemBlock* mTailUsedList; // _84
+	u8 mCurrentAllocMode; // _6C
+	u8 mCurrentGroupID;   // _6D
+	u8 _6E;               // _6E
+	void* mFree;
+	int mSizeCheck;
 };
-
 struct JKRSolidHeap : public JKRHeap {
 	struct SolidList {
 		SolidList(u32 num, u32 size, u8* p3, u8* p4, SolidList* next)
@@ -360,15 +324,102 @@ struct JKRSolidHeap : public JKRHeap {
 	SolidList* mList; // _78
 };
 
-void JKRDefaultMemoryErrorRoutine(void*, u32, int);
+struct JKRExpHeapReal : public JKRHeap {
+	struct CMemBlock {
+		CMemBlock* allocBack(u32, u8, u8, u8, u8);
+		CMemBlock* allocFore(u32, u8, u8, u8, u8);
+		void* free(JKRExpHeapReal*);
+		static CMemBlock* getHeapBlock(void*);
+		void initiate(CMemBlock*, CMemBlock*, u32, u8, u8);
+
+		void newGroupId(u8 groupId) { mGroupID = groupId; }
+		bool isValid() const { return mUsageHeader == 'HM'; }
+		bool _isTempMemBlock() const { return (mFlags & 0x80) ? true : false; }
+		int getAlignment() const { return mFlags & 0x7f; }
+		void* getContent() const { return (void*)(this + 1); }
+		CMemBlock* getPrevBlock() const { return mPrev; }
+		CMemBlock* getNextBlock() const { return mNext; }
+		u32 getSize() const { return mAllocatedSpace; }
+		u8 getGroupId() const { return mGroupID; }
+		static CMemBlock* getBlock(void* data) { return (CMemBlock*)((u32)data + -0x10); }
+
+		u16 mUsageHeader;    // _00
+		u8 mFlags;           // _02, a|bbbbbbb = a=temp, b=aln
+		u8 mGroupID;         // _03
+		int mAllocatedSpace; // _04
+		CMemBlock* mPrev;    // _08
+		CMemBlock* mNext;    // _0C
+	};
+
+	JKRExpHeapReal(void*, u32, JKRHeap*, bool);
+
+	virtual ~JKRExpHeapReal();                                      // _08
+	virtual u32 getHeapType() { return 'EXPH'; }                    // _10 (weak)
+	virtual bool check();                                           // _14
+	virtual bool dump_sort();                                       // _18
+	virtual bool dump();                                            // _1C
+	virtual void do_destroy();                                      // _20
+	virtual void* do_alloc(u32, int);                               // _24
+	virtual void do_free(void*);                                    // _28
+	virtual void do_freeAll();                                      // _2C
+	virtual void do_freeTail();                                     // _30
+	virtual void do_fillFreeArea();                                 // _34
+	virtual int do_resize(void*, u32);                              // _38
+	virtual int do_getSize(void*);                                  // _3C
+	virtual u32 do_getFreeSize();                                   // _40
+	virtual void* do_getMaxFreeBlock();                             // _44
+	virtual u32 do_getTotalFreeSize();                              // _48
+	virtual u8 do_changeGroupID(u8);                                // _4C
+	virtual u8 do_getCurrentGroupId() { return mCurrentGroupID; }   // _50 (weak)
+	virtual void state_register(TState*, u32) const;                // _54
+	virtual bool state_compare(const TState&, const TState&) const; // _58
+
+	void* allocFromHead(u32, int);
+	void* allocFromHead(u32);
+	void* allocFromTail(u32, int);
+	void* allocFromTail(u32);
+	void appendUsedList(CMemBlock*);
+	static JKRExpHeapReal* create(u32, JKRHeap*, bool);
+	static JKRExpHeapReal* createRoot(int, bool);
+	int freeGroup(u8 groupID);
+	void joinTwoBlocks(CMemBlock*);
+	void recycleFreeBlock(CMemBlock*);
+	void removeFreeBlock(CMemBlock*);
+	void setFreeBlock(CMemBlock*, CMemBlock*, CMemBlock*);
+
+	// unused/inlined:
+	void removeUsedBlock(CMemBlock*);
+	s32 getUsedSize(u8 groupId) const;
+
+	CMemBlock* getHeadUsedList() const { return mHeadUsedList; }
+	void setAllocationMode(EAllocMode mode) { mCurrentAllocMode = mode; }
+
+	static s32 getUsedSize_(JKRExpHeapReal* expHeap)
+	{
+		// s32 totalFreeSize = expHeap->getTotalFreeSize();
+		return expHeap->mHeapSize - expHeap->getTotalFreeSize();
+	}
+	static u32 getState_(TState* state) { return getState_buf_(state); } // might instead be a pointer to a next state?
+
+	// _00     = VTBL
+	// _00-_6C = JKRHeap
+	u8 mCurrentAllocMode;     // _6C
+	u8 mCurrentGroupID;       // _6D
+	u8 _6E;                   // _6E
+	u8 _70[8];                // _70
+	CMemBlock* mHead;         // _78, free list
+	CMemBlock* mTail;         // _7C, free list
+	CMemBlock* mHeadUsedList; // _80
+	CMemBlock* mTailUsedList; // _84
+};
 
 inline void* operator new(size_t size, void* mem) { return mem; } // fabricated?
 void* operator new(size_t, JKRHeap*, int);
-void* operator new(u32 byteCount, int p2);
+void* operator new(size_t byteCount, int p2);
 void* operator new[](size_t, JKRHeap*, int);
-void* operator new[](u32 byteCount, int p2);
+void* operator new[](size_t byteCount, int p2);
 
-void JKRDefaultMemoryErrorRoutine(void* heap, u32 size, int alignment);
+static void JKRDefaultMemoryErrorRoutine(void* heap, u32 size, int alignment);
 
 inline void* JKRAllocFromHeap(JKRHeap* heap, u32 size, int alignment) { return JKRHeap::alloc(size, alignment, heap); }
 
@@ -396,6 +447,5 @@ inline JKRHeap* JKRGetCurrentHeap() { return JKRHeap::getCurrentHeap(); }
 
 inline JKRExpHeap* makeExpHeap(size_t size, JKRHeap* heap, bool a) { return JKRExpHeap::create(size, heap, a); }
 inline JKRSolidHeap* makeSolidHeap(size_t size, JKRHeap* heap, bool a) { return JKRSolidHeap::create(size, heap, a); }
-
 
 #endif
