@@ -58,5 +58,5 @@ void Mgr::loadTexData()
 	P2ASSERTLINE(83, mChangeTexture);
 }
 
-} // namespace FireOtakara
+} // namespace SporeOtakara
 } // namespace Game

@@ -60,5 +60,5 @@ void Mgr::loadModelData()
 	}
 }
 
-} // namespace Houdai
+} // namespace TechnoHoudai
 } // namespace Game

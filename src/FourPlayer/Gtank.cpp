@@ -61,7 +61,7 @@ void Obj::setupEffect()
 	effect       = mTankEffect;
 
 	effect->mEfxGas.setMtxptr(mtx->mMatrix.mtxView);
-	effect->mEfxGasYodare.mMtx   = mtx;
+	effect->mEfxGasYodare.mMtx = mtx;
 }
 
 /*

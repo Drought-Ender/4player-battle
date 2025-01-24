@@ -56,5 +56,5 @@ void Mgr::loadTexData()
 	P2ASSERTLINE(82, mChangeTexture);
 }
 
-} // namespace Ftank
+} // namespace Mtank
 } // namespace Game

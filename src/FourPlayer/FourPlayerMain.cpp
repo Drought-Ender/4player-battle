@@ -23,8 +23,7 @@
 f32 gFirstViewportHeight = 0.5f;
 f32 gOtherViewportHeight = 0.5f;
 
-namespace Game
-{
+namespace Game {
 
 bool gSplit4 = false;
 
@@ -34,55 +33,55 @@ Controller* gControllerP4;
 PlayCamera* gCameraP3;
 PlayCamera* gCameraP4;
 
-void BaseGameSection::initControllers() {
+void BaseGameSection::initControllers()
+{
 	gControllerP3 = new Controller((JUTGamePad::EPadPort)2);
-    gControllerP4 = new Controller((JUTGamePad::EPadPort)3);
+	gControllerP4 = new Controller((JUTGamePad::EPadPort)3);
 }
 
 bool gFancyCamera;
 
 int gNaviNum = 2;
 
-void BaseGameSection::birthNavis() {
+void BaseGameSection::birthNavis()
+{
 
 	gNaviNum = CalcNaviNum();
 	for (int i = 0; i < 4; i++) {
 		gDrawNavi[i] = true;
 	}
-	PlayCamera* playCameraPtrArr[4] = {mOlimarCamera, mLouieCamera, gCameraP3, gCameraP4};
-    for (int i = 0; i < 4; i++) {
-        Vector3f startVelocity = 0.0f;
-        Vector3f startPosition = Vector3f(-40.0f, 0.0f, 2.0f);
-        f32 mapRotation = mapMgr->getMapRotation();
-        if (gameSystem->isVersusMode() && i < gNaviNum) {
-            Onyon* onyon = ItemOnyon::mgr->getOnyon(gVsNaviIndexArray[i]);
-            P2ASSERT(onyon);
-            startPosition = onyon->getPosition();
-        }
-        else if (!mapMgr->getDemoMatrix()) {
-            mapMgr->getStartPosition(startPosition, 0);
-            startPosition.y = mapMgr->getMinY(startPosition) + 8.5f;
-            startPosition.x += -4.526f;
-            startPosition.z += 7.453f;
-        }
-        else {
-            Matrixf* demoMatrix = mapMgr->getDemoMatrix();
-            PSMTXMultVec(demoMatrix->mMatrix.mtxView, (Vec*)&startPosition, (Vec*)&startPosition);
-            startPosition.y = mapMgr->getMinY(startPosition);
-            startVelocity = 0.0f;
-        }
-        Navi* navi = naviMgr->birth();
-        P2ASSERT(navi);
-        navi->init(nullptr);
-        navi->mFaceDir = roundAng(mapRotation);
-        navi->mCamera  = playCameraPtrArr[i];
-        navi->mCamera2 = playCameraPtrArr[i];
-        navi->mController1 = nullptr;
-        navi->mController2 = nullptr; 
-        navi->setPosition(startPosition, false);
-        navi->setVelocity(startVelocity);
-        navi->mHealth = playData->mNaviLifeMax[0];
-    }
+	PlayCamera* playCameraPtrArr[4] = { mOlimarCamera, mLouieCamera, gCameraP3, gCameraP4 };
+	for (int i = 0; i < 4; i++) {
+		Vector3f startVelocity = 0.0f;
+		Vector3f startPosition = Vector3f(-40.0f, 0.0f, 2.0f);
+		f32 mapRotation        = mapMgr->getMapRotation();
+		if (gameSystem->isVersusMode() && i < gNaviNum) {
+			Onyon* onyon = ItemOnyon::mgr->getOnyon(gVsNaviIndexArray[i]);
+			P2ASSERT(onyon);
+			startPosition = onyon->getPosition();
+		} else if (!mapMgr->getDemoMatrix()) {
+			mapMgr->getStartPosition(startPosition, 0);
+			startPosition.y = mapMgr->getMinY(startPosition) + 8.5f;
+			startPosition.x += -4.526f;
+			startPosition.z += 7.453f;
+		} else {
+			Matrixf* demoMatrix = mapMgr->getDemoMatrix();
+			PSMTXMultVec(demoMatrix->mMatrix.mtxView, (Vec*)&startPosition, (Vec*)&startPosition);
+			startPosition.y = mapMgr->getMinY(startPosition);
+			startVelocity   = 0.0f;
+		}
+		Navi* navi = naviMgr->birth();
+		P2ASSERT(navi);
+		navi->init(nullptr);
+		navi->mFaceDir     = roundAng(mapRotation);
+		navi->mCamera      = playCameraPtrArr[i];
+		navi->mCamera2     = playCameraPtrArr[i];
+		navi->mController1 = nullptr;
+		navi->mController2 = nullptr;
+		navi->setPosition(startPosition, false);
+		navi->setVelocity(startVelocity);
+		navi->mHealth = playData->mNaviLifeMax[0];
+	}
 
 	for (int i = gNaviNum; i < 4; i++) {
 		// hacky solution to remove the navis without the game crashing
@@ -93,42 +92,46 @@ void BaseGameSection::birthNavis() {
 	}
 }
 
-void NaviMgr::informOrimaDead(int idx) {
-    for (int i = 0; i < mNaviCount; i++) {
-        if (mNaviIndexArray[idx] == i) {
-            return;     
-        }
-    }
-    mNaviIndexArray[mNaviCount] = idx;
-    mNaviCount++;
-    getAt(idx)->releasePikis();
+void NaviMgr::informOrimaDead(int idx)
+{
+	for (int i = 0; i < mNaviCount; i++) {
+		if (mNaviIndexArray[idx] == i) {
+			return;
+		}
+	}
+	mNaviIndexArray[mNaviCount] = idx;
+	mNaviCount++;
+	getAt(idx)->releasePikis();
 }
 
-Navi* NaviMgr::getDeadOrima(int idx) {
-    if (idx <= mNaviCount) {
-        return getAt(mNaviIndexArray[idx]);
-    }
-    return nullptr;
+Navi* NaviMgr::getDeadOrima(int idx)
+{
+	if (idx <= mNaviCount) {
+		return getAt(mNaviIndexArray[idx]);
+	}
+	return nullptr;
 }
 
-Navi* NaviMgr::getAliveOrima(int idx) {
-    for (int i = 0; i < 4; i++) {
-        Navi* navi = getAt(i);
-        if (navi->isAlive()) {
-            return navi;
-        }
-    }
-    
-    return nullptr;
+Navi* NaviMgr::getAliveOrima(int idx)
+{
+	for (int i = 0; i < 4; i++) {
+		Navi* navi = getAt(i);
+		if (navi->isAlive()) {
+			return navi;
+		}
+	}
+
+	return nullptr;
 }
 
-void NaviMgr::loadResources_float() {
+void NaviMgr::loadResources_float()
+{
 	JKRArchive* pikiArc = JKRArchive::mount("user/Kando/piki/pikis.szs", JKRArchive::EMM_Mem, sys->mSysHeap, JKRArchive::EMD_Head);
 	void* models[4];
 	u32 renderFlags[4];
 
 	for (int i = 0; i < 4; i++) {
-		models[i] = sCharacters[i].loadModel();
+		models[i]      = sCharacters[i].loadModel();
 		renderFlags[i] = sCharacters[i].loadRenderFlags();
 	}
 
@@ -138,19 +141,19 @@ void NaviMgr::loadResources_float() {
 		for (int j = 0; j < modelData[i]->mShapeTable.mCount; j++) {
 			u32& bitfield = modelData[i]->mShapeTable.mItems[j]->mFlags;
 			bitfield &= ~0xF000;
-			bitfield |=  0x2000;
+			bitfield |= 0x2000;
 		}
 	}
-	mOlimarModel = modelData[0];
-	mLouieModel = modelData[1];
+	mOlimarModel    = modelData[0];
+	mLouieModel     = modelData[1];
 	mPresidentModel = modelData[2];
-	mWifeModel = modelData[3];
-	
+	mWifeModel      = modelData[3];
 }
 
-SysShape::Model* NaviMgr::createModel(int idx) {
+SysShape::Model* NaviMgr::createModel(int idx)
+{
 	J3DModelData* models[] = { mOlimarModel, mLouieModel, mPresidentModel, mWifeModel };
-    return new SysShape::Model(models[idx], 0, 2);
+	return new SysShape::Model(models[idx], 0, 2);
 }
 
 // Navi* NaviMgr::birth() {
@@ -167,12 +170,13 @@ SysShape::Model* NaviMgr::createModel(int idx) {
 //     }
 // }
 
-void NaviMgr::clearDeadCount() {
-    mNaviCount = 0;
-    mNaviIndexArray = new int[4];
-    for (int i = 0; i < 4; i++) {
-        mNaviIndexArray[i] = -1;
-    }
+void NaviMgr::clearDeadCount()
+{
+	mNaviCount      = 0;
+	mNaviIndexArray = new int[4];
+	for (int i = 0; i < 4; i++) {
+		mNaviIndexArray[i] = -1;
+	}
 }
 
 void Navi::onInit(Game::CreatureInitArg* arg)
@@ -234,7 +238,7 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 	setLifeMax();
 
 	mPluckingCounter = 0;
-	_269 = 0;
+	_269             = 0;
 	Vector3f navi_scale; // navi model scale
 	navi_scale = Vector3f(1.3f);
 
@@ -339,8 +343,8 @@ void BaseGameSection::setCamController()
 
 	navis[0] = naviMgr->getAt(0);
 	navis[1] = naviMgr->getAt(1);
-    navis[2] = naviMgr->getAt(2);
-    navis[3] = naviMgr->getAt(3);
+	navis[2] = naviMgr->getAt(2);
+	navis[3] = naviMgr->getAt(3);
 
 	if (mPrevNaviIdx > gNaviNum) {
 		mPrevNaviIdx = gNaviNum;
@@ -416,11 +420,10 @@ void BaseGameSection::setCamController()
 		navis[1]->mController1       = louieController;
 		navis[1]->mController2       = louieController;
 
-		navis[2]->mController1       = gControllerP3;
-		navis[2]->mController2       = gControllerP3;
-		navis[2]->mCamera            = gCameraP3;
-		navis[2]->mCamera2           = gCameraP3;
-
+		navis[2]->mController1 = gControllerP3;
+		navis[2]->mController2 = gControllerP3;
+		navis[2]->mCamera      = gCameraP3;
+		navis[2]->mCamera2     = gCameraP3;
 
 		moviePlayer->mTargetNavi   = navis[0];
 		moviePlayer->mActingCamera = mOlimarCamera;
@@ -443,16 +446,15 @@ void BaseGameSection::setCamController()
 		navis[1]->mController1       = louieController;
 		navis[1]->mController2       = louieController;
 
-		navis[2]->mController1       = gControllerP3;
-		navis[2]->mController2       = gControllerP3;
-		navis[2]->mCamera            = gCameraP3;
-		navis[2]->mCamera2           = gCameraP3;
+		navis[2]->mController1 = gControllerP3;
+		navis[2]->mController2 = gControllerP3;
+		navis[2]->mCamera      = gCameraP3;
+		navis[2]->mCamera2     = gCameraP3;
 
-		navis[3]->mController1       = gControllerP4;
-		navis[3]->mController2       = gControllerP4;
-		navis[3]->mCamera            = gCameraP4;
-		navis[3]->mCamera2           = gCameraP4;
-
+		navis[3]->mController1 = gControllerP4;
+		navis[3]->mController2 = gControllerP4;
+		navis[3]->mCamera      = gCameraP4;
+		navis[3]->mCamera2     = gCameraP4;
 
 		moviePlayer->mTargetNavi   = navis[0];
 		moviePlayer->mActingCamera = mOlimarCamera;
@@ -549,7 +551,7 @@ void BaseGameSection::setPlayerMode(int naviIdx)
 		mSecondViewportHeight = 0.5f;
 		gOtherViewportHeight  = 0.5f;
 		mSplit                = 0.0f;
-		gSplit4 = true;
+		gSplit4               = true;
 		mSplitter->split4(0.5f, 0.5f);
 		cameraMgr->changePlayerMode(2, cameraMgrCallback);
 		break;
@@ -562,14 +564,13 @@ Vector2f getRectSkew() { return Vector2f(0.0f, -80.0f); }
 
 Vector2f getBottomLeft() { return Vector2f(0.0f, 0.0f); }
 
-
 void BaseGameSection::initViewports(Graphics& gfx)
 {
 	mSplitter = new FourSplitter(&gfx);
-	//setSplitter(false);
+	// setSplitter(false);
 
 	gCameraP3 = new PlayCamera(naviMgr->getAt(2));
-	gCameraP4 = new PlayCamera(naviMgr->getAt(3));	
+	gCameraP4 = new PlayCamera(naviMgr->getAt(3));
 
 	Viewport* olimarViewport = gfx.getViewport(0);
 	olimarViewport->mCamera  = mOlimarCamera;
@@ -579,28 +580,27 @@ void BaseGameSection::initViewports(Graphics& gfx)
 	louieViewport->mCamera  = mLouieCamera;
 	louieViewport->updateCameraAspect();
 
-    Viewport* vp3 = gfx.getViewport(2);
-    vp3->mCamera = gCameraP3;
-    vp3->updateCameraAspect();
+	Viewport* vp3 = gfx.getViewport(2);
+	vp3->mCamera  = gCameraP3;
+	vp3->updateCameraAspect();
 
-    Viewport* vp4 = gfx.getViewport(3);
-    vp4->mCamera = gCameraP4;
-    vp4->updateCameraAspect();
+	Viewport* vp4 = gfx.getViewport(3);
+	vp4->mCamera  = gCameraP4;
+	vp4->updateCameraAspect();
 
 	shadowMgr->setViewport(gfx.getViewport(0), 0);
 	shadowMgr->setViewport(gfx.getViewport(1), 1);
 	shadowMgr->setViewport(gfx.getViewport(2), 2);
 	shadowMgr->setViewport(gfx.getViewport(3), 3);
-	
+
 	cameraMgr->setViewport(gfx.getViewport(0), 0);
 	cameraMgr->setViewport(gfx.getViewport(1), 1);
-    cameraMgr->setViewport(gfx.getViewport(2), 2);
+	cameraMgr->setViewport(gfx.getViewport(2), 2);
 	cameraMgr->setViewport(gfx.getViewport(3), 3);
 
 	if (gNaviNum == 3) {
 		gFancyCamera = true;
-	}
-	else {
+	} else {
 		gFancyCamera = false;
 	}
 
@@ -626,7 +626,8 @@ void BaseGameSection::initViewports(Graphics& gfx)
 	}
 }
 
-void CameraMgr::loadResource() {
+void CameraMgr::loadResource()
+{
 	_18 = -1;
 	_1C = new void*[4];
 	_20 = new Viewport*[4];
@@ -635,7 +636,7 @@ void CameraMgr::loadResource() {
 		mCameraParms[i] = new CameraParms;
 	}
 	mVibrationParms = new VibrationParms;
-	_34 = nullptr;
+	_34             = nullptr;
 
 	for (int i = 0; i < 4; i++) {
 		_1C[i] = nullptr;
@@ -645,17 +646,14 @@ void CameraMgr::loadResource() {
 
 	if (gameSystem && gameSystem->mIsInCave) {
 		readCameraParms("/user/Nishimura/Camera/caveCameraParms.txt");
-	}
-	else {
+	} else {
 		readCameraParms("/user/Nishimura/Camera/groundCameraParms.txt");
 	}
-	
 }
 
 bool CameraMgr::isStartAndEnd(int* shakeArray, int id)
 {
-	switch (id)
-	{
+	switch (id) {
 	case 3:
 		shakeArray[0] = 3;
 		shakeArray[1] = 4;
@@ -707,56 +705,56 @@ void BaseGameSection::drawParticle(Graphics& gfx, int viewport)
 	}
 }
 
-void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback) {
-    switch (mode)
-    {
-    case 0: {
-        bool b = _18 == 1;
-        if (b) {
-            CameraData data;
-            _24[1]->getCameraData(data);
-            _24[0]->setCameraData(data);
-        }
-        _24[0]->setCameraParms(mCameraParms[0]);
-        _24[0]->changePlayerMode(b);
-        break;
-    }
-    case 1: {
-        bool b = _18 == 0;
-        if (b) {
-            CameraData data;
-            _24[0]->getCameraData(data);
-            _24[1]->setCameraData(data);
-        }
-        _24[1]->setCameraParms(mCameraParms[0]);
-        _24[0]->changePlayerMode(b);
-        break;
-    }
-    case 2: {
-        _24[0]->setCameraParms(mCameraParms[0]);
-        _24[0]->changePlayerMode(false);
-        _24[1]->setCameraParms(mCameraParms[0]);
-        _24[1]->changePlayerMode(false);
+void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback)
+{
+	switch (mode) {
+	case 0: {
+		bool b = _18 == 1;
+		if (b) {
+			CameraData data;
+			_24[1]->getCameraData(data);
+			_24[0]->setCameraData(data);
+		}
+		_24[0]->setCameraParms(mCameraParms[0]);
+		_24[0]->changePlayerMode(b);
+		break;
+	}
+	case 1: {
+		bool b = _18 == 0;
+		if (b) {
+			CameraData data;
+			_24[0]->getCameraData(data);
+			_24[1]->setCameraData(data);
+		}
+		_24[1]->setCameraParms(mCameraParms[0]);
+		_24[0]->changePlayerMode(b);
+		break;
+	}
+	case 2: {
+		_24[0]->setCameraParms(mCameraParms[0]);
+		_24[0]->changePlayerMode(false);
+		_24[1]->setCameraParms(mCameraParms[0]);
+		_24[1]->changePlayerMode(false);
 		_24[2]->setCameraParms(mCameraParms[0]);
-        _24[2]->changePlayerMode(false);
-        _24[3]->setCameraParms(mCameraParms[0]);
-        _24[3]->changePlayerMode(false);
-        break;
-    }
-    default:
-        break;
-    }
-    _18 = mode;
-    _34 = callback;
+		_24[2]->changePlayerMode(false);
+		_24[3]->setCameraParms(mCameraParms[0]);
+		_24[3]->changePlayerMode(false);
+		break;
+	}
+	default:
+		break;
+	}
+	_18 = mode;
+	_34 = callback;
 }
 
 // hacky as all ass solution
-void BaseGameSection::updateSplitter2() {
-	
+void BaseGameSection::updateSplitter2()
+{
+
 	if (mSplitter && gSplit4) {
 		mSplitter->split4(mSecondViewportHeight, gOtherViewportHeight);
-	}
-	else {
+	} else {
 		BaseGameSection::updateSplitter();
 	}
 }
@@ -863,7 +861,6 @@ void BaseGameSection::setDefaultPSSceneInfo(PSGame::SceneInfo& sceneInfo)
 		sceneInfo.mCameraMtx[3]    = gCameraP4->getSoundMatrixPtr();
 	}
 
-	
 	BoundBox box;
 
 	mapMgr->getBoundBox(box);

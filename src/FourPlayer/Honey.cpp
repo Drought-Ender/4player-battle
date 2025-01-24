@@ -1,19 +1,16 @@
 #include "Game/Entities/ItemHoney.h"
 
-namespace Game
+namespace Game {
+
+namespace ItemHoney {
+
+void Mgr::onCreateModel(SysShape::Model* model)
 {
-    
 
-
-namespace ItemHoney
-{
-
-void Mgr::onCreateModel(SysShape::Model* model) {
-
-    for (u16 j = 0; j < model->mJ3dModel->mModelData->getShapeNum(); j++) {
-        J3DShape* shape = model->mJ3dModel->mModelData->mShapeTable.mItems[j];
-        shape->setTexMtxLoadType(0x2000);
-    }
+	for (u16 j = 0; j < model->mJ3dModel->mModelData->getShapeNum(); j++) {
+		J3DShape* shape = model->mJ3dModel->mModelData->mShapeTable.mItems[j];
+		shape->setTexMtxLoadType(0x2000);
+	}
 
 	model->getJ3DModel()->newDifferedDisplayList(0x1000200);
 	model->getJ3DModel()->calc();

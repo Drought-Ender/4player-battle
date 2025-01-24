@@ -20,12 +20,12 @@ bool Container::create(efx::Arg* arg)
 	case ONYON_TYPE_YELLOW:
 		mEffectID = PID_Container_Yellow;
 		break;
-    case ONYON_TYPE_PURPLE:
-        mEffectID = PID_Container_Purple;
-        break;
-    case ONYON_TYPE_WHITE:
-        mEffectID = PID_Container_White;
-        break;
+	case ONYON_TYPE_PURPLE:
+		mEffectID = PID_Container_Purple;
+		break;
+	case ONYON_TYPE_WHITE:
+		mEffectID = PID_Container_White;
+		break;
 	}
 	return TSync::create(arg);
 }

@@ -45,11 +45,9 @@ Obj::Obj()
 	createEffect();
 }
 
-void Obj::createEffect() {
-    mEfxFire = (efx::THibaFire*) new efx::THibaWater; 
-}
+void Obj::createEffect() { mEfxFire = (efx::THibaFire*)new efx::THibaWater; }
 
-} // namespace Hiba
+} // namespace WaterHiba
 
 namespace GasLineHiba {
 
@@ -94,11 +92,9 @@ Obj::Obj()
 	createEffect();
 }
 
-void Obj::createEffect() {
-    mEfxFire = (efx::THibaFire*) new efx::THibaLineGas; 
-}
+void Obj::createEffect() { mEfxFire = (efx::THibaFire*)new efx::THibaLineGas; }
 
-} // namespace Hiba
+} // namespace GasLineHiba
 
 namespace SporeHiba {
 
@@ -144,10 +140,8 @@ Obj::Obj()
 	createEffect();
 }
 
-void Obj::createEffect() {
-    mEfxFire = (efx::THibaFire*) new efx::THibaSpore; 
-}
+void Obj::createEffect() { mEfxFire = (efx::THibaFire*)new efx::THibaSpore; }
 
-} // namespace Hiba
+} // namespace SporeHiba
 
 } // namespace Game

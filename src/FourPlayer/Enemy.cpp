@@ -74,14 +74,11 @@
 #include "Game/Entities/SporeOtakara.h"
 #include "Game/Entities/Hibas.h"
 
-
 #include "Game/plantsMgr.h"
 #include "Game/gamePlayData.h"
 #include "Game/MapMgr.h"
 #include "Game/Interaction.h"
 #include "LoadResource.h"
-
-
 
 void Game::GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 {
@@ -404,7 +401,6 @@ void Game::GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 		JUT_PANIC("UNKNOWN ENEMY MANAGER %i FOR %s", enemyID, name);
 		break;
 	}
-	
 
 	mgr->alloc();
 	mEnemyMgrNode.add(new EnemyMgrNode(enemyID, name, mgr));
@@ -412,25 +408,21 @@ void Game::GeneralEnemyMgr::createEnemyMgr(u8 type, int enemyID, int limit)
 	sys->heapStatusEnd(name);
 }
 
-
-
-
 JAISound* PSStartEnemyGhostSE(Game::EnemyBase* enemy, float)
 {
 	JAISound* ghost = enemy->getJAIObject()->startSound(PSSE_EN_ENEMY_GHOST, 0);
 	if (ghost) {
 		f32 volume = 0.0f;
-        f32 pitch = 0.0f;
-		switch (enemy->getEnemyTypeID())
-		{
+		f32 pitch  = 0.0f;
+		switch (enemy->getEnemyTypeID()) {
 		case Game::EnemyTypeID::EnemyID_KingChappy:
 			volume = 1.0f;
-            pitch  = 0.8f;
+			pitch  = 0.8f;
 			break;
 		case Game::EnemyTypeID::EnemyID_FireChappy:
 		case Game::EnemyTypeID::EnemyID_OoPanModoki:
 			volume = 1.0f;
-            pitch  = 0.9f;
+			pitch  = 0.9f;
 			break;
 		case SwitchChappy:
 			volume = 1.0f;
@@ -438,27 +430,27 @@ JAISound* PSStartEnemyGhostSE(Game::EnemyBase* enemy, float)
 			break;
 		case Game::EnemyTypeID::EnemyID_MiniHoudai:
 			volume = 1.0f;
-            pitch  = 1.1f;
+			pitch  = 1.1f;
 			break;
 		case Game::EnemyTypeID::EnemyID_SnakeCrow:
 		case Game::EnemyTypeID::EnemyID_SnakeWhole:
 		case Game::EnemyTypeID::EnemyID_Kabuto:
 		case Game::EnemyTypeID::EnemyID_Hana:
 			volume = 1.0f;
-            pitch  = 1.2f;
+			pitch  = 1.2f;
 			break;
 		case Game::EnemyTypeID::EnemyID_Armor:
 		case Game::EnemyTypeID::EnemyID_Catfish:
 		case Game::EnemyTypeID::EnemyID_Miulin:
 		case Game::EnemyTypeID::EnemyID_BombSarai:
 			volume = 0.9f;
-            pitch  = 1.3f;
+			pitch  = 1.3f;
 			break;
 		case Game::EnemyTypeID::EnemyID_Frog:
 		case Game::EnemyTypeID::EnemyID_MaroFrog:
 		case SwitchTank:
 			volume = 0.8f;
-            pitch  = 1.4f;
+			pitch  = 1.4f;
 			break;
 		case SwitchSarai:
 		case SwitchBug:
@@ -467,7 +459,7 @@ JAISound* PSStartEnemyGhostSE(Game::EnemyBase* enemy, float)
 		case Game::EnemyTypeID::EnemyID_Jigumo:
 		case Game::EnemyTypeID::EnemyID_LeafChappy:
 			volume = 0.7f;
-            pitch  = 1.5f;
+			pitch  = 1.5f;
 			break;
 		case SwitchKochappy:
 		case Game::EnemyTypeID::EnemyID_Sokkuri:
@@ -477,7 +469,7 @@ JAISound* PSStartEnemyGhostSE(Game::EnemyBase* enemy, float)
 		case Game::EnemyTypeID::EnemyID_Tadpole:
 		case Game::EnemyTypeID::EnemyID_Baby:
 			volume = 0.6f;
-            pitch  = 1.7f;
+			pitch  = 1.7f;
 			break;
 
 		case SwitchGrub:
@@ -487,11 +479,11 @@ JAISound* PSStartEnemyGhostSE(Game::EnemyBase* enemy, float)
 			break;
 		case SwitchOtakara:
 			volume = 0.6f;
-            pitch  = 1.8f;
+			pitch  = 1.8f;
 			break;
 		case Game::EnemyTypeID::EnemyID_ShijimiChou:
 			volume = 0.4f;
-            pitch  = 2.3f;
+			pitch  = 2.3f;
 			break;
 		}
 		ghost->setVolume(volume, 0, 0);

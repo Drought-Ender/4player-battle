@@ -7,23 +7,19 @@
 #include "System.h"
 #include "VsOptions.h"
 
-namespace efx
+namespace efx {
+
+void TPkEffect::createSpore_(Vector3f* pos)
 {
+	P2ASSERT(pos);
+	mOeSpore.create(pos);
+}
 
-    
-    void TPkEffect::createSpore_(Vector3f* pos) {
-        P2ASSERT(pos);
-        mOeSpore.create(pos);
-    }
-
-    void TPkEffect::killSpore_() {
-        mOeSpore.kill();
-    }
+void TPkEffect::killSpore_() { mOeSpore.kill(); }
 
 } // namespace efx
 
-namespace Game
-{
+namespace Game {
 
 inline void PikiPanicState::startSound(Piki* piki)
 {
@@ -36,7 +32,7 @@ inline void PikiPanicState::startSound(Piki* piki)
 		panicSound = PSSE_PK_VC_FIRED;
 		break;
 	case PIKIPANIC_Gas:
-    case PIKIPANIC_Spore:
+	case PIKIPANIC_Spore:
 	case PIKIPANIC_Panic:
 	case PIKIPANIC_Other:
 		break;
@@ -44,7 +40,6 @@ inline void PikiPanicState::startSound(Piki* piki)
 
 	piki->mSoundObj->startFreePikiSetSound(panicSound, PSGame::SeMgr::SETSE_PikiPanicRun, 90, 0);
 }
-
 
 void PikiPanicState::init(Piki* piki, StateArg* stateArg)
 {
@@ -89,12 +84,12 @@ void PikiPanicState::init(Piki* piki, StateArg* stateArg)
 		_22         = 0;
 		mDramaTimer = 0.3f * randFloat();
 		break;
-    case PIKIPANIC_Spore:
-        efx::TPkEffect* effectsObj = piki->mEffectsObj;
+	case PIKIPANIC_Spore:
+		efx::TPkEffect* effectsObj = piki->mEffectsObj;
 		effectsObj->setFlag(PKEFF_Spore);
 		effectsObj->createSpore_(effectsObj->_0C);
 		piki->startMotion(IPikiAnims::WALK, IPikiAnims::WALK, nullptr, nullptr);
-        break;
+		break;
 	}
 
 	startSound(piki);
@@ -128,12 +123,12 @@ void PikiPanicState::cleanup(Piki* piki)
 			efx::createSimpleGedoku(*effectsObjGas->_0C);
 		}
 
-        efx::TPkEffect* effectsObjSpore = piki->mEffectsObj;
-        effectsObjSpore->killSpore_();
-        if (effectsObjSpore->isFlag(PKEFF_Spore)) {
-            effectsObjSpore->resetFlag(PKEFF_Spore);
-            pkEffectMgr->createS_SporeOff(*effectsObjSpore->_0C);
-        }
+		efx::TPkEffect* effectsObjSpore = piki->mEffectsObj;
+		effectsObjSpore->killSpore_();
+		if (effectsObjSpore->isFlag(PKEFF_Spore)) {
+			effectsObjSpore->resetFlag(PKEFF_Spore);
+			pkEffectMgr->createS_SporeOff(*effectsObjSpore->_0C);
+		}
 	}
 }
 
@@ -144,7 +139,8 @@ void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
 
 	switch (mPanicType) {
 	case PIKIPANIC_Fire:
-		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON) piki->setGasInvincible(90);
+		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON)
+			piki->setGasInvincible(90);
 		efx::TPkEffect* effectsObjFire = piki->mEffectsObj;
 		effectsObjFire->killMoe_();
 		if (effectsObjFire->isFlag(PKEFF_Fire)) {
@@ -155,7 +151,8 @@ void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
 		}
 		break;
 	case PIKIPANIC_Water:
-		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON) piki->setGasInvincible(90);
+		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON)
+			piki->setGasInvincible(90);
 		efx::TPkEffect* effectsObjWater = piki->mEffectsObj;
 		effectsObjWater->killWater_();
 		if (effectsObjWater->isFlag(PKEFF_Water)) {
@@ -164,7 +161,8 @@ void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
 		}
 		break;
 	case PIKIPANIC_Gas:
-		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON) piki->setGasInvincible(90);
+		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON)
+			piki->setGasInvincible(90);
 		efx::TPkEffect* effectsObjGas = piki->mEffectsObj;
 		effectsObjGas->killChudoku_();
 		if (effectsObjGas->isFlag(PKEFF_Gas)) {
@@ -173,18 +171,16 @@ void PikiPanicState::onFlute(Piki* piki, Game::Navi*)
 		}
 		break;
 	case PIKIPANIC_Spore:
-		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON) piki->setGasInvincible(90);
+		if (gConfig[HAZARD_TIMER] == ConfigEnums::HAZARD_ON)
+			piki->setGasInvincible(90);
 		efx::TPkEffect* effectsObjSpore = piki->mEffectsObj;
-        effectsObjSpore->killSpore_();
-        if (effectsObjSpore->isFlag(PKEFF_Spore)) {
-            effectsObjSpore->resetFlag(PKEFF_Spore);
-            pkEffectMgr->createS_SporeOff(*effectsObjSpore->_0C);
-        }
+		effectsObjSpore->killSpore_();
+		if (effectsObjSpore->isFlag(PKEFF_Spore)) {
+			effectsObjSpore->resetFlag(PKEFF_Spore);
+			pkEffectMgr->createS_SporeOff(*effectsObjSpore->_0C);
+		}
 		break;
 	}
-
 }
 
-
 } // namespace Game
-

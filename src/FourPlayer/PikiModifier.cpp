@@ -70,10 +70,7 @@ f32 Piki::getPelletCarryPower()
 	return carryPower * sSpeeds[gConfig[CARRY_SPEED]];
 }
 
-f32 Piki::getBaseScale()
-{
-	return 1.0f;
-}
+f32 Piki::getBaseScale() { return 1.0f; }
 
 f32 Piki::getSpeed(f32 multiplier)
 {
@@ -104,7 +101,6 @@ void Piki::setSpeed(f32 multiplier, Vector3f& vec)
 		mVelocity = vec * getSpeed(multiplier);
 	}
 }
-
 
 f32 Piki::getSpeed(f32 multiplier, f32 max)
 {
@@ -140,18 +136,18 @@ int Piki::getDownfloorMass()
 	return 1;
 }
 
-void endPluck(NaviNukuState* state, Navi* navi) {
-    if (navi && navi->mController1 && navi->mController1->isButtonDown(PAD_BUTTON_B)) {
+void endPluck(NaviNukuState* state, Navi* navi)
+{
+	if (navi && navi->mController1 && navi->mController1->isButtonDown(PAD_BUTTON_B)) {
 		if (gConfig[AUTOPLUCK] == ConfigEnums::AUTOPLUCK_CANCEL) {
-        	navi->transit(NSID_Walk, nullptr);
-        	navi->mPluckingCounter = false;
-		}
-		else {
-			state->mDidPressA = false;
-			state->mIsActive  = false;
+			navi->transit(NSID_Walk, nullptr);
+			navi->mPluckingCounter = false;
+		} else {
+			state->mDidPressA       = false;
+			state->mIsActive        = false;
 			state->mIsStopAutopluck = true;
 		}
-    }
+	}
 }
 
 void NaviNukuState::init(Navi* navi, StateArg* stateArg)
@@ -171,8 +167,8 @@ void NaviNukuState::init(Navi* navi, StateArg* stateArg)
 
 	const PluckSpeedBuff* buff = static_cast<const PluckSpeedBuff*>(naviBuffMgr->mBuffData[navi->mNaviIndex].findBuff("PluckSpeedBuff"));
 	if (buff) {
-		//OSReport("pluck speed buff %f\n", buff->getSpeedBuff());
-		mAnimSpeed = 30.0f * buff->getSpeedBuff();
+		// OSReport("pluck speed buff %f\n", buff->getSpeedBuff());
+		mAnimSpeed       = 30.0f * buff->getSpeedBuff();
 		navi->mAnimSpeed = mAnimSpeed;
 		OSReport("Anim Speed Initial %f\n", navi->mAnimSpeed);
 	}
@@ -180,18 +176,13 @@ void NaviNukuState::init(Navi* navi, StateArg* stateArg)
 	navi->startMotion(mAnimID, mAnimID, navi, nullptr);
 	mCounter = static_cast<NaviParms*>(navi->mParms)->mNaviParms.mP042;
 	navi->mSoundObj->startSound(PSSE_PL_PULLING_PIKI, 0);
-	mDidPluckSE 	 = 0;
-	mIsActive   	 = 0;
-	mDidPressA  	 = 0;
+	mDidPluckSE      = 0;
+	mIsActive        = 0;
+	mDidPressA       = 0;
 	mIsStopAutopluck = false;
-	_15         	 = 0;
-	navi->mMass 	 = 0.0f;
-
-	
-
-	
+	_15              = 0;
+	navi->mMass      = 0.0f;
 }
-
 
 /**
  * @note Address: 0x80181D70
@@ -212,8 +203,8 @@ void NaviNukuState::exec(Navi* navi)
 		transit(navi, NSID_Walk, nullptr);
 		return;
 	}
-	navi->mVelocity       = 0.0f;
-	navi->mSimVelocity    = 0.0f;
+	navi->mVelocity    = 0.0f;
+	navi->mSimVelocity = 0.0f;
 	if (!navi->assertMotion(mAnimID)) {
 		if (mIsFollower != 0) {
 			NaviFollowArg followArg(false); // not new to party
@@ -239,6 +230,4 @@ void NaviNukuState::cleanup(Navi* navi)
 	navi->startThrowDisable();
 }
 
-
-}
-
+} // namespace Game

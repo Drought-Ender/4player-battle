@@ -53,8 +53,7 @@
 
 #include "nans.h"
 
-namespace PSGame
-{
+namespace PSGame {
 
 SceneInfo::SceneInfo()
     : mStageFlags(0)
@@ -88,7 +87,6 @@ void SceneInfo::setStageFlag(SceneInfo::FlagDef flag, SceneInfo::FlagBitShift sh
  * @note Size: 0x10
  */
 SceneInfo::FlagDef SceneInfo::getFlag(SceneInfo::FlagBitShift shift) const { return (SceneInfo::FlagDef)(mStageFlags >> shift & 1); }
-
 
 void SceneInfo::setStageCamera() const
 {
@@ -126,7 +124,6 @@ PSSystem::Scene* PSM::SceneMgr::newGameScene(u8 wscene, PSGame::SceneInfo* info)
 
 	return scene;
 }
-
 
 PSSystem::Scene* PikSceneMgr::newAndSetGlobalScene()
 {
@@ -218,7 +215,6 @@ void SysFactory::newSoundSystem()
 	OSReport("LEave!\n");
 }
 
-
 /**
  * @note Address: 0x80335AA0
  * @note Size: 0x4AC
@@ -284,8 +280,6 @@ PSSystem::Scene* PikSceneMgr::newAndSetCurrentScene(SceneInfo& info)
 	mScenes->adaptChildScene(newscene);
 	return newscene;
 }
-
-
 
 // /**
 //  * @note Address: 0x803365BC
@@ -487,11 +481,9 @@ PSSystem::Scene* PikSceneMgr::newAndSetCurrentScene(SceneInfo& info)
 // 	return bgm;
 // }
 
-
 } // namespace PSGame
 
-namespace PSSystem
-{
+namespace PSSystem {
 
 /**
  * @note Address: 0x8033143C
@@ -512,13 +504,11 @@ void SeqHeap::loadSeqAsync(TaskChecker* task)
 	int res
 	    = JASResArcLoader::loadResourceAsync(JAInter::SequenceMgr::getArchivePointer(), offs, fileData, size, &loadedCallback, (u32)this);
 	JUT_ASSERTLINE(266, res == 1, "SeqBase::loadSeqAsync() fault loading sequence");
-} 
+}
 
 } // namespace PSSystem
 
-
-namespace PSM
-{
+namespace PSM {
 
 Scene_Game::Scene_Game(u8 p1, PSGame::SceneInfo* info)
     : Scene_Objects(p1, info)
@@ -531,7 +521,6 @@ Scene_Game::Scene_Game(u8 p1, PSGame::SceneInfo* info)
 {
 	mHummingMgr = new PikiHummingMgr();
 }
-
 
 Scene_Cave::Scene_Cave(u8 p1, PSGame::SceneInfo* info)
     : Scene_Game(p1, info)
@@ -569,7 +558,7 @@ u8 ObjCalc_2PGame::getPlayerNo(Vec& pos)
 	case 0:
 
 		f32 minDistance = SQUARE(FLOAT_DIST_MAX);
-		s8 minID = 0;
+		s8 minID        = 0;
 
 		Iterator<Game::Navi> it(Game::naviMgr);
 		CI_LOOP(it)
@@ -581,11 +570,9 @@ u8 ObjCalc_2PGame::getPlayerNo(Vec& pos)
 
 			if (dist < minDistance) {
 				minDistance = dist;
-				minID = navi->mNaviIndex;
+				minID       = navi->mNaviIndex;
 			}
 		}
-
-		
 
 		return minID;
 	default:
@@ -596,15 +583,11 @@ u8 ObjCalc_2PGame::getPlayerNo(Vec& pos)
 
 } // namespace PSM
 
-
-namespace
-{
-	static s8 sSeasonIndex   = 255;
+namespace {
+static s8 sSeasonIndex = 255;
 } // namespace
 
-
-namespace Title
-{
+namespace Title {
 
 /**
  * @note Address: 0x8044C058
@@ -720,8 +703,7 @@ void Section::loadResource()
 
 } // namespace Title
 
-namespace Game
-{
+namespace Game {
 
 void Creature::updateLOD(Game::AILODParm& parm)
 {
@@ -776,7 +758,7 @@ void Creature::updateLOD(Game::AILODParm& parm)
 	} else {
 
 		f32 minDistance = SQUARE(FLOAT_DIST_MAX);
-		s8 minID = 0;
+		s8 minID        = 0;
 
 		for (s8 i = 0; i < viewportCount; i++) {
 			Viewport* vp = gfx->getViewport(i);
@@ -790,9 +772,8 @@ void Creature::updateLOD(Game::AILODParm& parm)
 
 			if (dist < minDistance) {
 				minDistance = dist;
-				minID = i;
+				minID       = i;
 			}
-
 		}
 
 		mLod.mSoundVPID = minID;
@@ -813,8 +794,6 @@ void Creature::updateLOD(Game::AILODParm& parm)
 	if (0 < getCellPikiCount()) {
 		mLod.setFlag(AILOD_PikiInCell);
 	}
-
 }
 
 } // namespace Game
-

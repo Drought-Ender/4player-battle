@@ -17,7 +17,6 @@
 #include "nans.h"
 #include "stream.h"
 
-
 namespace Game {
 namespace ItemRainmaker {
 
@@ -36,7 +35,8 @@ void FSM::init(Item*)
 	registerState(new DeadState());
 }
 
-void Item::addDamage(u8 color, f32 damage) {
+void Item::addDamage(u8 color, f32 damage)
+{
 	if (color == mColorOwner) {
 		mDamage += damage;
 		return;
@@ -45,7 +45,7 @@ void Item::addDamage(u8 color, f32 damage) {
 	mDamage -= damage;
 
 	if (mDamage < 0.0f) {
-		mDamage = -mDamage;
+		mDamage     = -mDamage;
 		mColorOwner = color;
 	}
 }
@@ -189,17 +189,14 @@ void DamagedState::onKeyEvent(Item*, SysShape::KeyEvent const&) { }
  * Address:	801F7E34
  * Size:	000044
  */
-void Item::doSave(Stream& output) {  }
+void Item::doSave(Stream& output) { }
 
 /*
  * --INFO--
  * Address:	801F7E78
  * Size:	0000BC
  */
-void Item::doLoad(Stream& input)
-{
-
-}
+void Item::doLoad(Stream& input) { }
 
 /*
  * --INFO--
@@ -384,7 +381,7 @@ Mgr::Mgr()
 	mObjectPathComponent = "user/Drought/objects/rainmaker";
 	mParms               = new BarrelParms();
 	void* resource       = JKRDvdRipper::loadToMainRAM("user/Drought/objects/rainmaker/parms.txt", nullptr, Switch_0, 0, nullptr,
-                                                 JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	                                                   JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
 	if (resource) {
 		RamStream stream(resource, -1);
 		stream.resetPosition(true, true);
@@ -478,7 +475,7 @@ void StateMachine<ItemRainmaker::Item>::create(int limit)
  */
 void StateMachine<ItemRainmaker::Item>::transit(ItemRainmaker::Item* item, int stateID, StateArg* stateArg)
 {
-	int stateIndex                  = mIdToIndexArray[stateID];
+	int stateIndex                     = mIdToIndexArray[stateID];
 	ItemRainmaker::State* currentState = item->mCurrentState;
 	if (currentState) {
 		currentState->cleanup(item);
@@ -489,7 +486,7 @@ void StateMachine<ItemRainmaker::Item>::transit(ItemRainmaker::Item* item, int s
 			;
 	}
 	ItemRainmaker::State* state = static_cast<ItemRainmaker::State*>(mStates[stateIndex]);
-	item->mCurrentState      = state;
+	item->mCurrentState         = state;
 	state->init(item, stateArg);
 }
 

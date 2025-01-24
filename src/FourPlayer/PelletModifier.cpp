@@ -11,16 +11,15 @@
 #include "Dolphin/rand.h"
 #include "PSM/WorkItem.h"
 
-namespace Game
-{
+namespace Game {
 void Pellet::onInit(CreatureInitArg* initArg)
 {
 	mMaxCarriers = -1;
 	mMinCarriers = -1;
-	
-	mWallTimer   = 0;
-	_324         = 0;
-	mIsInWater   = false;
+
+	mWallTimer = 0;
+	_324       = 0;
+	mIsInWater = false;
 
 	clearDiscoverDisable();
 
@@ -65,7 +64,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	mPikminCount[5] = 0;
 	mPikminCount[6] = 0;
 	_414            = 0;
-	mPelletSizeType            = (u16) static_cast<PelletInitArg*>(initArg)->mPelletIndex;
+	mPelletSizeType = (u16) static_cast<PelletInitArg*>(initArg)->mPelletIndex;
 
 	mConfig = mMgr->mConfigList->getPelletConfig(static_cast<PelletInitArg*>(initArg)->mTextIdentifier);
 
@@ -111,10 +110,10 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cCoin) == 0) {
 		mPelletFlag = FLAG_VS_CHERRY;
 	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaWhite) == 0) {
-        mPelletFlag = FLAG_VS_BEDAMA_WHITE;
-    } else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaPurple) == 0) {
-        mPelletFlag = FLAG_VS_BEDAMA_PURPLE;
-    } else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaMini) == 0 && gGameModeID == MAINGAME_BEDAMA) {
+		mPelletFlag = FLAG_VS_BEDAMA_WHITE;
+	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaPurple) == 0) {
+		mPelletFlag = FLAG_VS_BEDAMA_PURPLE;
+	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaMini) == 0 && gGameModeID == MAINGAME_BEDAMA) {
 		mPelletFlag = FLAG_VS_BEDAMA_MINI;
 	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBingoRandom) == 0 && gGameModeID == MAINGAME_BINGO) {
 		mPelletFlag = FLAG_VS_BINGO_ITEM;
@@ -204,7 +203,6 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	}
 }
 
-
 /*
  * --INFO--
  * Address:	8016D9E4
@@ -227,7 +225,7 @@ bool PelletMgr::makePelletInitArg(PelletInitArg& arg, char* identifier)
 
 	arg.mTextIdentifier = identifier;
 	arg.mPelletType     = mgr->getMgrID();
-	arg.mPelletIndex             = config->mParams.mIndex;
+	arg.mPelletIndex    = config->mParams.mIndex;
 	arg._18             = 0;
 
 	makeVsCarryMinMax(arg, identifier);
@@ -333,46 +331,48 @@ bool PelletMgr::makePelletInitArg(PelletInitArg& arg, PelletMgr::OtakaraItemCode
 
 	arg.mTextIdentifier = config->mParams.mName.mData;
 	arg.mPelletType     = itemCode.mValue >> 8;
-	arg.mPelletIndex             = itemCode.mValue & 0xFF;
+	arg.mPelletIndex    = itemCode.mValue & 0xFF;
 	arg._18             = 0;
 	makeVsCarryMinMax(arg, arg.mTextIdentifier);
 	return true;
 }
 
 // setBedamaColor__Q34Game13PelletOtakara6ObjectFv
-bool PelletOtakara::Object::setBedamaColor() {
-    PSM::PelletItem* obj = (PSM::PelletItem*)mSoundMgr;
+bool PelletOtakara::Object::setBedamaColor()
+{
+	PSM::PelletItem* obj = (PSM::PelletItem*)mSoundMgr;
 	if (mPelletFlag == FLAG_VS_BEDAMA_RED) {
 		mBedamaColor = Red;
-        obj->_70 = 4;
+		obj->_70     = 4;
 		return true;
 	}
 	if (mPelletFlag == FLAG_VS_BEDAMA_BLUE) {
 		mBedamaColor = Blue;
-        obj->_70 = 4;
+		obj->_70     = 4;
 		return true;
 	}
-    if (mPelletFlag == FLAG_VS_BEDAMA_WHITE) {
-        mBedamaColor = White;
-        obj->_70 = 4;
-        return true;
-    }
-    if (mPelletFlag == FLAG_VS_BEDAMA_PURPLE) {
-        mBedamaColor = Purple;
-        obj->_70 = 4;
-        return true;
-    }
+	if (mPelletFlag == FLAG_VS_BEDAMA_WHITE) {
+		mBedamaColor = White;
+		obj->_70     = 4;
+		return true;
+	}
+	if (mPelletFlag == FLAG_VS_BEDAMA_PURPLE) {
+		mBedamaColor = Purple;
+		obj->_70     = 4;
+		return true;
+	}
 	if (mPelletFlag == FLAG_VS_BEDAMA_MINI) {
 		mBedamaColor = 5;
-        obj->_70 = 4;
+		obj->_70     = 4;
 		return true;
 	}
 	mBedamaColor = Yellow;
-	obj->_70 = 4;
+	obj->_70     = 4;
 	return true;
 }
 
-void Pellet::setupGeneratorBedama() {
+void Pellet::setupGeneratorBedama()
+{
 	// if (gameSystem != nullptr && gameSystem->isVersusMode()) {
 	// 	if (strcmp(VsOtakaraName::cBedamaYellow, getCreatureName()) == 0) {
 	// 		mMinCarriers = 1;
@@ -400,17 +400,15 @@ void Pellet::setupGeneratorBedama() {
 	}
 }
 
-float Pellet::getMoveMultiplier() {
+float Pellet::getMoveMultiplier()
+{
 	if (mPelletFlag == FLAG_VS_BEDAMA_MINI) {
 		return 2.0f;
 	}
 	return 1.0f;
 }
 
-void MultiplyPelletMove(Pellet* pellet, Vector3f& move) {
-    move *= pellet->getMoveMultiplier();
-}
-
+void MultiplyPelletMove(Pellet* pellet, Vector3f& move) { move *= pellet->getMoveMultiplier(); }
 
 void ItemTreasure::Item::releasePellet()
 {
@@ -437,13 +435,13 @@ void ItemTreasure::Item::releasePellet()
 		mPellet->setVelocity(velocity);
 
 		if (gameSystem->isVersusMode()) {
-			s32 color = mPellet->getBedamaColor();
+			s32 color            = mPellet->getBedamaColor();
 			bool isColoredMarble = color >= Blue && color <= White && color != Yellow;
 
 			GameMessageVsBirthTekiTreasure mesg;
-			mesg.mPosition = mPosition;
-			mesg.mIsBaseMarble    = isColoredMarble;
-			mesg.mTobiCount       = randInt(3) + 1;
+			mesg.mPosition     = mPosition;
+			mesg.mIsBaseMarble = isColoredMarble;
+			mesg.mTobiCount    = randInt(3) + 1;
 			gameSystem->mSection->sendMessage(mesg);
 		}
 

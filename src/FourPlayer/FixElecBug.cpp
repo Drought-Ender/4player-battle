@@ -6,8 +6,6 @@
 namespace Game {
 
 // GetOurEnemyMgr__4GameFPQ24Game9EnemyBase
-EnemyMgrBase* GetOurEnemyMgr(EnemyBase* enemy) {
-	return generalEnemyMgr->getEnemyMgr(enemy->getEnemyTypeID());
-}
+EnemyMgrBase* GetOurEnemyMgr(EnemyBase* enemy) { return generalEnemyMgr->getEnemyMgr(enemy->getEnemyTypeID()); }
 
-}
+} // namespace Game

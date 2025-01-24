@@ -155,5 +155,5 @@ void Obj::createChargeSE() { getJAIObject()->startSound(PSSE_EN_TANK_BREATH, 0);
  */
 void Obj::createDisChargeSE() { getJAIObject()->startSound(PSSE_EN_TANK_FIRE, 0); }
 
-} // namespace Gtank
+} // namespace Mtank
 } // namespace Game

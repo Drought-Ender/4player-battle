@@ -37,5 +37,5 @@ void Mgr::createObj(int count) { mObj = new Obj[count]; }
  */
 EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
 
-} // namespace ElecBug
+} // namespace TechnoBug
 } // namespace Game

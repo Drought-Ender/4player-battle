@@ -24,14 +24,12 @@
 #include "VsOptions.h"
 #include "nans.h"
 
-namespace Game
-{
+namespace Game {
 
 // wasteable__Q24Game11NaviDopeArg
 bool NaviDopeArg::wasteable = false;
 
-namespace VsGame
-{
+namespace VsGame {
 
 int CardCount = 12;
 
@@ -41,22 +39,21 @@ f32 CardSize = WheelSize / CardCount;
 
 f32 CardBounce = CardSize + 10.0f;
 
-
 VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* tekiMgr)
 {
-	mSection                      = section;
-	mTekiMgr                      = tekiMgr;
-	mSlotNum                      = 0;
-	mSlotTextures                 = nullptr;
-	mSlotMachines[0].mPlayerIndex = 0;
-	mSlotMachines[1].mPlayerIndex = 1;
+	mSection                         = section;
+	mTekiMgr                         = tekiMgr;
+	mSlotNum                         = 0;
+	mSlotTextures                    = nullptr;
+	mSlotMachines[0].mPlayerIndex    = 0;
+	mSlotMachines[1].mPlayerIndex    = 1;
 	mNewSlotMachines[0].mPlayerIndex = 2;
 	mNewSlotMachines[1].mPlayerIndex = 3;
-	mSlotMachines[0].mCardMgr     = this;
-	mSlotMachines[1].mCardMgr     = this;
-	mNewSlotMachines[0].mCardMgr = this;
-	mNewSlotMachines[1].mCardMgr = this;
-	_104                          = 12 / CardCount * 40.0f;
+	mSlotMachines[0].mCardMgr        = this;
+	mSlotMachines[1].mCardMgr        = this;
+	mNewSlotMachines[0].mCardMgr     = this;
+	mNewSlotMachines[1].mCardMgr     = this;
+	_104                             = 12 / CardCount * 40.0f;
 
 	initDraw();
 
@@ -73,10 +70,14 @@ VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* te
 void VsGame::CardMgr::update()
 {
 	if (!gameSystem->paused()) {
-		if (gDrawNavi[0]) mSlotMachines[0].update();
-		if (gDrawNavi[1]) mSlotMachines[1].update();
-		if (gDrawNavi[2]) mNewSlotMachines[0].update();
-		if (gDrawNavi[3]) mNewSlotMachines[1].update();
+		if (gDrawNavi[0])
+			mSlotMachines[0].update();
+		if (gDrawNavi[1])
+			mSlotMachines[1].update();
+		if (gDrawNavi[2])
+			mNewSlotMachines[0].update();
+		if (gDrawNavi[3])
+			mNewSlotMachines[1].update();
 	}
 }
 
@@ -116,20 +117,22 @@ void CardMgr::loadResource()
 	mHighlightTexture = new JUTTexture(highlight);
 }
 
-void CardMgr::stopSlot(int idx) {
+void CardMgr::stopSlot(int idx)
+{
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
-	machines[idx]->startStop(); 
+	machines[idx]->startStop();
 }
 
-CardMgr::SlotMachine* CardMgr::getSlotMachine(int idx) {
+CardMgr::SlotMachine* CardMgr::getSlotMachine(int idx)
+{
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 	return machines[idx];
 }
 
-bool CardMgr::SlotMachine::dispCherryTarget(int user) {
+bool CardMgr::SlotMachine::dispCherryTarget(int user)
+{
 	if (mSlotID != UNRESOLVED) {
-		switch (vsSlotCardMgr->mUsingCards[mSlotID]->useTarget())
-		{
+		switch (vsSlotCardMgr->mUsingCards[mSlotID]->useTarget()) {
 		case NONE:
 			return false;
 		case TEAM:
@@ -151,9 +154,9 @@ bool CardMgr::usePlayerCard(int teamUser, TekiMgr* tekiMgr)
 		gUseCardNavi = getRandomAliveTeamate(teamUser);
 	}
 
-	tekiMgr    = mTekiMgr;
+	tekiMgr                 = mTekiMgr;
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
-	int slotID = machines[teamUser]->mSlotID;
+	int slotID              = machines[teamUser]->mSlotID;
 
 	bool used = true;
 
@@ -165,7 +168,7 @@ bool CardMgr::usePlayerCard(int teamUser, TekiMgr* tekiMgr)
 
 	if (slotID == UNRESOLVED || (machines[teamUser]->dispCherryTarget(gUseCardNavi) && target == -1)) {
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
-        return false;
+		return false;
 	}
 
 	if (target == -1) {
@@ -198,59 +201,56 @@ bool CardMgr::usePlayerCard(int teamUser, TekiMgr* tekiMgr)
 
 Vector3f CardMgr::getSlotOrigin(int playerIdx)
 {
-    if (gNaviNum == 2) {
+	if (gNaviNum == 2) {
 		if (gGameModeID == MAINGAME_BEDAMA) {
 			if (playerIdx == 0) {
 				return Vector3f(515.0f, 115.0f, 0.0f);
-			}
-			else {
+			} else {
 				return Vector3f(515.0f, 315.0f, 0.0f);
 			}
-		}
-		else if (gGameModeID == MAINGAME_BINGO) {
+		} else if (gGameModeID == MAINGAME_BINGO) {
 			if (playerIdx == 0) {
 				return Vector3f(565.0f, 115.0f, 0.0f);
-			}
-			else {
+			} else {
 				return Vector3f(565.0f, 315.0f, 0.0f);
 			}
 		}
-    }
-    else {
-        switch (playerIdx)
-        {
-        case 0:
-            return Vector3f(265.0f, 115.0f, 0.0f);
-        case 1:
-            return Vector3f(575.0f, 115.0f, 0.0f);
-        case 2:
-            return Vector3f(265.0f, 315.0f, 0.0f);
-        case 3:
-            return Vector3f(575.0f, 315.0f, 0.0f);
-        }
-    }
+	} else {
+		switch (playerIdx) {
+		case 0:
+			return Vector3f(265.0f, 115.0f, 0.0f);
+		case 1:
+			return Vector3f(575.0f, 115.0f, 0.0f);
+		case 2:
+			return Vector3f(265.0f, 315.0f, 0.0f);
+		case 3:
+			return Vector3f(575.0f, 315.0f, 0.0f);
+		}
+	}
 }
 
 static int sCurrentCarder = 0;
 
 // Scissor__Q44Game6VsGame7CardMgr11SlotMachineFR8Graphicsb
-void CardMgr::SlotMachine::Scissor(Graphics& gfx, bool simple) {
+void CardMgr::SlotMachine::Scissor(Graphics& gfx, bool simple)
+{
 	// "gfx" INPUTS THE WRONG POINTER!! DON'T USE
 	Viewport* vp = sys->mGfx->getViewport(sCurrentCarder);
-	Rectf box = vp->mRect2;
+	Rectf box    = vp->mRect2;
 	if (simple) {
 		GXSetScissor(box.p1.x, box.p1.y, box.getWidth(), box.getHeight());
 		return;
 	}
 
 	Vector3f origin = mCardMgr->getSlotOrigin(sCurrentCarder);
-	f32 size = (WheelSize) * 2 / PI;
-	f32 minY = origin.y - size / 2;
+	f32 size        = (WheelSize) * 2 / PI;
+	f32 minY        = origin.y - size / 2;
 	GXSetScissor(box.p1.x, minY, box.getWidth(), size);
 }
 
-void CardMgr::draw(Graphics& gfx) {
-    if (!moviePlayer->isActive()) {
+void CardMgr::draw(Graphics& gfx)
+{
+	if (!moviePlayer->isActive()) {
 		for (int i = 0; i < 4; i++) {
 			mSlotsUpdated[i] = false;
 		}
@@ -259,9 +259,9 @@ void CardMgr::draw(Graphics& gfx) {
 
 		Vector3f olimarSlotPos = getSlotOrigin(0);
 		Vector3f louieSlotPos  = getSlotOrigin(1);
-        Vector3f p3SlotPos     = getSlotOrigin(2);
-        Vector3f p4SlotPos     = getSlotOrigin(3);
-        
+		Vector3f p3SlotPos     = getSlotOrigin(2);
+		Vector3f p4SlotPos     = getSlotOrigin(3);
+
 		if (machines[getVsTeam(0)]->mSpinState && gDrawNavi[0]) {
 			sCurrentCarder = 0;
 			drawSlot(gfx, olimarSlotPos, *machines[getVsTeam(0)]);
@@ -270,22 +270,22 @@ void CardMgr::draw(Graphics& gfx) {
 			sCurrentCarder = 1;
 			drawSlot(gfx, louieSlotPos, *machines[getVsTeam(1)]);
 		}
-        if (gNaviNum >= 3) {
-            if (machines[getVsTeam(2)]->mSpinState && gDrawNavi[2]) {
+		if (gNaviNum >= 3) {
+			if (machines[getVsTeam(2)]->mSpinState && gDrawNavi[2]) {
 				sCurrentCarder = 2;
-                drawSlot(gfx, p3SlotPos, *machines[getVsTeam(2)]);
-            }
-            if (gNaviNum == 4 && machines[getVsTeam(3)]->mSpinState && gDrawNavi[3]) {
+				drawSlot(gfx, p3SlotPos, *machines[getVsTeam(2)]);
+			}
+			if (gNaviNum == 4 && machines[getVsTeam(3)]->mSpinState && gDrawNavi[3]) {
 				sCurrentCarder = 3;
-                drawSlot(gfx, p4SlotPos, *machines[getVsTeam(3)]);
-            }
-        }
+				drawSlot(gfx, p4SlotPos, *machines[getVsTeam(3)]);
+			}
+		}
 	}
 }
 
 inline Vector2f CardMgr::getLampPos(int user, int cherries)
 {
-    Vector3f slotPos = getSlotOrigin(user);
+	Vector3f slotPos    = getSlotOrigin(user);
 	Vector2f lampOrigin = Vector2f(slotPos.x, slotPos.y);
 	lampOrigin -= Vector2f(22.4f, 80.0f);
 	f32 lampWidth = 8.0f;
@@ -302,22 +302,21 @@ void CardMgr::gotPlayerCard(int user)
 		}
 		machines[user]->_18 = 0;
 	} else if (machines[user]->mCherryStock < 4) {
-        for (int i = 0; i < 4; i++) {
-            if (getVsTeam(i) == user && gDrawNavi[i]) {
-                Vector2f panePos = getLampPos(i, machines[user]->mCherryStock);
-                DebugReport("Owner %i\n", i);
+		for (int i = 0; i < 4; i++) {
+			if (getVsTeam(i) == user && gDrawNavi[i]) {
+				Vector2f panePos = getLampPos(i, machines[user]->mCherryStock);
+				DebugReport("Owner %i\n", i);
 
-                JUtility::TColor color1(0xff, 0x96, 0x64, 0xff);
-                JUtility::TColor color2(0xff, 0x46, 0x46, 0xff);
+				JUtility::TColor color1(0xff, 0x96, 0x64, 0xff);
+				JUtility::TColor color2(0xff, 0x46, 0x46, 0xff);
 
-                efx2d::ArgScaleColorColor spraysetArg(&panePos, 0.4f, color1, color2);
-                efx2d::T2DSprayset_forVS vsSpraySet;
-				
-                vsSpraySet.create(&spraysetArg);
-                PSSystem::spSysIF->playSystemSe(PSSE_SY_2P_SLOT_STOC, 0);
-                
-            }
-        }
+				efx2d::ArgScaleColorColor spraysetArg(&panePos, 0.4f, color1, color2);
+				efx2d::T2DSprayset_forVS vsSpraySet;
+
+				vsSpraySet.create(&spraysetArg);
+				PSSystem::spSysIF->playSystemSe(PSSE_SY_2P_SLOT_STOC, 0);
+			}
+		}
 		machines[user]->mCherryStock++;
 	}
 }
@@ -326,8 +325,7 @@ void CardMgr::SlotMachine::updateZoomIn()
 {
 	if (mCardMgr->mSlotsUpdated[mPlayerIndex]) {
 		return;
-	}
-	else {
+	} else {
 		mCardMgr->mSlotsUpdated[mPlayerIndex] = true;
 	}
 	if (_50 == 0) {
@@ -358,8 +356,7 @@ void CardMgr::SlotMachine::updateZoomUse()
 {
 	if (mCardMgr->mSlotsUpdated[mPlayerIndex]) {
 		return;
-	}
-	else {
+	} else {
 		mCardMgr->mSlotsUpdated[mPlayerIndex] = true;
 	}
 	_3C += sys->mDeltaTime * 3.0f;
@@ -374,11 +371,11 @@ void CardMgr::SlotMachine::updateZoomUse()
 
 CardSelector::CardSelector(int count)
 {
-	mCount = count;	
-	mValues = new int[count];
+	mCount      = count;
+	mValues     = new int[count];
 	mCumulative = new f32[count];
 	for (int i = 0; i < count; i++) {
-		mValues[i] = 100;
+		mValues[i]     = 100;
 		mCumulative[i] = 0.0f;
 	}
 }
@@ -422,75 +419,63 @@ int CardSelector::selectCard()
 	return (int)(randFloat() * mCount);
 }
 
-
 void CardMgr::SlotMachine::start()
 {
 	_51 = false;
 
 	int cardCount = vsSlotCardMgr->mCardCount;
 
-    CardSelector cardSelector(cardCount);
+	CardSelector cardSelector(cardCount);
 
+	for (int i = 0; i < cardCount; i++) {
+		cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getWeight(mCardMgr, mPlayerIndex);
+	}
 
-	
-    
-    for (int i = 0; i < cardCount; i++) {
-        cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getWeight(mCardMgr, mPlayerIndex);
-    }
+	cardSelector.fixBrokenWeights();
 
-	
-    cardSelector.fixBrokenWeights();
+	int totalMeasure = cardSelector.getTotalWeight();
 
+	for (int i = 0; i < cardCount; i++) {
+		cardSelector.mValues[i]
+		    = vsSlotCardMgr->mUsingCards[i]->getBedamaWeight(mCardMgr, mPlayerIndex, totalMeasure, cardSelector.mValues[i]);
+	}
 
-    int totalMeasure = cardSelector.getTotalWeight();
-    
-    for (int i = 0; i < cardCount; i++) {
-        cardSelector.mValues[i] = vsSlotCardMgr->mUsingCards[i]->getBedamaWeight(mCardMgr, mPlayerIndex, totalMeasure, cardSelector.mValues[i]);
-    }
+	mSelectedSlot = cardSelector.selectCard();
 
-    mSelectedSlot = cardSelector.selectCard();
+	if (mPrevSelected < cardCount) {
+		cardSelector.mValues[mPrevSelected] /= 10;
+	}
 
-
-    if (mPrevSelected < cardCount) {
-        cardSelector.mValues[mPrevSelected] /= 10;
-    }
-
-    mPrevSelected = mSelectedSlot;
-    _28 = randFloat();
-    mSlotID = UNRESOLVED;
-    mAppearState = APPEAR_LEAVE;
-    PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_APPEAR, 0);
-    switch (mSpinState) {
-        case SPIN_END:
-        case SPIN_UNSTARTED:
-            mSpinSpeed = 72.0f * DEG2RAD;
-            mSpinState = SPIN_WAIT_START;
-            mSpinAccel = -TAU;
-            return;
-        case SPIN_WAIT_START:
-        case SPIN_START:
-            break;
-        default:
-            mSpinState = SPIN_START;
-            return;
-    }
+	mPrevSelected = mSelectedSlot;
+	_28           = randFloat();
+	mSlotID       = UNRESOLVED;
+	mAppearState  = APPEAR_LEAVE;
+	PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_APPEAR, 0);
+	switch (mSpinState) {
+	case SPIN_END:
+	case SPIN_UNSTARTED:
+		mSpinSpeed = 72.0f * DEG2RAD;
+		mSpinState = SPIN_WAIT_START;
+		mSpinAccel = -TAU;
+		return;
+	case SPIN_WAIT_START:
+	case SPIN_START:
+		break;
+	default:
+		mSpinState = SPIN_START;
+		return;
+	}
 }
 
 inline int CardMgr::SlotMachine::getNextCard(int card) { return (CardCount + card + 1) % CardCount; }
 
 inline int CardMgr::SlotMachine::getPrevCard(int card) { return (CardCount + card - 1) % CardCount; }
 
-inline f32 GetMaxJump() {
-    return 0.07f;
-}
+inline f32 GetMaxJump() { return 0.07f; }
 
-inline f32 GetMinSpeed() {
-    return 0.44f;
-}
+inline f32 GetMinSpeed() { return 0.44f; }
 
-inline f32 GetAccel() {
-    return TAU;
-}
+inline f32 GetAccel() { return TAU; }
 
 bool CardMgr::SlotMachine::canJumpToCard(int card)
 {
@@ -575,8 +560,8 @@ void VsGame::CardMgr::SlotMachine::update()
 			}
 		}
 		break;
-	case SPIN_DECELERATE_END:                                              // on decelerate end
-		_2C += deltaTime;                                                  // wait 3 seconds
+	case SPIN_DECELERATE_END:                                                     // on decelerate end
+		_2C += deltaTime;                                                         // wait 3 seconds
 		if (_2C >= 3.0f && FABS(mSpinProgress - mCurrCardIndex) < GetMaxJump()) { // can jump to previous card
 			_6C           = 0.0f;
 			_68           = 0.0f;
@@ -673,12 +658,11 @@ void VsGame::CardMgr::SlotMachine::update()
 void VsGame::CardMgr::initDraw()
 {
 	int CardCount = 0;
-    for (int i = 0; i < VsSlotCardMgr::sTotalCardCount; i++) {
-        if (VsSlotCardMgr::sUsingCards[i]) {
-            CardCount++;
-        }
-    }
-
+	for (int i = 0; i < VsSlotCardMgr::sTotalCardCount; i++) {
+		if (VsSlotCardMgr::sUsingCards[i]) {
+			CardCount++;
+		}
+	}
 
 	DebugReport("CardCount %i\n", CardCount);
 	int countA = CardCount;
@@ -708,7 +692,8 @@ void VsGame::CardMgr::initDraw()
 	}
 }
 
-void CardMgr::informMovieDone() {
+void CardMgr::informMovieDone()
+{
 	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 
 	for (int i = 0; i < 4; i++) {
@@ -717,8 +702,7 @@ void CardMgr::informMovieDone() {
 				machines[i]->mCherryStock--;
 				machines[i]->start();
 				machines[i]->_18 = 0;
-			}
-			else {
+			} else {
 				machines[i]->mSpinSpeed   = 0.0f;
 				machines[i]->mSpinAccel   = 0.0f;
 				machines[i]->mAppearState = 2;
@@ -731,6 +715,5 @@ void CardMgr::informMovieDone() {
 }
 
 } // namespace VsGame
-
 
 } // namespace Game
