@@ -157,7 +157,7 @@ void Obj::startEnemyRumble()
 	Matrixf* worldMat = mModel->getJoint("ago")->getWorldMatrix();
 	Vector3f pos      = Vector3f(worldMat->mMatrix.mtxView[0][3], worldMat->mMatrix.mtxView[1][3], worldMat->mMatrix.mtxView[2][3]);
 	pos.y             = mPosition.y;
-	rumbleMgr->startRumble(8, pos, 2);
+	rumbleMgr->startRumble(8, pos, 4);
 	createBounceEffect(pos, 0.4f);
 }
 

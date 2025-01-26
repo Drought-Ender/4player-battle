@@ -224,7 +224,6 @@ void* JKRExpHeap::do_alloc(u32 byteCount, int align)
 {
 
 	lock();
-
 	/* Apparently it's sometimes 0 lol */
 	if (align < 0)
 		align = -align;
@@ -295,6 +294,7 @@ void* JKRExpHeap::do_alloc(u32 byteCount, int align)
 		}
 	}
 
+
 	unlock();
 
 	sizeSet(this);
@@ -341,7 +341,14 @@ void JKRExpHeap::do_free(void* p1)
 
 	lock();
 
+
 #ifdef SAFETY
+
+	if (p1 < mStartAddress || p1 > mEndAddress) {
+		OSReport("BAD FREE: %p outside of bound!\n", p1);
+		unlock();
+		return;
+	}
 
 	// This is so dumb...
 
@@ -357,7 +364,23 @@ void JKRExpHeap::do_free(void* p1)
 
 #endif
 
-	OSReport("BAD FREE: %x %x\n", p1, debugb);
+	OSReport("BAD FREE: %p %p (%p)\n", p1, debugb, myb);
+	if ((u32)myb > 0x80000000) {
+		OSReport("BAD FREE: bruh %u\n", *myb);
+	}
+	// PPCHalt();
+	return;
+
+
+	// OSReport("dealloc %p\n", p1);
+	// if ((u32)p1 > 0x80000000) {
+	// 	OSReport("dealloc *%p\n", *(void**)p1);
+	// 	if (*(u32*)p1 > 0x80000000 && *(u32*)p1 < 0x80700000) {
+	// 		OSReport("dealloc **%p\n", **(void***)p1);
+	// 	}
+	// }
+
+
 	unlock();
 	return;
 
@@ -389,7 +412,9 @@ int JKRExpHeap::freeGroup(u8 groupID)
 
 	lock();
 
-	OSPanic("Free group unsupported", 69, "sussy");
+	OSReport("Free group unsupported!\n");
+
+	unlock();
 
 	return true;
 }

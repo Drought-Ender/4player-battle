@@ -121,7 +121,7 @@ struct Camera : public CullFrustum {
 	Mtx44 mProjectionMtx;                  // _0B4
 	Mtx44 _F4;                             // _0F4
 	f32 _134;                              // _134
-	f32 _138;                              // _138
+	f32 mFieldOfViewTangent;                              // _138
 	f32 _13C;                              // _13C
 	Game::P2JST::ObjectCamera* mJstObject; // _140
 };
@@ -136,7 +136,7 @@ struct LookAtCamera : public Camera {
 	virtual void startVibration(int);      // _7C (weak)
 
 	// Camera _00 - _144
-	Matrixf _144;             // _144
+	Matrixf mLookMatrix;             // _144
 	Vector3f _174;            // _174 /* Sodium called this `position`, PikDecomp called it `angle`. :shrug: */
 	Vector3f mLookAtPosition; // _180 /* PikDecomp called this `position`. */
 	Vector3f _18C;            // _18C

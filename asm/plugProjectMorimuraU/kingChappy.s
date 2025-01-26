@@ -5651,12 +5651,12 @@ lbl_constructor:
 /* 8036151C 0035E45C  41 82 00 28 */	beq .L_80361544
 /* 80361520 0035E460  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 80361524 0035E464  38 80 00 06 */	li r4, 6
-/* 80361528 0035E468  38 C0 00 02 */	li r6, 2
+/* 80361528 0035E468  38 C0 00 02 */	li r6, 4
 /* 8036152C 0035E46C  4B EF 0D 11 */	bl "startVibration__Q24Game9CameraMgrFiR10Vector3<f>i"
 /* 80361530 0035E470  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 80361534 0035E474  7F C5 F3 78 */	mr r5, r30
 /* 80361538 0035E478  38 80 00 0B */	li r4, 0xb
-/* 8036153C 0035E47C  38 C0 00 02 */	li r6, 2
+/* 8036153C 0035E47C  38 C0 00 02 */	li r6, 4
 /* 80361540 0035E480  4B EF 22 41 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 .L_80361544:
 /* 80361544 0035E484  C0 02 03 2C */	lfs f0, lbl_8051E68C@sda21(r2)

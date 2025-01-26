@@ -552,7 +552,7 @@ Camera::Camera()
 	mProjectionNear = 1.0f;
 	mProjectionFar  = 128000.0f;
 	_134            = 1.0f;
-	_138            = 1.0f;
+	mFieldOfViewTangent            = 1.0f;
 	_13C            = 1.0f;
 	mSoundPosition  = 0;
 	PSMTXIdentity(mCurViewMatrix.mMatrix.mtxView);
@@ -594,7 +594,7 @@ void Camera::copyFrom(Camera* camera)
 	mProjectionFar  = camera->mProjectionFar;
 
 	_134 = camera->_134;
-	_138 = camera->_138;
+	mFieldOfViewTangent = camera->mFieldOfViewTangent;
 	_13C = camera->_13C;
 
 	mJstObject = camera->mJstObject;
@@ -988,7 +988,7 @@ void Camera::updateScreenConstants()
 	float cos = pikmin2_cosf(_134);
 	float sin = pikmin2_sinf(_134);
 
-	_138 = cos / sin;
+	mFieldOfViewTangent = cos / sin;
 
 	_13C = -(mProjectionFar - mProjectionNear) / (mProjectionFar * 2.0f * mProjectionNear);
 }
@@ -1287,8 +1287,8 @@ LookAtCamera::LookAtCamera()
 	_174            = Vector3f(0.0f, 0.0f, 1000.0f);
 	mLookAtPosition = 0.0f;
 	_18C            = Vector3f(0.0f, 1.0f, 0.0f);
-	PSMTXIdentity(_144.mMatrix.mtxView);
-	mViewMatrix = &_144;
+	PSMTXIdentity(mLookMatrix.mMatrix.mtxView);
+	mViewMatrix = &mLookMatrix;
 }
 
 /*
@@ -1304,7 +1304,7 @@ LookAtCamera::LookAtCamera()
  * Address:	8041B6F4
  * Size:	000034
  */
-void LookAtCamera::updateMatrix() { C_MTXLookAt(_144.mMatrix.mtxView, (Vec*)&_174, (Vec*)&_18C, (Vec*)&mLookAtPosition); }
+void LookAtCamera::updateMatrix() { C_MTXLookAt(mLookMatrix.mMatrix.mtxView, (Vec*)&_174, (Vec*)&_18C, (Vec*)&mLookAtPosition); }
 
 /*
  * --INFO--

@@ -17,7 +17,7 @@ namespace Game {
 
 FloatingIconMgr* FloatingIcon::mgr = nullptr;
 
-bool FloatingIconMgr::sDrawOptimize = false;
+bool FloatingIconMgr::sDrawOptimize = true;
 
 bool FloatingIconMgr::sIsEnabled = true;
 

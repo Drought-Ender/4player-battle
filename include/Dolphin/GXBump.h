@@ -20,6 +20,7 @@ extern void GXSetIndTexMtx(GXIndTexMtxID mtx, const Mtx23 offsets, s8 scale);
 extern void GXSetIndTexCoordScale(GXIndTexStageID stage, GXIndTexScale sScale, GXIndTexScale tScale);
 extern void GXSetIndTexOrder(GXIndTexStageID stage, GXTexCoordID texCoord, GXTexMapID texMap);
 extern void GXSetNumIndStages(u8 stageCount);
+extern void __GXSetIndirectMask(u32 mask);
 
 // Convenience functions.
 extern void GXSetTevDirect(GXTevStageID stage);

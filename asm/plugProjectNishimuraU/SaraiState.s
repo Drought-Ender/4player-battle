@@ -653,7 +653,7 @@ exec__Q34Game5Sarai9StateFallFPQ24Game9EnemyBase:
 /* 80270EB8 0026DDF8  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 80270EBC 0026DDFC  38 A1 00 14 */	addi r5, r1, 0x14
 /* 80270EC0 0026DE00  38 80 00 0B */	li r4, 0xb
-/* 80270EC4 0026DE04  38 C0 00 02 */	li r6, 2
+/* 80270EC4 0026DE04  38 C0 00 02 */	li r6, 4
 /* 80270EC8 0026DE08  4B FE 28 B9 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 80270ECC 0026DE0C  48 00 00 64 */	b .L_80270F30
 .L_80270ED0:

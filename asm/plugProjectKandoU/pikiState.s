@@ -6566,12 +6566,12 @@ collisionCallback__Q24Game16PikiHipDropStateFPQ24Game4PikiRQ24Game9CollEvent:
 /* 8018E034 0018AF74  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 8018E038 0018AF78  38 A1 00 4C */	addi r5, r1, 0x4c
 /* 8018E03C 0018AF7C  38 80 00 0B */	li r4, 0xb
-/* 8018E040 0018AF80  38 C0 00 02 */	li r6, 2
+/* 8018E040 0018AF80  38 C0 00 02 */	li r6, 4
 /* 8018E044 0018AF84  48 0C 57 3D */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 8018E048 0018AF88  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8018E04C 0018AF8C  38 A1 00 4C */	addi r5, r1, 0x4c
 /* 8018E050 0018AF90  38 80 00 06 */	li r4, 6
-/* 8018E054 0018AF94  38 C0 00 02 */	li r6, 2
+/* 8018E054 0018AF94  38 C0 00 02 */	li r6, 4
 /* 8018E058 0018AF98  48 0C 41 E5 */	bl "startVibration__Q24Game9CameraMgrFiR10Vector3<f>i"
 /* 8018E05C 0018AF9C  80 7F 00 00 */	lwz r3, 0(r31)
 /* 8018E060 0018AFA0  81 83 00 00 */	lwz r12, 0(r3)
@@ -6762,12 +6762,12 @@ dosin__Q24Game16PikiHipDropStateFPQ24Game4Piki:
 /* 8018E314 0018B254  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 8018E318 0018B258  38 A1 00 14 */	addi r5, r1, 0x14
 /* 8018E31C 0018B25C  38 80 00 0B */	li r4, 0xb
-/* 8018E320 0018B260  38 C0 00 02 */	li r6, 2
+/* 8018E320 0018B260  38 C0 00 02 */	li r6, 4
 /* 8018E324 0018B264  48 0C 54 5D */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 8018E328 0018B268  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8018E32C 0018B26C  38 A1 00 14 */	addi r5, r1, 0x14
 /* 8018E330 0018B270  38 80 00 06 */	li r4, 6
-/* 8018E334 0018B274  38 C0 00 02 */	li r6, 2
+/* 8018E334 0018B274  38 C0 00 02 */	li r6, 4
 /* 8018E338 0018B278  48 0C 3F 05 */	bl "startVibration__Q24Game9CameraMgrFiR10Vector3<f>i"
 /* 8018E33C 0018B27C  7F E3 FB 78 */	mr r3, r31
 /* 8018E340 0018B280  38 80 28 4E */	li r4, 0x284e

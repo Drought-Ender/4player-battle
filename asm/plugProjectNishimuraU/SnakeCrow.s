@@ -3455,12 +3455,12 @@ createDownHeadEffect__Q34Game9SnakeCrow3ObjFf:
 /* 80295AC0 00292A00  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 80295AC4 00292A04  38 A1 00 08 */	addi r5, r1, 8
 /* 80295AC8 00292A08  38 80 00 03 */	li r4, 3
-/* 80295ACC 00292A0C  38 C0 00 02 */	li r6, 2
+/* 80295ACC 00292A0C  38 C0 00 02 */	li r6, 4
 /* 80295AD0 00292A10  4B FB C7 6D */	bl "startVibration__Q24Game9CameraMgrFiR10Vector3<f>i"
 /* 80295AD4 00292A14  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 80295AD8 00292A18  38 A1 00 08 */	addi r5, r1, 8
 /* 80295ADC 00292A1C  38 80 00 08 */	li r4, 8
-/* 80295AE0 00292A20  38 C0 00 02 */	li r6, 2
+/* 80295AE0 00292A20  38 C0 00 02 */	li r6, 4
 /* 80295AE4 00292A24  4B FB DC 9D */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 80295AE8 00292A28  E3 E1 00 28 */	psq_l f31, 40(r1), 0, qr0
 /* 80295AEC 00292A2C  80 01 00 34 */	lwz r0, 0x34(r1)

@@ -5,6 +5,7 @@
 #include "DvdThreadCommand.h"
 #include "IDelegate.h"
 #include "JSystem/JKernel/JKRDisposer.h"
+#include "BitFlag.h"
 
 struct Graphics;
 
@@ -25,18 +26,25 @@ struct Node : public CNode, JKRDisposer {
 	void drawDump(Graphics&, int&, int&);
 	void becomeCurrentHeap();
 
-	static void destroy(Node*);
+	static void destroy(Node* node);
 
 	// CNode _00 - _18
 	// JKRDisposer _18 - _30
-	JKRHeap* _30;            // _30
-	u8 mGroupIDMaybe;        // _34
+	JKRHeap* mHeap;          // _30
+	u8 mHeapGroupID;         // _34
 	void* mResource;         // _38
 	MgrCommand* mMgrCommand; // _3C
 };
 
+// fabricated struct, needs to exist for MgrCommand dtor to build correctly
+struct CommandNode {
+	bool mIsWorking;           // _00
+	Node* mNode;               // _04
+	DvdThreadCommand mCommand; // _08
+};
+
 struct MgrCommand : public CNode, JKRDisposer {
-	MgrCommand(char*);
+	MgrCommand(char* name);
 
 	virtual ~MgrCommand();               // _08 (weak)
 	virtual void memoryCallBackFunc();   // _1C
@@ -58,47 +66,44 @@ struct MgrCommand : public CNode, JKRDisposer {
 
 	// CNode _00 - _18
 	// JKRDisposer _18 - _30
-	s32 _30;                      // _30
-	u8 _34;                       // _34
-	Node* _38;                    // _38
-	DvdThreadCommand _3C;         // _3C
-	Node* _A8;                    // _A8
-	JKRHeap* _AC;                 // _AC
-	IDelegate1<MgrCommand*>* _B0; // _B0
-	Delegate<MgrCommand> _B4;     // _B4
-	Delegate<MgrCommand> _C8;     // _C8
-	Delegate<MgrCommand> _DC;     // _DC
+	s32 mMode;                              // _30
+	CommandNode mCommandNode;               // _34
+	Node* mNode2;                           // _A8
+	JKRHeap* mActiveHeap;                   // _AC
+	IDelegate1<MgrCommand*>* mUserCallback; // _B0
+	Delegate<MgrCommand> mDelegateDvdLoad;  // _B4
+	Delegate<MgrCommand> mDelegateMemory;   // _C8
+	Delegate<MgrCommand> mDelegateAramLoad; // _DC
 };
 
 struct Mgr {
-	Mgr(JKRHeap*, u32);
+	Mgr(JKRHeap* parentHeap, u32 size);
 
 	virtual void drawDump(Graphics&, int, int); // _08
 
-	void createNewNode(const char*);
+	Node* createNewNode(const char*);
 	void delFinishCommand();
-	bool destroy(MgrCommand*);
+	bool destroy(MgrCommand* command);
 	void destroyAll();
 	void loadResource(MgrCommand*, const char*, bool);
-	void searchCommand(MgrCommand*);
+	bool searchCommand(MgrCommand*);
 	bool sync(MgrCommand*, bool);
 
 	// Unused/inlined:
-	void search(const char*);
+	Node* search(const char* path);
 	void dump();
 	void syncAll(bool);
 	void watchHeap();
 
+	JKRHeap* getHeap() const { return mHeap; }
+
 	// _00 = VTBL
-	JKRHeap* mHeap; // _04
-	u32 _08;        // _08
-	u32 _0C;        // _0C
-	CNode _10;      // _10
-	CNode _28;      // _28
-	union {
-		u8 bytesView[4];
-		u32 dwordView;
-	} _40; // _40
+	JKRHeap* mHeap;      // _04
+	u32 mHeapSize;       // _08
+	u32 mRemainingSize;  // _0C, guessed name
+	CNode mNodes;        // _10
+	CNode mLoadingNodes; // _28
+	BitFlag<u32> mFlags; // _40
 };
 
 struct Mgr2D : public Mgr {

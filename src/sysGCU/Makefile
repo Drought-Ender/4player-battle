@@ -26,7 +26,7 @@ GC_FILES:=\
 	$(BUILD_DIR)/src/sysGCU/gameConfig.o\
 	$(BUILD_DIR)/src/sysGCU/fogMgr.o\
 	$(BUILD_DIR)/asm/sysGCU/aramMgr.o\
-	$(BUILD_DIR)/asm/sysGCU/resourceMgr.o\
+	$(BUILD_DIR)/src/sysGCU/resourceMgr.o\
 	$(BUILD_DIR)/src/sysGCU/resourceMgr2D.o\
 	$(BUILD_DIR)/asm/sysGCU/sysMaterialAnim.o\
 	$(BUILD_DIR)/asm/sysGCU/P2DScreen.o\
@@ -60,7 +60,7 @@ GC_FILES:=\
 	$(BUILD_DIR)/asm/sysGCU/pikmin2THPPlayer.o\
 	$(BUILD_DIR)/src/sysGCU/captionMgr.o\
 	$(BUILD_DIR)/asm/sysGCU/captionMessage.o\
-	$(BUILD_DIR)/asm/sysGCU/screenScene.o\
+	$(BUILD_DIR)/src/sysGCU/screenScene.o\
 	$(BUILD_DIR)/asm/sysGCU/screenMgr.o\
 	$(BUILD_DIR)/asm/sysGCU/screenObj.o\
 	$(BUILD_DIR)/asm/sysGCU/JSTObjectParticleActor.o\

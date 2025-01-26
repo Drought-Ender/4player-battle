@@ -11,6 +11,7 @@ static const char fileName[]  = "registItem";
 template <typename T, typename T2>
 inline void GenerateMgr(T2& mgr, char* name)
 {
+	OSReport("%s loaded\n", __PRETTY_FUNCTION__);
 	sys->heapStatusStart(name, nullptr);
 	mgr = new T();
 	mgr->loadResources();
@@ -37,10 +38,14 @@ void ItemMgr::createManagers(u32 flags)
 	
 	sys->heapStatusEnd("-Weed-");
 
+	GenerateMgr<ItemTreasure::Mgr>(ItemTreasure::mgr, "-Treasure-");
+
+	GenerateMgr<ItemPikihead::Mgr>(ItemPikihead::mgr, "-PikiHead-");
 	GenerateMgr<ItemDownFloor::Mgr>(ItemDownFloor::mgr, "-DownFloor-");
 	GenerateMgr<ItemBridge::Mgr>(ItemBridge::mgr, "-Bridge-");
-	GenerateMgr<ItemTreasure::Mgr>(ItemTreasure::mgr, "-Treasure-");
-	GenerateMgr<ItemPikihead::Mgr>(ItemPikihead::mgr, "-PikiHead-");
+	
+	
+	
 
 	sys->heapStatusStart("-Plant-", nullptr);
 
@@ -100,6 +105,8 @@ void ItemMgr::createManagers(u32 flags)
 		ItemDengekiGate::mgr = nullptr;
 	}
 	sys->heapStatusEnd("-DengekiGate-");
+
+	OSReport("all loaded\n");
 }
 
 /*

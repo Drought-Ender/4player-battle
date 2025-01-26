@@ -1,6 +1,6 @@
 NISHIMURA_FILES:=\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/nslibmath.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/ShadowCylinder.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/ShadowCylinder.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/playCamera.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/shadowMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/MapUnit.o\
@@ -20,9 +20,9 @@ NISHIMURA_FILES:=\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/GateUnit.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/RandGateUnit.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/ObjectLayout.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/CameraMgr.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/CameraMgr.o\
 	$(BUILD_DIR)/asm/plugProjectNishimuraU/ContRumble.o\
-	$(BUILD_DIR)/asm/plugProjectNishimuraU/RumbleMgr.o\
+	$(BUILD_DIR)/src/plugProjectNishimuraU/RumbleMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/PomAnimator.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/PomMgr.o\
 	$(BUILD_DIR)/src/plugProjectNishimuraU/Pom.o\

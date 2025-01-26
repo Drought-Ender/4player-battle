@@ -1224,7 +1224,7 @@ makeUnit__Q24Game10MapUnitMgrFPQ24Game7MapUnitPc:
 /* 801B6CB0 001B3BF0  38 81 0E 68 */	addi r4, r1, 0xe68
 /* 801B6CB4 001B3BF4  48 26 33 AD */	bl read__12MapCollisionFR6Stream
 /* 801B6CB8 001B3BF8  7F 23 CB 78 */	mr r3, r25
-/* 801B6CBC 001B3BFC  4B E6 D4 1D */	bl __dla__FPv
+/* 801B6CBC 001B3BFC  4B E6 D4 1D */	# bl __dla__FPv # this shouldn't be deleted as its from a rarcive
 /* 801B6CC0 001B3C00  38 7F 00 10 */	addi r3, r31, 0x10
 /* 801B6CC4 001B3C04  38 9F 00 7C */	addi r4, r31, 0x7c
 /* 801B6CC8 001B3C08  81 9F 00 10 */	lwz r12, 0x10(r31)

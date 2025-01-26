@@ -17,6 +17,7 @@ struct Graphics;
 struct Matrixf;
 struct Stream;
 struct Viewport;
+struct ResTIMG;
 
 namespace Game {
 struct Creature;
@@ -31,18 +32,46 @@ struct ShadowParam {
 
 // Size: 0x60
 struct ShadowParms : public Parameters {
+	ShadowParms()
+	    : Parameters(nullptr, "ShadowParms")
+	    , mLodNear(this, 'lodn', "LOD NearÅF", 0.1f, 0.0f, 0.2f)
+	    , mLodFar(this, 'lodf', "LOD FarÅF", 0.02f, 0.0f, 0.2f)
+	{
+	}
+
 	Parm<f32> mLodNear; // _0C
 	Parm<f32> mLodFar;  // _34
-	void* mEnd;         // _5C
 };
 
 // Size: 0x24
 struct ShadowNode : public CNode {
-	virtual ~ShadowNode(); // _08 (weak)
+	ShadowNode();
+	ShadowNode(Creature*, int);
+
+	// virtual ~ShadowNode(); // _08 (weak)
+
+	void init(int);
+
+	inline ShadowNode* getNext() { return (ShadowNode*)mChild; }
+	inline Creature* getGameObject() { return mCreature; }
+	inline Matrixf* getMtx(int i) { return &mMatrices[i]; }
 
 	Creature* mCreature; // _18
-	u32 _1C;             // _1C
-	u32 _20;             // _20 /* bitfield */
+	Matrixf* mMatrices;  // _1C
+	u32 mFlags;          // _20 /* bitfield */
+};
+
+
+// stripped struct
+struct CylinderList {
+	CylinderList(int);
+
+	void createCylinder(int, f32);
+	void draw();
+
+	u8 mTriangleCount; // _00
+	void* mDLData;     // _04
+	int mSize;         // _08
 };
 
 struct CylinderBase {
@@ -57,7 +86,7 @@ struct CylinderBase {
 	void setShadowRect(Rectf&);
 	void setCameraParms(Camera*, int);
 	void makeSRT(Matrixf&, ShadowParam&);
-	void getCylinderType(ShadowParam&, int);
+	int getCylinderType(ShadowParam&, int);
 	void setupFillGX();
 	void setupDrawCylinderGX();
 	void setupFilterGX();
@@ -68,14 +97,14 @@ struct CylinderBase {
 	void fillRectAlphaZero();
 	void drawCylinderList(int);
 
-	// VTBL _00
-	void* mDisplayListObj; // _04
-	Color4* mColor;        // _08
-	ShadowParms* mParms;   // _0C
-	Rectf _10;             // _10
-	Vector3f _20[2];       // _20
-	Vector3f _38[2];       // _38
-	f32 _50;               // _50
+	// _00 = VTBL
+	CylinderList** mDisplayListObj; // _04
+	Color4* mColor;                 // _08
+	ShadowParms* mParms;            // _0C
+	Rectf mScreenBounds;            // _10
+	Vector3f mCamPosition[4];       // _20
+	Vector3f mCamLookAt[4];         // _38
+	f32 mCameraSizeMod[4];          // _50
 };
 
 struct ShadowCylinder2 : public CylinderBase {
@@ -90,26 +119,23 @@ struct ShadowCylinder2 : public CylinderBase {
 	void setupTextureFilterGX();
 	void drawTextureFilter();
 
-	void fix();
-
-	u8 _54[4]; // _54
-	void*** _58;
-	void* _5C; // _5C
-	int _60;   // _60
+	ResTIMG** mTexImg; // _58
+	GXTexObj* mTexObj; // _5C
+	int mTexIdx;       // _60
 };
 
 struct ShadowCylinder3 : public CylinderBase {
 	ShadowCylinder3(ShadowParms*, Color4*);
 
-	virtual void setFilterTextureID(int);     // _08
+	virtual void setFilterTextureID(int) { }  // _08
 	virtual void drawInit();                  // _0C
 	virtual void drawCylinder(Matrixf&, int); // _10
 	virtual void drawFinish();                // _14
 
 	void drawScreenFilter();
-
-	u8 _54[4]; // _54
 };
+
+int i = sizeof(ShadowCylinder2);
 
 struct TubeShadowPosNode : public JointShadowNode {
 	inline TubeShadowPosNode()
@@ -175,7 +201,7 @@ struct SphereShadowNode : public JointShadowNode {
 struct ShadowMgr : public CNode {
 	ShadowMgr(int);
 
-	virtual ~ShadowMgr();               // _08 (weak)
+	// virtual ~ShadowMgr();               // _08 (weak)
 	virtual int getSize();              // _10
 	virtual int getMax();               // _14
 	virtual Creature* getCreature(int); // _18
@@ -228,22 +254,25 @@ struct ShadowMgr : public CNode {
 
 	void setForceVisible(Creature*, bool);
 
+	inline int getViewportCount() { return mViewportNum; }
+	CylinderBase* getActiveCylinder() { return mCylinders[mCylinderID]; }
+	inline Viewport* getViewport(int i) { return mViewports[i]; }
+
 	// CNode _00
-	int _18;                  // _18
-	int _1C;                  // _1C /* Sodium called this max? Unsure why. */
-	ShadowNode* _20;          // _20
-	ShadowNode* _24;          // _24
-	ShadowCylinder2* _28;     // _28
-	ShadowCylinder3* _2C;     // _2C
-	Viewport** mViewports;    // _30
-	JointShadowRootNode* _34; // _34
-	JointShadowRootNode* _38; // _38
-	u8 _3C;                   // _3C
-	u8 _3D;                   // _3D
-	int _40;                  // _40
-	int _44;                  // _44
-	Color4 mColor;            // _48
-	ShadowParms* mParms;      // _4C
+	int mViewportNum;                           // _18
+	int mAllocShadowNum;                        // _1C
+	ShadowNode* mActiveShadows;                 // _20
+	ShadowNode* mInactiveShadows;               // _24
+	CylinderBase* mCylinders[2];                // _28, 0 = ShadowCylinder2, 1 = ShadowCylinder3
+	Viewport** mViewports;                      // _30, array of size _18
+	JointShadowRootNode* mActiveJointShadows;   // _34
+	JointShadowRootNode* mInactiveJointShadows; // _38
+	u8 mEnabled;                                // _3C
+	u8 mDoCheckCylinderType;                    // _3D
+	int mCylinderID;                            // _40
+	int mUnused0;                               // _44, seems to be entirely unused
+	Color4 mColor;                              // _48
+	ShadowParms* mParms;                        // _4C
 };
 
 extern ShadowMgr* shadowMgr;

@@ -759,12 +759,14 @@ void GameState::checkSMenu(VsGameSection* section)
  */
 void GameState::pre2dDraw(Graphics& gfx, VsGameSection* section)
 {
+	OSReport("GameState::pre2dDraw\n");
 	if (gameSystem->isVersusMode() && !mFlags.typeView && !moviePlayer->mDemoState) {
 		section->mCardMgr->draw(gfx);
 		if (naviBuffMgr) {
 			naviBuffMgr->draw(gfx);
 		}
 	}
+	OSReport("GameState::pre2dDraw done\n");
 }
 
 /*

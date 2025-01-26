@@ -1217,7 +1217,7 @@ lbl_constructor:
 /* 80359E88 00356DC8  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 80359E8C 00356DCC  38 80 00 0C */	li r4, 0xc
 /* 80359E90 00356DD0  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 80359E94 00356DD4  38 C0 00 02 */	li r6, 2
+/* 80359E94 00356DD4  38 C0 00 02 */	li r6, 4
 /* 80359E98 00356DD8  D0 41 00 14 */	stfs f2, 0x14(r1)
 /* 80359E9C 00356DDC  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 80359EA0 00356DE0  D0 21 00 18 */	stfs f1, 0x18(r1)
@@ -1226,7 +1226,7 @@ lbl_constructor:
 /* 80359EAC 00356DEC  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 80359EB0 00356DF0  38 A1 00 14 */	addi r5, r1, 0x14
 /* 80359EB4 00356DF4  38 80 00 0D */	li r4, 0xd
-/* 80359EB8 00356DF8  38 C0 00 02 */	li r6, 2
+/* 80359EB8 00356DF8  38 C0 00 02 */	li r6, 4
 /* 80359EBC 00356DFC  4B EF 98 C5 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 80359EC0 00356E00  80 1F 01 E0 */	lwz r0, 0x1e0(r31)
 /* 80359EC4 00356E04  54 00 06 B0 */	rlwinm r0, r0, 0, 0x1a, 0x18
@@ -1277,7 +1277,7 @@ lbl_constructor:
 /* 80359F60 00356EA0  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 80359F64 00356EA4  38 80 00 03 */	li r4, 3
 /* 80359F68 00356EA8  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 80359F6C 00356EAC  38 C0 00 02 */	li r6, 2
+/* 80359F6C 00356EAC  38 C0 00 02 */	li r6, 4
 /* 80359F70 00356EB0  D0 41 00 14 */	stfs f2, 0x14(r1)
 /* 80359F74 00356EB4  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 80359F78 00356EB8  D0 21 00 18 */	stfs f1, 0x18(r1)
@@ -1286,7 +1286,7 @@ lbl_constructor:
 /* 80359F84 00356EC4  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 80359F88 00356EC8  38 A1 00 14 */	addi r5, r1, 0x14
 /* 80359F8C 00356ECC  38 80 00 0B */	li r4, 0xb
-/* 80359F90 00356ED0  38 C0 00 02 */	li r6, 2
+/* 80359F90 00356ED0  38 C0 00 02 */	li r6, 4
 /* 80359F94 00356ED4  4B EF 97 ED */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 80359F98 00356ED8  48 00 00 10 */	b .L_80359FA8
 .L_80359F9C:
@@ -1494,12 +1494,12 @@ lbl_constructor:
 /* 8035A278 003571B8  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8035A27C 003571BC  38 A1 00 7C */	addi r5, r1, 0x7c
 /* 8035A280 003571C0  38 80 00 03 */	li r4, 3
-/* 8035A284 003571C4  38 C0 00 02 */	li r6, 2
+/* 8035A284 003571C4  38 C0 00 02 */	li r6, 4
 /* 8035A288 003571C8  4B EF 7F B5 */	bl "startVibration__Q24Game9CameraMgrFiR10Vector3<f>i"
 /* 8035A28C 003571CC  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 8035A290 003571D0  38 A1 00 7C */	addi r5, r1, 0x7c
 /* 8035A294 003571D4  38 80 00 0B */	li r4, 0xb
-/* 8035A298 003571D8  38 C0 00 02 */	li r6, 2
+/* 8035A298 003571D8  38 C0 00 02 */	li r6, 4
 /* 8035A29C 003571DC  4B EF 94 E5 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 8035A2A0 003571E0  83 BF 02 8C */	lwz r29, 0x28c(r31)
 /* 8035A2A4 003571E4  3B C0 00 00 */	li r30, 0
@@ -2091,7 +2091,7 @@ lbl_constructor:
 /* 8035AB24 00357A64  C0 21 00 9C */	lfs f1, 0x9c(r1)
 /* 8035AB28 00357A68  38 80 00 1A */	li r4, 0x1a
 /* 8035AB2C 00357A6C  C0 01 00 A0 */	lfs f0, 0xa0(r1)
-/* 8035AB30 00357A70  38 C0 00 02 */	li r6, 2
+/* 8035AB30 00357A70  38 C0 00 02 */	li r6, 4
 /* 8035AB34 00357A74  D0 41 00 C0 */	stfs f2, 0xc0(r1)
 /* 8035AB38 00357A78  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8035AB3C 00357A7C  D0 21 00 C4 */	stfs f1, 0xc4(r1)
@@ -2100,7 +2100,7 @@ lbl_constructor:
 /* 8035AB48 00357A88  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 8035AB4C 00357A8C  38 A1 00 C0 */	addi r5, r1, 0xc0
 /* 8035AB50 00357A90  38 80 00 03 */	li r4, 3
-/* 8035AB54 00357A94  38 C0 00 02 */	li r6, 2
+/* 8035AB54 00357A94  38 C0 00 02 */	li r6, 4
 /* 8035AB58 00357A98  4B EF 8C 29 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 8035AB5C 00357A9C  48 00 05 18 */	b .L_8035B074
 .L_8035AB60:
@@ -2917,7 +2917,7 @@ lbl_constructor:
 /* 8035B6E4 00358624  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 8035B6E8 00358628  38 80 00 06 */	li r4, 6
 /* 8035B6EC 0035862C  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 8035B6F0 00358630  38 C0 00 02 */	li r6, 2
+/* 8035B6F0 00358630  38 C0 00 02 */	li r6, 4
 /* 8035B6F4 00358634  D0 41 00 14 */	stfs f2, 0x14(r1)
 /* 8035B6F8 00358638  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8035B6FC 0035863C  D0 21 00 18 */	stfs f1, 0x18(r1)
@@ -2926,7 +2926,7 @@ lbl_constructor:
 /* 8035B708 00358648  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 8035B70C 0035864C  38 A1 00 14 */	addi r5, r1, 0x14
 /* 8035B710 00358650  38 80 00 0D */	li r4, 0xd
-/* 8035B714 00358654  38 C0 00 02 */	li r6, 2
+/* 8035B714 00358654  38 C0 00 02 */	li r6, 4
 /* 8035B718 00358658  4B EF 80 69 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 8035B71C 0035865C  80 01 00 34 */	lwz r0, 0x34(r1)
 /* 8035B720 00358660  83 E1 00 2C */	lwz r31, 0x2c(r1)
@@ -3421,12 +3421,12 @@ lbl_constructor:
 /* 8035BE10 00358D50  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8035BE14 00358D54  38 A1 00 14 */	addi r5, r1, 0x14
 /* 8035BE18 00358D58  38 80 00 0F */	li r4, 0xf
-/* 8035BE1C 00358D5C  38 C0 00 02 */	li r6, 2
+/* 8035BE1C 00358D5C  38 C0 00 02 */	li r6, 4
 /* 8035BE20 00358D60  4B EF 64 1D */	bl "startVibration__Q24Game9CameraMgrFiR10Vector3<f>i"
 /* 8035BE24 00358D64  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 8035BE28 00358D68  38 A1 00 14 */	addi r5, r1, 0x14
 /* 8035BE2C 00358D6C  38 80 00 0C */	li r4, 0xc
-/* 8035BE30 00358D70  38 C0 00 02 */	li r6, 2
+/* 8035BE30 00358D70  38 C0 00 02 */	li r6, 4
 /* 8035BE34 00358D74  4B EF 79 4D */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 8035BE38 00358D78  83 DF 02 8C */	lwz r30, 0x28c(r31)
 /* 8035BE3C 00358D7C  3B E0 00 00 */	li r31, 0
@@ -3552,7 +3552,7 @@ lbl_constructor:
 /* 8035BFEC 00358F2C  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 8035BFF0 00358F30  38 80 00 06 */	li r4, 6
 /* 8035BFF4 00358F34  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 8035BFF8 00358F38  38 C0 00 02 */	li r6, 2
+/* 8035BFF8 00358F38  38 C0 00 02 */	li r6, 4
 /* 8035BFFC 00358F3C  D0 41 00 14 */	stfs f2, 0x14(r1)
 /* 8035C000 00358F40  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 8035C004 00358F44  D0 21 00 18 */	stfs f1, 0x18(r1)
@@ -3561,7 +3561,7 @@ lbl_constructor:
 /* 8035C010 00358F50  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 8035C014 00358F54  38 A1 00 14 */	addi r5, r1, 0x14
 /* 8035C018 00358F58  38 80 00 0B */	li r4, 0xb
-/* 8035C01C 00358F5C  38 C0 00 02 */	li r6, 2
+/* 8035C01C 00358F5C  38 C0 00 02 */	li r6, 4
 /* 8035C020 00358F60  4B EF 77 61 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 8035C024 00358F64  48 00 00 3C */	b .L_8035C060
 .L_8035C028:

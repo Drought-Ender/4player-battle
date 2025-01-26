@@ -1318,7 +1318,7 @@ startEnemyRumble__Q34Game10KumaChappy3ObjFv:
 /* 8029A4FC 0029743C  C0 23 00 1C */	lfs f1, 0x1c(r3)
 /* 8029A500 00297440  38 80 00 0B */	li r4, 0xb
 /* 8029A504 00297444  C0 03 00 0C */	lfs f0, 0xc(r3)
-/* 8029A508 00297448  38 C0 00 02 */	li r6, 2
+/* 8029A508 00297448  38 C0 00 02 */	li r6, 4
 /* 8029A50C 0029744C  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 8029A510 00297450  D0 01 00 08 */	stfs f0, 8(r1)
 /* 8029A514 00297454  D0 21 00 0C */	stfs f1, 0xc(r1)

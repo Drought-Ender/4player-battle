@@ -137,8 +137,8 @@ void Obj::flickAttackBomb()
 	efx.create(nullptr);
 
 	Vector3f pos = mPosition;
-	cameraMgr->startVibration(28, pos, 2);
-	rumbleMgr->startRumble(11, pos, 2);
+	cameraMgr->startVibration(28, pos, 4);
+	rumbleMgr->startRumble(11, pos, 4);
 }
 
 /*
@@ -197,8 +197,8 @@ void Obj::createSmokeEffect()
 	if (id == 8) {
 		pos -= Vector3f(pikmin2_sinf(mFaceDir) * 60.0f, 0.0f, pikmin2_cosf(mFaceDir) * 60.0f);
 
-		cameraMgr->startVibration(3, pos, 2);
-		rumbleMgr->startRumble(11, pos, 2);
+		cameraMgr->startVibration(3, pos, 4);
+		rumbleMgr->startRumble(11, pos, 4);
 
 	} else if (id == 4) {
 		setAtari(true);
@@ -210,7 +210,7 @@ void Obj::createSmokeEffect()
 		parms = static_cast<ChappyBase::Parms*>(mParms);
 		EnemyFunc::flickNearbyNavi(this, parms->mGeneral.mPrivateRadius.mValue, parms->mGeneral.mShakeKnockback.mValue,
 		                           parms->mGeneral.mShakeDamage.mValue, -1000.0f, nullptr);
-		rumbleMgr->startRumble(10, pos, 2);
+		rumbleMgr->startRumble(10, pos, 4);
 
 	} else {
 		return;

@@ -44,7 +44,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	houdai->finishSteamEffect();
 
 	Vector3f position = houdai->getPosition();
-	rumbleMgr->startRumble(7, position, 2);
+	rumbleMgr->startRumble(7, position, 4);
 }
 
 /*
@@ -144,8 +144,8 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	shadowMgr->addJointShadow(houdai);
 
 	Vector3f position = houdai->getPosition();
-	cameraMgr->startVibration(0, position, 2);
-	rumbleMgr->startRumble(6, position, 2);
+	cameraMgr->startVibration(0, position, 4);
+	rumbleMgr->startRumble(6, position, 4);
 }
 
 /*
@@ -174,8 +174,8 @@ void StateLand::exec(EnemyBase* enemy)
 			shadowMgr->addJointShadow(houdai);
 
 			Vector3f position = houdai->getPosition();
-			cameraMgr->startVibration(0, position, 2);
-			rumbleMgr->startRumble(6, position, 2);
+			cameraMgr->startVibration(0, position, 4);
+			rumbleMgr->startRumble(6, position, 4);
 		}
 	}
 

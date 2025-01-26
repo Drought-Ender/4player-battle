@@ -463,21 +463,21 @@ void VsGameSection::onSetupFloatMemory()
 	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite };
 
 	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
+		// isMemoryOverrideOn() || 
+		// if (i < 2) {
 
-		if (isMemoryOverrideOn() || i < 2) {
+		PelletInitArg initArg;
+		PelletList::cKind cKind;
 
-			PelletInitArg initArg;
-			PelletList::cKind cKind;
+		PelletConfig* pelletConfig = PelletList::Mgr::getConfigAndKind(const_cast<char*>(marbles[i]), cKind);
 
-			PelletConfig* pelletConfig = PelletList::Mgr::getConfigAndKind(const_cast<char*>(marbles[i]), cKind);
+		JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
 
-			JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
-
-			initArg.mPelletIndex             = pelletConfig->mParams.mIndex;
-			initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
-			initArg.mPelletType     = cKind;
-			pelletMgr->setUse(&initArg);
-		}
+		initArg.mPelletIndex             = pelletConfig->mParams.mIndex;
+		initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
+		initArg.mPelletType     = cKind;
+		pelletMgr->setUse(&initArg);
+		// }
 	}
 
 	if (gGameModeID == MAINGAME_BEDAMA) {
@@ -2277,9 +2277,9 @@ namespace Game
 			gFancyTarget = fancyCamLookForTarget();
 		}
 		if (gFancyTarget) {
-			Vector3f realPos = gCameraP4->mNavi->mPosition3;
-			gCameraP4->mNavi->mPosition3 = gFancyTarget->getPosition();
-			gCameraP4->_1B0 = gFancyTarget->getFaceDir();
+			// Vector3f realPos = gCameraP4->mNavi->mPosition3;
+			// gCameraP4->mNavi->mPosition3 = gFancyTarget->getPosition();
+			// gCameraP4->_1B0 = gFancyTarget->getFaceDir();
 			// gCameraP4->_1B4 = gFancyTimer * cIntervalTheta / cTimerInterval + cMinInterval;
 			// gCameraP4->_1BC = gFancyTimer * cIntervalTheta / cTimerInterval + cMinInterval;
 			

@@ -515,10 +515,10 @@ void VsOptionsMenuMgr::init()
 VsOptionsMenuMgr::~VsOptionsMenuMgr()
 {
 	for (int i = 0; i < ARRAY_SIZE(mMenus); i++) {
-		delete mMenus[i];
+		// delete mMenus[i];
 		mMenus[i] = nullptr;
 	}
-	delete mBackground;
+	// delete mBackground;
 }
 
 bool VsOptionsMenuMgr::update()
@@ -1054,8 +1054,8 @@ void* CharacterData::loadAST()
 
 VsCardMenu::~VsCardMenu()
 {
-	delete mCardArchive;
-	delete[] mCards;
+	// delete mCardArchive;
+	// delete[] mCards;
 }
 
 void CharacterImage::SetupGX(Graphics& gfx)
@@ -1337,8 +1337,8 @@ bool CharacterSelect::update(VsOptionsMenuMgr* menu)
 
 CharacterImage::~CharacterImage()
 {
-	delete[] mCharacterName;
-	delete mPicture;
+	// delete[] mCharacterName;
+	// delete mPicture;
 }
 
 void CharacterImage::delMembers() { }
@@ -1354,7 +1354,7 @@ void CharacterSelect::cleanup()
 		CharacterData::CleanDisplayName(ARRAY_SIZE(sCharacters[i].mDispName), sCharacters[i].mDispName);
 
 		if (sCharacters[i].mImage) {
-			delete[] sCharacters[i].mImage;
+			// delete[] sCharacters[i].mImage;
 		}
 
 		sCharacters[i].mImage = sCharacters[i].loadImage();
@@ -1428,7 +1428,7 @@ void CharacterData::initDefaults()
 			DebugReport("Name %i %s %s\n", i, string, sCharacters[i].mName);
 			sCharacters[i].makeDisplayName();
 			if (sCharacters[i].mImage) {
-				delete[] sCharacters[i].mImage;
+				// delete[] sCharacters[i].mImage;
 			}
 			sCharacters[i].mImage      = sCharacters[i].loadImage();
 			sCharacters[i].mCharaterID = i;
@@ -1443,7 +1443,7 @@ void CharacterData::read(Stream& stream)
 	strcpy(mName, string);
 	makeDisplayName();
 	if (mImage) {
-		delete[] mImage;
+		// delete[] mImage;
 	}
 	mImage = loadImage();
 }
@@ -1459,20 +1459,20 @@ CharacterSelect::~CharacterSelect()
 	mCharacterCount = 0;
 	while (mDvdThread.mMode != DvdThreadCommand::CM_Completed) { }
 
-	delete[] mCharacters;
+	// delete[] mCharacters;
 
 	for (int i = 1; i < ARRAY_SIZE(mControllers); i++) {
-		delete mControllers[i];
+		// delete mControllers[i];
 	}
 
-	delete CharacterImage::sLoadingPicture;
+	// delete CharacterImage::sLoadingPicture;
 }
 
 void CharacterData::UpdateImages()
 {
 	for (int i = 0; i < 4; i++) {
 		if (sCharacters[i].mImage) {
-			delete[] sCharacters[i].mImage;
+			// delete[] sCharacters[i].mImage;
 		}
 		sCharacters[i].mImage = sCharacters[i].loadImage();
 	}

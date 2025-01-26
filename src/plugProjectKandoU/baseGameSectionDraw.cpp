@@ -50,7 +50,7 @@ namespace Game {
  */
 void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 {
-	DrawDebugMemory(gfx);
+	// DrawDebugMemory(gfx);
 	// Setup viewport callback to be newdraw_drawAll
 	Delegate1<BaseGameSection, Viewport*> vpDelegate(this, &BaseGameSection::newdraw_drawAll);
 	gfx.mapViewport(&vpDelegate);
@@ -130,6 +130,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 			directDrawExtras(gfx, vp);
 		}
 	}
+	OSReport("newdraw_draw3D_all done\n");
 }
 /*
  * --INFO--
@@ -205,6 +206,8 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 	mDrawBuffer2->get(2)->draw();
 	vp->setJ3DViewMtx(false);
 	sys->mTimers->_stop("j3d-etc");
+
+	OSReport("newdraw_drawAll done\n");
 }
 
 
@@ -269,7 +272,7 @@ void BaseGameSection::directDrawExtras(Graphics& gfx, Viewport* vp) {
 	// OSReport("BaseGameSection::directDrawExtras(Graphics& gfx, Viewport* vp)\n");
 	
 	if (FloatingIcon::mgr) {
-		FloatingIcon::mgr->FloatingIconMgr::draw(gfx);
+		// FloatingIcon::mgr->FloatingIconMgr::draw(gfx);
 	}
 }
 

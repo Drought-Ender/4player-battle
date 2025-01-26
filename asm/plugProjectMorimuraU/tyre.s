@@ -2247,12 +2247,12 @@ lbl_constructor:
 /* 803ADDFC 003AAD3C  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 803ADE00 003AAD40  38 BF 01 8C */	addi r5, r31, 0x18c
 /* 803ADE04 003AAD44  38 80 00 0F */	li r4, 0xf
-/* 803ADE08 003AAD48  38 C0 00 02 */	li r6, 2
+/* 803ADE08 003AAD48  38 C0 00 02 */	li r6, 4
 /* 803ADE0C 003AAD4C  4B EA 44 31 */	bl "startVibration__Q24Game9CameraMgrFiR10Vector3<f>i"
 /* 803ADE10 003AAD50  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 803ADE14 003AAD54  38 BF 01 8C */	addi r5, r31, 0x18c
 /* 803ADE18 003AAD58  38 80 00 0D */	li r4, 0xd
-/* 803ADE1C 003AAD5C  38 C0 00 02 */	li r6, 2
+/* 803ADE1C 003AAD5C  38 C0 00 02 */	li r6, 4
 /* 803ADE20 003AAD60  4B EA 59 61 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 803ADE24 003AAD64  38 00 00 00 */	li r0, 0
 /* 803ADE28 003AAD68  80 6D 92 F4 */	lwz r3, pikiMgr__4Game@sda21(r13)

@@ -48,6 +48,14 @@ struct Stream {
 	void _write(void*, int); // unused
 	void textWriteTab(int);
 
+	inline void setMode(bool mode, int a2)
+	{
+		mMode = mode;
+		if (mMode == a2) {
+			mTabCount = 0;
+		}
+	}
+
 	u8 readByte();
 	u8 _readByte();
 	short readShort();
@@ -136,6 +144,30 @@ inline bool loadAndRead(T* thisPtr, char* fname, JKRHeap* heap = nullptr, bool n
 	thisPtr->read(stream);
 	delete[] handle;
 	return true;
+}
+
+/**
+ * @brief A wrapper for loading and reading files using RamStream, which is commonly used and recognised in almost every
+ * config context.
+ *
+ * @tparam T				The class containing the read function
+ * @param thisPtr		A pointer to the class containing the read function
+ * @param fname			The file name we intend to read from
+ * @param heap			The heap used in the loading process
+ * @param nullCheck	Should we check if the file was successfully mounted to RAM or not?
+ */
+template <typename T>
+inline void loadFromFile(T* thisPtr, char* fname, JKRHeap* heap = nullptr, bool nullCheck = true)
+{
+	void* handle = JKRDvdRipper::loadToMainRAM(fname, 0, Switch_0, 0, heap, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, 0, 0);
+	if (nullCheck && !handle) {
+		return;
+	}
+
+	RamStream stream(handle, -1);
+	stream.setMode(STREAM_MODE_TEXT, 1);
+	thisPtr->read(stream);
+	delete[] handle;
 }
 
 #endif

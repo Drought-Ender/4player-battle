@@ -62,28 +62,29 @@ struct StartSceneArgTemplate : public StartSceneArg {
 };
 
 struct SetSceneArg : public SceneArgBase {
-	/**
-	 * @fabricated
-	 * Unsure if p3 and p4 exist or are hardcoded.
-	 * Remove p3 and p4 if they appear to never be set to anything else by a ctor.
-	 */
-	inline SetSceneArg(SceneType sceneType, og::Screen::DispMemberBase* dispMember, u8 p3, bool p4)
+	inline SetSceneArg(SceneType sceneType, og::Screen::DispMemberBase* dispMember, bool a, bool b)
 	    : mSceneType(sceneType)
 	    , mDispMember(dispMember)
-	    , _08(p3)
-	    , _09(p4)
+	    , _08(a)
+	    , _09(b)
 	{
-		// _08 = p3;
-		// _09 = p4;
 	}
 
-	virtual SceneType getSceneType() const; // _08
-	virtual int getClassSize();             // _0C
+	inline SetSceneArg(SceneType sceneType, og::Screen::DispMemberBase* dispMember)
+	    : mSceneType(sceneType)
+	    , mDispMember(dispMember)
+	    , _08(0)
+	    , _09(true)
+	{
+	}
+
+	virtual SceneType getSceneType() const { return mSceneType; } // _08
+	virtual int getClassSize() { return sizeof(SetSceneArg); }    // _0C
 
 	// _00 = VTBL
 	SceneType mSceneType;                    // _04
 	u8 _08;                                  // _08
-	bool _09;                                // _09
+	bool _09;                    // _09
 	og::Screen::DispMemberBase* mDispMember; // _0C
 };
 
@@ -95,7 +96,19 @@ struct EndSceneArg : public SceneArgBase {
 };
 
 struct SceneBase {
-	enum StateID { Unknown0 = 0, Unknown1, Unknown2, Unknown3, Unknown4 };
+	enum StateID {
+		SB_Finished3           = -3,
+		SB_Finished2           = -2,
+		SB_Finished1           = -1,
+		SB_Unknown0            = 0,
+		SB_WaitForResourceSync = 1,
+		SB_Unknown2            = 2,
+		SB_Started             = 3,
+		SB_Unknown4            = 4,
+		SB_Unknown5            = 5,
+		SB_Unknown6            = 6,
+		SB_Unknown7            = 7,
+	};
 
 	SceneBase();
 	~SceneBase();
@@ -152,6 +165,9 @@ struct SceneBase {
 	// Unused/inlined:
 	u32 getBackupSceneType();
 	void setBGMode(int);
+
+	inline Mgr* getScreenMgr() { return mScreenMgr; }
+
 
 	// _00 = VTBL
 	char mName[256];                                  // _004
