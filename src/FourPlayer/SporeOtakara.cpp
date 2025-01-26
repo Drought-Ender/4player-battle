@@ -117,5 +117,5 @@ void Obj::effectDrawOff() { mEfxChargeSpore->startDemoDrawOff(); }
  * Size:	000044
  */
 void Obj::startDisChargeSE() { getJAIObject()->startSound(PSSE_EN_OTAKARA_ATK_GAS, 0); }
-} // namespace FireOtakara
+} // namespace SporeOtakara
 } // namespace Game

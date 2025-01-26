@@ -17,7 +17,7 @@ VsOptionsMenuMgr* gOptionMenu;
 
 bool gTournamentMode = false;
 
-static bool sBingoTest = false;
+static bool sBingoTest = true;
 
 bool sNameOverride[4] = { false, false, false, false };
 
