@@ -28,6 +28,8 @@ enum NaviIndex {
 	NAVIID_Olimar    = 0,
 	NAVIID_Louie     = 1,
 	NAVIID_President = 2,
+	NAVIID_Wife      = 3,
+	NAVIID_Multiplayer = 4
 };
 
 #define GET_OTHER_NAVI(navi) (1 - (navi)->mNaviIndex)

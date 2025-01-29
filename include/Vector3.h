@@ -125,6 +125,8 @@ struct Vector3 {
 		this->z -= other.z;
 	}
 
+	inline T dot(const Vector3& other);
+
 	// Squared magnitude
 	inline f32 sqrMagnitude() { return x * x + y * y + z * z; }
 	// Quick length
@@ -165,6 +167,12 @@ inline Vector3f operator*(const Vector3f& a, const f32 b) { return Vector3f(a.x 
 inline Vector3f operator*=(const Vector3f& a, const f32 b) { return Vector3f(a.x * b, a.y * b, a.z * b); }
 
 inline f32 dot(const Vector3f& a, const Vector3f& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+
+template <typename T>
+inline T Vector3<T>::dot(const Vector3& other)
+{
+	return this->x * other.x + this->y * other.y + this->z * other.z;
+}
 
 inline bool operator==(const Vector3f& a, const Vector3f& b) { return (a.x == b.x && a.y == b.y && a.z == b.z); }
 

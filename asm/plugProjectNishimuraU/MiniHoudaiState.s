@@ -558,7 +558,7 @@ exec__Q34Game10MiniHoudai9StateDeadFPQ24Game9EnemyBase:
 /* 802E840C 002E534C  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 802E8410 002E5350  38 80 00 1C */	li r4, 0x1c
 /* 802E8414 002E5354  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 802E8418 002E5358  38 C0 00 02 */	li r6, 2
+/* 802E8418 002E5358  38 C0 00 02 */	li r6, 4
 /* 802E841C 002E535C  D0 41 00 14 */	stfs f2, 0x14(r1)
 /* 802E8420 002E5360  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802E8424 002E5364  D0 21 00 18 */	stfs f1, 0x18(r1)
@@ -567,7 +567,7 @@ exec__Q34Game10MiniHoudai9StateDeadFPQ24Game9EnemyBase:
 /* 802E8430 002E5370  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802E8434 002E5374  38 A1 00 14 */	addi r5, r1, 0x14
 /* 802E8438 002E5378  38 80 00 0B */	li r4, 0xb
-/* 802E843C 002E537C  38 C0 00 02 */	li r6, 2
+/* 802E843C 002E537C  38 C0 00 02 */	li r6, 4
 /* 802E8440 002E5380  4B F6 B3 41 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802E8444 002E5384  48 00 00 30 */	b .L_802E8474
 .L_802E8448:

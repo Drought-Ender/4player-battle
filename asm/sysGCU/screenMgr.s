@@ -741,6 +741,7 @@ lbl_constructor:
 /* 80452B70 0044FAB0  90 01 00 24 */	stw r0, 0x24(r1)
 /* 80452B74 0044FAB4  93 E1 00 1C */	stw r31, 0x1c(r1)
 /* 80452B78 0044FAB8  7C 7F 1B 78 */	mr r31, r3
+bl _debug_print__Fv
 /* 80452B7C 0044FABC  3C 60 80 4A */	lis r3, lbl_8049B8C8@ha
 /* 80452B80 0044FAC0  93 C1 00 18 */	stw r30, 0x18(r1)
 /* 80452B84 0044FAC4  93 A1 00 14 */	stw r29, 0x14(r1)
@@ -925,6 +926,7 @@ lbl_constructor:
 /* 80452E14 0044FD54  28 03 00 00 */	cmplwi r3, 0
 /* 80452E18 0044FD58  41 82 00 08 */	beq .L_80452E20
 /* 80452E1C 0044FD5C  4B FF EB CD */	bl update__Q26Screen9SceneBaseFv
+bl _debug_print__Fv
 .L_80452E20:
 /* 80452E20 0044FD60  80 01 00 24 */	lwz r0, 0x24(r1)
 /* 80452E24 0044FD64  83 E1 00 1C */	lwz r31, 0x1c(r1)

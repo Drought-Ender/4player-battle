@@ -508,7 +508,7 @@ exec__Q34Game10DangoMushi9StateDeadFPQ24Game9EnemyBase:
 /* 802F9F0C 002F6E4C  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 802F9F10 002F6E50  38 80 00 1A */	li r4, 0x1a
 /* 802F9F14 002F6E54  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 802F9F18 002F6E58  38 C0 00 02 */	li r6, 2
+/* 802F9F18 002F6E58  38 C0 00 02 */	li r6, 4
 /* 802F9F1C 002F6E5C  D0 41 00 20 */	stfs f2, 0x20(r1)
 /* 802F9F20 002F6E60  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802F9F24 002F6E64  D0 21 00 24 */	stfs f1, 0x24(r1)
@@ -517,7 +517,7 @@ exec__Q34Game10DangoMushi9StateDeadFPQ24Game9EnemyBase:
 /* 802F9F30 002F6E70  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802F9F34 002F6E74  38 A1 00 20 */	addi r5, r1, 0x20
 /* 802F9F38 002F6E78  38 80 00 0E */	li r4, 0xe
-/* 802F9F3C 002F6E7C  38 C0 00 02 */	li r6, 2
+/* 802F9F3C 002F6E7C  38 C0 00 02 */	li r6, 4
 /* 802F9F40 002F6E80  4B F5 98 41 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802F9F44 002F6E84  48 00 00 18 */	b .L_802F9F5C
 .L_802F9F48:
@@ -757,7 +757,7 @@ exec__Q34Game10DangoMushi11StateAppearFPQ24Game9EnemyBase:
 /* 802FA288 002F71C8  C0 21 00 90 */	lfs f1, 0x90(r1)
 /* 802FA28C 002F71CC  38 80 00 1B */	li r4, 0x1b
 /* 802FA290 002F71D0  C0 01 00 94 */	lfs f0, 0x94(r1)
-/* 802FA294 002F71D4  38 C0 00 02 */	li r6, 2
+/* 802FA294 002F71D4  38 C0 00 02 */	li r6, 4
 /* 802FA298 002F71D8  D0 41 00 A4 */	stfs f2, 0xa4(r1)
 /* 802FA29C 002F71DC  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FA2A0 002F71E0  D0 21 00 A8 */	stfs f1, 0xa8(r1)
@@ -766,7 +766,7 @@ exec__Q34Game10DangoMushi11StateAppearFPQ24Game9EnemyBase:
 /* 802FA2AC 002F71EC  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FA2B0 002F71F0  38 A1 00 A4 */	addi r5, r1, 0xa4
 /* 802FA2B4 002F71F4  38 80 00 0F */	li r4, 0xf
-/* 802FA2B8 002F71F8  38 C0 00 02 */	li r6, 2
+/* 802FA2B8 002F71F8  38 C0 00 02 */	li r6, 4
 /* 802FA2BC 002F71FC  4B F5 94 C5 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FA2C0 002F7200  48 00 02 CC */	b .L_802FA58C
 .L_802FA2C4:
@@ -788,7 +788,7 @@ exec__Q34Game10DangoMushi11StateAppearFPQ24Game9EnemyBase:
 /* 802FA2FC 002F723C  C0 21 00 84 */	lfs f1, 0x84(r1)
 /* 802FA300 002F7240  38 80 00 0F */	li r4, 0xf
 /* 802FA304 002F7244  C0 01 00 88 */	lfs f0, 0x88(r1)
-/* 802FA308 002F7248  38 C0 00 02 */	li r6, 2
+/* 802FA308 002F7248  38 C0 00 02 */	li r6, 4
 /* 802FA30C 002F724C  D0 41 00 98 */	stfs f2, 0x98(r1)
 /* 802FA310 002F7250  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FA314 002F7254  D0 21 00 9C */	stfs f1, 0x9c(r1)
@@ -797,7 +797,7 @@ exec__Q34Game10DangoMushi11StateAppearFPQ24Game9EnemyBase:
 /* 802FA320 002F7260  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FA324 002F7264  38 A1 00 98 */	addi r5, r1, 0x98
 /* 802FA328 002F7268  38 80 00 0B */	li r4, 0xb
-/* 802FA32C 002F726C  38 C0 00 02 */	li r6, 2
+/* 802FA32C 002F726C  38 C0 00 02 */	li r6, 4
 /* 802FA330 002F7270  4B F5 94 51 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FA334 002F7274  48 00 02 58 */	b .L_802FA58C
 .L_802FA338:
@@ -1756,7 +1756,7 @@ exec__Q34Game10DangoMushi9StateMoveFPQ24Game9EnemyBase:
 /* 802FB160 002F80A0  C0 21 00 FC */	lfs f1, 0xfc(r1)
 /* 802FB164 002F80A4  38 80 00 03 */	li r4, 3
 /* 802FB168 002F80A8  C0 01 01 00 */	lfs f0, 0x100(r1)
-/* 802FB16C 002F80AC  38 C0 00 02 */	li r6, 2
+/* 802FB16C 002F80AC  38 C0 00 02 */	li r6, 4
 /* 802FB170 002F80B0  D0 41 01 04 */	stfs f2, 0x104(r1)
 /* 802FB174 002F80B4  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FB178 002F80B8  D0 21 01 08 */	stfs f1, 0x108(r1)
@@ -1765,7 +1765,7 @@ exec__Q34Game10DangoMushi9StateMoveFPQ24Game9EnemyBase:
 /* 802FB184 002F80C4  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FB188 002F80C8  38 A1 01 04 */	addi r5, r1, 0x104
 /* 802FB18C 002F80CC  38 80 00 0B */	li r4, 0xb
-/* 802FB190 002F80D0  38 C0 00 02 */	li r6, 2
+/* 802FB190 002F80D0  38 C0 00 02 */	li r6, 4
 /* 802FB194 002F80D4  4B F5 85 ED */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FB198 002F80D8  48 00 00 2C */	b .L_802FB1C4
 .L_802FB19C:
@@ -1934,7 +1934,7 @@ exec__Q34Game10DangoMushi11StateAttackFPQ24Game9EnemyBase:
 /* 802FB3E8 002F8328  C0 21 00 18 */	lfs f1, 0x18(r1)
 /* 802FB3EC 002F832C  38 80 00 0F */	li r4, 0xf
 /* 802FB3F0 002F8330  C0 01 00 1C */	lfs f0, 0x1c(r1)
-/* 802FB3F4 002F8334  38 C0 00 02 */	li r6, 2
+/* 802FB3F4 002F8334  38 C0 00 02 */	li r6, 4
 /* 802FB3F8 002F8338  D0 41 00 38 */	stfs f2, 0x38(r1)
 /* 802FB3FC 002F833C  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FB400 002F8340  D0 21 00 3C */	stfs f1, 0x3c(r1)
@@ -1943,7 +1943,7 @@ exec__Q34Game10DangoMushi11StateAttackFPQ24Game9EnemyBase:
 /* 802FB40C 002F834C  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FB410 002F8350  38 A1 00 38 */	addi r5, r1, 0x38
 /* 802FB414 002F8354  38 80 00 0E */	li r4, 0xe
-/* 802FB418 002F8358  38 C0 00 02 */	li r6, 2
+/* 802FB418 002F8358  38 C0 00 02 */	li r6, 4
 /* 802FB41C 002F835C  4B F5 83 65 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FB420 002F8360  48 00 00 F0 */	b .L_802FB510
 .L_802FB424:
@@ -1986,7 +1986,7 @@ exec__Q34Game10DangoMushi11StateAttackFPQ24Game9EnemyBase:
 /* 802FB4AC 002F83EC  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 802FB4B0 002F83F0  38 80 00 19 */	li r4, 0x19
 /* 802FB4B4 002F83F4  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 802FB4B8 002F83F8  38 C0 00 02 */	li r6, 2
+/* 802FB4B8 002F83F8  38 C0 00 02 */	li r6, 4
 /* 802FB4BC 002F83FC  D0 41 00 2C */	stfs f2, 0x2c(r1)
 /* 802FB4C0 002F8400  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FB4C4 002F8404  D0 21 00 30 */	stfs f1, 0x30(r1)
@@ -1995,7 +1995,7 @@ exec__Q34Game10DangoMushi11StateAttackFPQ24Game9EnemyBase:
 /* 802FB4D0 002F8410  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FB4D4 002F8414  38 A1 00 2C */	addi r5, r1, 0x2c
 /* 802FB4D8 002F8418  38 80 00 0E */	li r4, 0xe
-/* 802FB4DC 002F841C  38 C0 00 02 */	li r6, 2
+/* 802FB4DC 002F841C  38 C0 00 02 */	li r6, 4
 /* 802FB4E0 002F8420  4B F5 82 A1 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FB4E4 002F8424  48 00 00 2C */	b .L_802FB510
 .L_802FB4E8:
@@ -2081,7 +2081,7 @@ init__Q34Game10DangoMushi9StateTurnFPQ24Game9EnemyBasePQ24Game8StateArg:
 /* 802FB608 002F8548  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 802FB60C 002F854C  38 80 00 1B */	li r4, 0x1b
 /* 802FB610 002F8550  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 802FB614 002F8554  38 C0 00 02 */	li r6, 2
+/* 802FB614 002F8554  38 C0 00 02 */	li r6, 4
 /* 802FB618 002F8558  D0 41 00 14 */	stfs f2, 0x14(r1)
 /* 802FB61C 002F855C  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FB620 002F8560  D0 21 00 18 */	stfs f1, 0x18(r1)
@@ -2090,7 +2090,7 @@ init__Q34Game10DangoMushi9StateTurnFPQ24Game9EnemyBasePQ24Game8StateArg:
 /* 802FB62C 002F856C  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FB630 002F8570  38 A1 00 14 */	addi r5, r1, 0x14
 /* 802FB634 002F8574  38 80 00 0F */	li r4, 0xf
-/* 802FB638 002F8578  38 C0 00 02 */	li r6, 2
+/* 802FB638 002F8578  38 C0 00 02 */	li r6, 4
 /* 802FB63C 002F857C  4B F5 81 45 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FB640 002F8580  80 01 00 34 */	lwz r0, 0x34(r1)
 /* 802FB644 002F8584  83 E1 00 2C */	lwz r31, 0x2c(r1)
@@ -2159,7 +2159,7 @@ exec__Q34Game10DangoMushi9StateTurnFPQ24Game9EnemyBase:
 /* 802FB728 002F8668  C0 21 00 24 */	lfs f1, 0x24(r1)
 /* 802FB72C 002F866C  38 80 00 15 */	li r4, 0x15
 /* 802FB730 002F8670  C0 01 00 28 */	lfs f0, 0x28(r1)
-/* 802FB734 002F8674  38 C0 00 02 */	li r6, 2
+/* 802FB734 002F8674  38 C0 00 02 */	li r6, 4
 /* 802FB738 002F8678  D0 41 00 44 */	stfs f2, 0x44(r1)
 /* 802FB73C 002F867C  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FB740 002F8680  D0 21 00 48 */	stfs f1, 0x48(r1)
@@ -2168,7 +2168,7 @@ exec__Q34Game10DangoMushi9StateTurnFPQ24Game9EnemyBase:
 /* 802FB74C 002F868C  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FB750 002F8690  38 A1 00 44 */	addi r5, r1, 0x44
 /* 802FB754 002F8694  38 80 00 0E */	li r4, 0xe
-/* 802FB758 002F8698  38 C0 00 02 */	li r6, 2
+/* 802FB758 002F8698  38 C0 00 02 */	li r6, 4
 /* 802FB75C 002F869C  4B F5 80 25 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FB760 002F86A0  48 00 01 4C */	b .L_802FB8AC
 .L_802FB764:
@@ -2206,7 +2206,7 @@ exec__Q34Game10DangoMushi9StateTurnFPQ24Game9EnemyBase:
 /* 802FB7DC 002F871C  C0 21 00 18 */	lfs f1, 0x18(r1)
 /* 802FB7E0 002F8720  38 80 00 0F */	li r4, 0xf
 /* 802FB7E4 002F8724  C0 01 00 1C */	lfs f0, 0x1c(r1)
-/* 802FB7E8 002F8728  38 C0 00 02 */	li r6, 2
+/* 802FB7E8 002F8728  38 C0 00 02 */	li r6, 4
 /* 802FB7EC 002F872C  D0 41 00 38 */	stfs f2, 0x38(r1)
 /* 802FB7F0 002F8730  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FB7F4 002F8734  D0 21 00 3C */	stfs f1, 0x3c(r1)
@@ -2215,7 +2215,7 @@ exec__Q34Game10DangoMushi9StateTurnFPQ24Game9EnemyBase:
 /* 802FB800 002F8740  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FB804 002F8744  38 A1 00 38 */	addi r5, r1, 0x38
 /* 802FB808 002F8748  38 80 00 0B */	li r4, 0xb
-/* 802FB80C 002F874C  38 C0 00 02 */	li r6, 2
+/* 802FB80C 002F874C  38 C0 00 02 */	li r6, 4
 /* 802FB810 002F8750  4B F5 7F 71 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FB814 002F8754  48 00 00 98 */	b .L_802FB8AC
 .L_802FB818:
@@ -2234,7 +2234,7 @@ exec__Q34Game10DangoMushi9StateTurnFPQ24Game9EnemyBase:
 /* 802FB848 002F8788  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 802FB84C 002F878C  38 80 00 19 */	li r4, 0x19
 /* 802FB850 002F8790  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 802FB854 002F8794  38 C0 00 02 */	li r6, 2
+/* 802FB854 002F8794  38 C0 00 02 */	li r6, 4
 /* 802FB858 002F8798  D0 41 00 2C */	stfs f2, 0x2c(r1)
 /* 802FB85C 002F879C  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FB860 002F87A0  D0 21 00 30 */	stfs f1, 0x30(r1)
@@ -2243,7 +2243,7 @@ exec__Q34Game10DangoMushi9StateTurnFPQ24Game9EnemyBase:
 /* 802FB86C 002F87AC  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FB870 002F87B0  38 A1 00 2C */	addi r5, r1, 0x2c
 /* 802FB874 002F87B4  38 80 00 0E */	li r4, 0xe
-/* 802FB878 002F87B8  38 C0 00 02 */	li r6, 2
+/* 802FB878 002F87B8  38 C0 00 02 */	li r6, 4
 /* 802FB87C 002F87BC  4B F5 7F 05 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FB880 002F87C0  48 00 00 2C */	b .L_802FB8AC
 .L_802FB884:
@@ -2350,7 +2350,7 @@ exec__Q34Game10DangoMushi12StateRecoverFPQ24Game9EnemyBase:
 /* 802FB9E8 002F8928  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 802FB9EC 002F892C  38 80 00 0F */	li r4, 0xf
 /* 802FB9F0 002F8930  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 802FB9F4 002F8934  38 C0 00 02 */	li r6, 2
+/* 802FB9F4 002F8934  38 C0 00 02 */	li r6, 4
 /* 802FB9F8 002F8938  D0 41 00 14 */	stfs f2, 0x14(r1)
 /* 802FB9FC 002F893C  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FBA00 002F8940  D0 21 00 18 */	stfs f1, 0x18(r1)
@@ -2359,7 +2359,7 @@ exec__Q34Game10DangoMushi12StateRecoverFPQ24Game9EnemyBase:
 /* 802FBA0C 002F894C  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FBA10 002F8950  38 A1 00 14 */	addi r5, r1, 0x14
 /* 802FBA14 002F8954  38 80 00 0B */	li r4, 0xb
-/* 802FBA18 002F8958  38 C0 00 02 */	li r6, 2
+/* 802FBA18 002F8958  38 C0 00 02 */	li r6, 4
 /* 802FBA1C 002F895C  4B F5 7D 65 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FBA20 002F8960  7F E3 FB 78 */	mr r3, r31
 /* 802FBA24 002F8964  48 00 2D D9 */	bl startBossFlickBGM__Q34Game10DangoMushi3ObjFv
@@ -2457,7 +2457,7 @@ exec__Q34Game10DangoMushi10StateFlickFPQ24Game9EnemyBase:
 /* 802FBB68 002F8AA8  C0 21 00 18 */	lfs f1, 0x18(r1)
 /* 802FBB6C 002F8AAC  38 80 00 19 */	li r4, 0x19
 /* 802FBB70 002F8AB0  C0 01 00 1C */	lfs f0, 0x1c(r1)
-/* 802FBB74 002F8AB4  38 C0 00 02 */	li r6, 2
+/* 802FBB74 002F8AB4  38 C0 00 02 */	li r6, 4
 /* 802FBB78 002F8AB8  D0 41 00 2C */	stfs f2, 0x2c(r1)
 /* 802FBB7C 002F8ABC  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FBB80 002F8AC0  D0 21 00 30 */	stfs f1, 0x30(r1)
@@ -2466,7 +2466,7 @@ exec__Q34Game10DangoMushi10StateFlickFPQ24Game9EnemyBase:
 /* 802FBB8C 002F8ACC  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FBB90 002F8AD0  38 A1 00 2C */	addi r5, r1, 0x2c
 /* 802FBB94 002F8AD4  38 80 00 0E */	li r4, 0xe
-/* 802FBB98 002F8AD8  38 C0 00 02 */	li r6, 2
+/* 802FBB98 002F8AD8  38 C0 00 02 */	li r6, 4
 /* 802FBB9C 002F8ADC  4B F5 7B E5 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FBBA0 002F8AE0  7F C3 F3 78 */	mr r3, r30
 /* 802FBBA4 002F8AE4  7F E4 FB 78 */	mr r4, r31
@@ -2517,7 +2517,7 @@ exec__Q34Game10DangoMushi10StateFlickFPQ24Game9EnemyBase:
 /* 802FBC4C 002F8B8C  C0 21 00 0C */	lfs f1, 0xc(r1)
 /* 802FBC50 002F8B90  38 80 00 0F */	li r4, 0xf
 /* 802FBC54 002F8B94  C0 01 00 10 */	lfs f0, 0x10(r1)
-/* 802FBC58 002F8B98  38 C0 00 02 */	li r6, 2
+/* 802FBC58 002F8B98  38 C0 00 02 */	li r6, 4
 /* 802FBC5C 002F8B9C  D0 41 00 20 */	stfs f2, 0x20(r1)
 /* 802FBC60 002F8BA0  80 6D 96 A0 */	lwz r3, cameraMgr__4Game@sda21(r13)
 /* 802FBC64 002F8BA4  D0 21 00 24 */	stfs f1, 0x24(r1)
@@ -2526,7 +2526,7 @@ exec__Q34Game10DangoMushi10StateFlickFPQ24Game9EnemyBase:
 /* 802FBC70 002F8BB0  80 6D 96 A8 */	lwz r3, rumbleMgr__4Game@sda21(r13)
 /* 802FBC74 002F8BB4  38 A1 00 20 */	addi r5, r1, 0x20
 /* 802FBC78 002F8BB8  38 80 00 0B */	li r4, 0xb
-/* 802FBC7C 002F8BBC  38 C0 00 02 */	li r6, 2
+/* 802FBC7C 002F8BBC  38 C0 00 02 */	li r6, 4
 /* 802FBC80 002F8BC0  4B F5 7B 01 */	bl "startRumble__Q24Game9RumbleMgrFiR10Vector3<f>i"
 /* 802FBC84 002F8BC4  48 00 00 2C */	b .L_802FBCB0
 .L_802FBC88:

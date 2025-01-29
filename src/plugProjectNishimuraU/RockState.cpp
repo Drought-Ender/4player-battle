@@ -209,8 +209,8 @@ void StateFall::cleanup(EnemyBase* enemy)
 	rock->finishFallEffect();
 
 	Vector3f position = rock->getPosition();
-	cameraMgr->startVibration(27, position, 2);
-	rumbleMgr->startRumble(14, position, 2);
+	cameraMgr->startVibration(27, position, 4);
+	rumbleMgr->startRumble(14, position, 4);
 }
 
 /*

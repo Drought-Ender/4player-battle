@@ -19,6 +19,7 @@
 #include "Game/MapMgr.h"
 #include "Game/mapParts.h"
 #include "Game/generalEnemyMgr.h"
+#include "Screen/Game2DMgr.h"
 
 f32 gFirstViewportHeight = 0.5f;
 f32 gOtherViewportHeight = 0.5f;
@@ -553,7 +554,7 @@ void BaseGameSection::setPlayerMode(int naviIdx)
 		mSplit                = 0.0f;
 		gSplit4               = true;
 		mSplitter->split4(0.5f, 0.5f);
-		cameraMgr->changePlayerMode(2, cameraMgrCallback);
+		cameraMgr->changePlayerMode(4, cameraMgrCallback);
 		break;
 	}
 	}
@@ -607,7 +608,7 @@ void BaseGameSection::initViewports(Graphics& gfx)
 	cameraMgr->init(0);
 	mTreasureZoomCamera         = new ZoomCamera;
 	mTreasureGetViewport        = new Viewport;
-	mTreasureGetViewport->mVpId = 2;
+	mTreasureGetViewport->mVpId = 4;
 
 	Vector2<u16> screenSize = getScreenSize();
 	getScreenSize();
@@ -626,53 +627,6 @@ void BaseGameSection::initViewports(Graphics& gfx)
 	}
 }
 
-void CameraMgr::loadResource()
-{
-	_18 = -1;
-	_1C = new void*[4];
-	_20 = new Viewport*[4];
-	_24 = new PlayCamera*[4];
-	for (int i = 0; i < sizeof(mCameraParms); i++) {
-		mCameraParms[i] = new CameraParms;
-	}
-	mVibrationParms = new VibrationParms;
-	_34             = nullptr;
-
-	for (int i = 0; i < 4; i++) {
-		_1C[i] = nullptr;
-		_20[i] = nullptr;
-		_24[i] = nullptr;
-	}
-
-	if (gameSystem && gameSystem->mIsInCave) {
-		readCameraParms("/user/Nishimura/Camera/caveCameraParms.txt");
-	} else {
-		readCameraParms("/user/Nishimura/Camera/groundCameraParms.txt");
-	}
-}
-
-bool CameraMgr::isStartAndEnd(int* shakeArray, int id)
-{
-	switch (id) {
-	case 3:
-		shakeArray[0] = 3;
-		shakeArray[1] = 4;
-		return true;
-	case 2:
-		shakeArray[0] = 2;
-		shakeArray[1] = 3;
-		return true;
-	case 1:
-		shakeArray[0] = 1;
-		shakeArray[1] = 2;
-		return true;
-	case 0:
-		shakeArray[0] = 0;
-		shakeArray[1] = 1;
-		return true;
-	}
-	return false;
-}
 
 void BaseGameSection::drawParticle(Graphics& gfx, int viewport)
 {
@@ -705,48 +659,6 @@ void BaseGameSection::drawParticle(Graphics& gfx, int viewport)
 	}
 }
 
-void CameraMgr::changePlayerMode(int mode, IDelegate1<CameraArg*>* callback)
-{
-	switch (mode) {
-	case 0: {
-		bool b = _18 == 1;
-		if (b) {
-			CameraData data;
-			_24[1]->getCameraData(data);
-			_24[0]->setCameraData(data);
-		}
-		_24[0]->setCameraParms(mCameraParms[0]);
-		_24[0]->changePlayerMode(b);
-		break;
-	}
-	case 1: {
-		bool b = _18 == 0;
-		if (b) {
-			CameraData data;
-			_24[0]->getCameraData(data);
-			_24[1]->setCameraData(data);
-		}
-		_24[1]->setCameraParms(mCameraParms[0]);
-		_24[0]->changePlayerMode(b);
-		break;
-	}
-	case 2: {
-		_24[0]->setCameraParms(mCameraParms[0]);
-		_24[0]->changePlayerMode(false);
-		_24[1]->setCameraParms(mCameraParms[0]);
-		_24[1]->changePlayerMode(false);
-		_24[2]->setCameraParms(mCameraParms[0]);
-		_24[2]->changePlayerMode(false);
-		_24[3]->setCameraParms(mCameraParms[0]);
-		_24[3]->changePlayerMode(false);
-		break;
-	}
-	default:
-		break;
-	}
-	_18 = mode;
-	_34 = callback;
-}
 
 // hacky as all ass solution
 void BaseGameSection::updateSplitter2()
@@ -903,5 +815,38 @@ void BaseGameSection::setDefaultPSSceneInfo(PSGame::SceneInfo& sceneInfo)
 	sceneInfo.mBounds.mMax.y = max.y;
 	sceneInfo.mBounds.mMax.z = max.z;
 }
+
+void BaseGameSection::doDraw(Graphics& gfx)
+{
+	captureRadarmap(gfx);
+	if (gameSystem->paused()) {
+		if (cameraMgr) {
+			cameraMgr->controllerLock(CAMNAVI_Both);
+			cameraMgr->update();
+			cameraMgr->controllerUnLock(CAMNAVI_Both);
+		}
+
+	} else if (cameraMgr) {
+		cameraMgr->update();
+	}
+
+	sys->mTimers->_start("_draw3D_", true);
+	draw3D(gfx);
+	sys->mTimers->_stop("_draw3D_");
+	if (moviePlayer && !gameSystem->mIsMoviePause) {
+		moviePlayer->drawLoading(gfx);
+	}
+	pre2dDraw(gfx);
+	gfx.setToken("2d");
+	draw2D(gfx);
+	if (mDraw2DCreature) {
+		drawOtakaraWindow(gfx);
+	}
+	Screen::gGame2DMgr->drawKanteiMsg(gfx);
+	if (moviePlayer && !gameSystem->mIsMoviePause) {
+		moviePlayer->draw(gfx);
+	}
+}
+
 
 } // namespace Game

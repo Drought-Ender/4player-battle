@@ -42,8 +42,8 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	bigfoot->startMotion(0, nullptr);
 
 	Vector3f position = bigfoot->getPosition();
-	cameraMgr->startVibration(0, position, 2);
-	rumbleMgr->startRumble(10, position, 2);
+	cameraMgr->startVibration(0, position, 4);
+	rumbleMgr->startRumble(10, position, 4);
 }
 
 /*
@@ -169,8 +169,8 @@ void StateLand::exec(EnemyBase* enemy)
 			}
 
 			Vector3f position = bigfoot->getPosition();
-			cameraMgr->startVibration(15, position, 2);
-			rumbleMgr->startRumble(15, position, 2);
+			cameraMgr->startVibration(15, position, 4);
+			rumbleMgr->startRumble(15, position, 4);
 
 		} else if ((u32)bigfoot->mCurAnim->mType == KEYEVENT_END) {
 			if (bigfoot->mHealth <= 0.0f) {

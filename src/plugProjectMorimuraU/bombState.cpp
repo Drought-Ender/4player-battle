@@ -140,8 +140,8 @@ void StateBomb::exec(EnemyBase* enemy)
 				static_cast<Obj*>(enemy)->bombEffInWater();
 			}
 
-			cameraMgr->startVibration(12, effectPos, 2);
-			rumbleMgr->startRumble(15, effectPos, 2);
+			cameraMgr->startVibration(12, effectPos, 4);
+			rumbleMgr->startRumble(15, effectPos, 4);
 
 			Vector3f position = enemy->getPosition();
 			Parms* parms      = static_cast<Parms*>(enemy->mParms);

@@ -82,9 +82,9 @@ void BigFootShadowMgr::update()
 {
 	Vector3f pos = mObj->getTraceCentrePosition();
 	JointShadowParm shadowParm;
-	shadowParm._00 = pos;
-	shadowParm._0C = Vector3f(0.5f, 3.0f, 0.5f);
-	shadowParm._0C.normalise();
+	shadowParm.mPosition = pos;
+	shadowParm.mRotation = Vector3f(0.5f, 3.0f, 0.5f);
+	shadowParm.mRotation.normalise();
 
 	Vector3f translation = mMatrix->getBasis(3);
 	translation.y += -75.0f;
@@ -96,8 +96,8 @@ void BigFootShadowMgr::update()
 
 	shadowParm._18 = 0.0f;
 	shadowParm._1C = 0.0f;
-	shadowParm._20 = 60.0f * shadowScale;
-	shadowParm._24 = -65.0f;
+	shadowParm.mShadowScale = 60.0f * shadowScale;
+	shadowParm.mPositionMultiplier = -65.0f;
 
 	mBodySphereShadow->makeShadowSRT(shadowParm, translation);
 
@@ -105,33 +105,33 @@ void BigFootShadowMgr::update()
 	for (int i = 0; i < 4; i++) {
 		shadowParm._18 = 72.5f;
 		shadowParm._1C = -65.0f;
-		shadowParm._20 = shadowA;
-		shadowParm._24 = -10.0f;
+		shadowParm.mShadowScale = shadowA;
+		shadowParm.mPositionMultiplier = -10.0f;
 		mLegTubeShadow1[i]->makeShadowSRT(shadowParm, jointVectors[0], jointVectors[1]);
 
 		shadowParm._18 = 0.0f;
 		shadowParm._1C = 0.0f;
-		shadowParm._20 = shadowA;
-		shadowParm._24 = -10.0f;
+		shadowParm.mShadowScale = shadowA;
+		shadowParm.mPositionMultiplier = -10.0f;
 		mLegTubeShadow2[i]->makeShadowSRT(shadowParm, jointVectors[1], jointVectors[2]);
 
 		shadowParm._18 = -5.0f;
 		shadowParm._1C = -5.0f;
-		shadowParm._20 = shadowA;
-		shadowParm._24 = -10.0f;
+		shadowParm.mShadowScale = shadowA;
+		shadowParm.mPositionMultiplier = -10.0f;
 		mLegTubeShadow3[i]->makeShadowSRT(shadowParm, jointVectors[2], jointVectors[3]);
 
 		shadowParm._18 = 0.0f;
 		shadowParm._1C = 0.0f;
-		shadowParm._20 = shadowA;
-		shadowParm._24 = -5.0f;
+		shadowParm.mShadowScale = shadowA;
+		shadowParm.mPositionMultiplier = -5.0f;
 		mLegSphereShadow1[i]->makeShadowSRT(shadowParm, jointVectors[1]);
 
-		shadowParm._24 = -8.0f;
+		shadowParm.mPositionMultiplier = -8.0f;
 		mLegSphereShadow2[i]->makeShadowSRT(shadowParm, jointVectors[2]);
 
-		shadowParm._20 = shadowB;
-		shadowParm._24 = -5.0f;
+		shadowParm.mShadowScale = shadowB;
+		shadowParm.mPositionMultiplier = -5.0f;
 		mLegSphereShadow3[i]->makeShadowSRT(shadowParm, jointVectors[3]);
 
 		for (int j = 0; j < 4; j++) {
