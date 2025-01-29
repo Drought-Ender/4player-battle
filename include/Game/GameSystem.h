@@ -61,7 +61,6 @@ struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
 	void detachObjectMgr(GenericObjectMgr*);
 	GameLightMgr* getLightMgr();
 	void init();
-	bool isZukanMode();
 	bool paused_soft();
 	bool paused();
 	void setDrawBuffer(int);
@@ -70,9 +69,12 @@ struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
 	u32 setPause(bool, char*, int);
 	int startPause(bool, int, char*);
 
+	inline bool isStoryMode() { return mMode == GSM_STORY_MODE; }
 	inline bool isVersusMode() { return mMode == GSM_VERSUS_MODE; }
 	inline bool isMultiplayerMode() { return (mMode == GSM_VERSUS_MODE || mMode == GSM_TWO_PLAYER_CHALLENGE); }
 	inline bool isChallengeMode() { return (mMode == GSM_ONE_PLAYER_CHALLENGE || mMode == GSM_TWO_PLAYER_CHALLENGE); }
+	inline bool isTwoPlayerMode() { return mMode == GSM_TWO_PLAYER_CHALLENGE; }
+	bool isZukanMode() { return mMode == GSM_PIKLOPEDIA; }
 
 	inline void setFlag(u32 flag) { mFlags |= flag; }
 
@@ -99,9 +101,9 @@ struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
 struct OptimiseController : public JKRDisposer, public Parameters {
 	OptimiseController()
 	    : Parameters(nullptr, "Dynamics")
-	    , mC000(this, 'c000', "ƒsƒNƒ~ƒ“Žñ", true, false, true)
+	    , mC000(this, 'c000', "ï¿½sï¿½Nï¿½~ï¿½ï¿½ï¿½ï¿½", true, false, true)
 	    ,                                                                 // pikmin neck
-	    mC001(this, 'c001', "ƒRƒŠƒWƒ‡ƒ“ƒoƒbƒtƒ@—LŒø", false, false, true) // collision buffer enabled
+	    mC001(this, 'c001', "ï¿½Rï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½oï¿½bï¿½tï¿½@ï¿½Lï¿½ï¿½", false, false, true) // collision buffer enabled
 	{
 	}
 

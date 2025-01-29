@@ -91,4 +91,14 @@ inline Vector3f getRotationOffset(f32 scale, f32 y, f32 angle)
 	return Vector3f(scale * pikmin2_sinf(angle), y, scale * pikmin2_cosf(angle));
 }
 
+inline f32 clamp(f32 val, f32 limit)
+{
+	if (FABS(val) > limit) {
+		val = (val > 0.0f) ? limit : -limit;
+	}
+
+	return val;
+}
+
+
 #endif

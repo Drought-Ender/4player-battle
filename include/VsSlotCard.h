@@ -7,205 +7,186 @@
 
 struct JUTTexture;
 
-namespace efx
-{
-    struct THdamaSight;
+namespace efx {
+struct THdamaSight;
 } // namespace efx
 
-namespace Game
-{
-namespace VsGame
-{
+namespace Game {
+namespace VsGame {
 
-enum TargetSpecifier {
-    NONE = 0,
-    TEAM = 1,
-    PLAYER = 2
-};
+enum TargetSpecifier { NONE = 0, TEAM = 1, PLAYER = 2 };
 
-class VsSlotMachineCard
-{
-    protected:
-    VsSlotMachineCard(const char* texName) {
-        mTexName = texName;
-    }
-    
-    private:
-    const char* mTexName;
+class VsSlotMachineCard {
+protected:
+	VsSlotMachineCard(const char* texName) { mTexName = texName; }
 
-    public:
-    inline const char* GetTexName() { return mTexName; }
-    virtual void allocate(VsGameSection* section) { }
-    virtual int getBedamaWeight(CardMgr* cardMgr, int user, int total, int baseWeight) { return baseWeight; }
-    virtual int getWeight(CardMgr* cardMgr, int teamID) { return 100; }
-    virtual void onUseCard(CardMgr* cardMgr, int user, int target) { }
-    virtual void onUseCard(CardMgr* cardMgr, int user) { }
-    virtual TargetSpecifier useTarget() { return NONE; }
+private:
+	const char* mTexName;
 
-    void updateTexName(const char* texname) { mTexName = texname; }
-    virtual bool varibleForward() { return false; }
-    virtual bool varibleBackward() { return false; }
-    virtual int getVaribleForwardCount() { return 0; }
+public:
+	inline const char* GetTexName() { return mTexName; }
+	virtual void allocate(VsGameSection* section) { }
+	virtual int getBedamaWeight(CardMgr* cardMgr, int user, int total, int baseWeight) { return baseWeight; }
+	virtual int getWeight(CardMgr* cardMgr, int teamID) { return 100; }
+	virtual void onUseCard(CardMgr* cardMgr, int user, int target) { }
+	virtual void onUseCard(CardMgr* cardMgr, int user) { }
+	virtual TargetSpecifier useTarget() { return NONE; }
 
-    virtual const char* getDescription() = 0;
+	void updateTexName(const char* texname) { mTexName = texname; }
+	virtual bool varibleForward() { return false; }
+	virtual bool varibleBackward() { return false; }
+	virtual int getVaribleForwardCount() { return 0; }
 
-    void useCard(CardMgr* cardMgr, int user, int target) {
-        onUseCard(cardMgr, user);
-        onUseCard(cardMgr, user, target);
-    }
+	virtual const char* getDescription() = 0;
 
-    protected:
-    JUTTexture* GetTextureFromMgr();
+	void useCard(CardMgr* cardMgr, int user, int target)
+	{
+		onUseCard(cardMgr, user);
+		onUseCard(cardMgr, user, target);
+	}
+
+protected:
+	JUTTexture* GetTextureFromMgr();
 };
 
 static bool isPaused();
 
-enum EntityID {
-    ENTITY_HAZARD,
-    ENTITY_FALL,
-    ENTITY_CALLBACKHOLDER
-};
+enum EntityID { ENTITY_HAZARD, ENTITY_FALL, ENTITY_CALLBACKHOLDER };
 
 struct ActionEntity : public CNode {
-    virtual bool update() { };
-    virtual void draw(Graphics& gfx) { }
-    virtual EntityID getEntityID() = 0;
+	virtual bool update() {};
+	virtual void draw(Graphics& gfx) { }
+	virtual EntityID getEntityID() = 0;
 };
 
 struct TeamEntity : public ActionEntity {
-    TeamEntity(int teamID) : mTeamID(teamID) 
-    {
-    }
+	TeamEntity(int teamID)
+	    : mTeamID(teamID)
+	{
+	}
 
-    const int mTeamID;
+	const int mTeamID;
 
-    int getTeamID() const { return mTeamID; }
+	int getTeamID() const { return mTeamID; }
 };
 
 struct TeamPositionEntity : public TeamEntity, public TPositionObject {
-    TeamPositionEntity(int teamID, Vector3f position) : TeamEntity(teamID), mPosition(position)
-    {
-    }
+	TeamPositionEntity(int teamID, Vector3f position)
+	    : TeamEntity(teamID)
+	    , mPosition(position)
+	{
+	}
 
-    Vector3f mPosition;
+	Vector3f mPosition;
 
-    virtual Vector3f getPosition() { return mPosition; }
+	virtual Vector3f getPosition() { return mPosition; }
 };
 
-struct PositionEntity : public ActionEntity, public TPositionObject
-{
-    PositionEntity(Vector3f position) : ActionEntity(), mPosition(position)
-    {
-    }
+struct PositionEntity : public ActionEntity, public TPositionObject {
+	PositionEntity(Vector3f position)
+	    : ActionEntity()
+	    , mPosition(position)
+	{
+	}
 
-    Vector3f mPosition;
+	Vector3f mPosition;
 
-    virtual Vector3f getPosition() { return mPosition; }
+	virtual Vector3f getPosition() { return mPosition; }
 };
-
 
 struct HazardBarrier : public TeamPositionEntity {
-    HazardBarrier(int, Vector3f);
-    ~HazardBarrier();
+	HazardBarrier(int, Vector3f);
+	~HazardBarrier();
 
-    static efx::TBase* MakeEfx(TeamID);
-    static f32 GetEfxTimer(TeamID);
+	static efx::TBase* MakeEfx(TeamID);
+	static f32 GetEfxTimer(TeamID);
 
-    efx::TBase* mEfx;
-    f32 mTimer;
-    f32 mEfxTimer;
+	efx::TBase* mEfx;
+	f32 mTimer;
+	f32 mEfxTimer;
 
-    virtual bool update();
-    virtual EntityID getEntityID() { return ENTITY_HAZARD; }
+	virtual bool update();
+	virtual EntityID getEntityID() { return ENTITY_HAZARD; }
 };
 
-struct WaitEnemySpawn : PositionEntity {
+struct WaitEnemySpawn : public PositionEntity {
 
-    EnemyBase* birthFromSky();
+	EnemyBase* birthFromSky();
 
-    
-    WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime, JUTTexture* tex);
-    WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime);
-    ~WaitEnemySpawn();
+	WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime, JUTTexture* tex);
+	WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime);
+	~WaitEnemySpawn();
 
-    void init();
+	void init();
 
-    virtual bool update();
+	virtual bool update();
 
-    efx::THdamaSight* mEfx;
-    f32 mWaitTimer;
-    f32 mExistenceTimer;
-    int mEntityID;
-    FloatingIcon* mIcon;
+	efx::THdamaSight* mEfx;
+	f32 mWaitTimer;
+	f32 mExistenceTimer;
+	int mEntityID;
+	FloatingIcon* mIcon;
 
-    virtual EntityID getEntityID() { return ENTITY_FALL; }
+	virtual EntityID getEntityID() { return ENTITY_FALL; }
 };
 
-struct FloatingIconHolderBase : public PositionEntity
-{
-    FloatingIconHolderBase(Vector3f position, JUTTexture* tex);
-    ~FloatingIconHolderBase();
+struct FloatingIconHolderBase : public PositionEntity {
+	FloatingIconHolderBase(Vector3f position, JUTTexture* tex);
+	~FloatingIconHolderBase();
 
-    virtual bool update() = 0;
+	virtual bool update() = 0;
 
-    FloatingIcon* mIcon;
+	FloatingIcon* mIcon;
 };
 
-struct CallbackArgs {};
+struct CallbackArgs { };
 
-typedef bool (BoolCallback(const Vector3f&, const CallbackArgs*));
+typedef bool(BoolCallback(const Vector3f&, const CallbackArgs*));
 
-struct FloatingIconHolderCallback : public FloatingIconHolderBase
-{
-    FloatingIconHolderCallback(Vector3f position, JUTTexture* tex, const BoolCallback* callback, const CallbackArgs* args);
+struct FloatingIconHolderCallback : public FloatingIconHolderBase {
+	FloatingIconHolderCallback(Vector3f position, JUTTexture* tex, const BoolCallback* callback, const CallbackArgs* args);
 
-    virtual bool update();
-    virtual EntityID getEntityID() { return ENTITY_CALLBACKHOLDER; }
+	virtual bool update();
+	virtual EntityID getEntityID() { return ENTITY_CALLBACKHOLDER; }
 
-    const BoolCallback* mCallback;
-    const CallbackArgs* mArgs;
+	const BoolCallback* mCallback;
+	const CallbackArgs* mArgs;
 };
 
 struct ActionEntityMgr : public CNode {
 
-    void add(ActionEntity* entity);
+	void add(ActionEntity* entity);
 
-    void update();
-    void draw(Graphics& gfx);
+	void update();
+	void draw(Graphics& gfx);
 };
 
-struct VsSlotCardMgr
-{
-    VsSlotCardMgr();
+struct VsSlotCardMgr {
+	VsSlotCardMgr();
 
-    
-    static int sTotalCardCount;
-    static VsSlotMachineCard** sAllCards;
-    static bool* sUsingCards;
-    static void initAllCards();
+	static int sTotalCardCount;
+	static VsSlotMachineCard** sAllCards;
+	static bool* sUsingCards;
+	static void initAllCards();
 
-    void generateCards(VsGameSection*);
+	void generateCards(VsGameSection*);
 
-    VsSlotMachineCard* getAt(int i) { return mUsingCards[i]; }
-    int getCardCount() { return mCardCount; }
+	VsSlotMachineCard* getAt(int i) { return mUsingCards[i]; }
+	int getCardCount() { return mCardCount; }
 
-    void update();
-    void draw(Graphics& gfx);
+	void update();
+	void draw(Graphics& gfx);
 
-    ActionEntityMgr* getActionMgr() { return &mActionMgr; };
+	ActionEntityMgr* getActionMgr() { return &mActionMgr; };
 
+	int mCardCount;
 
-    int mCardCount;
-    
-    VsSlotMachineCard** mUsingCards;
+	VsSlotMachineCard** mUsingCards;
 
-    ActionEntityMgr mActionMgr;
+	ActionEntityMgr mActionMgr;
 };
-
-
 
 extern bool sEnemyXLU;
-
 
 extern VsSlotCardMgr* vsSlotCardMgr;
 

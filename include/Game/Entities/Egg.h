@@ -72,6 +72,7 @@ struct Obj : public EnemyBase {
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
 	bool mIsFalling; // _2BC, set when released from capture
+	bool mIsForceMitite;
 	FSM* mFsm;       // _2C0
 	                 // _2C4 = PelletView
 };
@@ -104,11 +105,11 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mSingleNectarChance(this, 'fp01', "–¨ƒŒ[ƒg", 1.0f, 0.0f, 1.0f)       // 'nectar rate'
-		    , mDoubleNectarChance(this, 'fp02', "–¨x2ƒŒ[ƒg", 1.0f, 0.0f, 1.0f)     // 'nectar x2 rate'
-		    , mMititesChance(this, 'fp03', "ƒ^ƒ}ƒSƒ€ƒVx10ƒŒ[ƒg", 1.0f, 0.0f, 1.0f) // 'mitite x10 rate'
-		    , mSpicyChance(this, 'fp04', "Ôƒh[ƒsƒ“ƒOƒŒ[ƒg", 1.0f, 0.0f, 1.0f)    // 'red doping rate'
-		    , mBitterChance(this, 'fp05', "•ƒh[ƒsƒ“ƒOƒŒ[ƒg", 1.0f, 0.0f, 1.0f)   // 'black doping rate'
+		    , mSingleNectarChance(this, 'fp01', "ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½g", 1.0f, 0.0f, 1.0f)       // 'nectar rate'
+		    , mDoubleNectarChance(this, 'fp02', "ï¿½ï¿½x2ï¿½ï¿½ï¿½[ï¿½g", 1.0f, 0.0f, 1.0f)     // 'nectar x2 rate'
+		    , mMititesChance(this, 'fp03', "ï¿½^ï¿½}ï¿½Sï¿½ï¿½ï¿½Vx10ï¿½ï¿½ï¿½[ï¿½g", 1.0f, 0.0f, 1.0f) // 'mitite x10 rate'
+		    , mSpicyChance(this, 'fp04', "ï¿½Ôƒhï¿½[ï¿½sï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½[ï¿½g", 1.0f, 0.0f, 1.0f)    // 'red doping rate'
+		    , mBitterChance(this, 'fp05', "ï¿½ï¿½ï¿½hï¿½[ï¿½sï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½[ï¿½g", 1.0f, 0.0f, 1.0f)   // 'black doping rate'
 		{
 		}
 

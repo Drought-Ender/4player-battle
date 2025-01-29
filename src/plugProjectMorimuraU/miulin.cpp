@@ -1274,8 +1274,8 @@ f32 Obj::turnFunc(f32 factor)
 		targetPos = mTargetCreature->getPosition();
 	}
 
-	f32 turnSpeed  = factor * C_PARMS->mGeneral.mRotationalSpeed.mValue;
-	f32 turnFactor = factor * C_PARMS->mGeneral.mRotationalAccel.mValue;
+	f32 turnSpeed  = factor * C_PARMS->mGeneral.mMaxTurnAngle.mValue;
+	f32 turnFactor = factor * C_PARMS->mGeneral.mTurnSpeed.mValue;
 
 	Vector3f pos = getPosition();
 

@@ -510,8 +510,8 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		f32 z;
 
 		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		rotSpeed              = parms->mGeneral.mRotationalSpeed.mValue;
-		rotAccel              = parms->mGeneral.mRotationalAccel.mValue;
+		rotSpeed              = parms->mGeneral.mMaxTurnAngle.mValue;
+		rotAccel              = parms->mGeneral.mTurnSpeed.mValue;
 
 		Vector3f pos = getPosition();
 		x            = XYZ.x;
@@ -539,8 +539,8 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		f32 z;
 
 		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		rotSpeed              = parms->mGeneral.mRotationalSpeed.mValue;
-		rotAccel              = parms->mGeneral.mRotationalAccel.mValue;
+		rotSpeed              = parms->mGeneral.mMaxTurnAngle.mValue;
+		rotAccel              = parms->mGeneral.mTurnSpeed.mValue;
 
 		Vector3f pos = getPosition();
 		x            = XZ.x;
@@ -566,8 +566,8 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		f32 rotAccel;
 
 		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		rotSpeed              = parms->mGeneral.mRotationalSpeed.mValue;
-		rotAccel              = parms->mGeneral.mRotationalAccel.mValue;
+		rotSpeed              = parms->mGeneral.mMaxTurnAngle.mValue;
+		rotAccel              = parms->mGeneral.mTurnSpeed.mValue;
 
 		Vector3f targetPos = target->getPosition();
 		Vector3f pos       = getPosition();
@@ -617,9 +617,25 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		return angleDist;
 	}
 
+	inline f32 turnToTarget2_tamago(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle)
+	{
+		f32 angleDist = getAngDist2(targetPos);
+		f32 angle     = clamp(angleDist * turnSpeed, PI * (DEG2RAD * maxTurnAngle));
+		updateFaceDir(angle);
+
+		return angleDist;
+	}
+
+
 	inline void updateFaceDir(f32 angle)
 	{
 		mFaceDir    = roundAng(angle + getFaceDir());
+		mRotation.y = mFaceDir;
+	}
+
+	inline void updateFaceDir_tamago(f32 angle)
+	{
+		mFaceDir    = angle;
 		mRotation.y = mFaceDir;
 	}
 

@@ -33,6 +33,10 @@ extern "C" {
 #define SIN_2_5 0.43633234f
 
 #define DEG2RAD (1.0f / 180.0f)
+#define RAD2DEG (180.0f / PI)
+
+#define TORADIANS(degrees) (PI * (DEG2RAD * degrees))
+#define TODEGREES(radians) (RAD2DEG * radians)
 
 f64 cos(f64);
 f32 cosf(f32);

@@ -811,8 +811,8 @@ void StateGoHome::exec(EnemyBase* enemy)
 {
 	Obj* tobi        = OBJ(enemy);
 	Vector3f homePos = Vector3f(tobi->mHomePosition);
-	EnemyFunc::walkToTarget(tobi, homePos, CG_PARMS(tobi)->mGeneral.mMoveSpeed.mValue, CG_PARMS(tobi)->mGeneral.mRotationalAccel.mValue,
-	                        CG_PARMS(tobi)->mGeneral.mRotationalSpeed.mValue);
+	EnemyFunc::walkToTarget(tobi, homePos, CG_PARMS(tobi)->mGeneral.mMoveSpeed.mValue, CG_PARMS(tobi)->mGeneral.mTurnSpeed.mValue,
+	                        CG_PARMS(tobi)->mGeneral.mMaxTurnAngle.mValue);
 
 	if (EnemyFunc::getNearestPikminOrNavi(tobi, CG_PARMS(tobi)->mGeneral.mMaxAttackRange.mValue,
 	                                      CG_PARMS(tobi)->mGeneral.mMinAttackRange.mValue, nullptr, nullptr, nullptr)) {
@@ -879,8 +879,8 @@ void StateFly::exec(EnemyBase* enemy)
 	Obj* tobi = OBJ(enemy);
 	tobi->randomFlyingTarget();
 	Vector3f targetPos = Vector3f(tobi->mTargetPosition);
-	EnemyFunc::walkToTarget(tobi, targetPos, CG_PARMS(tobi)->mGeneral.mMoveSpeed.mValue, CG_PARMS(tobi)->mGeneral.mRotationalAccel.mValue,
-	                        CG_PARMS(tobi)->mGeneral.mRotationalSpeed.mValue);
+	EnemyFunc::walkToTarget(tobi, targetPos, CG_PARMS(tobi)->mGeneral.mMoveSpeed.mValue, CG_PARMS(tobi)->mGeneral.mTurnSpeed.mValue,
+	                        CG_PARMS(tobi)->mGeneral.mMaxTurnAngle.mValue);
 
 	if (tobi->mHealth / CG_PARMS(tobi)->mGeneral.mHealth.mValue > CG_PROPERPARMS(tobi).mFp02.mValue) {
 		tobi->disableEvent(0, EB_IsFlying);

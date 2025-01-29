@@ -7,10 +7,15 @@
 #include "Game/updateMgr.h"
 #include "BitFlag.h"
 #include "ObjectTypes.h"
+#include "trig.h"
 
 // Shorthand cast to obj-specific 'parms'
 #define CG_PARMS(x) (static_cast<Parms*>(x->mParms))
 #define C_PARMS     (CG_PARMS(this))
+
+// Shorthand cast to obj-specific 'parms->mGeneralParms'
+#define CG_GENERALPARMS(x) (CG_PARMS(x)->mGeneral)
+#define C_GENERALPARMS     (C_PARMS->mGeneral)
 
 // Shorthand cast to obj-specific 'parms->properParms'
 #define CG_PROPERPARMS(x) (CG_PARMS(x)->mProperParms)
@@ -343,6 +348,13 @@ struct Creature : public CellObject {
 
 	inline bool isPelletBuried() {
 		return mCaptureMatrix;
+	}
+
+	inline f32 getAngDist2(Vector3f& targetPos)
+	{
+		Vector3f pos   = getPosition();
+		f32 angBetween = _angXZ(targetPos.x, targetPos.z, pos.x, pos.z);
+		return angDist(angBetween, getFaceDir());
 	}
 
 	static bool usePacketCulling;

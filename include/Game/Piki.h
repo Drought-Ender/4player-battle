@@ -130,6 +130,16 @@ struct Piki : public FakePiki {
 
 	Piki();
 
+	inline bool isSearchable()
+	{
+		bool result = false;
+		if (isPikmin() && isAlive() && !isStickToMouth()) {
+			result = true;
+		}
+
+		return result;
+	}
+
 	// vtable 1 (Creature)
 	virtual bool deferPikiCollision() { return true; }              // _20 (weak)
 	virtual void onInit(CreatureInitArg* settings);                 // _30

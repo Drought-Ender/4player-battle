@@ -271,8 +271,8 @@ void Obj::moveNoTarget()
 			mTargetPos.z = f1 * pikmin2_cosf(ang) + mHomePosition.z;
 		}
 		Parms* parms = static_cast<Parms*>(mParms);
-		EnemyFunc::walkToTarget(this, mTargetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-		                        parms->mGeneral.mRotationalSpeed.mValue);
+		EnemyFunc::walkToTarget(this, mTargetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+		                        parms->mGeneral.mMaxTurnAngle.mValue);
 	} else {
 		mTargetVelocity = Vector3f(0.0f);
 	}
@@ -285,6 +285,9 @@ void Obj::moveNoTarget()
  */
 void Obj::createHoney()
 {
+	if (mExistDuration > 0.0f) {
+		return;
+	}
 	Parms* parms = static_cast<Parms*>(mParms);
 	if (randWeightFloat(1.0f) < parms->mProperParms.mNectarChance.mValue) {
 		ItemHoney::InitArg arg(false, false);

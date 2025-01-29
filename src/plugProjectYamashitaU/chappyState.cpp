@@ -295,8 +295,8 @@ void StateTurn::exec(EnemyBase* enemy)
 
 			Vector3f targetPos = enemy->mTargetCreature->getPosition();
 
-			f32 turnSpeed  = CG_PARMS(enemy)->mGeneral.mRotationalSpeed.mValue;
-			f32 turnFactor = CG_PARMS(enemy)->mGeneral.mRotationalAccel.mValue;
+			f32 turnSpeed  = CG_PARMS(enemy)->mGeneral.mMaxTurnAngle.mValue;
+			f32 turnFactor = CG_PARMS(enemy)->mGeneral.mTurnSpeed.mValue;
 
 			Vector3f pos = enemy->getPosition();
 

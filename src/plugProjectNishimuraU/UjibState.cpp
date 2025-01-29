@@ -782,8 +782,8 @@ void StateGoHome::exec(EnemyBase* enemy)
 {
 	Obj* uji         = OBJ(enemy);
 	Vector3f homePos = Vector3f(uji->mHomePosition);
-	EnemyFunc::walkToTarget(uji, homePos, CG_PARMS(uji)->mGeneral.mMoveSpeed.mValue, CG_PARMS(uji)->mGeneral.mRotationalAccel.mValue,
-	                        CG_PARMS(uji)->mGeneral.mRotationalSpeed.mValue);
+	EnemyFunc::walkToTarget(uji, homePos, CG_PARMS(uji)->mGeneral.mMoveSpeed.mValue, CG_PARMS(uji)->mGeneral.mTurnSpeed.mValue,
+	                        CG_PARMS(uji)->mGeneral.mMaxTurnAngle.mValue);
 
 	if (EnemyFunc::getNearestPikminOrNavi(uji, CG_PARMS(uji)->mGeneral.mMaxAttackRange.mValue,
 	                                      CG_PARMS(uji)->mGeneral.mMinAttackRange.mValue, nullptr, nullptr, nullptr)) {

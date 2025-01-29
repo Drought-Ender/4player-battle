@@ -66,8 +66,8 @@ struct EnemyParmsBase : public CreatureParms {
 		    , mDamageScaleDuration(this, 'fp04', "ダメージフレーム", 0.35f, 0.0f, 1.0f)    // 'damage frame'
 		    , mMass(this, 'fp05', "質量", 1.0f, 0.0f, 100.0f)                              // mass
 		    , mMoveSpeed(this, 'fp06', "速度", 80.0f, 0.0f, 1000.0f)                       // speed
-		    , mRotationalAccel(this, 'fp08', "回転速度率", 0.1f, 0.0f, 1.0f)               // rotation speed rate
-		    , mRotationalSpeed(this, 'fp28', "回転最大速度", 10.0f, 0.0f, 360.0f)          // maximum rotation speed
+		    , mTurnSpeed(this, 'fp08', "回転速度率", 0.1f, 0.0f, 1.0f)                     // rotation speed rate
+		    , mMaxTurnAngle(this, 'fp28', "回転最大速度", 10.0f, 0.0f, 360.0f)             // maximum rotation speed
 		    , mTerritoryRadius(this, 'fp09', "テリトリー", 200.0f, 1.0f, 1000.0f)          // territory
 		    , mHomeRadius(this, 'fp10', "ホーム範囲", 15.0f, 1.0f, 1000.0f)                // home range
 		    , mPrivateRadius(this, 'fp11', "プライベート距離", 70.0f, 0.0f, 1000.0f)       // private distance
@@ -115,8 +115,8 @@ struct EnemyParmsBase : public CreatureParms {
 		Parm<f32> mDamageScaleDuration;    // _27C
 		Parm<f32> mMass;                   // _2A4, 'mass'
 		Parm<f32> mMoveSpeed;              // _2CC
-		Parm<f32> mRotationalAccel;        // _2F4
-		Parm<f32> mRotationalSpeed;        // _31C
+		Parm<f32> mTurnSpeed;              // _2F4
+		Parm<f32> mMaxTurnAngle;           // _31C
 		Parm<f32> mTerritoryRadius;        // _344
 		Parm<f32> mHomeRadius;             // _36C
 		Parm<f32> mPrivateRadius;          // _394

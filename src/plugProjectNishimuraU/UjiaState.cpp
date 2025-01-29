@@ -807,8 +807,8 @@ void StateGoHome::exec(EnemyBase* enemy)
 {
 	Obj* uji         = OBJ(enemy);
 	Vector3f homePos = Vector3f(uji->mHomePosition);
-	EnemyFunc::walkToTarget(uji, homePos, CG_PARMS(uji)->mGeneral.mMoveSpeed.mValue, CG_PARMS(uji)->mGeneral.mRotationalAccel.mValue,
-	                        CG_PARMS(uji)->mGeneral.mRotationalSpeed.mValue);
+	EnemyFunc::walkToTarget(uji, homePos, CG_PARMS(uji)->mGeneral.mMoveSpeed.mValue, CG_PARMS(uji)->mGeneral.mTurnSpeed.mValue,
+	                        CG_PARMS(uji)->mGeneral.mMaxTurnAngle.mValue);
 
 	Vector3f homePos2 = uji->mHomePosition;
 	Vector3f position = uji->getPosition();

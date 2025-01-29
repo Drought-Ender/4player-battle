@@ -355,8 +355,8 @@ void StateMove::exec(EnemyBase* enemy)
 			}
 
 			Parms* parms = static_cast<Parms*>(imomushi->mParms);
-			EnemyFunc::walkToTarget(imomushi, creaturePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-			                        parms->mGeneral.mRotationalSpeed.mValue);
+			EnemyFunc::walkToTarget(imomushi, creaturePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+			                        parms->mGeneral.mMaxTurnAngle.mValue);
 		}
 
 	} else {
@@ -432,8 +432,8 @@ void StateGoHome::exec(EnemyBase* enemy)
 			imomushi->finishMotion();
 		}
 		Parms* parms2 = static_cast<Parms*>(imomushi->mParms);
-		EnemyFunc::walkToTarget(imomushi, homePos, parms2->mGeneral.mMoveSpeed.mValue, parms2->mGeneral.mRotationalAccel.mValue,
-		                        parms2->mGeneral.mRotationalSpeed.mValue);
+		EnemyFunc::walkToTarget(imomushi, homePos, parms2->mGeneral.mMoveSpeed.mValue, parms2->mGeneral.mTurnSpeed.mValue,
+		                        parms2->mGeneral.mMaxTurnAngle.mValue);
 	}
 
 	if ((imomushi->mCurAnim->mIsPlaying) && ((u32)imomushi->mCurAnim->mType == KEYEVENT_END)) {
@@ -772,8 +772,8 @@ void StateZukanMove::exec(EnemyBase* enemy)
 	Obj* imomushi   = static_cast<Obj*>(enemy);
 	Vector3f target = Vector3f(imomushi->mZukanTargetPosition);
 	Parms* parms    = static_cast<Parms*>(imomushi->mParms);
-	EnemyFunc::walkToTarget(imomushi, target, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mRotationalAccel.mValue,
-	                        parms->mGeneral.mRotationalSpeed.mValue);
+	EnemyFunc::walkToTarget(imomushi, target, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
+	                        parms->mGeneral.mMaxTurnAngle.mValue);
 	if (imomushi->isInZukanTargetArea()) {
 		imomushi->setZukanTargetPosition();
 	}

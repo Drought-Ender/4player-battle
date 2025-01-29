@@ -8,6 +8,8 @@
 #include "DroughtLib.h"
 #include "Game/pathfinder.h"
 #include "Game/Cave/RandMapMgr.h"
+#include "Game/Entities/TamagoMushi.h"
+#include "Game/Entities/Egg.h"
 #include "Game/PikiState.h"
 #include "PikiAI.h"
 
@@ -35,6 +37,7 @@ struct NaviTekiParams {
 		mCount       = 0;
 		mRadius      = 0.0f;
 		mSpawnHeight = 0.0f;
+		mFallFromSky = false;
 	}
 
 	inline NaviTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight)
@@ -43,6 +46,7 @@ struct NaviTekiParams {
 		mRadius       = spawnRadius;
 		mSpawnHeight  = spawnHeight;
 		mDespawnTimer = 0.0f;
+		mFallFromSky  = false;
 	}
 
 	inline NaviTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength)
@@ -51,12 +55,23 @@ struct NaviTekiParams {
 		mRadius       = spawnRadius;
 		mSpawnHeight  = spawnHeight;
 		mDespawnTimer = despawnTimerLength;
+		mFallFromSky  = false;
+	}
+
+	inline NaviTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength, bool fallFromSky)
+	{
+		mCount        = objCount;
+		mRadius       = spawnRadius;
+		mSpawnHeight  = spawnHeight;
+		mDespawnTimer = despawnTimerLength;
+		mFallFromSky  = fallFromSky;
 	}
 
 	int mCount;
 	f32 mRadius;
 	f32 mSpawnHeight;
 	f32 mDespawnTimer;
+	bool mFallFromSky;
 };
 
 struct NaviFallTekiParams : public NaviTekiParams {
@@ -441,11 +456,14 @@ struct TekiCard : public VsSlotMachineCard {
 		mTekiMgrID       = allocateTeki(section->mCardMgr->mTekiMgr, mEnemyID, MAX(2, defaultAlloc));
 	}
 
+	virtual void onTekiBirth(EnemyBase* enemy) { }
+
 	EnemyBase* birth(TekiMgr* tekiMgr, Vector3f& position, bool willDespawn)
 	{
 		EnemyBase* enemy = tekiMgr->birth(mTekiMgrID, position, willDespawn);
 		if (enemy)
 			enemy->setAnimSpeed(30.0f);
+			onTekiBirth(enemy);
 		return enemy;
 	}
 
@@ -455,6 +473,7 @@ struct TekiCard : public VsSlotMachineCard {
 		P2ASSERT(enemy);
 		if (enemy)
 			enemy->setAnimSpeed(30.0f);
+			onTekiBirth(enemy);
 		return enemy;
 	}
 
@@ -463,6 +482,7 @@ struct TekiCard : public VsSlotMachineCard {
 		EnemyBase* enemy = tekiMgr->birthFromSky(mTekiMgrID, position, timer);
 		if (enemy)
 			enemy->setAnimSpeed(30.0f);
+			onTekiBirth(enemy);
 		return enemy;
 	}
 };
@@ -572,6 +592,11 @@ struct NaviTekiCard : public TekiCard {
 
 				spawnNaviPos += spawnOffset;
 
+				if (mParms.mFallFromSky) {
+					birthFromSky(cardMgr->mTekiMgr, spawnNaviPos, mParms.mDespawnTimer);
+					continue;
+				}
+
 				birth(cardMgr->mTekiMgr, spawnNaviPos, mParms.mDespawnTimer);
 			}
 		}
@@ -587,6 +612,20 @@ struct NaviTekiCard : public TekiCard {
 
 	virtual TargetSpecifier useTarget() { return PLAYER; }
 };
+
+struct MititeCard : public NaviTekiCard
+{
+	NaviTekiParams mParms;
+	MititeCard(NaviTekiParams parms, const char* texName)
+	    : mParms(parms)
+	    , NaviTekiCard(EnemyTypeID::EnemyID_Egg, parms, texName) {};
+
+	virtual void onTekiBirth(EnemyBase* enemy) {
+		static_cast<Egg::Obj*>(enemy)->mIsForceMitite = true;
+		static_cast<Egg::Obj*>(enemy)->mIsFalling = true;
+	}
+};
+
 
 struct TankOnyonTeki : public OnyonTekiCard {
 	EnemyTypeID::EEnemyTypeID mWTankTeki;
@@ -1086,7 +1125,8 @@ void VsSlotCardMgr::initAllCards()
 	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
 	sAllCards[TEKI_OTAKARA] = new TankOnyonTeki(EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara,
 	                                            EnemyTypeID::EnemyID_GasOtakara, EnemyTypeID::EnemyID_SporeOtakara, "teki_otakara.bti");
-	sAllCards[TEKI_MITES]   = new NaviTekiCard(EnemyTypeID::EnemyID_TamagoMushi, NaviTekiParams(1, 0.0f, 0.0f), "teki_mitites.bti");
+	sAllCards[TEKI_MITES]   = new MititeCard(NaviTekiParams(1, 0.0f, 0.0f, 120.0f, true), "teki_mitites.bti");
+	sAllCards[TEKI_BABY]    = new NaviTekiCard(EnemyTypeID::EnemyID_Baby, NaviTekiParams(5, 100.0f, 0.0f, 300.0f, true), "teki_baby.bti");
 }
 
 VsSlotCardMgr::VsSlotCardMgr() { mUsingCards = nullptr; }

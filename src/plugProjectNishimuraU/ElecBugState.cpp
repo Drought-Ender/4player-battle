@@ -380,7 +380,7 @@ void StateTurn::exec(EnemyBase* enemy)
 {
 	Obj* bug           = static_cast<Obj*>(enemy);
 	Vector3f targetPos = bug->mTargetPosition;
-	bug->turnToTarget2(targetPos, CG_PARMS(bug)->mGeneral.mRotationalSpeed, 30.0f);
+	bug->turnToTarget2(targetPos, CG_PARMS(bug)->mGeneral.mMaxTurnAngle, 30.0f);
 	if (bug->_2C0 > 15.0f) {
 		bug->finishMotion();
 	}
@@ -426,7 +426,7 @@ void StateMove::exec(EnemyBase* enemy)
 	Vector3f currentPos = bug->getPosition();
 	if (outsideRadius(25.0f, targetPos, currentPos)) {
 		EnemyParmsBase::Parms& general = CG_PARMS(bug)->mGeneral;
-		EnemyFunc::walkToTarget(bug, targetPos, general.mMoveSpeed, general.mRotationalAccel, general.mRotationalSpeed);
+		EnemyFunc::walkToTarget(bug, targetPos, general.mMoveSpeed, general.mTurnSpeed, general.mMaxTurnAngle);
 
 	} else {
 		bug->finishMotion();
@@ -505,7 +505,7 @@ void StateCharge::exec(EnemyBase* enemy)
 	Obj* partner = bug->mPartner;
 	if (partner) {
 		Vector3f partnerPos = partner->getPosition();
-		partner->turnToTarget2(partnerPos, 0.15f, CG_PARMS(bug)->mGeneral.mRotationalSpeed.mValue);
+		partner->turnToTarget2(partnerPos, 0.15f, CG_PARMS(bug)->mGeneral.mMaxTurnAngle.mValue);
 	}
 	if (bug->_2C4 >= 3.0f) {
 		if (!bug->mPartner) {

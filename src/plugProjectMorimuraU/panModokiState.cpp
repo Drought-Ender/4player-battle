@@ -974,8 +974,8 @@ void StateCarryEnd::exec(EnemyBase* enemy)
 			}
 
 		} else {
-			enemy->turnToTargetMori(_10, CG_PARMS(enemy)->mGeneral.mRotationalAccel.mValue,
-			                        CG_PARMS(enemy)->mGeneral.mRotationalSpeed.mValue);
+			enemy->turnToTargetMori(_10, CG_PARMS(enemy)->mGeneral.mTurnSpeed.mValue,
+			                        CG_PARMS(enemy)->mGeneral.mMaxTurnAngle.mValue);
 			diff.x *= 0.05f;
 			diff.y *= 0.05f;
 			diff.z *= 0.05f;

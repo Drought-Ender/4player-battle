@@ -56,6 +56,8 @@ void Obj::onInit(CreatureInitArg* initArg)
 		PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 		mModel->mJ3dModel->calc();
 	}
+
+	mIsForceMitite = false;
 }
 
 /*
@@ -290,6 +292,10 @@ void Obj::genItem()
 		}
 	}
 
+	if (mIsForceMitite) {
+		dropType = EGGDROP_Mitites;
+	}
+
 	mititeGroup = nullptr;
 	Pellet* pellet;
 	switch (dropType) {
@@ -344,6 +350,7 @@ void Obj::genItem()
 		if (mititeMgr) {
 			EnemyBirthArg birthArg;
 			birthArg.mPosition = mPosition;
+			birthArg.mExistenceLength = mExistDuration - mExistTimer;
 
 			birthArg.mFaceDir = TAU * randFloat();
 			velocity.y        = 200.0f;
