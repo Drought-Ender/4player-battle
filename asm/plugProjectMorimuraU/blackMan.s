@@ -2597,8 +2597,8 @@ lbl_constructor:
 /* 803A7A30 003A4970  4E 80 04 21 */	bctrl 
 /* 803A7A34 003A4974  88 1E 02 B8 */	lbz r0, 0x2b8(r30)
 /* 803A7A38 003A4978  7F C4 F3 78 */	mr r4, r30
-/* 803A7A3C 003A497C  2C 00 00 03 */	cmpwi r0, 3
-/* 803A7A40 003A4980  41 82 00 74 */	beq .L_803A7AB4
+/* 803A7A3C 003A497C  2C 00 00 03 */	# cmpwi r0, 3
+/* 803A7A40 003A4980  41 82 00 74 */	# beq .L_803A7AB4
 /* 803A7A44 003A4984  80 BC 00 C0 */	lwz r5, 0xc0(r28)
 /* 803A7A48 003A4988  3C 80 80 4B */	lis r4, __vt__Q24Game11Interaction@ha
 /* 803A7A4C 003A498C  3C 60 80 4B */	lis r3, __vt__Q24Game13InteractFlick@ha
