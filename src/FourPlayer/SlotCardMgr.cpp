@@ -66,27 +66,27 @@ struct NaviFallTekiParams : public NaviTekiParams {
 		mStartSpawnTimer = 0.0f;
 	}
 
-	inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight)
-	    : NaviTekiParams(objCount, spawnRadius, spawnHeight)
+	inline NaviFallTekiParams(int objCount, f32 spawnRadius)
+	    : NaviTekiParams(objCount, spawnRadius, 0.0f)
 	{
 		mStartSpawnTimer = 0.0f;
 	}
 
-	inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength)
-	    : NaviTekiParams(objCount, spawnRadius, spawnHeight, despawnTimerLength)
+	inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 despawnTimerLength)
+	    : NaviTekiParams(objCount, spawnRadius, 0.0f, despawnTimerLength)
 	{
 		mStartSpawnTimer = 0.0f;
 	}
 
-	inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength, f32 startSpawnWait)
-	    : NaviTekiParams(objCount, spawnRadius, spawnHeight, despawnTimerLength)
+	inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 despawnTimerLength, f32 startSpawnWait)
+	    : NaviTekiParams(objCount, spawnRadius, 0.0f, despawnTimerLength)
 	{
 		mStartSpawnTimer = startSpawnWait;
 		mVarience        = 0.0f;
 	}
 
-	inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 spawnHeight, f32 despawnTimerLength, f32 startSpawnWait, f32 varience)
-	    : NaviTekiParams(objCount, spawnRadius, spawnHeight, despawnTimerLength)
+	inline NaviFallTekiParams(int objCount, f32 spawnRadius, f32 despawnTimerLength, f32 startSpawnWait, f32 varience)
+	    : NaviTekiParams(objCount, spawnRadius, 0.0f, despawnTimerLength)
 	{
 		mStartSpawnTimer = startSpawnWait;
 		mVarience        = varience;
@@ -118,11 +118,32 @@ struct AddPikminCard : public VsSlotMachineCard {
 	virtual int getWeight(CardMgr* cardMgr, int teamID)
 	{
 		int pikiCount = GameStat::getMapPikmins(getPikiFromTeamEnum(teamID));
+		
+		int score = VsSlotMachineCard::getWeight(cardMgr, teamID);
 
 		if (pikiCount < 4) {
-			return (pikiCount < 10) ? 200 : 150;
+			score += (pikiCount < 10) ? 100 : 50;
 		}
-		return VsSlotMachineCard::getWeight(cardMgr, teamID);
+
+		int avgPikiCountOther = 0;
+		int activeTeams = 0;
+		for (int i = 0; i < 4; i++) {
+			if (i != teamID && isTeamActive(i)) {
+				activeTeams++;
+				avgPikiCountOther += GameStat::getMapPikmins(getPikiFromTeamEnum(i));
+			}
+		}
+
+		avgPikiCountOther /= activeTeams;
+
+		if (avgPikiCountOther - pikiCount > 20) {
+			score *= (pikiCount < 10) ? 5 : 3;
+		}
+		else if (avgPikiCountOther - pikiCount > 10) {
+			score *= (pikiCount < 10) ? 3 : 1.5f;
+		}
+
+		return ;
 	}
 
 	virtual const char* getDescription() { return "Grows Pikmin"; }
@@ -631,9 +652,10 @@ struct BedamaCard : public VsSlotMachineCard {
 	BedamaCard(const char* texName, const char* texName2)
 	    : mTexName(texName)
 	    , mBuryTexname(texName2)
-	    , VsSlotMachineCard(texName) {
-
-	    };
+	    , mBuryBedama(false)
+	    , VsSlotMachineCard(texName)
+	{
+	};
 
 	const char* mTexName;
 	const char* mBuryTexname;
@@ -685,8 +707,8 @@ struct BedamaCard : public VsSlotMachineCard {
 	void onUseCard(CardMgr* cardMgr, int user)
 	{
 		updateUseEffectiveness(cardMgr, getVsTeam(user));
-		if (mBuryBedama) {
 
+		if (mBuryBedama) {
 			BuryBedama(cardMgr, user);
 			return;
 		}
@@ -783,7 +805,7 @@ struct BedamaCard : public VsSlotMachineCard {
 		resetBedamaProb -= overuseFactor;
 
 		if (resetBedamaProb > 0.0f) {
-			return total * resetBedamaProb;
+			return total * resetBedamaProb * (vsSlotCardMgr->mCardCount - 1) / (vsSlotCardMgr->mCardCount);
 		}
 
 		if (mBuryBedama) {
@@ -1056,14 +1078,14 @@ void VsSlotCardMgr::initAllCards()
 	sAllCards[TEKI_DEMON]      = new OnyonTekiCard(EnemyTypeID::EnemyID_Demon, "teki_demon.bti");
 	sAllCards[TEKI_FUEFUKI]    = new OnyonTekiCard(EnemyTypeID::EnemyID_Fuefuki, "teki_fuefuki.bti");
 	sAllCards[TEKI_JELLYFLOAT] = new OnyonTekiCard(EnemyTypeID::EnemyID_Kurage, "teki_kurage.bti");
-	sAllCards[TEKI_FKABUTO]    = new NaviTekiCard(EnemyTypeID::EnemyID_Fkabuto, NaviTekiParams(1, 0.0f, 0.0f, 10.0f), "teki_kabuto.bti");
+	sAllCards[TEKI_FKABUTO]    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Kabuto, NaviFallTekiParams(1, 0.0f, 30.0f, 2.0f), "teki_kabuto.bti");
 	sAllCards[ALL_PLUCK]       = new PluckAllCard("fue_pullout.bti");
 	sAllCards[PATH_BLOCK]      = new HazardBarrierCard("fire_water.bti");
 	sAllCards[WARP_HOME]       = new WarpHomeCard("warp_home.bti");
 	sAllCards[TEKI_KUMA]
-	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 0.0f, 20.0f, 3.0f), "teki_kuma.bti");
+	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 20.0f, 3.0f), "teki_kuma.bti");
 	sAllCards[BOMB_STORM]
-	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 0.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
+	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
 	sAllCards[TEKI_OTAKARA] = new TankOnyonTeki(EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara,
 	                                            EnemyTypeID::EnemyID_GasOtakara, EnemyTypeID::EnemyID_SporeOtakara, "teki_otakara.bti");
 	sAllCards[TEKI_MITES]   = new NaviTekiCard(EnemyTypeID::EnemyID_TamagoMushi, NaviTekiParams(1, 0.0f, 0.0f), "teki_mitites.bti");
