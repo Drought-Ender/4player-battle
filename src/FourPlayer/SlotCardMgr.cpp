@@ -118,7 +118,7 @@ struct AddPikminCard : public VsSlotMachineCard {
 	virtual int getWeight(CardMgr* cardMgr, int teamID)
 	{
 		int pikiCount = GameStat::getMapPikmins(getPikiFromTeamEnum(teamID));
-		
+
 		int score = VsSlotMachineCard::getWeight(cardMgr, teamID);
 
 		if (pikiCount < 4) {
@@ -126,7 +126,7 @@ struct AddPikminCard : public VsSlotMachineCard {
 		}
 
 		int avgPikiCountOther = 0;
-		int activeTeams = 0;
+		int activeTeams       = 0;
 		for (int i = 0; i < 4; i++) {
 			if (i != teamID && isTeamActive(i)) {
 				activeTeams++;
@@ -138,12 +138,11 @@ struct AddPikminCard : public VsSlotMachineCard {
 
 		if (avgPikiCountOther - pikiCount > 20) {
 			score *= (pikiCount < 10) ? 5 : 3;
-		}
-		else if (avgPikiCountOther - pikiCount > 10) {
+		} else if (avgPikiCountOther - pikiCount > 10) {
 			score *= (pikiCount < 10) ? 3 : 1.5f;
 		}
 
-		return ;
+		return;
 	}
 
 	virtual const char* getDescription() { return "Grows Pikmin"; }
@@ -653,9 +652,7 @@ struct BedamaCard : public VsSlotMachineCard {
 	    : mTexName(texName)
 	    , mBuryTexname(texName2)
 	    , mBuryBedama(false)
-	    , VsSlotMachineCard(texName)
-	{
-	};
+	    , VsSlotMachineCard(texName) {};
 
 	const char* mTexName;
 	const char* mBuryTexname;
@@ -1078,10 +1075,11 @@ void VsSlotCardMgr::initAllCards()
 	sAllCards[TEKI_DEMON]      = new OnyonTekiCard(EnemyTypeID::EnemyID_Demon, "teki_demon.bti");
 	sAllCards[TEKI_FUEFUKI]    = new OnyonTekiCard(EnemyTypeID::EnemyID_Fuefuki, "teki_fuefuki.bti");
 	sAllCards[TEKI_JELLYFLOAT] = new OnyonTekiCard(EnemyTypeID::EnemyID_Kurage, "teki_kurage.bti");
-	sAllCards[TEKI_FKABUTO]    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Kabuto, NaviFallTekiParams(1, 0.0f, 30.0f, 2.0f), "teki_kabuto.bti");
-	sAllCards[ALL_PLUCK]       = new PluckAllCard("fue_pullout.bti");
-	sAllCards[PATH_BLOCK]      = new HazardBarrierCard("fire_water.bti");
-	sAllCards[WARP_HOME]       = new WarpHomeCard("warp_home.bti");
+	sAllCards[TEKI_FKABUTO]
+	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Kabuto, NaviFallTekiParams(1, 0.0f, 30.0f, 2.0f), "teki_kabuto.bti");
+	sAllCards[ALL_PLUCK]  = new PluckAllCard("fue_pullout.bti");
+	sAllCards[PATH_BLOCK] = new HazardBarrierCard("fire_water.bti");
+	sAllCards[WARP_HOME]  = new WarpHomeCard("warp_home.bti");
 	sAllCards[TEKI_KUMA]
 	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 20.0f, 3.0f), "teki_kuma.bti");
 	sAllCards[BOMB_STORM]
@@ -1124,6 +1122,8 @@ void VsSlotCardMgr::generateCards(VsGameSection* section)
 
 void VsSlotCardMgr::update() { mActionMgr.update(); }
 
+void VsSlotCardMgr::draw(Graphics& gfx) { mActionMgr.draw(gfx); }
+
 void ActionEntityMgr::update()
 {
 	FOREACH_NODE(ActionEntity, mChild, entity)
@@ -1145,6 +1145,11 @@ void ActionEntityMgr::add(ActionEntity* entity)
 	if (entity) {
 		CNode::add(entity);
 	}
+}
+
+void ActionEntityMgr::draw(Graphics& gfx)
+{
+	FOREACH_NODE(ActionEntity, mChild, entity) { entity->draw(gfx); }
 }
 
 } // namespace VsGame

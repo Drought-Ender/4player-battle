@@ -313,6 +313,8 @@ struct NaviMgr : public MonoObjectMgr<Navi>, public JKRDisposer {
 	void setupSoundViewerAndBas();
 	void setupNavi(Navi*);
 
+	Navi* getNearestNavi(Vector3f& pos);
+
 	// Unused/inlined:
 	unknown init();
 	Navi* getSurviveNavi();

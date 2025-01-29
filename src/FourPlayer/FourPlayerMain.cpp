@@ -774,12 +774,40 @@ Navi* NaviMgr::getActiveNavi()
 
 	int count = 0;
 	for (int i = 0; i < 4; i++) {
-		if (navis[i]) {
+		if (navis[i] && navis[i]->isAlive()) {
 			availableSlots[count++] = i;
 		}
 	}
 
-	return navis[randInt(count)];
+	return navis[availableSlots[randInt(count)]];
+}
+
+Navi* NaviMgr::getNearestNavi(Vector3f& pos)
+{
+	Navi* navis[4];
+	navis[0] = getAt(0);
+	navis[1] = getAt(1);
+	navis[2] = getAt(2);
+	navis[3] = getAt(3);
+	if (!navis[0] && !navis[1] && !navis[2] && !navis[3]) {
+		return nullptr;
+	}
+
+	f32 minDist = FLOAT_DIST_MAX;
+
+	int availableSlots[4];
+
+	Navi* navi = nullptr;
+	for (int i = 0; i < 4; i++) {
+		if (navis[i] && navis[i]->isAlive()) {
+			f32 d = sqrDistanceXZ(pos, navis[i]->mPosition3);
+			if (d < minDist) {
+				minDist = d;
+				navi    = navis[i];
+			}
+		}
+	}
+	return navi;
 }
 
 void ModelEffect::doEntry()

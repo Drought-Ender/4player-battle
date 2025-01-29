@@ -68,6 +68,7 @@ enum EntityID {
 
 struct ActionEntity : public CNode {
     virtual bool update() { };
+    virtual void draw(Graphics& gfx) { }
     virtual EntityID getEntityID() = 0;
 };
 
@@ -103,7 +104,7 @@ struct PositionEntity : public ActionEntity, public TPositionObject
 };
 
 
-struct HazardBarrier : TeamPositionEntity {
+struct HazardBarrier : public TeamPositionEntity {
     HazardBarrier(int, Vector3f);
     ~HazardBarrier();
 
@@ -117,7 +118,6 @@ struct HazardBarrier : TeamPositionEntity {
     virtual bool update();
     virtual EntityID getEntityID() { return ENTITY_HAZARD; }
 };
-
 
 struct WaitEnemySpawn : PositionEntity {
 
@@ -171,6 +171,7 @@ struct ActionEntityMgr : public CNode {
     void add(ActionEntity* entity);
 
     void update();
+    void draw(Graphics& gfx);
 };
 
 struct VsSlotCardMgr
@@ -189,6 +190,7 @@ struct VsSlotCardMgr
     int getCardCount() { return mCardCount; }
 
     void update();
+    void draw(Graphics& gfx);
 
     ActionEntityMgr* getActionMgr() { return &mActionMgr; };
 

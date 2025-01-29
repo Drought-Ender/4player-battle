@@ -20,6 +20,8 @@
 #include "Game/Navi.h"
 #include "FloatingIconMgr.h"
 
+#include "VsSlotCard.h"
+
 const char* message = "drct-post";
 
 #if FOURPLAYER_DEBUG == 1
@@ -270,6 +272,10 @@ void BaseGameSection::directDrawExtras(Graphics& gfx, Viewport* vp) {
 	
 	if (FloatingIcon::mgr) {
 		FloatingIcon::mgr->FloatingIconMgr::draw(gfx);
+	}
+
+	if (VsGame::vsSlotCardMgr) {
+		VsGame::vsSlotCardMgr->draw(gfx);
 	}
 }
 
