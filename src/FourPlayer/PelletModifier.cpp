@@ -203,6 +203,62 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	}
 }
 
+void Pellet::onKill(CreatureKillArg* killArg)
+{
+	if (gameSystem->isVersusMode()) {
+		mPelletSM->start(this, 0, nullptr);
+	}
+
+	setAlive(false);
+
+	if (shadowMgr) {
+		shadowMgr->delShadow(this);
+	}
+
+	if (gameSystem->isVersusMode()) {
+		GameMessagePelletDead msg(this);
+		gameSystem->mSection->sendMessage(msg);
+	}
+
+	Vector3f scale(1.0f);
+	Vector3f rotation(0.0f);
+	Vector3f translation(0.0f);
+	mObjMatrix.makeSRT(scale, rotation, translation);
+
+	if (mModel) {
+		mLodSphere.mPosition = Vector3f(0.0f);
+		mLodSphere.mRadius   = 128000.0f;
+		mScale               = Vector3f(1.0f);
+		PSMTXCopy(mObjMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+		mScale.setTVec(mModel->mJ3dModel->mModelScale);
+		mModel->clearAnimatorAll();
+		mModel->mJ3dModel->calc();
+	}
+
+	releaseParticles();
+	mCollTree->release();
+	mMgr->kill(this);
+
+	if (((killArg != nullptr) && (static_cast<PelletKillArg*>(killArg)->_08 != 0))
+	    || ((gameSystem->isVersusMode()) && (mPelletFlag == FLAG_VS_CHERRY || mPelletFlag == FLAG_VS_BINGO_ITEM))) {
+			OSReport("set revival %p\n", this);
+		mMgr->setRevival(this);
+	}
+
+	finishDisplayCarryInfo();
+
+	if (mPelletView) {
+		mPelletView->viewOnPelletKilled();
+		mPelletView->mPellet = nullptr;
+		mPelletView          = nullptr;
+	}
+
+	if (getKind() == PELTYPE_TREASURE || getKind() == PELTYPE_UPGRADE) {
+		Radar::Mgr::exit(this);
+	}
+}
+
+
 /*
  * --INFO--
  * Address:	8016D9E4
@@ -362,6 +418,11 @@ bool PelletOtakara::Object::setBedamaColor()
 		return true;
 	}
 	if (mPelletFlag == FLAG_VS_BEDAMA_MINI) {
+		mBedamaColor = 2;
+		obj->_70     = 1;
+		return true;
+	}
+	if (mPelletFlag == FLAG_VS_BINGO_ITEM) {
 		mBedamaColor = 5;
 		obj->_70     = 4;
 		return true;

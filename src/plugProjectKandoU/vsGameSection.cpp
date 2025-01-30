@@ -53,10 +53,11 @@ static int sEditNum;
 
 namespace Game {
 
-void ElecbugTest() {
+void ElecbugTest()
+{
 	if (generalEnemyMgr) {
 		Bomb::Mgr* mgr = static_cast<Bomb::Mgr*>(generalEnemyMgr->getEnemyMgr(EnemyTypeID::EnemyID_Bomb));
-			if (mgr) {
+		if (mgr) {
 			for (int i = 0; i < mgr->mNumObjects; i++) {
 				Bomb::Obj* obj = static_cast<Bomb::Obj*>(mgr->getEnemy(i));
 				if (obj->isAlive()) {
@@ -109,8 +110,7 @@ int VsGameSection::mWhiteWinCount;
 int VsGameSection::mPurpleWinCount;
 int VsGameSection::mDrawCount;
 
-int VsGameSection::mNaviWinCounts[4] = {0, 0, 0, 0};
-
+int VsGameSection::mNaviWinCounts[4] = { 0, 0, 0, 0 };
 
 /*
  * --INFO--
@@ -122,26 +122,25 @@ VsGameSection::VsGameSection(JKRHeap* heap, bool gameMode)
     : BaseGameSection(heap)
     , mMenuFlags(0)
 {
-	mIsVersusMode          = gameMode;
-	_205                   = true;
-	mChallengeStageNum     = 0;
-	mVsStageNum            = 0;
-	mVsWinner              = -1;
-	mLouieHandicap         = 2;
-	mOlimarHandicap        = 2;
-	mWhiteHandicap         = 2;
-	mPurpleHandicap        = 2;
-	for (int i = 0; i < 4; i++)
-	{
+	mIsVersusMode      = gameMode;
+	_205               = true;
+	mChallengeStageNum = 0;
+	mVsStageNum        = 0;
+	mVsWinner          = -1;
+	mLouieHandicap     = 2;
+	mOlimarHandicap    = 2;
+	mWhiteHandicap     = 2;
+	mPurpleHandicap    = 2;
+	for (int i = 0; i < 4; i++) {
 		mRealMarbleCounts[i] = 0;
 		mDispMarbleCounts[i] = 0;
 		mRealMiniCounts[i]   = 0;
 		mDispMiniCounts[i]   = 0;
 	}
-	
-	mEditNumber            = -2;
-	mVsFifo                = nullptr;
-	mBingoMgr = nullptr;
+
+	mEditNumber = -2;
+	mVsFifo     = nullptr;
+	mBingoMgr   = nullptr;
 
 	if (gGameConfig.mParms.mVsFifo.mData > 0) {
 		size_t size = gGameConfig.mParms.mVsFifo.mData * KILOBYTE_BYTECOUNT;
@@ -262,10 +261,10 @@ void VsGameSection::onInit()
 	mRedBlueScore[1]       = 0.0f;
 	mRedBlueScore[0]       = 0.0f;
 	mMarbleRedBlue[3]      = nullptr;
-    mMarbleRedBlue[2]      = nullptr;
+	mMarbleRedBlue[2]      = nullptr;
 	mMarbleRedBlue[1]      = nullptr;
 	mMarbleRedBlue[0]      = nullptr;
-	mBingoMgr = nullptr;
+	mBingoMgr              = nullptr;
 
 	Radar::mgr = new Radar::Mgr();
 
@@ -310,7 +309,7 @@ bool VsGameSection::doUpdate()
 
 	mFsm->exec(this);
 
-	// ------ code does nothing ------- // 
+	// ------ code does nothing ------- //
 
 	// if (gameSystem->isVersusMode()) {
 
@@ -381,12 +380,12 @@ void VsGameSection::onSetSoundScene()
 	PSGame::CaveFloorInfo floorInfo;
 
 	if (gameSystem->isChallengeMode()) {
-		floorInfo.mSceneType = PSGame::SceneInfo::CHALLENGE_MODE;
-		floorInfo.mFloorNum        = getCurrFloor();
-		floorInfo.mChallengeModeStageNum        = mChallengeStageNum;
+		floorInfo.mSceneType             = PSGame::SceneInfo::CHALLENGE_MODE;
+		floorInfo.mFloorNum              = getCurrFloor();
+		floorInfo.mChallengeModeStageNum = mChallengeStageNum;
 	} else {
 		floorInfo.mSceneType = PSGame::SceneInfo::TWO_PLAYER_BATTLE;
-		floorInfo.mFloorNum        = mVsStageNum;
+		floorInfo.mFloorNum  = mVsStageNum;
 	}
 
 	floorInfo.mAlphaType = static_cast<RoomMapMgr*>(mapMgr)->mFloorInfo->mParms.mFloorAlphaType.mValue;
@@ -420,7 +419,8 @@ void VsGameSection::initPlayData()
 	playData->mNaviLifeMax[1] = naviMgr->mNaviParms->mNaviParms.mMaxHealth.mValue;
 }
 
-void VsGameSection::setupBedamaUse(const char* name) {
+void VsGameSection::setupBedamaUse(const char* name)
+{
 	PelletInitArg initArg;
 	PelletList::cKind cKind;
 
@@ -428,7 +428,7 @@ void VsGameSection::setupBedamaUse(const char* name) {
 
 	JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
 
-	initArg.mPelletIndex             = pelletConfig->mParams.mIndex;
+	initArg.mPelletIndex    = pelletConfig->mParams.mIndex;
 	initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
 	initArg.mPelletType     = cKind;
 	pelletMgr->setUse(&initArg);
@@ -460,10 +460,11 @@ void VsGameSection::onSetupFloatMemory()
 	mTekiMgr->entry(EnemyTypeID::EnemyID_Tobi, 20);
 
 	mCardMgr->loadResource();
-	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite };
+	const char* marbles[]
+	    = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaPurple, VsOtakaraName::cBedamaWhite };
 
 	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
-		// isMemoryOverrideOn() || 
+		// isMemoryOverrideOn() ||
 		// if (i < 2) {
 
 		PelletInitArg initArg;
@@ -473,7 +474,7 @@ void VsGameSection::onSetupFloatMemory()
 
 		JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
 
-		initArg.mPelletIndex             = pelletConfig->mParams.mIndex;
+		initArg.mPelletIndex    = pelletConfig->mParams.mIndex;
 		initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
 		initArg.mPelletType     = cKind;
 		pelletMgr->setUse(&initArg);
@@ -487,14 +488,10 @@ void VsGameSection::onSetupFloatMemory()
 		for (int i = 0; i < ARRAY_SIZE(bedamaGame); i++) {
 			setupBedamaUse(bedamaGame[i]);
 		}
-	}
-	else if (gGameModeID == MAINGAME_BINGO) {
+	} else if (gGameModeID == MAINGAME_BINGO) {
 
 		setupBedamaUse(VsOtakaraName::cBingoRandom);
 	}
-
-
-
 }
 
 /*
@@ -508,13 +505,12 @@ void VsGameSection::postSetupFloatMemory()
 	if (gameSystem->isVersusMode()) {
 		mRedBlueYellowScore[1] = 0.0f;
 		mRedBlueYellowScore[0] = 0.0f;
-        mMarbleRedBlue[3]      = nullptr;
-        mMarbleRedBlue[2]      = nullptr;
+		mMarbleRedBlue[3]      = nullptr;
+		mMarbleRedBlue[2]      = nullptr;
 		mMarbleRedBlue[1]      = nullptr;
 		mMarbleRedBlue[0]      = nullptr;
 		Vector3f position      = Vector3f(0.0f);
 		createRedBlueBedamas(position);
-
 
 		if (gGameModeID == MAINGAME_BEDAMA) {
 			createYellowBedamas(7);
@@ -526,23 +522,21 @@ void VsGameSection::postSetupFloatMemory()
 			mBingoMgr = new VsGame::BingoMgr; // if ctor isn't here than it causes problems for pellet birth buffer
 			mBingoMgr->init(this);
 			mBingoMgr->GenerateCards();
-		}
-		else {
+		} else {
 			mBingoMgr = nullptr;
 		}
-		
 	}
 
 	BaseGameSection::postSetupFloatMemory();
 }
 
-namespace
-{
-	char filepath[64];
-} // namespace name
+namespace {
+char filepath[64];
+} // namespace
 
-void VsGameSection::SetupCourseinfo() {
-	
+void VsGameSection::SetupCourseinfo()
+{
+
 	int lastChar = strlen(mEditFilename);
 
 	char properCaveName[32];
@@ -550,23 +544,21 @@ void VsGameSection::SetupCourseinfo() {
 
 	strncpy(properCaveName, mEditFilename, lastChar - 4);
 	properCaveName[lastChar - 4] = nullptr;
-	
+
 	sprintf(filepath, "/user/drought/cave/%s/%i", properCaveName, sEditNum);
 
 	int entrynum = DVDConvertPathToEntrynum(filepath);
 
 	if (entrynum == -1) {
 		DebugReport("%s not found!\n", filepath);
-	}
-	else {
+	} else {
 		DebugReport("%s found!\n", filepath);
 	}
 
-
-	mapMgr->mCourseInfo = new CourseInfo();
+	mapMgr->mCourseInfo               = new CourseInfo();
 	mapMgr->mCourseInfo->mCourseIndex = 0;
 
-	mapMgr->mCourseInfo->mFolder = filepath;
+	mapMgr->mCourseInfo->mFolder    = filepath;
 	mapMgr->mCourseInfo->mAbeFolder = filepath;
 }
 
@@ -649,7 +641,7 @@ void VsGameSection::gmPikminZero() { }
  */
 void VsGameSection::goNextFloor(ItemHole::Item* hole) { mState->onNextFloor(this, hole); }
 
-//0x8413f78
+// 0x8413f78
 
 /*
  * --INFO--
@@ -816,14 +808,13 @@ void VsGameSection::onMovieStart(MovieConfig* movie, u32 param_2, u32 playerMode
 	movie->is("s03_orimadown");
 	if (gameSystem->isMultiplayerMode()) {
 		DebugReport("PlayedMode %i\n", playerMode);
-		switch (playerMode)
-		{
+		switch (playerMode) {
 		case 0:
 			mSecondViewportHeight = 1.0f;
 			gOtherViewportHeight  = 1.0f;
 			break;
 		case 1:
-			gSplit4 = false;
+			gSplit4               = false;
 			mSecondViewportHeight = 0.0f;
 			gOtherViewportHeight  = 1.0f;
 			break;
@@ -907,7 +898,8 @@ void VsGameSection::createFallPikmins(PikiContainer& setPikmin, int param_2)
 void VsGameSection::createVsPikmins()
 {
 	DebugReport("Team Count %i\n", gEffectiveTeamCount);
-	DebugReport("Team Delegations %s %s %s %s\n", getPikiColorName(gScoreDelegations[0][0]), getPikiColorName(gScoreDelegations[0][1]), getPikiColorName(gScoreDelegations[1][0]), getPikiColorName(gScoreDelegations[1][1]));
+	DebugReport("Team Delegations %s %s %s %s\n", getPikiColorName(gScoreDelegations[0][0]), getPikiColorName(gScoreDelegations[0][1]),
+	            getPikiColorName(gScoreDelegations[1][0]), getPikiColorName(gScoreDelegations[1][1]));
 	Onyon* redOnyon = ItemOnyon::mgr->getOnyon(gScoreDelegations[0][0]);
 	P2ASSERTLINE(1349, redOnyon);
 	Vector3f redOnyonPos = redOnyon->getPosition();
@@ -916,7 +908,7 @@ void VsGameSection::createVsPikmins()
 	P2ASSERTLINE(1354, blueOnyon);
 	Vector3f blueOnyonPos = blueOnyon->getPosition();
 
-	Onyon* whiteOnyon = nullptr;
+	Onyon* whiteOnyon  = nullptr;
 	Onyon* purpleOnyon = nullptr;
 	Vector3f whiteOnyonPos;
 	Vector3f purpleOnyonPos;
@@ -947,11 +939,9 @@ void VsGameSection::createVsPikmins()
 	DebugReport("Whites %i\n", whites);
 
 	int& purples = pikmin->getCount(Purple, Leaf);
-	purples = mPurpleHandicap * 5;
+	purples      = mPurpleHandicap * 5;
 
 	DebugReport("Purpels %i\n", whites);
-	
-
 
 	Vector3f spawnOnyonPos;
 
@@ -960,11 +950,9 @@ void VsGameSection::createVsPikmins()
 			spawnOnyonPos = redOnyonPos;
 		} else if (color == gScoreDelegations[0][1]) {
 			spawnOnyonPos = blueOnyonPos;
-		}
-		else if (color == gScoreDelegations[1][0] && gEffectiveTeamCount > 2) {
+		} else if (color == gScoreDelegations[1][0] && gEffectiveTeamCount > 2) {
 			spawnOnyonPos = whiteOnyonPos;
-		}
-		else if (!gThreePlayer && color == gScoreDelegations[1][1] && gEffectiveTeamCount > 2) {
+		} else if (!gThreePlayer && color == gScoreDelegations[1][1] && gEffectiveTeamCount > 2) {
 			spawnOnyonPos = purpleOnyonPos;
 		} else {
 			continue;
@@ -990,11 +978,13 @@ void VsGameSection::createVsPikmins()
 			}
 		}
 	}
-	
-	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
+
+	const char* marbles[]
+	    = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
 	for (int onyonType = 0; onyonType < ARRAY_SIZE(marbles); onyonType++) {
 		Onyon* currentOnyon = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(onyonType));
-		if (!currentOnyon) continue;
+		if (!currentOnyon)
+			continue;
 		PelletIterator pelletIter;
 		pelletIter.first();
 		while (!pelletIter.isDone()) {
@@ -1006,7 +996,7 @@ void VsGameSection::createVsPikmins()
 				pellet->setPosition(flagPos, false);
 
 				if (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_BURY) {
-					pellet->mPelletPosition.y = mapMgr->getMinY(pellet->mPelletPosition);
+					pellet->mPelletPosition.y          = mapMgr->getMinY(pellet->mPelletPosition);
 					ItemTreasure::Item* pelletTreasure = (ItemTreasure::Item*)ItemTreasure::mgr->birth();
 					pelletTreasure->init(nullptr);
 					pelletTreasure->setPosition(pellet->mPelletPosition, false);
@@ -1027,8 +1017,6 @@ void VsGameSection::createVsPikmins()
 			gDopeCountArray[i][SPRAY_TYPE_BITTER] = 999; // int max
 		}
 	}
-
-	 
 }
 
 /*
@@ -1061,12 +1049,14 @@ bool GameMessageVsGetDoping::actVs(VsGameSection* section)
 	return true;
 }
 
-bool GameMessageVsGetBingoOtakara::actVs(VsGameSection* section) {
+bool GameMessageVsGetBingoOtakara::actVs(VsGameSection* section)
+{
 	section->mBingoMgr->TeamReceivePellet(mTeamColor, mPellet);
 	return true;
 }
 
-bool GameMessageVsBingoOtakaraSuckStart::actVs(VsGameSection* section) {
+bool GameMessageVsBingoOtakaraSuckStart::actVs(VsGameSection* section)
+{
 	if (section->mState) {
 		section->mState->onBingoSuckStart(section, mTeamColor, mPellet);
 	}
@@ -1080,30 +1070,31 @@ bool GameMessageVsBingoOtakaraSuckStart::actVs(VsGameSection* section) {
  */
 bool GameMessageVsBattleFinished::actVs(VsGameSection* section)
 {
-    switch (gConfig[CAPTURE_MARBLE])
-    {
+	switch (gConfig[CAPTURE_MARBLE]) {
 	case ConfigEnums::CAPTURE_KILLPIKI:
-    case ConfigEnums::CAPTURE_ELIMINATE:
-    case ConfigEnums::CAPTURE_STEALMARBLE:
-    case ConfigEnums::CAPTURE_STEALSPRAY:
-        return false;
-    case ConfigEnums::CAPTURE_VICTORY:
-        break;
-    
-    default:
-        break;
-    }
+	case ConfigEnums::CAPTURE_ELIMINATE:
+	case ConfigEnums::CAPTURE_STEALMARBLE:
+	case ConfigEnums::CAPTURE_STEALSPRAY:
+		return false;
+	case ConfigEnums::CAPTURE_VICTORY:
+		break;
+
+	default:
+		break;
+	}
 	if (section->mState) {
 		section->mState->onBattleFinished(section, mWinningSide, false);
 	}
 	return true;
 }
 
-void VsGameSection::killAllPiki(int team) {
+void VsGameSection::killAllPiki(int team)
+{
 	int pikiKind = getPikiFromTeamEnum(team);
 
 	Iterator<Piki> iPiki = pikiMgr;
-	CI_LOOP(iPiki) {
+	CI_LOOP(iPiki)
+	{
 		Piki* piki = *iPiki;
 		if (piki->isAlive() && piki->getKind() == pikiKind) {
 			DyingStateArg arg;
@@ -1114,7 +1105,8 @@ void VsGameSection::killAllPiki(int team) {
 
 	Iterator<ItemPikihead::Item> iPkhd = ItemPikihead::mgr;
 
-	CI_LOOP(iPkhd) {
+	CI_LOOP(iPkhd)
+	{
 		ItemPikihead::Item* pikiHead = *iPkhd;
 		if (pikiHead->isAlive() && pikiHead->mColor == pikiKind) {
 			pikiHead->kill(nullptr);
@@ -1131,7 +1123,7 @@ int VsGame::gBedamaColor = 0;
  */
 bool GameMessageVsRedOrSuckStart::actVs(VsGameSection* section)
 {
-	
+
 	VsGame::gBedamaColor = mBedamaColor;
 	if (section->mState) {
 		section->mState->onRedOrBlueSuckStart(section, mColor, (VsGame::MarbleType)mMarbleType);
@@ -1178,7 +1170,6 @@ bool GameMessageVsGetMiniOtakara::actVs(VsGameSection* section)
 	return true;
 }
 
-
 /*
  * --INFO--
  * Address:	801C2FD4
@@ -1187,7 +1178,7 @@ bool GameMessageVsGetMiniOtakara::actVs(VsGameSection* section)
 bool GameMessageVsAddEnemy::actVs(VsGameSection* section)
 {
 	DebugReport("Add enemy lmao\n");
-	//section->mTekiMgr->entry(_04, _08);
+	// section->mTekiMgr->entry(_04, _08);
 	return true;
 }
 
@@ -1211,8 +1202,7 @@ bool GameMessagePelletBorn::actVs(VsGameSection* section)
 			}
 		}
 		JUT_PANICLINE(1592, "no space for new yellow\n");
-	}
-	else if (mPellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_MINI) {
+	} else if (mPellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_MINI) {
 		for (int i = 0; i < MINI_MARBLE_COUNT; i++) {
 			if (section->mMarbleMini[i] == mPellet) {
 				return false;
@@ -1264,13 +1254,14 @@ bool GameMessagePelletDead::actVs(VsGameSection* section)
 	return false;
 }
 
-bool GameMessageEnemyDead::actVs(VsGameSection* section) {
+bool GameMessageEnemyDead::actVs(VsGameSection* section)
+{
 	if (section->mBingoMgr) {
 		if (mEnemy->isEvent(0, EB_IsBittered)) {
 			section->mBingoMgr->informDeath(mEnemy);
 		}
 	}
-	
+
 	return false;
 }
 
@@ -1435,7 +1426,7 @@ void VsGameSection::initCardPellets()
 
 	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
 	JUT_ASSERTLINE(1796, config, "zannenn\n"); // 'disappointing'
-	arg.mPelletIndex             = config->mParams.mIndex;
+	arg.mPelletIndex    = config->mParams.mIndex;
 	arg.mTextIdentifier = config->mParams.mName.mData;
 	arg.mPelletType     = kind;
 	arg.mMinCarriers    = 1;
@@ -1445,7 +1436,6 @@ void VsGameSection::initCardPellets()
 		Pellet* pellet = pelletMgr->birth(&arg);
 		if (pellet) {
 			Vector3f position = Vector3f(0.0f);
-			mCherryArray[j]   = pellet;
 			pellet->setPosition(position, false);
 			mCherryArray[j] = pellet;
 		} else {
@@ -1476,7 +1466,8 @@ void VsGameSection::initCardGeneration()
  */
 void VsGameSection::updateCardGeneration()
 {
-	if (gConfig[CHERRY_RATE] == ConfigEnums::RATE_NEVER || (gTournamentMode && mVsStageData->mIndex2D == 27)) { // champion's court (no cherries)
+	if (gConfig[CHERRY_RATE] == ConfigEnums::RATE_NEVER
+	    || (gTournamentMode && mVsStageData->mIndex2D == 27)) { // champion's court (no cherries)
 		return;
 	}
 	if (VsGame::CardCount == 0) {
@@ -1492,35 +1483,34 @@ void VsGameSection::updateCardGeneration()
 	for (int i = 0; i < 2; i++) {
 		lowFactor[i] = mCherryScore[i * 2] - mCherryScore[i * 2 + 1];
 	}
-	f32 factors[2][2] = { {0.4f, 0.6f}, {0.4f, 0.6f} };
-	bool isUrgent[2] = { false, false };
+	f32 factors[2][2] = { { 0.4f, 0.6f }, { 0.4f, 0.6f } };
+	bool isUrgent[2]  = { false, false };
 	for (int i = 0; i < gEffectiveTeamCount / 2; i++) {
 		if (FABS(spawnFactor[i]) < 0.2f) {
 
 		} else if (0.2f <= FABS(spawnFactor[i]) < 0.4f) {
-			isUrgent[i]            = true;
-			factors[i][0]          = 0.3f;
-			factors[i][1]          = 0.5f;
+			isUrgent[i]   = true;
+			factors[i][0] = 0.3f;
+			factors[i][1] = 0.5f;
 		} else if (0.4f <= FABS(spawnFactor[i]) < 0.8f) {
-			maxSpawnCherries[i]    = 1;
-			isUrgent[i]            = true;
-			factors[i][0]          = 0.2f;
-			factors[i][1]          = 0.4f;
+			maxSpawnCherries[i] = 1;
+			isUrgent[i]         = true;
+			factors[i][0]       = 0.2f;
+			factors[i][1]       = 0.4f;
 		} else if (0.8f <= FABS(spawnFactor[i])) {
-			maxSpawnCherries[i]    = 2;
-			isUrgent[i]            = true;
-			factors[i][0]          = 0.2f;
-			factors[i][1]          = 0.4f;
+			maxSpawnCherries[i] = 2;
+			isUrgent[i]         = true;
+			factors[i][0]       = 0.2f;
+			factors[i][1]       = 0.4f;
 		}
 
 		if (spawnFactor[i] > 0.0f) {
 
 			f32 originalFactor0 = factors[i][0];
 
-			factors[i][1] = 1 - factors[i][0]; 
+			factors[i][1] = 1 - factors[i][0];
 			factors[i][0] = 1 - originalFactor0;
 		}
-
 
 		if (!isUrgent[i]) {
 			f32 absLowFactor = FABS(lowFactor[i] * 0.5f);
@@ -1546,7 +1536,7 @@ void VsGameSection::updateCardGeneration()
 
 				f32 originalFactor0 = factors[i][0];
 
-				factors[i][1] = 1 - factors[i][0]; 
+				factors[i][1] = 1 - factors[i][0];
 				factors[i][0] = 1 - originalFactor0;
 			}
 		}
@@ -1559,12 +1549,13 @@ void VsGameSection::updateCardGeneration()
 		}
 	}
 
-	const f32 cardTimerConst[] = {0.5f,  3.0f, 6.0f, 10.0f, 14.0f, 20.0f, 0};
-	const f32 cardTimerRand[]  = {0.75f, 1.0f, 2.0f, 3.0f,  4.0f,  6.0f,  0};
+	const f32 cardTimerConst[] = { 0.5f, 3.0f, 6.0f, 10.0f, 14.0f, 20.0f, 0 };
+	const f32 cardTimerRand[]  = { 0.75f, 1.0f, 2.0f, 3.0f, 4.0f, 6.0f, 0 };
 
-	bool hasUrgency = isUrgent[0] || isUrgent[1];
+	bool hasUrgency   = isUrgent[0] || isUrgent[1];
 	int spawnCherries = maxSpawnCherries[0] + maxSpawnCherries[1] + maxSpawnCherries[2] + maxSpawnCherries[3] + 5;
-	if (spawnCherries > mMaxCherries) spawnCherries = mMaxCherries;
+	if (spawnCherries > mMaxCherries)
+		spawnCherries = mMaxCherries;
 
 	if (mCardCount < 4 || (hasUrgency && mCardCount < spawnCherries)) { // config is never spawn
 		f32 ticking = sys->mDeltaTime;
@@ -1609,12 +1600,12 @@ Pellet* VsGameSection::createCardPellet()
 
 	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
 	JUT_ASSERTLINE(1759, config, "zannenn\n");
-	pelletArg.mPelletIndex             = config->mParams.mIndex;
-	pelletArg.mTextIdentifier = config->mParams.mName.mData;
-	pelletArg.mPelletType     = kind;
-	pelletArg.mDoSkipCreateModel             = 1;
-	pelletArg.mMinCarriers    = 1;
-	pelletArg.mMaxCarriers    = 1;
+	pelletArg.mPelletIndex       = config->mParams.mIndex;
+	pelletArg.mTextIdentifier    = config->mParams.mName.mData;
+	pelletArg.mPelletType        = kind;
+	pelletArg.mDoSkipCreateModel = 1;
+	pelletArg.mMinCarriers       = 1;
+	pelletArg.mMaxCarriers       = 1;
 
 	for (int i = 0; i < mMaxCherries; i++) {
 		Pellet* pellet = mCherryArray[i];
@@ -1671,38 +1662,35 @@ void VsGameSection::createYellowBedamas(int bedamas)
 			bedamas = mVsStageData->mStartNumYellowMarbles;
 			if (mVsStageData->mStartNumMiniMarbles >= 0) {
 				mHasMiniBedamas = true;
-				miniBedamas = mVsStageData->mStartNumMiniMarbles;
-			}
-			else {
+				miniBedamas     = mVsStageData->mStartNumMiniMarbles;
+			} else {
 				mHasMiniBedamas = false;
 			}
-		}
-		else {
+		} else {
 			bedamas = mVsStageData->mStartNumYellowMarblesVsFour;
 			if (mVsStageData->mStartNumMiniMarblesFour >= 0) {
 				mHasMiniBedamas = true;
-				miniBedamas = mVsStageData->mStartNumMiniMarblesFour;
-			}
-			else {
+				miniBedamas     = mVsStageData->mStartNumMiniMarblesFour;
+			} else {
 				mHasMiniBedamas = false;
 			}
 		}
 
 		int editnum = sEditNum;
 
-		if (sEditNum < 0) editnum = 3;
+		if (sEditNum < 0)
+			editnum = 3;
 
 		int currentFlag = 1 << editnum;
 
-		if (gEffectiveTeamCount > 2) currentFlag *= 0x10;
-		int flag = mVsStageData->mMarbleFlags;
+		if (gEffectiveTeamCount > 2)
+			currentFlag *= 0x10;
+		int flag    = mVsStageData->mMarbleFlags;
 		int flagOut = flag & currentFlag;
-
 
 		if (flagOut != 0) {
 			return;
 		}
-
 
 		if (bedamas >= YELLOW_MARBLE_COUNT) {
 			bedamas = YELLOW_MARBLE_COUNT;
@@ -1729,7 +1717,6 @@ void VsGameSection::createYellowBedamas(int bedamas)
 
 		PelletList::cKind kind;
 		char* name = const_cast<char*>(VsOtakaraName::cBedamaYellow);
-		
 
 		PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
 		JUT_ASSERTLINE(2154, config, "zannenn\n"); // 'disappointing'
@@ -1747,8 +1734,6 @@ void VsGameSection::createYellowBedamas(int bedamas)
 
 	{
 		PelletList::cKind miniKind;
-		
-		
 
 		PelletConfig* miniConfig = PelletList::Mgr::getConfigAndKind(mininame, miniKind);
 		JUT_ASSERTLINE(2154, miniConfig, "zannenn\n"); // 'disappointing'
@@ -1764,14 +1749,13 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	JUT_ASSERTLINE(2163, bedamas + miniBedamas <= MINI_MARBLE_COUNT, "oosugi %d\n", bedamas);
 
 	Vector3f positions[MINI_MARBLE_COUNT];
-	
+
 	VsWeights mindists;
 	VsWeights maxdists;
 	if (true) {
 		mindists[0] = mindists[1] = 0.45f;
 		maxdists[0] = maxdists[1] = 0.55f;
-	} 
-	else {
+	} else {
 		mindists[0] = mindists[1] = 0.1f;
 		maxdists[0] = maxdists[1] = 0.9f;
 	};
@@ -1796,7 +1780,8 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	PelletMgr::OtakaraItemCode code;
 	pelletMgr->makeOtakaraItemCode(mininame, code);
 
-	CI_LOOP(iterator) {
+	CI_LOOP(iterator)
+	{
 		EnemyBase* enemy = *iterator;
 		if (enemy->mPelletDropCode == code) {
 			mMiniBedamaRemainingCount++;
@@ -1808,18 +1793,17 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	}
 }
 
-inline f32 GetCreatureSqrDistance(Vector3f& basePos, Creature* creature) {
+inline f32 GetCreatureSqrDistance(Vector3f& basePos, Creature* creature)
+{
 	Vector3f position = creature->getPosition();
 	return sqrDistanceXZ(basePos, position);
 }
 
-void VsGameSection::killNearestP4Marbles() {
+void VsGameSection::killNearestP4Marbles()
+{
 	Onyon* team4Onyon = ItemOnyon::mgr->getOnyon(gScoreDelegations[1][1]);
 
 	Vector3f basePos = team4Onyon->getGoalPos();
-
-	
-	
 
 	PelletIterator iPellet;
 
@@ -1835,53 +1819,51 @@ void VsGameSection::killNearestP4Marbles() {
 		f32 minDistance = 1e+38;
 
 		Creature* nearest = nullptr;
-		
-		CI_LOOP(iPellet) {
+
+		CI_LOOP(iPellet)
+		{
 			Pellet* pellet = *iPellet;
 			if (pellet->isAlive() && pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) {
 				f32 distance = GetCreatureSqrDistance(basePos, pellet);
 				if (distance < minDistance) {
 					minDistance = distance;
-					nearest = pellet;
+					nearest     = pellet;
 				}
 			}
 		}
 
-		CI_LOOP(iEnemy) {
+		CI_LOOP(iEnemy)
+		{
 			EnemyBase* enemy = *iEnemy;
 			if (enemy->isAlive() && enemy->mPelletDropCode == config->mParams.mIndex + 768) {
 				f32 distance = GetCreatureSqrDistance(basePos, enemy);
 				if (distance < minDistance) {
 					minDistance = distance;
-					nearest = enemy;
+					nearest     = enemy;
 				}
 			}
 		}
 
 		if (nearest->isTeki()) {
 			static_cast<EnemyBase*>(nearest)->mPelletDropCode = 0;
-		}
-		else if (nearest->isPellet()) {
+		} else if (nearest->isPellet()) {
 			Iterator<BaseItem> iTreaure = ItemTreasure::mgr;
-			CI_LOOP(iTreaure) {
+			CI_LOOP(iTreaure)
+			{
 				ItemTreasure::Item* treasure = static_cast<ItemTreasure::Item*>(*iTreaure);
 				if (treasure->mPellet == nearest) {
 					treasure->releasePellet();
 					treasure->kill(nullptr);
 				}
 			}
-			Pellet* pellet = static_cast<Pellet*>(nearest);
+			Pellet* pellet      = static_cast<Pellet*>(nearest);
 			pellet->mPelletFlag = 0;
 
-			PelletGoalStateArg arg (team4Onyon);
+			PelletGoalStateArg arg(team4Onyon);
 
 			pellet->mPelletState->transit(pellet, PELSTATE_Goal, &arg);
-			
 		}
 	}
-
-
-
 }
 
 void VsGameSection::createRedBlueBedamas(Vector3f& pos)
@@ -1889,7 +1871,8 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 	if (gConfig[MARBLE_BURY] == ConfigEnums::PLACE_NOTHING) {
 		return;
 	}
-	const char* marbles[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
+	const char* marbles[]
+	    = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
 	for (int i = 0; i < ARRAY_SIZE(marbles); i++) {
 		if (!doesTeamHavePlayers(i)) {
 			mMarbleRedBlue[i] = nullptr;
@@ -1901,7 +1884,7 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 		char* name           = const_cast<char*>(marbles[i]);
 		PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
 		JUT_ASSERTLINE(2211, config, "zannenn\n"); // 'disappointing'
-		pelletArg.mPelletIndex             = config->mParams.mIndex;
+		pelletArg.mPelletIndex    = config->mParams.mIndex;
 		pelletArg.mTextIdentifier = config->mParams.mName.mData;
 		pelletArg.mPelletType     = kind;
 		pelletArg.mMinCarriers    = 1;
@@ -1913,7 +1896,6 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 		mMarbleRedBlue[i] = pellet;
 	}
 }
-
 
 /*
  * --INFO--
@@ -1943,17 +1925,18 @@ void VsGameSection::calcVsScores()
 				}
 			}
 
-			Vector3f marblePosition   = marble->getPosition();
+			Vector3f marblePosition = marble->getPosition();
 			f32 scores[4];
 			for (int our = 0; our < gEffectiveTeamCount; our++) {
 				Vector3f ourOnyonPos = onyons[our]->getPosition();
-				f32 ourDistance = _distanceXZ(marblePosition, ourOnyonPos);
-				scores[our] = 0;
+				f32 ourDistance      = _distanceXZ(marblePosition, ourOnyonPos);
+				scores[our]          = 0;
 				for (int their = 0; their < gEffectiveTeamCount; their++) {
-					if (our == their) continue;
+					if (our == their)
+						continue;
 					Vector3f theirOnyonPos = onyons[their]->getPosition();
-					f32 theirDistance = _distanceXZ(marblePosition, theirOnyonPos);
-					f32 newScore = 1.0f / ((f32)exp((theirDistance / (ourDistance + theirDistance) - 0.5f) * -10.0f) + 1.0f);
+					f32 theirDistance      = _distanceXZ(marblePosition, theirOnyonPos);
+					f32 newScore           = 1.0f / ((f32)exp((theirDistance / (ourDistance + theirDistance) - 0.5f) * -10.0f) + 1.0f);
 					if (newScore > scores[our]) {
 						scores[our] = newScore;
 					}
@@ -1964,8 +1947,7 @@ void VsGameSection::calcVsScores()
 				for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
 					if (marbleCarryFactor == teamColor) {
 						yellowMarbleDist[teamColor][i] = 0.0f;
-					}
-					else {
+					} else {
 						yellowMarbleDist[teamColor][i] = scores[teamColor];
 					}
 				}
@@ -2005,12 +1987,13 @@ void VsGameSection::calcVsScores()
 		if (marble) {
 			Vector3f marblePosition = marble->getPosition();
 			Vector3f onyonPosition  = onyon->getPosition();
-			f32 ourDist = _distanceXZ(marblePosition, onyonPosition);
-			redBlueScore[i] = 0;
+			f32 ourDist             = _distanceXZ(marblePosition, onyonPosition);
+			redBlueScore[i]         = 0;
 			for (int other = 0; other < gEffectiveTeamCount; other++) {
-				if (other == i) continue;
+				if (other == i)
+					continue;
 				Vector3f otherOnyonPosition = onyons[other]->getPosition();
-				f32 otherDist = _distanceXZ(marblePosition, otherOnyonPosition);
+				f32 otherDist               = _distanceXZ(marblePosition, otherOnyonPosition);
 
 				f32 ePower = ourDist / (ourDist + otherDist) - 0.5f;
 				if (marble->mCarryColor == getPikiFromTeamEnum(other)) {
@@ -2031,14 +2014,15 @@ void VsGameSection::calcVsScores()
 	for (int our = 0; our < gEffectiveTeamCount; our++) {
 		mRedBlueYellowScore[our] = yellowScore[our] - redBlueScore[our];
 		for (int their = 0; their < gEffectiveTeamCount; their++) {
-			if (our == their) continue;
+			if (our == their)
+				continue;
 			mRedBlueYellowScore[our] -= (yellowScore[their] - redBlueScore[their]) / 3;
 		}
 	}
 
 	f32 cherryValue;
 	f32 cherryDist[4][10];
-	
+
 	for (int i = 0; i < 10; i++) {
 		Pellet* cherry = mCherryArray[i];
 		if (cherry->isAlive() && cherry->getStateID() == 0) {
@@ -2049,18 +2033,19 @@ void VsGameSection::calcVsScores()
 				}
 			}
 
-			Vector3f cherryPosition   = cherry->getPosition();
+			Vector3f cherryPosition = cherry->getPosition();
 			f32 score[4];
 
 			for (int our = 0; our < gEffectiveTeamCount; our++) {
 				Vector3f ourOnyonPosition = onyons[our]->getPosition();
-				f32 ourDist            = _distanceXZ(cherryPosition, ourOnyonPosition);
-				score[our] = 0.0f;
+				f32 ourDist               = _distanceXZ(cherryPosition, ourOnyonPosition);
+				score[our]                = 0.0f;
 				for (int their = 0; their < gEffectiveTeamCount; their++) {
-					if (our == their) continue;
+					if (our == their)
+						continue;
 					Vector3f theirOnyonPosition = onyons[their]->getPosition();
-					f32 theirDist            = _distanceXZ(cherryPosition, theirOnyonPosition);
-					f32 newScore = 1.0f / ((f32)exp((theirDist / (ourDist + theirDist) - 0.5f) * -10.0f) + 1.0f);
+					f32 theirDist               = _distanceXZ(cherryPosition, theirOnyonPosition);
+					f32 newScore                = 1.0f / ((f32)exp((theirDist / (ourDist + theirDist) - 0.5f) * -10.0f) + 1.0f);
 					if (newScore > score[our]) {
 						score[our] = newScore;
 					}
@@ -2071,19 +2056,18 @@ void VsGameSection::calcVsScores()
 				for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
 					if (cherry->mCarryColor == teamColor) {
 						cherryDist[teamColor][i] = 0.0f;
-					}
-					else {
+					} else {
 						cherryDist[teamColor][i] = score[teamColor];
 					}
 				}
 			} else {
 				for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
-					cherryDist[teamColor][i]  = 0.1f * score[teamColor];
+					cherryDist[teamColor][i] = 0.1f * score[teamColor];
 				}
 			}
 		} else {
 			for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
-				cherryDist[teamColor][i]  = 0.0f;
+				cherryDist[teamColor][i] = 0.0f;
 			}
 		}
 	}
@@ -2137,10 +2121,7 @@ int& VsGameSection::getGetDopeCount(int player, int type)
  * Address:	801C49A8
  * Size:	000010
  */
-void VsGameSection::clearGetCherryCount()
-{
-
-}
+void VsGameSection::clearGetCherryCount() { }
 
 /*
  * --INFO--
@@ -2263,100 +2244,99 @@ void StateMachine<VsGameSection>::exec(VsGameSection* section)
 
 } // namespace Game
 
-namespace Game
+namespace Game {
+const float cTimerInterval = 10.0f;
+float gFancyTimer          = 0.0f;
+const float cMinInterval   = PI / 6;
+const float cIntervalTheta = PI / 2;
+Creature* gFancyTarget     = nullptr;
+void VsGameSection::updateFancyCam()
 {
-	const float cTimerInterval = 10.0f;
-	float gFancyTimer = 0.0f;
-	const float cMinInterval = PI / 6;
-	const float cIntervalTheta = PI / 2;
-	Creature* gFancyTarget = nullptr;
-	void VsGameSection::updateFancyCam() {
-		gFancyTimer -= sys->mDeltaTime;
-		if (gFancyTimer <= 0.0f) {
-			gFancyTimer = cTimerInterval;
-			gFancyTarget = fancyCamLookForTarget();
+	gFancyTimer -= sys->mDeltaTime;
+	if (gFancyTimer <= 0.0f) {
+		gFancyTimer  = cTimerInterval;
+		gFancyTarget = fancyCamLookForTarget();
+	}
+	if (gFancyTarget) {
+		// Vector3f realPos = gCameraP4->mNavi->mPosition3;
+		// gCameraP4->mNavi->mPosition3 = gFancyTarget->getPosition();
+		// gCameraP4->_1B0 = gFancyTarget->getFaceDir();
+		// gCameraP4->_1B4 = gFancyTimer * cIntervalTheta / cTimerInterval + cMinInterval;
+		// gCameraP4->_1BC = gFancyTimer * cIntervalTheta / cTimerInterval + cMinInterval;
+
+		// gCameraP4->mNavi->mPosition3 = realPos;
+	}
+}
+
+Creature* VsGameSection::fancyCamLookForTarget()
+{
+	Creature* targets[300];
+	int currTarget = 0;
+	f32 maxScore   = 0.0f;
+
+	// Find all the potentional targets
+
+	// Every Navi
+	for (int i = 0; i < 4; i++) {
+		Navi* navi = naviMgr->getAt(i);
+		if (navi->isAlive()) {
+			targets[currTarget++] = navi;
 		}
-		if (gFancyTarget) {
-			// Vector3f realPos = gCameraP4->mNavi->mPosition3;
-			// gCameraP4->mNavi->mPosition3 = gFancyTarget->getPosition();
-			// gCameraP4->_1B0 = gFancyTarget->getFaceDir();
-			// gCameraP4->_1B4 = gFancyTimer * cIntervalTheta / cTimerInterval + cMinInterval;
-			// gCameraP4->_1BC = gFancyTimer * cIntervalTheta / cTimerInterval + cMinInterval;
-			
-			//gCameraP4->mNavi->mPosition3 = realPos;
-		}
-		
 	}
 
-	Creature* VsGameSection::fancyCamLookForTarget() {
-		Creature* targets[300];
-		int currTarget = 0;
-		f32 maxScore = 0.0f;
-		
-		// Find all the potentional targets
-
-		// Every Navi
-		for (int i = 0; i < 4; i++) {
-			Navi* navi = naviMgr->getAt(i);
-			if (navi->isAlive()) {
-				targets[currTarget++] = navi;
-			}
+	// Every Treasure
+	PelletIterator iPellet;
+	CI_LOOP(iPellet)
+	{
+		Pellet* pellet = *iPellet;
+		if (pellet->isAlive()) {
+			targets[currTarget++] = pellet;
 		}
-
-		// Every Treasure
-		PelletIterator iPellet;
-		CI_LOOP(iPellet) {
-			Pellet* pellet = *iPellet;
-			if (pellet->isAlive()) {
-				targets[currTarget++] = pellet;
-			}
-		}
-
-		// Every Enemy
-		GeneralMgrIterator<EnemyBase> iEnemyBase = generalEnemyMgr;
-		CI_LOOP(iEnemyBase) {
-			EnemyBase* enemy = *iEnemyBase;
-			if (enemy->isAlive()) {
-				targets[currTarget++] = enemy;
-			}
-		}
-
-		// Calculate the most intresting target
-		Creature* fanciestTarget = nullptr;
-		for (int i = 0; i < currTarget; i++) {
-			f32 score = fancyCamCalcIntrest(targets[i]);
-			if (score > maxScore) {
-				maxScore = score;
-				fanciestTarget = targets[i];
-			}
-		}
-		return fanciestTarget;
 	}
 
-	f32 VsGameSection::fancyCamCalcIntrest(Creature* target) {
-		if (target->isPellet()) {
-			Pellet* pellet = static_cast<Pellet*>(target);
-			
+	// Every Enemy
+	GeneralMgrIterator<EnemyBase> iEnemyBase = generalEnemyMgr;
+	CI_LOOP(iEnemyBase)
+	{
+		EnemyBase* enemy = *iEnemyBase;
+		if (enemy->isAlive()) {
+			targets[currTarget++] = enemy;
 		}
-		return 0.0f;
 	}
+
+	// Calculate the most intresting target
+	Creature* fanciestTarget = nullptr;
+	for (int i = 0; i < currTarget; i++) {
+		f32 score = fancyCamCalcIntrest(targets[i]);
+		if (score > maxScore) {
+			maxScore       = score;
+			fanciestTarget = targets[i];
+		}
+	}
+	return fanciestTarget;
+}
+
+f32 VsGameSection::fancyCamCalcIntrest(Creature* target)
+{
+	if (target->isPellet()) {
+		Pellet* pellet = static_cast<Pellet*>(target);
+	}
+	return 0.0f;
+}
 } // namespace Game
 
-
-int SaveEditNum(int i) {
-    sEditNum = i;
+int SaveEditNum(int i)
+{
+	sEditNum = i;
 	if (gTournamentMode) {
 		if (sEditNum == -1) {
 			sEditNum = 0;
-		}
-		else if (sEditNum == 2 && GetVsGameSection()->mVsStageData->mIndex2D == 25) { // == wraith stage
+		} else if (sEditNum == 2 && GetVsGameSection()->mVsStageData->mIndex2D == 25) { // == wraith stage
 			sEditNum = randInt(2);
 		}
 	}
 	OSReport("Edit Num %i\n", sEditNum);
-    return sEditNum;
-}
-
-int GetEditNum() {
 	return sEditNum;
 }
+
+int GetEditNum() { return sEditNum; }

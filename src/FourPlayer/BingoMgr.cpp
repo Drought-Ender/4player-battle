@@ -902,6 +902,10 @@ s8 BingoMgr::BingoCard::popSlotQuque()
 
 int BingoMgr::BingoCard::ReceiveDispPellet(ObjectKey& key, Pellet* pellet)
 {
+	if (!pellet) {
+		DebugReport("wtf no pellet?\n");
+		return -1;
+	}
 
 	int configIdx = key.FindPellet(pellet);
 
@@ -1045,7 +1049,7 @@ bool BingoMgr::BingoCard::isImpossible(ObjectKey& key, int x, int y)
 	return !mActive[x][y] && key.mObjectEntries[idx].mExistCount <= 0;
 }
 
-size_t BingoMgr::sBingoItemSize = 5;
+const size_t BingoMgr::sBingoItemSize = 5;
 
 void BingoMgr::createBingoPellets()
 {
@@ -1133,7 +1137,8 @@ Pellet* BingoMgr::createBingoChanceItem()
 
 	for (int i = 0; i < sBingoItemSize; i++) {
 		Pellet* pellet = mBingoItems[i];
-		if (!pellet->isAlive() && !pellet->getStateID()) {
+		P2ASSERT(pellet);
+		if (!pellet->isAlive() && pellet->getStateID() == PELSTATE_Normal) {
 			PelletOtakara::mgr->setComeAlive(pellet->mSlotIndex);
 			pellet->init(&pelletArg);
 			return pellet;
@@ -1144,6 +1149,7 @@ Pellet* BingoMgr::createBingoChanceItem()
 
 Pellet* BingoMgr::dropBingoChanceItem()
 {
+	DebugReport("dropBingoChanceItem()\n");
 
 	VsGameSection::DropCardArg arg;
 	arg.mMinDists[0] = 0.45f;
@@ -1162,16 +1168,22 @@ Pellet* BingoMgr::dropBingoChanceItem()
 	DebugReport("Bedama chance item %p\n", pellet);
 
 	if (pellet) {
+		DebugReport("Bedama Spawn %f %f %f\n", spawn.x, spawn.y, spawn.z);
 		spawn.y += 140.0f;
 		pellet->setPosition(spawn, false);
+		DebugReport("smoking progg\n");
 		efx::TEnemyApsmoke smoke;
-		efx::ArgEnemyType smokeArg(spawn, EnemyTypeID::EnemyID_Kochappy, 1.0f);
+		efx::ArgEnemyType smokeArg(spawn, EnemyTypeID::EnemyID_Kochappy, 3.0f);
 		smoke.create(&smokeArg);
+
+		DebugReport("hits blunt\n");
 
 		Vector3f newRand = Vector3f(0.0f, randFloat() * TAU, 0.0f);
 		Matrixf mat;
 		mat.makeTR(Vector3f::zero, newRand);
 		pellet->setOrientation(mat);
+
+		DebugReport("malformed mamuta\n");
 	} else {
 		DebugReport("Bedama chance item spawn failed\n");
 	}

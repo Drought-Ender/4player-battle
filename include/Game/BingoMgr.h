@@ -136,7 +136,7 @@ struct BingoMgr
     bool mBedamaSound[2];
     f32 mBingoTimer; // always counts down
     BingoState mBingoState;
-    static size_t sBingoItemSize;
+    const static size_t sBingoItemSize;
     Pellet** mBingoItems;
 };
 
