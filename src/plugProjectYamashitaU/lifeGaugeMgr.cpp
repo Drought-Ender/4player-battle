@@ -22,9 +22,7 @@ LifeGauge::LifeGauge() { init(MAX_LIFEGAUGE_SEGMENTS, MAX_LIFEGAUGE_SEGMENTS_BLU
  */
 void LifeGauge::init(u8 maxSegmentNum)
 {
-	mTimer             = 0.0f;
-	mMaxSegmentNum     = maxSegmentNum;
-	mCurrentSegmentNum = maxSegmentNum;
+	init(maxSegmentNum, MAX_LIFEGAUGE_SEGMENTS_BLUE);
 }
 
 void LifeGauge::init(u8 maxSegmentNum, u8 maxSegmentNumTimer)
@@ -34,6 +32,7 @@ void LifeGauge::init(u8 maxSegmentNum, u8 maxSegmentNumTimer)
 	mCurrentSegmentNum      = maxSegmentNum;
 	mMaxSegmentNumTimer     = maxSegmentNumTimer;
 	mCurrentTimerSegmentNum = 0;
+	mCherryTimerPercent     = 0.0f;
 }
 
 /**
@@ -42,9 +41,10 @@ void LifeGauge::init(u8 maxSegmentNum, u8 maxSegmentNumTimer)
  */
 void LifeGauge::update(f32 healthRatio, f32 timerRatio)
 {
+	mCherryTimerPercent = timerRatio;
 	u32 newSegmentNum = (u8)(f32)(ROUND_F32_TO_U8(mMaxSegmentNum * healthRatio));
 
-	mCurrentTimerSegmentNum = (u8)(f32)(ROUND_F32_TO_U8(mMaxSegmentNumTimer * timerRatio));
+	mCurrentTimerSegmentNum = (u8)(mMaxSegmentNumTimer * timerRatio);
 	if (timerRatio < 0.0f) {
 		mCurrentSegmentNum = 0;
 	}
@@ -100,7 +100,7 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 
 	f32 greenRadius = radius;
 
-	if (mCurrentTimerSegmentNum != 0) {
+	if (mCurrentTimerSegmentNum != 0 || mCherryTimerPercent > 0.0f) {
 		greenRadius = radius * 0.9f;
 	}
 
@@ -123,7 +123,7 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 		drawOneTri(vertices, mLifeGaugeColor);
 	}
 
-	if (mCurrentTimerSegmentNum == 0) {
+	if (mCurrentTimerSegmentNum == 0 && mCherryTimerPercent <= 0.0f) {
 		return;
 	}
 
@@ -155,6 +155,30 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 		// Draw the quat
 		drawOneQuad(verticesQuad, colorBlue);
 	}
+
+	f32 angle         = -HALF_PI - (TAU * ((f32)mCurrentTimerSegmentNum / static_cast<f32>(mMaxSegmentNumTimer)));
+	verticesQuad[1].x = (radius * (f32)cos(angle)) + centerX;
+	verticesQuad[1].y = (radius * (f32)sin(angle)) + centerY;
+	verticesQuad[1].z = 0.0f;
+
+	verticesQuad[0].x = (greenRadius * (f32)cos(angle)) + centerX;
+	verticesQuad[0].y = (greenRadius * (f32)sin(angle)) + centerY;
+	verticesQuad[0].z = 0.0f;
+
+	// third vertex is on outside of circle at "end" of segment
+	angle             = -HALF_PI - (TAU * mCherryTimerPercent);
+	verticesQuad[2].x = (radius * (f32)cos(angle)) + centerX;
+	verticesQuad[2].y = (radius * (f32)sin(angle)) + centerY;
+	verticesQuad[2].z = 0.0f;
+
+	angle             = -HALF_PI - (TAU * mCherryTimerPercent);
+	verticesQuad[3].x = (greenRadius * (f32)cos(angle)) + centerX;
+	verticesQuad[3].y = (greenRadius * (f32)sin(angle)) + centerY;
+	verticesQuad[3].z = 0.0f;
+
+	// Draw the quat
+	drawOneQuad(verticesQuad, colorBlue);
+
 
 	Color4 colorBlack = BLACK_LIFEGAUGE_COLOR;
 
@@ -189,7 +213,109 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 		drawOneQuad(verticesQuad, colorBlack);
 	}
 
+
+}
+
+void LifeGauge::drawCherry(f32 radius, f32 centerX, f32 centerY)
+{
+	Vector3f vertices[3];
+
+	// first vertex - we're in 2D drawing mode so z is always 0.0f
+	vertices[0] = Vector3f(centerX, centerY, 0.0f);
+
+	Vector3f verticesQuad[4];
+
+	Color4 colorBlue = BLUE_LIFEGAUGE_COLOR;
+
+	f32 greenRadius = radius * 0.9f;
+	
+
+	Color4 colorBlack = BLACK_LIFEGAUGE_COLOR;
+
+	f32 outerBlack = radius * 1.03f;
+	f32 innerBlack = radius * 0.87f;
+
+	// draw segments
+	for (int i = 0; i < mMaxSegmentNumTimer; i++) {
+
+		// second vertex is on outside of circle at "start" of segment
+		f32 angle         = -HALF_PI - (TAU * ((f32)i / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[1].x = (outerBlack * (f32)cos(angle)) + centerX;
+		verticesQuad[1].y = (outerBlack * (f32)sin(angle)) + centerY;
+		verticesQuad[1].z = 0.0f;
+
+		verticesQuad[0].x = (innerBlack * (f32)cos(angle)) + centerX;
+		verticesQuad[0].y = (innerBlack * (f32)sin(angle)) + centerY;
+		verticesQuad[0].z = 0.0f;
+
+		// third vertex is on outside of circle at "end" of segment
+		angle             = -HALF_PI - (TAU * ((f32)(i + 1) / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[2].x = (outerBlack * (f32)cos(angle)) + centerX;
+		verticesQuad[2].y = (outerBlack * (f32)sin(angle)) + centerY;
+		verticesQuad[2].z = 0.0f;
+
+		angle             = -HALF_PI - (TAU * ((f32)(i + 1) / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[3].x = (innerBlack * (f32)cos(angle)) + centerX;
+		verticesQuad[3].y = (innerBlack * (f32)sin(angle)) + centerY;
+		verticesQuad[3].z = 0.0f;
+
+		// Draw the quat
+		drawOneQuad(verticesQuad, colorBlack);
+	}
+
+
+	
+	// draw segments
+	for (int i = 0; i < mCurrentTimerSegmentNum; i++) {
+
+		// second vertex is on outside of circle at "start" of segment
+		f32 angle         = -HALF_PI - (TAU * ((f32)i / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[1].x = (radius * (f32)cos(angle)) + centerX;
+		verticesQuad[1].y = (radius * (f32)sin(angle)) + centerY;
+		verticesQuad[1].z = 0.0f;
+
+		verticesQuad[0].x = (greenRadius * (f32)cos(angle)) + centerX;
+		verticesQuad[0].y = (greenRadius * (f32)sin(angle)) + centerY;
+		verticesQuad[0].z = 0.0f;
+
+		// third vertex is on outside of circle at "end" of segment
+		angle             = -HALF_PI - (TAU * ((f32)(i + 1) / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[2].x = (radius * (f32)cos(angle)) + centerX;
+		verticesQuad[2].y = (radius * (f32)sin(angle)) + centerY;
+		verticesQuad[2].z = 0.0f;
+
+		angle             = -HALF_PI - (TAU * ((f32)(i + 1) / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[3].x = (greenRadius * (f32)cos(angle)) + centerX;
+		verticesQuad[3].y = (greenRadius * (f32)sin(angle)) + centerY;
+		verticesQuad[3].z = 0.0f;
+
+		// Draw the quat
+		drawOneQuad(verticesQuad, colorBlue);
+	}
 	//drawCircle(vertices[0], greenRadius, colorBlack);
+
+	f32 angle         = -HALF_PI - (TAU * ((f32)mCurrentTimerSegmentNum / static_cast<f32>(mMaxSegmentNumTimer)));
+	verticesQuad[1].x = (radius * (f32)cos(angle)) + centerX;
+	verticesQuad[1].y = (radius * (f32)sin(angle)) + centerY;
+	verticesQuad[1].z = 0.0f;
+
+	verticesQuad[0].x = (greenRadius * (f32)cos(angle)) + centerX;
+	verticesQuad[0].y = (greenRadius * (f32)sin(angle)) + centerY;
+	verticesQuad[0].z = 0.0f;
+
+	// third vertex is on outside of circle at "end" of segment
+	angle             = -HALF_PI - (TAU * mCherryTimerPercent);
+	verticesQuad[2].x = (radius * (f32)cos(angle)) + centerX;
+	verticesQuad[2].y = (radius * (f32)sin(angle)) + centerY;
+	verticesQuad[2].z = 0.0f;
+
+	angle             = -HALF_PI - (TAU * mCherryTimerPercent);
+	verticesQuad[3].x = (greenRadius * (f32)cos(angle)) + centerX;
+	verticesQuad[3].y = (greenRadius * (f32)sin(angle)) + centerY;
+	verticesQuad[3].z = 0.0f;
+
+	// Draw the quat
+	drawOneQuad(verticesQuad, colorBlue);
 }
 
 /**

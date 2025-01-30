@@ -1156,7 +1156,7 @@ void VsSlotCardMgr::initAllCards()
 	sAllCards[TEKI_KUMA]
 	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 20.0f, 3.0f), "teki_kuma.bti");
 	sAllCards[BOMB_STORM]
-	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(8, 90.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
+	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(5, 90.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
 	sAllCards[TEKI_OTAKARA] = new TankOnyonTeki(EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara,
 	                                            EnemyTypeID::EnemyID_GasOtakara, EnemyTypeID::EnemyID_SporeOtakara, "teki_otakara.bti");
 	sAllCards[TEKI_MITES]   = new MititeCard(NaviTekiParams(1, 0.0f, 0.0f, 120.0f, true), "teki_mitites.bti");

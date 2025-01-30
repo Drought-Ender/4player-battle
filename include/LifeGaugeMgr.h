@@ -33,6 +33,7 @@ struct LifeGauge {
 	LifeGauge();
 
 	void draw(f32, f32, f32);
+	void drawCherry(f32, f32, f32);
 	void drawOneTri(Vector3f*, Color4&);
 	void drawOneQuad(Vector3f*, Color4&);
 	void drawCircle(Vector3f&, f32, Color4&);
@@ -48,6 +49,7 @@ struct LifeGauge {
 	u8 mMaxSegmentNum;      // _09
 	u8 mCurrentTimerSegmentNum;
 	u8 mMaxSegmentNumTimer;
+	f32 mCherryTimerPercent;
 };
 
 /**
@@ -121,7 +123,6 @@ struct LifeGaugeMgr {
 	LifeGaugeList mListInactive; // _04
 	JUTTexture* mTexture;        // _90
 };
-
 
 extern LifeGaugeMgr* lifeGaugeMgr;
 

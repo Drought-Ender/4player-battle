@@ -4,6 +4,7 @@
 #include "Game/VsGame.h"
 #include "Game/Stickers.h"
 #include "FloatingIconMgr.h"
+#include "LifeGaugeMgr.h"
 
 struct JUTTexture;
 
@@ -104,8 +105,10 @@ struct HazardBarrier : public TeamPositionEntity {
 	efx::TBase* mEfx;
 	f32 mTimer;
 	f32 mEfxTimer;
+	LifeGauge mLifeGauge;
 
 	virtual bool update();
+	virtual void draw(Graphics&);
 	virtual EntityID getEntityID() { return ENTITY_HAZARD; }
 };
 
@@ -120,12 +123,16 @@ struct WaitEnemySpawn : public PositionEntity {
 	void init();
 
 	virtual bool update();
+	virtual void draw(Graphics& gfx);
 
 	efx::THdamaSight* mEfx;
 	f32 mWaitTimer;
+	f32 mMaxWaitTimer;
 	f32 mExistenceTimer;
 	int mEntityID;
 	FloatingIcon* mIcon;
+
+	LifeGauge mLifeGauge;
 
 	virtual EntityID getEntityID() { return ENTITY_FALL; }
 };

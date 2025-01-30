@@ -51,10 +51,14 @@ HazardBarrier::HazardBarrier(int teamID, Vector3f position)
 
 	efx::Arg efxArg(mPosition);
 	mEfx->create(&efxArg);
+
+	mLifeGauge.mCurrentSegmentNum = 0;
 }
 
 bool HazardBarrier::update()
 {
+	mLifeGauge.update(0.0f, 1.0f - mTimer / HAZARD_BARRIER_DURATION);
+
 	DebugReport("HazardBarrier::update\n");
 	if (!isPaused()) {
 		mTimer += sys->mDeltaTime;
@@ -109,10 +113,44 @@ HazardBarrier::~HazardBarrier() { mEfx->fade(); }
 
 #define ICON_HEIGHT (50.0f)
 
+void HazardBarrier::draw(Graphics& gfx)
+{
+
+	LifeGauge::initLifeGaugeDraw();
+
+	Vector3f pos = mPosition;
+	pos.y += ICON_HEIGHT;
+
+	Viewport* cVp = gfx.mCurrentViewport;
+
+	Matrixf* viewMtx = cVp->getMatrix(true);
+	Matrixf transScaledMtx;
+	transScaledMtx(0, 0) = viewMtx->mMatrix.mtxView[0][0];
+	transScaledMtx(1, 0) = viewMtx->mMatrix.mtxView[0][1];
+	transScaledMtx(2, 0) = viewMtx->mMatrix.mtxView[0][2];
+	transScaledMtx(0, 1) = -viewMtx->mMatrix.mtxView[1][0];
+	transScaledMtx(1, 1) = -viewMtx->mMatrix.mtxView[1][1];
+	transScaledMtx(2, 1) = -viewMtx->mMatrix.mtxView[1][2];
+	transScaledMtx(0, 2) = viewMtx->mMatrix.mtxView[2][0];
+	transScaledMtx(1, 2) = viewMtx->mMatrix.mtxView[2][1];
+	transScaledMtx(2, 2) = viewMtx->mMatrix.mtxView[2][2];
+
+	transScaledMtx(0, 3) = pos.x;
+	transScaledMtx(1, 3) = pos.y;
+	transScaledMtx(2, 3) = pos.z;
+
+	Mtx posMtx;
+	PSMTXConcat(cVp->getMatrix(true)->mMatrix.mtxView, transScaledMtx.mMatrix.mtxView, posMtx);
+	GXLoadPosMtxImm(posMtx, GX_MTX3x4);
+
+	mLifeGauge.drawCherry(10.0f, 0.0f, 0.0f);
+}
+
 WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime, JUTTexture* tex)
     : PositionEntity(position)
 {
 	mWaitTimer      = timer;
+	mMaxWaitTimer   = timer;
 	mExistenceTimer = existenceTime;
 	mEntityID       = entityId;
 	mIcon           = new HoveringFloatingIcon(tex, &mPosition, ICON_HEIGHT);
@@ -124,6 +162,7 @@ WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 e
     : PositionEntity(position)
 {
 	mWaitTimer      = timer;
+	mMaxWaitTimer   = timer;
 	mExistenceTimer = existenceTime;
 	mEntityID       = entityId;
 	mIcon           = nullptr;
@@ -133,7 +172,7 @@ WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 e
 
 void WaitEnemySpawn::init()
 {
-
+	
 	mEfx = new efx::THdamaSight;
 
 	efx::Arg efxArg(mPosition);
@@ -146,6 +185,9 @@ void WaitEnemySpawn::init()
 
 bool WaitEnemySpawn::update()
 {
+
+	mLifeGauge.update(0.0f, mWaitTimer / mMaxWaitTimer);
+
 	if (!isPaused()) {
 		mWaitTimer -= sys->mDeltaTime;
 	}
@@ -160,6 +202,37 @@ bool WaitEnemySpawn::update()
 		return true;
 	}
 	return false;
+}
+
+void WaitEnemySpawn::draw(Graphics& gfx) {
+	LifeGauge::initLifeGaugeDraw();
+
+	Vector3f pos = mPosition;
+	pos.y += ICON_HEIGHT + 20.0f;
+
+	Viewport* cVp = gfx.mCurrentViewport;
+
+	Matrixf* viewMtx = cVp->getMatrix(true);
+	Matrixf transScaledMtx;
+	transScaledMtx(0, 0) = viewMtx->mMatrix.mtxView[0][0];
+	transScaledMtx(1, 0) = viewMtx->mMatrix.mtxView[0][1];
+	transScaledMtx(2, 0) = viewMtx->mMatrix.mtxView[0][2];
+	transScaledMtx(0, 1) = -viewMtx->mMatrix.mtxView[1][0];
+	transScaledMtx(1, 1) = -viewMtx->mMatrix.mtxView[1][1];
+	transScaledMtx(2, 1) = -viewMtx->mMatrix.mtxView[1][2];
+	transScaledMtx(0, 2) = viewMtx->mMatrix.mtxView[2][0];
+	transScaledMtx(1, 2) = viewMtx->mMatrix.mtxView[2][1];
+	transScaledMtx(2, 2) = viewMtx->mMatrix.mtxView[2][2];
+
+	transScaledMtx(0, 3) = pos.x;
+	transScaledMtx(1, 3) = pos.y;
+	transScaledMtx(2, 3) = pos.z;
+
+	Mtx posMtx;
+	PSMTXConcat(cVp->getMatrix(true)->mMatrix.mtxView, transScaledMtx.mMatrix.mtxView, posMtx);
+	GXLoadPosMtxImm(posMtx, GX_MTX3x4);
+
+	mLifeGauge.drawCherry(10.0f, 0.0f, 0.0f);
 }
 
 WaitEnemySpawn::~WaitEnemySpawn()

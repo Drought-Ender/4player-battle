@@ -10167,7 +10167,7 @@ setupFloatMemory__Q24Game15BaseGameSectionFv:
 /* 801508B4 0014D7F4  48 2D 2A A9 */	bl heapStatusStart__6SystemFPcP7JKRHeap
 /* 801508B8 0014D7F8  80 6D 92 E0 */	lwz r3, naviMgr__4Game@sda21(r13)
 /* 801508BC 0014D7FC  48 00 A7 D5 */	bl loadResources_float__Q24Game7NaviMgrFv
-/* 801508C0 0014D800  38 60 00 94 */	li r3, 0x94
+/* 801508C0 0014D800  38 60 00 94 */	li r3, 0xA4
 /* 801508C4 0014D804  4B ED 35 E1 */	bl __nw__FUl
 /* 801508C8 0014D808  7C 60 1B 79 */	or. r0, r3, r3
 /* 801508CC 0014D80C  41 82 00 0C */	beq .L_801508D8
