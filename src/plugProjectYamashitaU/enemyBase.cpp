@@ -2474,7 +2474,6 @@ void EnemyBase::throwupItem()
 
 	PelletInitArg pelletInitArg;
 
-
 	if (pelletMgr->makePelletInitArg(pelletInitArg, mPelletDropCode)) {
 		pelletInitArg.mState         = 2;
 		EnemyTypeID::EEnemyTypeID id = getEnemyTypeID();
@@ -2580,6 +2579,13 @@ void EnemyBase::getLifeGaugeParam(LifeGaugeParam& param)
 		param.mIsGaugeShown = isEvent(0, EB_LifegaugeVisible) && mLod.mFlags & AILOD_FLAG_NEED_SHADOW;
 	}
 
+	if (mExistDuration != 0.0f && mHealth > 0.0f) {
+		param.mCurrTimerRatio = 1.0f - mExistTimer / mExistDuration;
+	}
+	else {
+		param.mCurrTimerRatio = 0.0f;
+	}
+
 	if (param.mIsGaugeShown) {
 		doGetLifeGaugeParam(param);
 	}
@@ -2596,9 +2602,9 @@ void EnemyBase::doGetLifeGaugeParam(LifeGaugeParam& param)
 	f32 z            = mPosition.z;
 	f32 x            = mPosition.x;
 
-	param.mPosition            = Vector3f(x, heightOffset, z);
-	param.mCurHealthPercentage = mHealth / mMaxHealth;
-	param.mRadius              = 10.0f;
+	param.mPosition        = Vector3f(x, heightOffset, z);
+	param.mCurrHealthRatio = mHealth / mMaxHealth;
+	param.mRadius          = 10.0f;
 }
 
 /*

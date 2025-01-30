@@ -216,7 +216,7 @@ void Obj::doGetLifeGaugeParam(LifeGaugeParam& param)
 
 		param.mPosition.y += C_PARMS->mGeneral.mLifeMeterHeight.mValue;
 
-		param.mCurHealthPercentage = mHealth / mMaxHealth;
+		param.mCurrHealthRatio = mHealth / mMaxHealth;
 
 		param.mRadius = 10.0f;
 	} else {

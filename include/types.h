@@ -91,6 +91,12 @@ typedef u32 unknown;
 #define SPRAY_TYPE_SPICY  (0)
 #define SPRAY_TYPE_BITTER (1)
 
+#define CLAMP_VALUE_ABOVE(val, limit)              ((val) > (limit)) ? (limit) : (val)
+#define MAX(a, b)                                  (((a) > (b)) ? (a) : (b))
+#define MIN(a, b)                                  (((a) < (b)) ? (a) : (b))
+#define ROUND_F32_TO_U8(a)                         a >= 0.0f ? a + 0.5f : a - 0.5f
+#define INTERPOLATE_BETWEEN(src, dest, proportion) (proportion) * ((f32)(dest) - (f32)(src)) + (f32)(src)
+
 #ifdef __MWERKS__
 #define WEAKFUNC __declspec(weak)
 #else

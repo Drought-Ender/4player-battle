@@ -65,10 +65,12 @@ struct ShadowParam;
 struct WaterBox;
 
 struct LifeGaugeParam {
-	Vector3f mPosition;       // _00
-	f32 mCurHealthPercentage; // _0C
-	f32 mRadius;              // _10
-	bool mIsGaugeShown;       // _14
+	Vector3f mPosition;   // _00
+	f32 mCurrHealthRatio; // _0C
+	f32 mRadius;          // _10
+	bool mIsGaugeShown;   // _14
+
+	f32 mCurrTimerRatio;
 };
 
 enum CreatureFlags {
@@ -346,9 +348,7 @@ struct Creature : public CellObject {
 	void updateLOD(AILODParm&);
 	void updateStick(Vector3f&);
 
-	inline bool isPelletBuried() {
-		return mCaptureMatrix;
-	}
+	inline bool isPelletBuried() { return mCaptureMatrix; }
 
 	inline f32 getAngDist2(Vector3f& targetPos)
 	{

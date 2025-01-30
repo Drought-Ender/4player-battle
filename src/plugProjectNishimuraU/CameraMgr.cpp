@@ -119,6 +119,10 @@ void CameraMgr::update()
 		for (int i = 0; i < 4; i++) {
 			mCameraObjList[i]->update();
 		}
+	} else if (mCurrPlayerMode == 2) {
+		for (int i = 0; i < 2; i++) {
+			mCameraObjList[i]->update();
+		}
 	} else {
 		Navi* navi = naviMgr->getActiveNavi();
 		if (navi) {
@@ -304,19 +308,26 @@ void CameraMgr::changePlayerMode(int naviID, IDelegate1<Game::CameraArg*>* deleg
 		mCameraObjList[NAVIID_Louie]->changePlayerMode(centerCamera);
 		break;
 	}
-	case NAVIID_President: {
-		break;
-	}
-	case NAVIID_Wife: {
-		break;
-	}
-	case NAVIID_Multiplayer: {
+	case 2: {
 		mCameraObjList[NAVIID_Olimar]->setCameraParms(mCameraParms[0]);
 		mCameraObjList[NAVIID_Olimar]->changePlayerMode(false);
 
 		mCameraObjList[NAVIID_Louie]->setCameraParms(mCameraParms[0]);
 		mCameraObjList[NAVIID_Louie]->changePlayerMode(false);
-		
+		break;
+	}
+	case 4: {
+		mCameraObjList[NAVIID_Olimar]->setCameraParms(mCameraParms[0]);
+		mCameraObjList[NAVIID_Olimar]->changePlayerMode(false);
+
+		mCameraObjList[NAVIID_Louie]->setCameraParms(mCameraParms[0]);
+		mCameraObjList[NAVIID_Louie]->changePlayerMode(false);
+
+		mCameraObjList[NAVIID_President]->setCameraParms(mCameraParms[0]);
+		mCameraObjList[NAVIID_President]->changePlayerMode(false);
+
+		mCameraObjList[NAVIID_Wife]->setCameraParms(mCameraParms[0]);
+		mCameraObjList[NAVIID_Wife]->changePlayerMode(false);
 		break;
 	}
 	}

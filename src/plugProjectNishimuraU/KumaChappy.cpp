@@ -743,7 +743,7 @@ void KumaChappy::Obj::doGetLifeGaugeParam(Game::LifeGaugeParam& param)
 		param.mPosition.y = mPosition.y + C_PARMS->mGeneral.mLifeMeterHeight.mValue;
 	}
 	param.mPosition.z          = mPosition.z;
-	param.mCurHealthPercentage = mHealth / mMaxHealth;
+	param.mCurrHealthRatio = mHealth / mMaxHealth;
 	param.mRadius              = 10.0f;
 }
 

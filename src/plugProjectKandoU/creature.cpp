@@ -226,9 +226,10 @@ bool Creature::needShadow() { return mLod.mFlags & AILOD_FLAG_NEED_SHADOW; }
 void Creature::getLifeGaugeParam(LifeGaugeParam& param)
 {
 	param.mPosition            = getPosition();
-	param.mCurHealthPercentage = 1.0f;
+	param.mCurrHealthRatio     = 1.0f;
 	param.mRadius              = 10.0f;
 	param.mIsGaugeShown        = true;
+	param.mCurrTimerRatio      = 0.0f;
 }
 
 /*

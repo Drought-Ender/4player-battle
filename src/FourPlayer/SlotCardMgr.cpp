@@ -74,6 +74,29 @@ struct NaviTekiParams {
 	bool mFallFromSky;
 };
 
+struct OnyonTekiParams {
+	inline OnyonTekiParams()
+	    : mCount(1)
+	    , mDespawnTimer(50.0f)
+	{
+	}
+
+	inline OnyonTekiParams(int count)
+	    : mCount(count)
+	    , mDespawnTimer(50.0f)
+	{
+	}
+
+	inline OnyonTekiParams(int count, f32 timer)
+	    : mCount(count)
+	    , mDespawnTimer(timer)
+	{
+	}
+
+	int mCount;
+	f32 mDespawnTimer;
+};
+
 struct NaviFallTekiParams : public NaviTekiParams {
 	inline NaviFallTekiParams()
 	    : NaviTekiParams()
@@ -463,7 +486,7 @@ struct TekiCard : public VsSlotMachineCard {
 		EnemyBase* enemy = tekiMgr->birth(mTekiMgrID, position, willDespawn);
 		if (enemy)
 			enemy->setAnimSpeed(30.0f);
-			onTekiBirth(enemy);
+		onTekiBirth(enemy);
 		return enemy;
 	}
 
@@ -473,7 +496,7 @@ struct TekiCard : public VsSlotMachineCard {
 		P2ASSERT(enemy);
 		if (enemy)
 			enemy->setAnimSpeed(30.0f);
-			onTekiBirth(enemy);
+		onTekiBirth(enemy);
 		return enemy;
 	}
 
@@ -482,14 +505,24 @@ struct TekiCard : public VsSlotMachineCard {
 		EnemyBase* enemy = tekiMgr->birthFromSky(mTekiMgrID, position, timer);
 		if (enemy)
 			enemy->setAnimSpeed(30.0f);
-			onTekiBirth(enemy);
+		onTekiBirth(enemy);
 		return enemy;
 	}
 };
 
 struct OnyonTekiCard : public TekiCard {
+
+	OnyonTekiParams mParams;
+
 	OnyonTekiCard(EnemyTypeID::EEnemyTypeID enemy, const char* texName)
 	    : TekiCard(enemy, texName)
+	    , mParams()
+	{
+	}
+
+	OnyonTekiCard(EnemyTypeID::EEnemyTypeID enemy, OnyonTekiParams parms, const char* texName)
+	    : TekiCard(enemy, texName)
+	    , mParams(parms)
 	{
 	}
 
@@ -545,22 +578,24 @@ struct OnyonTekiCard : public TekiCard {
 	{
 		Onyon* onyon = ItemOnyon::mgr->getOnyon(getVsPikiColor(target));
 		Vector3f onyonPos;
-		if (onyon)
-			do {
-				onyonPos = onyon->getPosition();
+		for (int i = 0; i < mParams.mCount; i++) {
+			if (onyon)
+				do {
+					onyonPos = onyon->getPosition();
 
-				float faceDir = onyon->getFaceDir();
+					float faceDir = onyon->getFaceDir();
 
-				float radius = randFloat() * 150.0f + 50.0f;
-				float angle  = randFloat() * TAU;
-				float height = 0.0f;
+					float radius = randFloat() * 150.0f + 50.0f;
+					float angle  = randFloat() * TAU;
+					float height = 0.0f;
 
-				Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
+					Vector3f spawnOffset = Vector3f(radius * pikmin2_sinf(angle), height, radius * pikmin2_cosf(angle));
 
-				onyonPos += spawnOffset;
-			} while (!DroughtLib::hasValidFloor(onyonPos));
+					onyonPos += spawnOffset;
+				} while (!DroughtLib::hasValidFloor(onyonPos));
 
-		birth(cardMgr->mTekiMgr, onyonPos, true);
+			birth(cardMgr->mTekiMgr, onyonPos, mParams.mDespawnTimer);
+		}
 	}
 
 	virtual const char* getDescription() { return "Spawns an enemy at your target's onion"; }
@@ -613,19 +648,18 @@ struct NaviTekiCard : public TekiCard {
 	virtual TargetSpecifier useTarget() { return PLAYER; }
 };
 
-struct MititeCard : public NaviTekiCard
-{
+struct MititeCard : public NaviTekiCard {
 	NaviTekiParams mParms;
 	MititeCard(NaviTekiParams parms, const char* texName)
 	    : mParms(parms)
 	    , NaviTekiCard(EnemyTypeID::EnemyID_Egg, parms, texName) {};
 
-	virtual void onTekiBirth(EnemyBase* enemy) {
+	virtual void onTekiBirth(EnemyBase* enemy)
+	{
 		static_cast<Egg::Obj*>(enemy)->mIsForceMitite = true;
-		static_cast<Egg::Obj*>(enemy)->mIsFalling = true;
+		static_cast<Egg::Obj*>(enemy)->mIsFalling     = true;
 	}
 };
-
 
 struct TankOnyonTeki : public OnyonTekiCard {
 	EnemyTypeID::EEnemyTypeID mWTankTeki;
@@ -1111,9 +1145,9 @@ void VsSlotCardMgr::initAllCards()
 	sAllCards[TEKI_BOMBOTAKRA] = new NaviTekiCard(EnemyTypeID::EnemyID_BombOtakara, NaviTekiParams(1, 0.0f, 1.0f), "teki_bombotakara.bti");
 	sAllCards[TEKI_TANK]       = new TankOnyonTeki(EnemyTypeID::EnemyID_Tank, EnemyTypeID::EnemyID_Wtank, EnemyTypeID::EnemyID_Gtank,
 	                                               EnemyTypeID::EnemyID_Mtank, "teki_tank.bti");
-	sAllCards[TEKI_DEMON]      = new OnyonTekiCard(EnemyTypeID::EnemyID_Demon, "teki_demon.bti");
+	sAllCards[TEKI_DEMON]      = new OnyonTekiCard(EnemyTypeID::EnemyID_Demon, OnyonTekiParams(1, 30.0f), "teki_demon.bti");
 	sAllCards[TEKI_FUEFUKI]    = new OnyonTekiCard(EnemyTypeID::EnemyID_Fuefuki, "teki_fuefuki.bti");
-	sAllCards[TEKI_JELLYFLOAT] = new OnyonTekiCard(EnemyTypeID::EnemyID_Kurage, "teki_kurage.bti");
+	sAllCards[TEKI_JELLYFLOAT] = new OnyonTekiCard(EnemyTypeID::EnemyID_Kurage, OnyonTekiParams(1, 30.0f), "teki_kurage.bti");
 	sAllCards[TEKI_FKABUTO]
 	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Kabuto, NaviFallTekiParams(1, 0.0f, 30.0f, 2.0f), "teki_kabuto.bti");
 	sAllCards[ALL_PLUCK]  = new PluckAllCard("fue_pullout.bti");

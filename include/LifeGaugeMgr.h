@@ -4,7 +4,20 @@
 #include "Color4.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "Vector3.h"
+#include "Game/Creature.h"
 #include "types.h"
+
+#define MAX_LIFEGAUGE_SEGMENTS (32) // (More segments = more detailed hp wheel, also changes slower)
+
+#define MAX_LIFEGAUGE_SEGMENTS_BLUE (64) 
+
+#define RED_LIFEGAUGE_RATIO    (0.2f) // 0 < health < this ratio = "red"
+#define YELLOW_LIFEGAUGE_RATIO (0.5f) // red ratio <= health < this ratio = "yellow"
+
+#define RED_LIFEGAUGE_COLOR    (Color4(255, 0, 0, 255))   // red (for when 0 < health < red ratio)
+#define YELLOW_LIFEGAUGE_COLOR (Color4(255, 255, 0, 255)) // yellow (for when red ratio <= health < yellow ratio)
+#define GREEN_LIFEGAUGE_COLOR  (Color4(0, 255, 0, 255))   // green (for when health >= yellow ratio)
+#define BLUE_LIFEGAUGE_COLOR   (Color4(51, 129, 255, 255)) // blue
 
 struct Graphics;
 struct JUTTexture;
@@ -18,34 +31,73 @@ struct LifeGauge {
 
 	void draw(f32, f32, f32);
 	void drawOneTri(Vector3f*, Color4&);
+	void drawOneQuad(Vector3f*, Color4&);
+	void drawCircle(Vector3f&, f32, Color4&);
 	void init(u8);
-	void update(f32);
+	void init(u8, u8);
+	void update(f32, f32);
 
 	static void initLifeGaugeDraw();
 
-	f32 _00;    // _00
-	Color4 _04; // _04 // might be TColor
-	u8 _08;     // _08
-	u8 _09;     // _09
+	f32 mTimer;             // _00
+	Color4 mLifeGaugeColor; // _04 // might be TColor
+	u8 mCurrentSegmentNum;  // _08
+	u8 mMaxSegmentNum;      // _09
+	u8 mCurrentTimerSegmentNum;
+	u8 mMaxSegmentNumTimer;
 };
 
 /**
  * @size{0x48}
  */
 struct LifeGaugeList : public JKRDisposer {
-	virtual ~LifeGaugeList(); // _08 (weak)
+	inline LifeGaugeList(Game::Creature* obj = nullptr)
+	    : mParam()
+	{
+		mGameObject          = obj;
+		mNext                = nullptr;
+		mPrev                = nullptr;
+		mParam.mIsGaugeShown = false;
 
-	void draw(Graphics&);
+		mLifeGauge.mTimer             = 0.0f;
+		mLifeGauge.mMaxSegmentNum     = 32;
+		mLifeGauge.mCurrentSegmentNum = 32;
+	}
 
-	LifeGaugeList* _18;  // _18
-	LifeGaugeList* _1C;  /// _1C
-	Game::Creature* _20; // _20
-	u8 _24[0x14];        // _24
-	u8 _38;              // _38
-	f32 _3C;             // _3C
-	u8 _40[4];           // _ 40
-	u8 _44;              // _44
-	u8 _45;              // _45
+	virtual ~LifeGaugeList() { clearRelations(); } // _08 (weak)
+
+	inline void clearRelations()
+	{
+		if (mPrev) {
+			mPrev->mNext = mNext;
+		}
+		if (mNext) {
+			mNext->mPrev = mPrev;
+		}
+		mNext = nullptr;
+		mPrev = nullptr;
+	}
+
+	inline LifeGaugeList* search(Game::Creature* obj)
+	{
+		for (LifeGaugeList* list = mNext; list; list = list->mNext) {
+			if (list->mGameObject != obj) {
+				continue;
+			}
+
+			return list;
+		}
+
+		return nullptr;
+	}
+
+	void draw(Graphics& gfx);
+
+	LifeGaugeList* mPrev;        // _18
+	LifeGaugeList* mNext;        // _1C
+	Game::Creature* mGameObject; // _20, what this is a life gauge for
+	Game::LifeGaugeParam mParam; // _24
+	LifeGauge mLifeGauge;        // _28
 };
 
 /**
@@ -55,16 +107,18 @@ struct LifeGaugeList : public JKRDisposer {
 struct LifeGaugeMgr {
 	LifeGaugeMgr();
 
-	void createLifeGauge(Game::Creature*);
-	void activeLifeGauge(Game::Creature*, f32);
-	void inactiveLifeGauge(Game::Creature*);
+	LifeGaugeList* createLifeGauge(Game::Creature* obj);
+	void activeLifeGauge(Game::Creature* obj, f32 healthRatio);
+	void inactiveLifeGauge(Game::Creature* obj);
 	void loadResource();
 	void update();
-	void draw(Graphics&);
+	void draw(Graphics& gfx);
 
-	LifeGaugeList mLists[2];
-	JUTTexture* mTexture;
+	LifeGaugeList mListActive;   // _00
+	LifeGaugeList mListInactive; // _04
+	JUTTexture* mTexture;        // _90
 };
+
 
 extern LifeGaugeMgr* lifeGaugeMgr;
 

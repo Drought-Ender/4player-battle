@@ -617,7 +617,7 @@ bool Obj::neckJointCallBack(J3DJoint* joint, int p2)
 Mgr::Mgr(int p1, unsigned char p2)
     : EnemyMgrBase(p1, p2)
 {
-	mName = "ƒyƒŒƒbƒg‘ƒ}ƒl[ƒWƒƒ"; // pellet plant manager
+	mName = "ï¿½yï¿½ï¿½ï¿½bï¿½gï¿½ï¿½ï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½"; // pellet plant manager
 }
 
 /*
@@ -675,7 +675,7 @@ void Obj::doGetLifeGaugeParam(LifeGaugeParam& param)
 {
 	mRootJointMtx->getTranslation(param.mPosition);
 	param.mPosition.y += 60.0f;
-	param.mCurHealthPercentage = mHealth / mMaxHealth;
+	param.mCurrHealthRatio = mHealth / mMaxHealth;
 	param.mRadius              = 10.0f;
 }
 

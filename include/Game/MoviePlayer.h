@@ -205,6 +205,10 @@ struct MoviePlayer : public JKRDisposer {
 	void unsuspend(long, bool);
 	unknown update(Controller*, Controller*);
 
+	inline void setFlag(u32 flag) { mFlags = (FlagEnum)(mFlags | flag); }
+	inline void resetFlag(u32 flag) {mFlags = (FlagEnum)(mFlags & ~flag); }
+	inline bool isFlag(u32 flag) const { return mFlags & flag; }
+
 	// _00     = VTBL
 	// _00-_18 = JKRDisposer
 	int mDemoState;                  // _18
@@ -253,7 +257,8 @@ struct MoviePlayer : public JKRDisposer {
 	u32 mCounter;                                                  // _1E8
 	void* mStbFile;                                                // _1EC
 	// TODO: This might be a BitFlag<u32> object
-	enum { IS_ACTIVE = 1, IS_FINISHED = 2, _FORCE_INT = 0xFFFFFFFF } mFlags; // _1F0
+
+	enum FlagEnum { IS_ACTIVE = 1, IS_FINISHED = 2, _FORCE_INT = 0xFFFFFFFF } mFlags; // _1F0
 	// u32 mIsActive : 1, mFlags : 1;
 	JPAResourceManager* mResourceManager; // _1F4
 

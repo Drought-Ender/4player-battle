@@ -66,7 +66,7 @@ void CallBack_LifeGauge::init(P2DScreen::Mgr* mgr, DataNavi* data, LifeGaugeType
 		mData          = data;
 		mNaviLifeRatio = data->mNaviLifeRatio;
 		mLifeGauge->init(128);
-		mLifeGauge->_08 = 128.0f * mNaviLifeRatio;
+		mLifeGauge->mCurrentSegmentNum = 128.0f * mNaviLifeRatio;
 		_5C             = mgr;
 
 		mPin1 = TagSearch(mgr, 'pin1');
@@ -221,7 +221,7 @@ void CallBack_LifeGauge::update()
 	if (!og::newScreen::checkMovieActive()) {
 		moveIcon();
 		mNaviLifeRatio = mData->mNaviLifeRatio;
-		mLifeGauge->update(mNaviLifeRatio);
+		mLifeGauge->update(mNaviLifeRatio, 0.0f);
 		if (mNaviLifeRatio < 0.5f) {
 			mPin1->show();
 			mPin2->show();

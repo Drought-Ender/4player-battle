@@ -106,9 +106,11 @@ void Item::initDependency()
 			if (mOtherSeesaw->mDownFloorType == DFTYPE_UpBlock) {
 				mDownFloorType = DFTYPE_DownBlock;
 				mIsPressed     = true;
+				mWayPoint->setOpen(true);
 			} else {
 				mIsPressed     = false;
 				mDownFloorType = DFTYPE_UpBlock;
+				mWayPoint->setOpen(false);
 			}
 
 			mFsm->start(this, DOWNFLOOR_Wait, nullptr);
@@ -837,7 +839,7 @@ void Mgr::generatorWrite(Stream& input, GenItemParm* genParm)
 	P2ASSERTLINE(1246, downParm);
 	input.textWriteTab(input.mTabCount);
 	input.writeShort(downParm->mBagWeight);
-	input.textWriteText("\t#’¾‚Ýl”\r\n"); // '#number of people sinking'
+	input.textWriteText("\t#ï¿½ï¿½ï¿½Ýlï¿½ï¿½\r\n"); // '#number of people sinking'
 
 	input.textWriteTab(input.mTabCount);
 	input.writeShort(downParm->mModelType);

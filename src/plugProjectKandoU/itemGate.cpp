@@ -156,7 +156,7 @@ void ItemGate::doLoad(Stream& stream)
 	mSegmentsDown = stream.readInt();
 	initMotion();
 	if (mSegmentsDown >= mMaxSegments) {
-		mCentrePlatInstance->setCollision(false); // Centre? ?\_(ƒc)_/? British
+		mCentrePlatInstance->setCollision(false); // Centre? ?\_(ï¿½c)_/? British
 		setAlive(false);
 		if (mIsElectric) {
 			mEgateEfxA->forceKill();
@@ -746,7 +746,7 @@ void ItemGate::getLifeGaugeParam(Game::LifeGaugeParam& param)
 	param.mPosition = mPosition;
 	param.mPosition.y += 120.0f;
 	param.mRadius              = 10.0f;
-	param.mCurHealthPercentage = getGateHealth() / (mMaxSegmentHealth * mMaxSegments);
+	param.mCurrHealthRatio = getGateHealth() / (mMaxSegmentHealth * mMaxSegments);
 	param.mIsGaugeShown        = mLod.mFlags & 4;
 	/*
 	stwu     r1, -0x20(r1)
@@ -1265,7 +1265,7 @@ void ItemGateMgr::generatorWrite(Stream& stream, Game::GenItemParm* param)
 	GenGateParm* gateParam = static_cast<GenGateParm*>(param);
 	stream.textWriteTab(stream.mTabCount);
 	stream.writeFloat(gateParam->mLife);
-	stream.textWriteText("\t#ƒ‰ƒCƒt\r\n"); // life
+	stream.textWriteText("\t#ï¿½ï¿½ï¿½Cï¿½t\r\n"); // life
 	stream.textWriteTab(stream.mTabCount);
 	stream.writeByte(gateParam->mColor);
 	stream.textWriteText("\t#Color\r\n");
@@ -1619,7 +1619,7 @@ lbl_801C9CD0:
  */
 ItemDengekiGate::Mgr::Mgr()
 {
-	mName = "“dŒ‚ƒQ[ƒg"; // electric shock gate
+	mName = "ï¿½dï¿½ï¿½ï¿½Qï¿½[ï¿½g"; // electric shock gate
 	sys->heapStatusStart("ItemDengekiGate", nullptr);
 	mObjectPathComponent = "user/Kando/objects/gates";
 	setModelSize(1);
@@ -1789,7 +1789,7 @@ void ItemDengekiGate::Mgr::generatorWrite(Stream& stream, Game::GenItemParm* par
 	GenGateParm* gateParam = static_cast<GenGateParm*>(param);
 	stream.textWriteTab(stream.mTabCount);
 	stream.writeFloat(gateParam->mLife);
-	stream.textWriteText("\t#ƒ‰ƒCƒt\r\n"); // life
+	stream.textWriteText("\t#ï¿½ï¿½ï¿½Cï¿½t\r\n"); // life
 	                                       /*
 	                                       stwu     r1, -0x20(r1)
 	                                       mflr     r0

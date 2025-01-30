@@ -6,6 +6,7 @@
 
 struct JKRArchive;
 struct JKRFileFinder;
+struct ResTIMG;
 struct JKRFileLoader : public JKRDisposer {
 	JKRFileLoader();
 
@@ -42,5 +43,7 @@ struct JKRFileLoader : public JKRDisposer {
 	bool mIsMounted;                        // _30
 	u32 mMountCount;                        // _34
 };
+
+inline ResTIMG* JKRGetImageResource(char const* name, JKRFileLoader* arc) { return (ResTIMG*)JKRFileLoader::getGlbResource(name, arc); }
 
 #endif

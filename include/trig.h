@@ -100,5 +100,12 @@ inline f32 clamp(f32 val, f32 limit)
 	return val;
 }
 
+inline f32 absF(f32 val)
+{
+	f64 newVal = fabs(val);
+	return (f32)newVal;
+}
+
+
 
 #endif
