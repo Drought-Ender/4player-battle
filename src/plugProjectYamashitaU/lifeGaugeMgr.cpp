@@ -101,7 +101,7 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 	f32 greenRadius = radius;
 
 	if (mCurrentTimerSegmentNum != 0) {
-		// greenRadius = radius * 0.9f;
+		greenRadius = radius * 0.9f;
 	}
 
 	// draw segments
@@ -127,8 +127,7 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 		return;
 	}
 
-	greenRadius = radius * 0.9f;
-
+	
 	// draw segments
 	for (int i = 0; i < mCurrentTimerSegmentNum; i++) {
 
@@ -156,6 +155,41 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 		// Draw the quat
 		drawOneQuad(verticesQuad, colorBlue);
 	}
+
+	Color4 colorBlack = BLACK_LIFEGAUGE_COLOR;
+
+	f32 outerBlack = radius * 0.93f;
+	f32 innerBlack = radius * 0.87f;
+
+	// draw segments
+	for (int i = 0; i < mMaxSegmentNumTimer; i++) {
+
+		// second vertex is on outside of circle at "start" of segment
+		f32 angle         = -HALF_PI - (TAU * ((f32)i / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[1].x = (outerBlack * (f32)cos(angle)) + centerX;
+		verticesQuad[1].y = (outerBlack * (f32)sin(angle)) + centerY;
+		verticesQuad[1].z = 0.0f;
+
+		verticesQuad[0].x = (innerBlack * (f32)cos(angle)) + centerX;
+		verticesQuad[0].y = (innerBlack * (f32)sin(angle)) + centerY;
+		verticesQuad[0].z = 0.0f;
+
+		// third vertex is on outside of circle at "end" of segment
+		angle             = -HALF_PI - (TAU * ((f32)(i + 1) / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[2].x = (outerBlack * (f32)cos(angle)) + centerX;
+		verticesQuad[2].y = (outerBlack * (f32)sin(angle)) + centerY;
+		verticesQuad[2].z = 0.0f;
+
+		angle             = -HALF_PI - (TAU * ((f32)(i + 1) / static_cast<f32>(mMaxSegmentNumTimer)));
+		verticesQuad[3].x = (innerBlack * (f32)cos(angle)) + centerX;
+		verticesQuad[3].y = (innerBlack * (f32)sin(angle)) + centerY;
+		verticesQuad[3].z = 0.0f;
+
+		// Draw the quat
+		drawOneQuad(verticesQuad, colorBlack);
+	}
+
+	//drawCircle(vertices[0], greenRadius, colorBlack);
 }
 
 /**
@@ -220,8 +254,24 @@ void LifeGauge::drawOneQuad(Vector3f* vertices, Color4& color)
 	GXEnd();
 }
 
-void LifeGauge::drawCircle(Vector3f& origin, f32 rad, Color4& quad) {
-	
+void LifeGauge::drawCircle(Vector3f& origin, f32 rad, Color4& color) {
+
+	u8 segmentCount = MAX(mMaxSegmentNum, mMaxSegmentNumTimer);
+
+	GXBegin(GX_LINESTRIP, GX_VTXFMT0, segmentCount + 1);
+
+	for (int i = 0; i <= segmentCount; i++) {
+
+		// second vertex is on outside of circle at "start" of segment
+		f32 angle     = -HALF_PI - (TAU * ((f32)i / static_cast<f32>(segmentCount)));
+		Vector3f pos = origin;
+		pos.x += (rad * (f32)cos(angle));
+		pos.y += (rad * (f32)sin(angle));
+
+		GXDrawVector3f(pos);
+		GXColor4u8(color.r, color.g, color.b, color.a);
+	}
+	GXEnd();
 }
 
 /**

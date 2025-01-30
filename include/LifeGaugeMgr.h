@@ -17,7 +17,10 @@
 #define RED_LIFEGAUGE_COLOR    (Color4(255, 0, 0, 255))   // red (for when 0 < health < red ratio)
 #define YELLOW_LIFEGAUGE_COLOR (Color4(255, 255, 0, 255)) // yellow (for when red ratio <= health < yellow ratio)
 #define GREEN_LIFEGAUGE_COLOR  (Color4(0, 255, 0, 255))   // green (for when health >= yellow ratio)
-#define BLUE_LIFEGAUGE_COLOR   (Color4(51, 129, 255, 255)) // blue
+#define BLUE_LIFEGAUGE_COLOR   (Color4(255, 99, 99, 255)) // blue
+
+#define BLACK_LIFEGAUGE_COLOR   (Color4(0, 0, 0, 255)) // blue
+
 
 struct Graphics;
 struct JUTTexture;
