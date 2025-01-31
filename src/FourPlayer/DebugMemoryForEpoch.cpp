@@ -3,11 +3,12 @@
 
 void DrawDebugMemory(Graphics& gfx)
 {
-#if FOURPLAYER_DEBUG == 1
 	J2DPrint print(getPikminFont(), 0.0f);
-
 	print.mGlyphHeight /= 3;
 	print.mGlyphWidth /= 3;
+
+#if FOURPLAYER_DEBUG == 1
+	J2DPrint print(getPikminFont(), 0.0f);
 
 	f32 megabytes     = (JKRHeap::sCurrentHeap->getFreeSize() / 8.0f) / 1e+6f;
 	f32 currentHeapMB = (JKRHeap::sCurrentHeap->getSize() / 8.0f) / 1e+6f;

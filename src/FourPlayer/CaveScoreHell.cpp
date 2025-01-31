@@ -26,8 +26,16 @@ int gScoreDelegations[2][2] = { { ONYON_TYPE_RED, ONYON_TYPE_BLUE }, { ONYON_TYP
 int gEffectiveTeamCount     = 4;
 bool gThreePlayer;
 
-enum ScoreDelegations { FIRST_SCORE, SECOND_SCORE };
-enum ScoreDelegationSeconds { FIRST_ONYON_DELEGATE, SECOND_ONYON_DELEGATE };
+// returns an index 0-3, or -1 if not found
+int FindScoreDelegation(int onyonType)
+{
+	for (int i = 0; i < 4; i++) {
+		if (reinterpret_cast<int*>(gScoreDelegations)[i] == onyonType) {
+			return i;
+		}
+	}
+	return -1;
+}
 
 // gets the usual opposite of the onyon color
 int GetUsualCompliment(int color)

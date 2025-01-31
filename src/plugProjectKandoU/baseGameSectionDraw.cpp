@@ -44,6 +44,51 @@ static Color4 vsTeamColorsColor4[] = {
 
 namespace Game {
 
+
+void DrawDebugScores(Graphics& gfx) {
+	J2DPrint print(getPikminFont(), 0.0f);
+	print.mGlyphHeight /= 3;
+	print.mGlyphWidth /= 3;
+
+	print.print(85.0f, 10.0f, "Scores Red Blue");
+
+	print.mCharColor = JUtility::TColor(0xff0000ff);
+	print.print(85.0f, 20.0f, "%f\n", GetVsGameSection()->mRedBlueScore[Game::TEAM_RED]);
+	print.mCharColor = JUtility::TColor(0x0000ffff);
+	print.print(85.0f, 30.0f, "%f\n", GetVsGameSection()->mRedBlueScore[Game::TEAM_BLUE]);
+	print.mCharColor = JUtility::TColor(0xffffffff);
+	print.print(85.0f, 40.0f, "%f\n", GetVsGameSection()->mRedBlueScore[Game::TEAM_WHITE]);
+	print.mCharColor = JUtility::TColor(0xff00ffff);
+	print.print(85.0f, 50.0f, "%f\n", GetVsGameSection()->mRedBlueScore[Game::TEAM_PURPLE]);
+
+	print.mCharColor = JUtility::TColor(0xffffffff);
+
+	print.print(185.0f, 10.0f, "Scores Yellow");
+
+	print.mCharColor = JUtility::TColor(0xff0000ff);
+	print.print(185.0f, 20.0f, "%f\n", GetVsGameSection()->mYellowScore[Game::TEAM_RED]);
+	print.mCharColor = JUtility::TColor(0x0000ffff);
+	print.print(185.0f, 30.0f, "%f\n", GetVsGameSection()->mYellowScore[Game::TEAM_BLUE]);
+	print.mCharColor = JUtility::TColor(0xffffffff);
+	print.print(185.0f, 40.0f, "%f\n", GetVsGameSection()->mYellowScore[Game::TEAM_WHITE]);
+	print.mCharColor = JUtility::TColor(0xff00ffff);
+	print.print(185.0f, 50.0f, "%f\n", GetVsGameSection()->mYellowScore[Game::TEAM_PURPLE]);
+
+	print.mCharColor = JUtility::TColor(0xffffffff);
+
+
+	print.print(285.0f, 10.0f, "Scores Cherry");
+
+	print.mCharColor = JUtility::TColor(0xff0000ff);
+	print.print(285.0f, 20.0f, "%f\n", GetVsGameSection()->mCherryScore[Game::TEAM_RED]);
+	print.mCharColor = JUtility::TColor(0x0000ffff);
+	print.print(285.0f, 30.0f, "%f\n", GetVsGameSection()->mCherryScore[Game::TEAM_BLUE]);
+	print.mCharColor = JUtility::TColor(0xffffffff);
+	print.print(285.0f, 40.0f, "%f\n", GetVsGameSection()->mCherryScore[Game::TEAM_WHITE]);
+	print.mCharColor = JUtility::TColor(0xff00ffff);
+	print.print(285.0f, 50.0f, "%f\n", GetVsGameSection()->mCherryScore[Game::TEAM_PURPLE]);
+}
+
 /*
  * --INFO--
  * Address:	802398D8
@@ -52,7 +97,8 @@ namespace Game {
  */
 void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 {
-	DrawDebugMemory(gfx);
+	//DrawDebugMemory(gfx);
+	//DrawDebugScores(gfx);
 	// Setup viewport callback to be newdraw_drawAll
 	Delegate1<BaseGameSection, Viewport*> vpDelegate(this, &BaseGameSection::newdraw_drawAll);
 	gfx.mapViewport(&vpDelegate);

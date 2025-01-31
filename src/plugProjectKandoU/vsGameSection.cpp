@@ -1474,18 +1474,26 @@ void VsGameSection::updateCardGeneration()
 		return;
 	}
 
+	int scoreDelegationsTeamIndex[2][2];
+	for (int x = 0; x < 2; x++) {
+		for (int y = 0; y < 2; y++) {
+			scoreDelegationsTeamIndex[x][y] = getTeamFromPiki(gScoreDelegations[x][y]);
+		}
+	}
+
 	int maxSpawnCherries[2] = { 0, 0 };
 	f32 spawnFactor[2];
 	for (int i = 0; i < 2; i++) {
-		spawnFactor[i] = (mRedBlueScore[i * 2] - mYellowScore[i * 2]) - (mRedBlueScore[i * 2 + 1] - mYellowScore[i * 2 + 1]);
+		spawnFactor[i] = (mRedBlueScore[scoreDelegationsTeamIndex[i][0]] - mYellowScore[scoreDelegationsTeamIndex[i][0]])
+		               - (mRedBlueScore[scoreDelegationsTeamIndex[i][1]] - mYellowScore[scoreDelegationsTeamIndex[i][1]]);
 	}
 	f32 lowFactor[2];
 	for (int i = 0; i < 2; i++) {
-		lowFactor[i] = mCherryScore[i * 2] - mCherryScore[i * 2 + 1];
+		lowFactor[i] = mCherryScore[scoreDelegationsTeamIndex[i][0]] - mCherryScore[scoreDelegationsTeamIndex[i][1]];
 	}
 	f32 factors[2][2] = { { 0.4f, 0.6f }, { 0.4f, 0.6f } };
 	bool isUrgent[2]  = { false, false };
-	for (int i = 0; i < gEffectiveTeamCount / 2; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (FABS(spawnFactor[i]) < 0.2f) {
 
 		} else if (0.2f <= FABS(spawnFactor[i]) < 0.4f) {
@@ -1541,6 +1549,11 @@ void VsGameSection::updateCardGeneration()
 			}
 		}
 	}
+
+	// f32 firstFactor  = reinterpret_cast<f32*>(factors)[FindScoreDelegation(ONYON_TYPE_RED)];
+	// f32 secondFactor = reinterpret_cast<f32*>(factors)[FindScoreDelegation(ONYON_TYPE_BLUE)];
+	// f32 thirdFactor  = reinterpret_cast<f32*>(factors)[FindScoreDelegation(ONYON_TYPE_WHITE)];
+	// f32 fourthFactor = reinterpret_cast<f32*>(factors)[FindScoreDelegation(ONYON_TYPE_PURPLE)];
 
 	mCardCount = 0;
 	for (int i = 0; i < mMaxCherries; i++) {
@@ -1907,10 +1920,10 @@ void VsGameSection::calcVsScores()
 
 	f32 yellowMarbleDist[4][YELLOW_MARBLE_COUNT];
 	Onyon* onyons[4];
-	onyons[0] = ItemOnyon::mgr->getOnyon(gScoreDelegations[0][0]);
-	onyons[1] = ItemOnyon::mgr->getOnyon(gScoreDelegations[0][1]);
-	onyons[2] = ItemOnyon::mgr->getOnyon(gScoreDelegations[1][0]);
-	onyons[3] = ItemOnyon::mgr->getOnyon(gScoreDelegations[1][1]);
+	onyons[0] = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(0));
+	onyons[1] = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(1));
+	onyons[2] = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(2));
+	onyons[3] = ItemOnyon::mgr->getOnyon(getPikiFromTeamEnum(3));
 
 	int* scoreDelegationsArr = *gScoreDelegations;
 
@@ -1927,11 +1940,18 @@ void VsGameSection::calcVsScores()
 
 			Vector3f marblePosition = marble->getPosition();
 			f32 scores[4];
-			for (int our = 0; our < gEffectiveTeamCount; our++) {
+			for (int our = 0; our < 4; our++) {
+				yellowMarbleDist[our][i] = 0.0f;
+				scores[our]              = 0;
+				if (!onyons[our])
+					continue;
+
 				Vector3f ourOnyonPos = onyons[our]->getPosition();
 				f32 ourDistance      = _distanceXZ(marblePosition, ourOnyonPos);
-				scores[our]          = 0;
-				for (int their = 0; their < gEffectiveTeamCount; their++) {
+
+				for (int their = 0; their < 4; their++) {
+					if (!onyons[their])
+						continue;
 					if (our == their)
 						continue;
 					Vector3f theirOnyonPos = onyons[their]->getPosition();
@@ -1944,27 +1964,27 @@ void VsGameSection::calcVsScores()
 			}
 
 			if (!marble->isPelletBuried()) {
-				for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
-					if (marbleCarryFactor == teamColor) {
+				for (int teamColor = 0; teamColor < 4; teamColor++) {
+					if (marbleCarryFactor != teamColor && marbleCarryFactor != -1) {
 						yellowMarbleDist[teamColor][i] = 0.0f;
 					} else {
 						yellowMarbleDist[teamColor][i] = scores[teamColor];
 					}
 				}
 			} else {
-				for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
+				for (int teamColor = 0; teamColor < 4; teamColor++) {
 					yellowMarbleDist[teamColor][i] = 0.1f * scores[teamColor];
 				}
 			}
 		} else {
-			for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
+			for (int teamColor = 0; teamColor < 4; teamColor++) {
 				yellowMarbleDist[teamColor][i] = 0.0f;
 			}
 		}
 	}
 
 	f32 yellowScore[4];
-	for (int i = 0; i < gEffectiveTeamCount; i++) {
+	for (int i = 0; i < 4; i++) {
 		f32 count = mRealMarbleCounts[i];
 		for (int j = 0; j < YELLOW_MARBLE_COUNT; j++) {
 			if (yellowMarbleDist[i][j] >= 0.0f) {
@@ -1981,22 +2001,24 @@ void VsGameSection::calcVsScores()
 
 	f32 redBlueScore[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-	for (int i = 0; i < gEffectiveTeamCount; i++) {
-		Pellet* marble = mMarbleRedBlue[getTeamFromPiki(scoreDelegationsArr[i])];
+	for (int i = 0; i < 4; i++) {
+		Pellet* marble = mMarbleRedBlue[i];
 		Onyon* onyon   = onyons[i];
-		if (marble) {
+		if (marble && onyon) {
 			Vector3f marblePosition = marble->getPosition();
 			Vector3f onyonPosition  = onyon->getPosition();
 			f32 ourDist             = _distanceXZ(marblePosition, onyonPosition);
 			redBlueScore[i]         = 0;
-			for (int other = 0; other < gEffectiveTeamCount; other++) {
+			for (int other = 0; other < 4; other++) {
+				if (!onyons[other])
+					continue;
 				if (other == i)
 					continue;
 				Vector3f otherOnyonPosition = onyons[other]->getPosition();
 				f32 otherDist               = _distanceXZ(marblePosition, otherOnyonPosition);
 
 				f32 ePower = ourDist / (ourDist + otherDist) - 0.5f;
-				if (marble->mCarryColor == getPikiFromTeamEnum(other)) {
+				if (marble->mCarryColor != 5 && marble->mCarryColor != getPikiFromTeamEnum(other)) {
 					ePower += 0.1f;
 				}
 
@@ -2011,9 +2033,9 @@ void VsGameSection::calcVsScores()
 		}
 	}
 
-	for (int our = 0; our < gEffectiveTeamCount; our++) {
+	for (int our = 0; our < 4; our++) {
 		mRedBlueYellowScore[our] = yellowScore[our] - redBlueScore[our];
-		for (int their = 0; their < gEffectiveTeamCount; their++) {
+		for (int their = 0; their < 4; their++) {
 			if (our == their)
 				continue;
 			mRedBlueYellowScore[our] -= (yellowScore[their] - redBlueScore[their]) / 3;
@@ -2036,11 +2058,16 @@ void VsGameSection::calcVsScores()
 			Vector3f cherryPosition = cherry->getPosition();
 			f32 score[4];
 
-			for (int our = 0; our < gEffectiveTeamCount; our++) {
+			for (int our = 0; our < 4; our++) {
+				cherryDist[our][i] = 0.0f;
+				score[our]         = 0.0f;
+				if (!onyons[our])
+					continue;
 				Vector3f ourOnyonPosition = onyons[our]->getPosition();
 				f32 ourDist               = _distanceXZ(cherryPosition, ourOnyonPosition);
-				score[our]                = 0.0f;
-				for (int their = 0; their < gEffectiveTeamCount; their++) {
+				for (int their = 0; their < 4; their++) {
+					if (!onyons[their])
+						continue;
 					if (our == their)
 						continue;
 					Vector3f theirOnyonPosition = onyons[their]->getPosition();
@@ -2052,21 +2079,21 @@ void VsGameSection::calcVsScores()
 				}
 			}
 
-			if (!cherry->isPelletBuried()) {
-				for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
-					if (cherry->mCarryColor == teamColor) {
+			if (!cherry->isPelletBuried()) { // ??? burried cherry?
+				for (int teamColor = 0; teamColor < 4; teamColor++) {
+					if (cherryCarryFactor != teamColor && cherryCarryFactor != -1) {
 						cherryDist[teamColor][i] = 0.0f;
 					} else {
 						cherryDist[teamColor][i] = score[teamColor];
 					}
 				}
 			} else {
-				for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
+				for (int teamColor = 0; teamColor < 4; teamColor++) {
 					cherryDist[teamColor][i] = 0.1f * score[teamColor];
 				}
 			}
 		} else {
-			for (int teamColor = 0; teamColor < gEffectiveTeamCount; teamColor++) {
+			for (int teamColor = 0; teamColor < 4; teamColor++) {
 				cherryDist[teamColor][i] = 0.0f;
 			}
 		}
@@ -2074,7 +2101,7 @@ void VsGameSection::calcVsScores()
 
 	f32 redCherryValue;
 	f32 blueCherryValue;
-	for (int i = 0; i < gEffectiveTeamCount; i++) {
+	for (int i = 0; i < 4; i++) {
 		mMinCherryScore[i] = 0.0f;
 		f32 count          = 0.0f;
 		for (int j = 0; j < 10; j++) {

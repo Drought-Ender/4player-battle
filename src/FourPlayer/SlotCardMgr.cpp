@@ -856,11 +856,11 @@ struct BedamaCard : public VsSlotMachineCard {
 		if (redBlueScoreCount < 0.2f) {
 
 		} else if (redBlueScoreCount < 0.4f) {
-			resetBedamaProb = 0.2f;
+			resetBedamaProb = 0.1f;
 		} else if (redBlueScoreCount < 0.7f) {
-			resetBedamaProb = 0.5f;
+			resetBedamaProb = 0.25f;
 		} else {
-			resetBedamaProb = 0.8f;
+			resetBedamaProb = 0.4f;
 		}
 
 		if (ourYellowScoreCount - enemyYellowScoreCount >= 0.4f) {
@@ -868,14 +868,14 @@ struct BedamaCard : public VsSlotMachineCard {
 		}
 
 		f32 overuseFactor = mUseEffectiveness[teamID];
-		if (overuseFactor > 0.4f) {
-			overuseFactor = 0.4f;
+		if (overuseFactor > 0.2f) {
+			overuseFactor = 0.2f;
 		}
 
 		resetBedamaProb -= overuseFactor;
 
 		if (resetBedamaProb > 0.0f) {
-			return total * resetBedamaProb * (vsSlotCardMgr->mCardCount - 1) / (vsSlotCardMgr->mCardCount);
+			return total * resetBedamaProb / (1 - resetBedamaProb);
 		}
 
 		if (mBuryBedama) {
