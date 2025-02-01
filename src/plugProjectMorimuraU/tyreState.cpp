@@ -50,18 +50,18 @@ void Tyre::StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 void Tyre::StateMove::exec(EnemyBase* enemy)
 {
 	Obj* tyre    = static_cast<Obj*>(enemy);
-	f32 p1       = tyre->_30C;
+	f32 p1       = tyre->mSingleRotationRatio;
 	Parms* parms = static_cast<Parms*>(tyre->mParms);
 	p1 *= parms->mProperParms.mTyreRotationSpeed.mValue;
 
-	if (parms->_832 != 0) {
-		f32 p2     = 0.2f * FABS(p1 - tyre->_2C4);
-		tyre->_2C4 = p2;
-		p2 += tyre->_2C0;
+	if (parms->mDoUseGlobalJointMgr != 0) {
+		f32 p2                = 0.2f * FABS(p1 - tyre->mRotationOffset);
+		tyre->mRotationOffset = p2;
+		p2 += tyre->mCurrentRotation;
 		if (p2 > TAU) {
 			p2 -= TAU;
 		}
-		tyre->_2C0 = p2;
+		tyre->mCurrentRotation = p2;
 	} else {
 		p1 *= EnemyAnimatorBase::defaultAnimSpeed;
 		tyre->mAnimator->mSpeed = p1;
@@ -138,7 +138,7 @@ void Tyre::StateFreeze::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* tyre = static_cast<Obj*>(enemy);
 	tyre->stopMotion();
-	_10                    = 0;
+	mFrozenTimer           = 0;
 	tyre->mCurrentVelocity = Vector3f(0.0f);
 	tyre->mTargetVelocity  = Vector3f(0.0f);
 	tyre->enableEvent(0, EB_Constraint);
@@ -155,12 +155,12 @@ void Tyre::StateFreeze::exec(EnemyBase* enemy)
 	Obj* tyre              = static_cast<Obj*>(enemy);
 	tyre->mCurrentVelocity = Vector3f(0.0f);
 	tyre->mTargetVelocity  = Vector3f(0.0f);
-	_10++;
+	mFrozenTimer++;
 	if ((tyre->mHealth <= 0.0f) && tyre->isEvent(0, EB_IsVulnerable)) {
 		transit(tyre, TYRE_Dead, nullptr);
 	}
 
-	EnemyBase* wraith = tyre->_2BC;
+	EnemyBase* wraith = tyre->mOwner;
 	if (wraith) {
 		if (wraith->isEvent(1, EB2_IsEarthquake)) {
 			tyre->constraintOff();

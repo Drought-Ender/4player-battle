@@ -50,7 +50,7 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* wraith = static_cast<Obj*>(enemy);
 	bool check;
-	if (wraith->mTyre == nullptr || wraith->_2E0 == 2) {
+	if (wraith->mTyre == nullptr || wraith->mEscapePhase == 2) {
 		check = false;
 	} else {
 		check = true;
@@ -90,7 +90,7 @@ void StateWalk::exec(EnemyBase* enemy)
 		return;
 	}
 
-	if (wraith->isReachToGoal(wraith->getParms()->_A1C)) {
+	if (wraith->isReachToGoal(wraith->getParms()->mWaypointGoalRadius)) {
 		wraith->findNextRoutePoint();
 		return;
 	}
@@ -479,7 +479,7 @@ void StateFall::exec(EnemyBase* enemy)
 	position.y += 20.0f;
 
 	f32 minY     = mapMgr->getMinY(position);
-	f32 someParm = static_cast<Obj*>(enemy)->getParms()->_A48;
+	f32 someParm = static_cast<Obj*>(enemy)->getParms()->mFallMinDistance;
 	someParm += minY;
 
 	if (initY < someParm) {
@@ -585,7 +585,7 @@ StateFlick::StateFlick(int stateID)
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	bool check;
-	if (static_cast<Obj*>(enemy)->mTyre == nullptr || static_cast<Obj*>(enemy)->_2E0 == 2) {
+	if (static_cast<Obj*>(enemy)->mTyre == nullptr || static_cast<Obj*>(enemy)->mEscapePhase == 2) {
 		check = false;
 	} else {
 		check = true;
@@ -663,7 +663,7 @@ void StateTired::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(10, nullptr);
 	enemy->mTargetVelocity = Vector3f(0.0f);
-	_10                    = 0;
+	mTiredCounter          = 0;
 }
 
 /*
@@ -684,9 +684,9 @@ void StateTired::exec(EnemyBase* enemy)
 		return;
 	}
 
-	_10++;
+	mTiredCounter++;
 	Obj* wraith = static_cast<Obj*>(enemy);
-	if (_10 > wraith->getParms()->mProperParms.mStandStillTimerLength.mValue) {
+	if (mTiredCounter > wraith->getParms()->mProperParms.mStandStillTimerLength.mValue) {
 		enemy->finishMotion();
 	}
 }

@@ -114,7 +114,7 @@ struct SeqMgr : JSUList<SeqBase> {
 	void getPlayingSeq(JASTrack*);
 	void getFirstSeq();
 	void getFirstSeqA();
-	void getSeq(u32);
+	SeqBase* getSeq(u32);
 
 	// _00-_0C  = JSUList<SeqBase>
 	// _0C      = VTABLE

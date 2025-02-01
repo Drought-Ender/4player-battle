@@ -2212,7 +2212,7 @@ void Game::RouteMgr::openRoom(short p1)
 		WayPoint* wp = (*iterator);
 		for (WayPoint::RoomList* node = (WayPoint::RoomList*)wp->mRoomList.mChild; node != nullptr;
 		     node                     = (WayPoint::RoomList*)node->mNext) {
-			if (node->_18 == p1) {
+			if (node->mRoomIdx == p1) {
 				wp->mFlags &= ~WPF_Closed;
 			}
 		}

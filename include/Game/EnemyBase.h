@@ -485,6 +485,8 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 
 	inline bool isDead() { return mHealth <= 0.0f; }
 
+	inline void getPosition2D(Vector3f& pos) { pos = Vector3f(mPosition.x, 0.0f, mPosition.z); }
+
 	inline bool isDropping()
 	{ // needs a better name eventually, used in doSimulationGround
 		return (isEvent(1, EB2_IsEarthquake) || isEvent(1, EB2_IsDropping));

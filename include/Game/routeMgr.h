@@ -29,7 +29,7 @@ enum WayPointFlags {
 struct WayPoint : public JKRDisposer {
 	struct RoomList : public CNode {
 		inline RoomList()
-		    : _18(-1)
+		    : mRoomIdx(-1)
 		{
 		}
 
@@ -37,7 +37,7 @@ struct WayPoint : public JKRDisposer {
 
 		// _00     = VTBL
 		// _00-_18 = CNode
-		s16 _18; // _18, possibly count?
+		s16 mRoomIdx; // _18, possibly count?
 	};
 
 	WayPoint();

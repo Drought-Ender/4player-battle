@@ -1818,7 +1818,8 @@ lbl_constructor:
 /* 803A6F14 003A3E54  98 03 02 D2 */	stb r0, 0x2d2(r3)
 .L_803A6F18:
 /* 803A6F18 003A3E58  80 6D 92 E0 */	lwz r3, naviMgr__4Game@sda21(r13)
-/* 803A6F1C 003A3E5C  4B DB 3D 05 */	bl getActiveNavi__Q24Game7NaviMgrFv
+addi r4, r30, 0x18C # mPosition
+/* 803A6F1C 003A3E5C  4B DB 3D 05 */	bl "getNearestNavi__Q24Game7NaviMgrFR10Vector3<f>"
 /* 803A6F20 003A3E60  88 1E 03 A9 */	lbz r0, 0x3a9(r30)
 /* 803A6F24 003A3E64  7C 7D 1B 78 */	mr r29, r3
 /* 803A6F28 003A3E68  28 00 00 00 */	cmplwi r0, 0
@@ -3323,7 +3324,8 @@ lbl_constructor:
 /* 803A8488 003A53C8  2C 00 00 02 */	cmpwi r0, 2
 /* 803A848C 003A53CC  40 82 01 EC */	bne .L_803A8678
 /* 803A8490 003A53D0  80 6D 92 E0 */	lwz r3, naviMgr__4Game@sda21(r13)
-/* 803A8494 003A53D4  4B DB 27 8D */	bl getActiveNavi__Q24Game7NaviMgrFv
+addi r4, r30, 0x18C # mPosition
+bl "getNearestNavi__Q24Game7NaviMgrFR10Vector3<f>"
 /* 803A8498 003A53D8  80 9F 00 C0 */	lwz r4, 0xc0(r31)
 /* 803A849C 003A53DC  28 03 00 00 */	cmplwi r3, 0
 /* 803A84A0 003A53E0  C3 A4 08 44 */	lfs f29, 0x844(r4)
@@ -4092,6 +4094,12 @@ lbl_constructor:
 /* 803A8FB0 003A5EF0  7C 04 02 14 */	add r0, r4, r0
 /* 803A8FB4 003A5EF4  2C 00 00 01 */	cmpwi r0, 1
 /* 803A8FB8 003A5EF8  40 81 00 10 */	ble .L_803A8FC8
+
+# wp is in r3 already
+bl isWaypointTraversable__Q34Game8BlackMan3ObjFPQ24Game8WayPoint
+cmpwi r3, 0
+beq .L_803A8FC8
+
 /* 803A8FBC 003A5EFC  B2 F6 00 00 */	sth r23, 0(r22)
 /* 803A8FC0 003A5F00  3A D6 00 02 */	addi r22, r22, 2
 /* 803A8FC4 003A5F04  3B BD 00 01 */	addi r29, r29, 1
@@ -4131,6 +4139,12 @@ lbl_constructor:
 /* 803A9040 003A5F80  88 03 00 34 */	lbz r0, 0x34(r3)
 /* 803A9044 003A5F84  54 00 07 FF */	clrlwi. r0, r0, 0x1f
 /* 803A9048 003A5F88  40 82 00 10 */	bne .L_803A9058
+
+# wp is in r3 already
+bl isWaypointTraversable__Q34Game8BlackMan3ObjFPQ24Game8WayPoint
+cmpwi r3, 0
+beq .L_803A9058
+
 /* 803A904C 003A5F8C  B2 F6 00 00 */	sth r23, 0(r22)
 /* 803A9050 003A5F90  3A D6 00 02 */	addi r22, r22, 2
 /* 803A9054 003A5F94  3B BD 00 01 */	addi r29, r29, 1
@@ -4372,7 +4386,8 @@ lbl_constructor:
 /* 803A93C0 003A6300  7C 04 18 40 */	cmplw r4, r3
 /* 803A93C4 003A6304  40 82 FE 6C */	bne .L_803A9230
 /* 803A93C8 003A6308  80 6D 92 E0 */	lwz r3, naviMgr__4Game@sda21(r13)
-/* 803A93CC 003A630C  4B DB 18 55 */	bl getActiveNavi__Q24Game7NaviMgrFv
+addi r4, r30, 0x18C # mPosition
+bl "getNearestNavi__Q24Game7NaviMgrFR10Vector3<f>"
 /* 803A93D0 003A6310  7C 76 1B 79 */	or. r22, r3, r3
 /* 803A93D4 003A6314  41 82 00 98 */	beq .L_803A946C
 /* 803A93D8 003A6318  81 83 00 00 */	lwz r12, 0(r3)
@@ -4470,7 +4485,8 @@ lbl_constructor:
 /* 803A9530 003A6470  4E 80 04 21 */	bctrl 
 /* 803A9534 003A6474  7C 77 1B 78 */	mr r23, r3
 /* 803A9538 003A6478  80 6D 92 E0 */	lwz r3, naviMgr__4Game@sda21(r13)
-/* 803A953C 003A647C  4B DB 16 E5 */	bl getActiveNavi__Q24Game7NaviMgrFv
+addi r4, r30, 0x18C # mPosition
+bl "getNearestNavi__Q24Game7NaviMgrFR10Vector3<f>"
 /* 803A9540 003A6480  7C 79 1B 79 */	or. r25, r3, r3
 /* 803A9544 003A6484  41 82 00 B0 */	beq .L_803A95F4
 /* 803A9548 003A6488  7F 24 CB 78 */	mr r4, r25

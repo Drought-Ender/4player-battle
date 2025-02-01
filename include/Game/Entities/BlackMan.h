@@ -22,59 +22,88 @@
 
 namespace Game {
 struct PathNode;
+struct WayPoint;
 
 namespace BlackMan {
 struct Parms;
-struct FSM;
 
-void lHandCallBack(J3DJoint*, int);
-void rHandCallBack(J3DJoint*, int);
-void lFootCallBack(J3DJoint*, int);
-void rFootCallBack(J3DJoint*, int);
-void bodyCallBack(J3DJoint*, int);
+struct FSM : public EnemyStateMachine {
+	virtual void init(EnemyBase* enemy); // _08
+
+	// _00		= VTBL
+	// _00-_1C	= EnemyStateMachine
+};
+
+bool lHandCallBack(J3DJoint*, int);
+bool rHandCallBack(J3DJoint*, int);
+bool lFootCallBack(J3DJoint*, int);
+bool rFootCallBack(J3DJoint*, int);
+bool bodyCallBack(J3DJoint*, int);
 
 struct Obj : public EnemyBase {
 	Obj();
 
 	//////////////// VTABLE
-	virtual void onInit(CreatureInitArg* settings);          // _30
-	virtual void onKill(CreatureKillArg* settings);          // _34
-	virtual void doEntry();                                  // _40
-	virtual void doSimulation(f32);                          // _4C
-	virtual void doDirectDraw(Graphics& gfx);                // _50
-	virtual bool isUnderground();                            // _D0
-	virtual void collisionCallback(CollEvent& event);        // _EC
-	virtual void getShadowParam(ShadowParam& settings);      // _134
-	virtual ~Obj() { }                                       // _1BC (weak)
-	virtual void birth(Vector3f&, f32);                      // _1C0
-	virtual void setInitialSetting(EnemyInitialParamBase*);  // _1C4 (weak)
-	virtual void doUpdate();                                 // _1CC
-	virtual void doAnimationCullingOff();                    // _1DC
-	virtual void doDebugDraw(Graphics&);                     // _1EC
-	virtual void changeMaterial();                           // _200
-	virtual void setParameters();                            // _228
-	virtual void initWalkSmokeEffect();                      // _230
-	virtual WalkSmokeEffect::Mgr* getWalkSmokeEffectMgr();   // _234
-	virtual void updateEfxHamon();                           // _24C (weak)
-	virtual void createEfxHamon();                           // _250 (weak)
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID();      // _258 (weak)
-	virtual void doGetLifeGaugeParam(LifeGaugeParam&);       // _260
-	virtual void throwupItemInDeathProcedure();              // _270 (weak)
-	virtual bool damageCallBack(Creature*, f32, CollPart*);  // _278
-	virtual bool hipdropCallBack(Creature*, f32, CollPart*); // _284
-	virtual bool earthquakeCallBack(Creature*, f32);         // _28C
-	virtual bool bombCallBack(Creature*, Vector3f&, f32);    // _294 (weak)
-	virtual void doStartStoneState();                        // _2A4
-	virtual void doFinishStoneState();                       // _2A8
-	virtual void setFSM(FSM*);                               // _2F8 (weak)
+	virtual void onInit(CreatureInitArg* settings);                             // _30
+	virtual void onKill(CreatureKillArg* settings);                             // _34
+	virtual void doEntry();                                                     // _40
+	virtual void doSimulation(f32);                                             // _4C
+	virtual void doDirectDraw(Graphics& gfx);                                   // _50
+	virtual bool isUnderground();                                               // _D0
+	virtual void collisionCallback(CollEvent& event);                           // _EC
+	virtual void getShadowParam(ShadowParam& settings);                         // _134
+	virtual ~Obj() { }                                                          // _1BC (weak)
+	virtual void birth(Vector3f&, f32);                                         // _1C0
+	virtual void doUpdate();                                                    // _1CC
+	virtual void doAnimationCullingOff();                                       // _1DC
+	virtual void doDebugDraw(Graphics& gfx);                                    // _1EC
+	virtual void changeMaterial();                                              // _200
+	virtual void setParameters();                                               // _228
+	virtual void initWalkSmokeEffect();                                         // _230
+	virtual WalkSmokeEffect::Mgr* getWalkSmokeEffectMgr();                      // _234
+	virtual void doGetLifeGaugeParam(LifeGaugeParam&);                          // _260
+	virtual bool damageCallBack(Creature* source, f32 damage, CollPart* part);  // _278
+	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part); // _284
+	virtual bool earthquakeCallBack(Creature* source, f32 bounceFactor);        // _28C
+	virtual void doStartStoneState();                                           // _2A4
+	virtual void doFinishStoneState();                                          // _2A8
+	virtual void setFSM(FSM* fsm)
+	{
+		mFSM = fsm;
+		mFSM->init(this);
+		mCurrentLifecycleState = nullptr;
+	};                                                                // _2F8 (weak)
+	virtual void setInitialSetting(EnemyInitialParamBase* params) { } // _1C4 (weak)
+	virtual void throwupItemInDeathProcedure() { }                    // _270 (weak)
+	virtual void createEfxHamon()                                     // _250 (weak)
+	{
+		if (!mTyre) {
+			EnemyBase::createEfxHamon();
+		}
+	}
+	virtual void updateEfxHamon() // _24C (weak)
+	{
+		if (mTyre) {
+			fadeEfxHamon();
+		} else {
+			EnemyBase::updateEfxHamon();
+		}
+	}
+	virtual bool bombCallBack(Creature* source, Vector3f& direction, f32 damage) { return false; } // _294 (weak)
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()                                             // _258 (weak)
+	{
+		return EnemyTypeID::EnemyID_BlackMan;
+	}
 	//////////////// VTABLE END
+
+	static bool isWaypointTraversable(WayPoint*);
 
 	void walkFunc();
 	bool isReachToGoal(f32);
 	void findNextRoutePoint();
 	void findNextTraceRoutePoint();
 	bool isEndPathFinder();
-	void setPathFinder(bool);
+	bool setPathFinder(bool);
 	void releasePathFinder();
 	void jointMtxCalc(int);
 	void bodyMtxCalc();
@@ -105,54 +134,69 @@ struct Obj : public EnemyBase {
 
 	inline Parms* getParms() { return C_PARMS; }
 
+	inline bool isOnTyres()
+	{ // unsure of name
+		if (!mTyre || mEscapePhase == 2) {
+			return false;
+		}
+		return true;
+	}
+
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
-	u8 _2BC[0x10];                          // _2BC, unknown
+	Matrixf* mLeftHandMtx;                  // _2BC
+	Matrixf* mRightHandMtx;                 // _2C0
+	Matrixf* mLeftFootMtx;                  // _2C4
+	Matrixf* mRightFootMtx;                 // _2C8
 	int mFreezeTimer;                       // _2CC
-	Vector3f _2D0;                          // _2D0
+	Vector3f mTargetPosition;               // _2D0
 	int mPostFlickState;                    // _2DC
-	int _2E0;                               // _2E0
-	u32 _2E4;                               // _2E4, unknown
-	u32 _2E8;                               // _2E8, unknown
-	u32 _2EC;                               // _2EC, unknown
-	u32 _2F0;                               // _2F0, unknown
-	u32 _2F4;                               // _2F4, unknown
-	Vector3f _2F8;                          // _2F8
-	u8 _304[0xC];                           // _304, unknown
-	Vector3f _310[2];                       // _310
-	Vector3f _328;                          // _328
-	u32 _334;                               // _334
-	bool _338;                              // _338
-	f32 _33C;                               // _33C, timer?
-	s16 _340;                               // _340, next or current waypoint idx?
-	s16 _342;                               // _342, next or current waypoint idx?
-	u8 _344[0x4];                           // _344, unknown
-	u32 _348;                               // _348
-	u8 _34C;                                // _34C, unknown
+	int mEscapePhase;                       // _2E0
+	u32 _2E4;                               // _2E4
+	int mRouteFindTimer;                    // _2E8
+	int mStepTimer;                         // _2EC
+	int mStepPhase;                         // _2F0
+	int mEscapeTimer;                       // _2F4
+	Vector3f mNextRoutePos;                 // _2F8
+	Vector3f mChestJointPosition;           // _304
+	Vector3f mHandPositions[2];             // _310
+	Vector3f mLandPosition;                 // _328
+	int mRouteFindCooldownTimer;            // _334
+	bool mIsSameWaypoint;                   // _338
+	f32 mWraithFallTimer;                   // _33C
+	s16 mCurrentWaypointIndex;              // _340
+	s16 mPreviousWaypointIndex;             // _342
+	s16 mNextWaypointIndex;                 // _344
+	u32 mPathFindingHandle;                 // _348
+	u8 mFoundPath;                          // _34C
 	WalkSmokeEffect::Mgr mWalkSmokeMgr;     // _350
 	Sys::MatLoopAnimator* mMatLoopAnimator; // _358
-	PathNode* _35C;                         // _35C
-	FSM* _360;                              // _360
+	PathNode* mPath;                        // _35C
+	FSM* mFSM;                              // _360
 	Tyre::Obj* mTyre;                       // _364
-	u16 _368;                               // _368, unknown
+	u16 mWaistJointIndex;                   // _368
 	u16 mChestJointIndex;                   // _36A
 	u16 mLeftHandJointIndex;                // _36C
 	u16 mRightHandJointIndex;               // _36E
 	u16 mLeftFootJointIndex;                // _370
 	u16 mRightFootJointIndex;               // _372
-	f32 _374;                               // _374
-	f32 _378;                               // _378
-	u8 _37C[0x14];                          // _37C
+	f32 mEscapeMoveSpeed;                   // _374
+	f32 mFadeTimer;                         // _378
+	J3DMaterial* mBodyMaterial;             // _37C
+	Color4 mActiveColor;                    // _380
+	Color4 mTargetColor;                    // _384
+	Color4 mUnusedColor;                    // _388
+	Color4 mFadeColor;                      // _38C
 	efx::TKageMove* mEfxMove;               // _390
 	efx::TKageRun* mEfxRun;                 // _394
 	efx::TKageTyreup* mEfxTyreup;           // _398
 	efx::TKageDead1* mEfxDead;              // _39C
-	efx::TKageFlick* _3A0;                  // _3A0
-	efx::TKageFlick* _3A4;                  // _3A4
-	u8 _3A8;                                // _3A8, unknown
-	u8 _3A9;                                // _3A9
-	u8 _3AA;                                // _3AA
-	u8 _3AB;                                // _3AB
+	efx::TKageFlick* mEfxFrontFlick;        // _3A0
+	efx::TKageFlick* mEfxBackFlick;         // _3A4
+	u8 mHasStartedChaseBgm;                 // _3A8
+	u8 mIsFallStart;                        // _3A9
+	u8 mNeedAppearBgm;                      // _3AA
+	u8 mIsMoviePlaying;                     // _3AB
 	                                        // _3AC = PelletView
 };
 
@@ -192,22 +236,22 @@ struct Parms : public EnemyParmsBase {
 		ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
 		    // Pod?
-		    , mPodMoveSpeed(this, 'fp01', "É|ÉbÉhà⁄ìÆë¨ìx", 10.0f, 0.0f, 100.0f)
+		    , mPodMoveSpeed(this, 'fp01', "„Éù„ÉÉ„ÉâÁßªÂãïÈÄüÂ∫¶", 10.0f, 0.0f, 100.0f)
 		    // Running away (escape)
-		    , mEscapeSpeed(this, 'fp02', "ì¶Ç∞ë¨ìx", 10.0f, 0.0f, 1000.0f)
-		    , mEscapeRotationSpeed(this, 'fp03', "ì¶Ç∞âÒì]ë¨ìxó¶", 0.1f, 0.0f, 1.0f)
-		    , mMaxEscapeRotationStep(this, 'fp04', "ì¶Ç∞âÒì]ç≈ëÂë¨ìx", 10.0f, 0.0f, 360.0f)
+		    , mEscapeSpeed(this, 'fp02', "ÈÄÉ„ÅíÈÄüÂ∫¶", 10.0f, 0.0f, 1000.0f)
+		    , mEscapeRotationSpeed(this, 'fp03', "ÈÄÉ„ÅíÂõûËª¢ÈÄüÂ∫¶Áéá", 0.1f, 0.0f, 1.0f)
+		    , mMaxEscapeRotationStep(this, 'fp04', "ÈÄÉ„ÅíÂõûËª¢ÊúÄÂ§ßÈÄüÂ∫¶", 10.0f, 0.0f, 360.0f)
 		    // Normal movement
-		    , mTravelSpeed(this, 'fp05', "2íiäKë¨ìx", 200.0f, 10.0f, 500.0f)
-		    , mRotationSpeed(this, 'fp06', "2íiäKâÒì]ë¨ìxó¶", 0.1f, 0.0f, 1.0f)
-		    , mMaxRotationStep(this, 'fp07', "2íiäKâÒì]ç≈ëÂë¨ìx", 10.0f, 0.0f, 360.0f)
+		    , mTravelSpeed(this, 'fp05', "2ÊÆµÈöéÈÄüÂ∫¶", 200.0f, 10.0f, 500.0f)
+		    , mRotationSpeed(this, 'fp06', "2ÊÆµÈöéÂõûËª¢ÈÄüÂ∫¶Áéá", 0.1f, 0.0f, 1.0f)
+		    , mMaxRotationStep(this, 'fp07', "2ÊÆµÈöéÂõûËª¢ÊúÄÂ§ßÈÄüÂ∫¶", 10.0f, 0.0f, 360.0f)
 		    // Walking speed
-		    , mWalkingSpeed(this, 'fp11', "ï‡Ç´ë¨ìx", 10.0f, 0.0f, 100.0f)
-		    , mTimerToTwoStep(this, 'ip01', "2íiäKÇ÷ÇÃÉ^ÉCÉ}Å[", 300, 0, 3000)
-		    , mDosinStopTimerLength(this, 'ip03', "ÉhÉVÉìí‚é~É^ÉCÉ}Å[", 200, 0, 600)
-		    , mFreezeTimerLength(this, 'ip04', "ì¶Ç∞í‚é~É^ÉCÉ}Å[", 200, 0, 600)
-		    , mContinuousEscapeTimerLength(this, 'ip05', "òAë±ì¶Ç∞É^ÉCÉ}Å[", 200, 0, 600)
-		    , mStandStillTimerLength(this, 'ip06', "Ç¬Ç©ÇÍí‚é~É^ÉCÉ}Å[", 200, 0, 600)
+		    , mWalkingSpeed(this, 'fp11', "Ê≠©„ÅçÈÄüÂ∫¶", 10.0f, 0.0f, 100.0f)
+		    , mTimerToTwoStep(this, 'ip01', "2ÊÆµÈöé„Å∏„ÅÆ„Çø„Ç§„Éû„Éº", 300, 0, 3000)
+		    , mDosinStopTimerLength(this, 'ip03', "„Éâ„Ç∑„É≥ÂÅúÊ≠¢„Çø„Ç§„Éû„Éº", 200, 0, 600)
+		    , mFreezeTimerLength(this, 'ip04', "ÈÄÉ„ÅíÂÅúÊ≠¢„Çø„Ç§„Éû„Éº", 200, 0, 600)
+		    , mContinuousEscapeTimerLength(this, 'ip05', "ÈÄ£Á∂öÈÄÉ„Åí„Çø„Ç§„Éû„Éº", 200, 0, 600)
+		    , mStandStillTimerLength(this, 'ip06', "„Å§„Åã„ÇåÂÅúÊ≠¢„Çø„Ç§„Éû„Éº", 200, 0, 600)
 		{
 		}
 
@@ -228,31 +272,31 @@ struct Parms : public EnemyParmsBase {
 
 	Parms()
 	{
-		_A10 = 1;
-		_A11 = 0;
-		_A12 = 1;
-		_A14 = 1;
-		_A15 = 0;
-		_A16 = 1;
-		_A17 = 1;
-		_A18 = 1;
-		_A1A = -1;
-		_A1C = 50.0f;
-		_A20 = 20.0f;
-		_A24 = 1.0f;
-		_A28 = 5.0f;
-		_A2C = 1.0f;
-		_A30 = 0.9f;
-		_A34 = 0.6f;
-		_A38 = 0.2f;
-		_A3C = 0.08f;
-		_A40 = 20.0f;
-		_A44 = -10.0f;
-		_A48 = 10.0f;
-		_A4C = 1.25f;
-		_A50 = 1100.0f;
-		_A54 = 300.0f;
-		_A58 = 1.0f;
+		mStartPhase          = 1;
+		mArmFollowType       = 0;
+		mDoStunOnEarthquake  = true;
+		mUseGlobalMtxCalc    = true;
+		mWaypointCalcType    = 0;
+		_A16                 = 1;
+		mUseDrawBuffer8      = 1;
+		mUseTyreForJointCalc = 1;
+		mForcedStepPhase     = -1;
+		mWaypointGoalRadius  = 50.0f;
+		_A20                 = 20.0f;
+		mBaseScale           = 1.0f;
+		mBodyMoveRate        = 5.0f;
+		mBodyRotationSpeed   = 1.0f;
+		mWristScale          = 0.9f;
+		mArmScale            = 0.6f;
+		mShoulderScale       = 0.2f;
+		mFadeRate            = 0.08f;
+		mArmRotationA        = 20.0f;
+		mArmRotationB        = -10.0f;
+		mFallMinDistance     = 10.0f;
+		mFallStartDelay      = 1.25f;
+		mInitialSpawnHeight  = 1100.0f;
+		mFallRadius          = 300.0f;
+		mFallDelay2          = 1.0f;
 	}
 
 	virtual void read(Stream& stream) // _08 (weak)
@@ -264,32 +308,50 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
-	u8 _A10;                  // _A10, unknown
-	u8 _A11;                  // _A11, unknown
-	u8 _A12;                  // _A12, unknown
-	u8 _A13;                  // _A13, unknown
-	u8 _A14;                  // _A14, unknown
-	u8 _A15;                  // _A15, unknown
-	u8 _A16;                  // _A16, unknown
-	u8 _A17;                  // _A17, unknown
-	u8 _A18;                  // _A18, unknown
-	s16 _A1A;                 // _A1A, unknown
-	f32 _A1C;                 // _A1C
+	u8 mStartPhase;           // _A10
+	u8 mArmFollowType;        // _A11
+	u8 mDoStunOnEarthquake;   // _A12
+	u8 _A13;                  // _A13
+	u8 mUseGlobalMtxCalc;     // _A14
+	u8 mWaypointCalcType;     // _A15
+	u8 _A16;                  // _A16
+	bool mUseDrawBuffer8;     // _A17
+	u8 mUseTyreForJointCalc;  // _A18
+	s16 mForcedStepPhase;     // _A1A
+	f32 mWaypointGoalRadius;  // _A1C
 	f32 _A20;                 // _A20
-	f32 _A24;                 // _A24
-	f32 _A28;                 // _A28
-	f32 _A2C;                 // _A2C
-	f32 _A30;                 // _A30
-	f32 _A34;                 // _A34
-	f32 _A38;                 // _A38
-	f32 _A3C;                 // _A3C
-	f32 _A40;                 // _A40
-	f32 _A44;                 // _A44
-	f32 _A48;                 // _A48
-	f32 _A4C;                 // _A4C
-	f32 _A50;                 // _A50
-	f32 _A54;                 // _A54
-	f32 _A58;                 // _A58
+	f32 mBaseScale;           // _A24
+	f32 mBodyMoveRate;        // _A28
+	f32 mBodyRotationSpeed;   // _A2C
+	f32 mWristScale;          // _A30
+	f32 mArmScale;            // _A34
+	f32 mShoulderScale;       // _A38
+	f32 mFadeRate;            // _A3C
+	f32 mArmRotationA;        // _A40
+	f32 mArmRotationB;        // _A44
+	f32 mFallMinDistance;     // _A48
+	f32 mFallStartDelay;      // _A4C
+	f32 mInitialSpawnHeight;  // _A50
+	f32 mFallRadius;          // _A54
+	f32 mFallDelay2;          // _A58
+};
+
+enum AnimID {
+	WRAITHANIM_Bend    = 0,
+	WRAITHANIM_Bend2   = 1,
+	WRAITHANIM_Dead    = 2,
+	WRAITHANIM_Flick   = 3,
+	WRAITHANIM_Flick2  = 4,
+	WRAITHANIM_GetOff  = 5,
+	WRAITHANIM_Move    = 6,
+	WRAITHANIM_Recover = 7,
+	WRAITHANIM_Run     = 8,
+	WRAITHANIM_Wait    = 9,
+	WRAITHANIM_Wait2   = 10,
+	WRAITHANIM_Walk    = 11,
+	WRAITHANIM_Through = 12,
+	WRAITHANIM_Land    = 13,
+	WRAITHANIM_AnimCount, // 14
 };
 
 struct ProperAnimator : public EnemyAnimatorBase {
@@ -316,13 +378,6 @@ enum StateID {
 	WRAITH_Count   = 9,
 };
 
-struct FSM : public EnemyStateMachine {
-	virtual void init(EnemyBase*); // _08
-
-	// _00		= VTBL
-	// _00-_1C	= EnemyStateMachine
-};
-
 struct State : public EnemyFSMState {
 	inline State(int stateID)
 	    : EnemyFSMState(stateID)
@@ -336,9 +391,9 @@ struct State : public EnemyFSMState {
 struct StateBend : public State {
 	StateBend(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -347,8 +402,8 @@ struct StateBend : public State {
 struct StateDead : public State {
 	StateDead(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -358,8 +413,8 @@ struct StateDead : public State {
 struct StateEscape : public State {
 	StateEscape(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -368,8 +423,8 @@ struct StateEscape : public State {
 struct StateFall : public State {
 	StateFall(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -378,9 +433,9 @@ struct StateFall : public State {
 struct StateFlick : public State {
 	StateFlick(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -389,9 +444,9 @@ struct StateFlick : public State {
 struct StateFreeze : public State {
 	StateFreeze(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -400,8 +455,8 @@ struct StateFreeze : public State {
 struct StateRecover : public State {
 	StateRecover(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
@@ -410,20 +465,20 @@ struct StateRecover : public State {
 struct StateTired : public State {
 	StateTired(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
-	int _10; // _10
+	int mTiredCounter; // _10
 };
 
 struct StateWalk : public State {
 	StateWalk(int);
 
-	virtual void init(EnemyBase*, StateArg*); // _08
-	virtual void exec(EnemyBase*);            // _0C
-	virtual void cleanup(EnemyBase*);         // _10
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

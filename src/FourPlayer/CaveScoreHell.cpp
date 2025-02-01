@@ -1554,15 +1554,23 @@ void RandEnemyUnit::setVersusEnemyTypeF()
 	}
 }
 
+static bool sIsWaterWraith = false;
+
 void RandEnemyUnit::setVersusEnemyTypeB()
 {
 	int count = 0;
 	FOREACH_NODE(EnemyNode, mGenerator->mMainEnemies->mChild, currEnemy)
 	{
 		TekiInfo* info = currEnemy->getTekiInfo();
+
 		if (info && info->mType == BaseGen::TekiB__Hard) {
+			OSReport("enemy id %i\n", info->mEnemyID);
+			sIsWaterWraith = info->mEnemyID == EnemyTypeID::EnemyID_BlackMan;
+			OSReport("is waterwraith %i\n", sIsWaterWraith);
+
 			count += info->mWeight / 10;
 			if (count > mTypeCount[TEKITYPE_B]) {
+
 				int altNum     = (count - mTypeCount[TEKITYPE_B]) % 2;
 				int roundedMax = ((count - mTypeCount[TEKITYPE_B]) / 2) * 2;
 
@@ -1570,7 +1578,7 @@ void RandEnemyUnit::setVersusEnemyTypeB()
 				for (int i = 0; i < roundedMax; i++, randIdx++) {
 
 					randIdx &= 3;
-					if (randIdx == White && gEffectiveTeamCount == 2) {
+					if (gEffectiveTeamCount == 2 && randIdx == White) {
 						randIdx = Blue;
 					}
 
@@ -1718,7 +1726,9 @@ void RandEnemyUnit::setSlotEnemyTypeB(int vsColor)
 	zero[0] = (f32)scoreTally[0];
 	zero[1] = (f32)scoreTally[1];
 
-	if (zero[0] == 0.0f && (getTeamCount() == 2 || zero[1] == 0.0f)) {
+	if (sIsWaterWraith) {
+
+	} else if (zero[0] == 0.0f && (getTeamCount() == 2 || zero[1] == 0.0f)) {
 		f32 valueA = randFloat();
 
 		zero[0] = valueA * (vsScore[0] - vsScore[1]) + vsScore[1];

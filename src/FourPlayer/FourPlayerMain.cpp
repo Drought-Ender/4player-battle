@@ -694,6 +694,8 @@ Navi* NaviMgr::getActiveNavi()
 	return navis[availableSlots[randInt(count)]];
 }
 
+
+// getNearestNavi__Q24Game7NaviMgrFR10Vector3<f>
 Navi* NaviMgr::getNearestNavi(Vector3f& pos)
 {
 	Navi* navis[4];

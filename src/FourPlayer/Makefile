@@ -40,6 +40,7 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/Encryption.o\
 	$(BUILD_DIR)/src/FourPlayer/FastPathfinder.o\
 	$(BUILD_DIR)/src/FourPlayer/Honey.o\
+	$(BUILD_DIR)/src/FourPlayer/WaterwraithFix.o\
 
 
 
