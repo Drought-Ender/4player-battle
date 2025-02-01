@@ -1540,7 +1540,7 @@ void VsGameSection::updateCardGeneration()
 				}
 			}
 
-			if (lowFactor[i] > 0.0f) {
+			if (lowFactor[i] < 0.0f) {
 
 				f32 originalFactor0 = factors[i][0];
 

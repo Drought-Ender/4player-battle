@@ -83,6 +83,8 @@ void LifeGauge::update(f32 healthRatio, f32 timerRatio)
 	}
 }
 
+#define GREEN_RADIUS_RATIO (0.85f)
+
 /**
  * @note Address: 0x80119E10
  * @note Size: 0x1BC
@@ -101,7 +103,7 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 	f32 greenRadius = radius;
 
 	if (mCurrentTimerSegmentNum != 0 || mCherryTimerPercent > 0.0f) {
-		greenRadius = radius * 0.9f;
+		greenRadius = radius * GREEN_RADIUS_RATIO;
 	}
 
 	// draw segments
@@ -182,8 +184,8 @@ void LifeGauge::draw(f32 radius, f32 centerX, f32 centerY)
 
 	Color4 colorBlack = BLACK_LIFEGAUGE_COLOR;
 
-	f32 outerBlack = radius * 0.93f;
-	f32 innerBlack = radius * 0.87f;
+	f32 outerBlack = radius * (GREEN_RADIUS_RATIO + 0.03f);
+	f32 innerBlack = radius * (GREEN_RADIUS_RATIO - 0.03f);
 
 	// draw segments
 	for (int i = 0; i < mMaxSegmentNumTimer; i++) {
@@ -227,13 +229,13 @@ void LifeGauge::drawCherry(f32 radius, f32 centerX, f32 centerY)
 
 	Color4 colorBlue = BLUE_LIFEGAUGE_COLOR;
 
-	f32 greenRadius = radius * 0.9f;
+	f32 greenRadius = radius * GREEN_RADIUS_RATIO;
 	
 
 	Color4 colorBlack = BLACK_LIFEGAUGE_COLOR;
 
 	f32 outerBlack = radius * 1.03f;
-	f32 innerBlack = radius * 0.87f;
+	f32 innerBlack = radius * (GREEN_RADIUS_RATIO - 0.03f);
 
 	// draw segments
 	for (int i = 0; i < mMaxSegmentNumTimer; i++) {

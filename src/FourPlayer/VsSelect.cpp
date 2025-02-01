@@ -64,13 +64,13 @@ const f32 boxYOffs[4] = { 146.0f, 166.0f, 186.0f, 206.0f };
 // demoStart__Q28Morimura13TFourVsSelectFv
 void TFourVsSelect::demoStart()
 {
-	OSReport("demoStart__Q28Morimura13TFourVsSelectFv\n");
+	// OSReport("demoStart__Q28Morimura13TFourVsSelectFv\n");
 	if (!canEnterStage()) {
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_ERROR, 0);
 		return;
 	}
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
-	OSReport("TVsSelect::demoStart()\n");
+	// OSReport("TVsSelect::demoStart()\n");
 	// gDrawVsMenu = false;
     // _229 = 1;
     // _240 = 1;
@@ -79,7 +79,7 @@ void TFourVsSelect::demoStart()
 
 bool TFourVsSelect::canEnterStage()
 {
-	OSReport("TFourVsSelect::canEnterStage()\n");
+	// OSReport("TFourVsSelect::canEnterStage()\n");
 
 	Game::VsGame::StageData* data = GetVsGameSection()->mVsStageList->getStageData(mIndexPaneList[mCurrentSelect]->getIndex());
 

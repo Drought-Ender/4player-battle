@@ -1564,9 +1564,9 @@ void RandEnemyUnit::setVersusEnemyTypeB()
 		TekiInfo* info = currEnemy->getTekiInfo();
 
 		if (info && info->mType == BaseGen::TekiB__Hard) {
-			OSReport("enemy id %i\n", info->mEnemyID);
+			// OSReport("enemy id %i\n", info->mEnemyID);
 			sIsWaterWraith = info->mEnemyID == EnemyTypeID::EnemyID_BlackMan;
-			OSReport("is waterwraith %i\n", sIsWaterWraith);
+			// OSReport("is waterwraith %i\n", sIsWaterWraith);
 
 			count += info->mWeight / 10;
 			if (count > mTypeCount[TEKITYPE_B]) {

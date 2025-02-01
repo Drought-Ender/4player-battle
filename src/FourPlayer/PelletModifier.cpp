@@ -101,7 +101,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	}
 
 	if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaYellow) == 0 && gGameModeID == MAINGAME_BEDAMA) {
-		OSReport("FLAG_VS_BEDAMA_YELLOW\n");
+		// OSReport("FLAG_VS_BEDAMA_YELLOW\n");
 		mPelletFlag = FLAG_VS_BEDAMA_YELLOW;
 	} else if (strcmp(mConfig->mParams.mName.mData, VsOtakaraName::cBedamaRed) == 0) {
 		mPelletFlag = FLAG_VS_BEDAMA_RED;
@@ -241,7 +241,6 @@ void Pellet::onKill(CreatureKillArg* killArg)
 
 	if (((killArg != nullptr) && (static_cast<PelletKillArg*>(killArg)->_08 != 0))
 	    || ((gameSystem->isVersusMode()) && (mPelletFlag == FLAG_VS_CHERRY || mPelletFlag == FLAG_VS_BINGO_ITEM))) {
-			OSReport("set revival %p\n", this);
 		mMgr->setRevival(this);
 	}
 
