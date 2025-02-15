@@ -9,6 +9,25 @@ namespace Game {
 struct RouteMgr;
 }
 namespace Game {
+	
+enum PathFindState {
+	PATHFIND_MakePath = 0,
+	PATHFIND_Start    = 1,
+	PATHFIND_Busy     = 2,
+	PATHFIND_NoHandle = 3,
+};
+
+enum PathFindFlags {
+	PATHFLAG_RequireOpen               = 0x1,
+	PATHFLAG_PathThroughWater          = 0x2,
+	PATHFLAG_DisallowUnfinishedBridges = 0x4,
+	PATHFLAG_Unk4                      = 0x8,
+	PATHFLAG_DisallowVsRed             = 0x10,
+	PATHFLAG_DisallowVsBlue            = 0x20,
+	PATHFLAG_AllowUnvisited            = 0x40,
+	PATHFLAG_TwoWayPathing             = 0x80 // used for Panmodoki and BlackMan
+};
+
 namespace PathfindContext {
 extern Game::RouteMgr* routeMgr;
 } // namespace PathfindContext

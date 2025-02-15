@@ -6,9 +6,11 @@
 #include "SysShape/Model.h"
 
 #include "GenericObjectMgr.h"
-#include "MapCollision.h"
+#include "Game/routeMgr.h"
 #include "Game/MoveInfo.h"
+#include "MapCollision.h"
 #include "Vector3.h"
+
 
 struct BoundBox;
 struct BoundBox2d;
@@ -131,6 +133,9 @@ struct ShapeMapMgr : public MapMgr {
 };
 
 extern MapMgr* mapMgr;
+
+inline WayPoint* getWaypointAt(s16 idx) { return mapMgr->mRouteMgr->getWayPoint(idx); }
+
 } // namespace Game
 
 #endif
