@@ -180,7 +180,7 @@ struct AddPikminCard : public VsSlotMachineCard {
 			score *= (pikiCount < 10) ? 3 : 1.5f;
 		}
 
-		return;
+		return score;
 	}
 
 	virtual const char* getDescription() { return "Grows Pikmin"; }

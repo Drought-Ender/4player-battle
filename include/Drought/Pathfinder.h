@@ -1,3 +1,9 @@
+#ifndef _DROUGHT_PATHFINDER_H_
+#define _DROUGHT_PATHFINDER_H_
+
+#include "Game/routeMgr.h"
+#include "Game/pathfinder.h"
+
 namespace Drought {
 struct PathNode;
 struct Path;
@@ -109,3 +115,5 @@ private:
 };
 
 } // namespace Drought
+
+#endif

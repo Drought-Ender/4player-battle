@@ -219,7 +219,7 @@ void FourObjVs::doCreate(JKRArchive* arc)
 		if (disp->isID(OWNER_OGA, MEMBER_DUMMY)) {
 			mDisp = new og::Screen::DispMemberVs;
 		} else {
-			JUT_PANICLINE(246, "ERR! in ObjVS Createé∏îsÅI\n");
+			JUT_PANICLINE(246, "ERR! in ObjVS CreateÔøΩÔøΩÔøΩsÔøΩI\n");
 		}
 	}
 
@@ -947,12 +947,12 @@ inline void FourObjVs::MiniBedamaAnimation(int playerID)
 		mMinidamaTimers[playerID]      = 0.0f;
 	}
 
-	if (mMiniImpossibleFlags[playerID] && mMinidamaTimers[playerID] < cMiniBedamaAnimLength) {
+	if (mMiniImpossibleFlags[playerID] && (mMinidamaTimers[playerID] < cMiniBedamaAnimLength)) {
 		mMinidamaTimers[playerID] += sys->mDeltaTime;
 
 		for (int i = 0; i < 4; i++) {
-			if (mMinidamaTimers[playerID] < i * cMiniBedamaMarbleAnimTimeOffset
-			    || mMinidamaTimers[playerID] > cMiniBedamaSingleMarbleAnimLength + i * cMiniBedamaMarbleAnimTimeOffset) {
+			if ((mMinidamaTimers[playerID] < i * cMiniBedamaMarbleAnimTimeOffset)
+			    || mMinidamaTimers[playerID] > (cMiniBedamaSingleMarbleAnimLength + i * cMiniBedamaMarbleAnimTimeOffset)) {
 				continue;
 			}
 			f32 velocity = sinf((mMinidamaTimers[i] - i * cMiniBedamaMarbleAnimTimeOffset - 0.4f) * PI / 2.0f)

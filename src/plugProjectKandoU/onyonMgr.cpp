@@ -493,12 +493,10 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 			return true;
 		}
 
-		if (pellet->mPelletFlag == Pellet::FLAG_NAVI_NAPSACK) {
+		if (pellet->mPelletFlag == Pellet::FLAG_NAVI_NAPSACK && gConfig[CAPTAIN_CORPSE] == ConfigEnums::COPRSE_ON) {
 			for (int i = 0; i < 4; i++) {
-				OSReport("hi\n");
 				Navi* navi = naviMgr->getAt(i);
 				if (navi->mPellet == pellet && !navi->mIsAlive) {
-					OSReport("Revive\n");
 					navi->SetRevive(item->mOnyonType);
 				}
 			}
@@ -1931,7 +1929,7 @@ Vector3f Onyon::getOutStart_UFO()
 	if (mPikiOutJoint) {
 		return getJointPosition(mPikiOutJoint);
 	} else {
-		JUT_PANICLINE(2569, "‚¾‚ß‚Å‚·");
+		JUT_PANICLINE(2569, "ï¿½ï¿½ï¿½ß‚Å‚ï¿½");
 		return Vector3f::zero;
 	}
 }
