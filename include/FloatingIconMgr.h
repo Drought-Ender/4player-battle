@@ -26,7 +26,7 @@ struct IFloatingIcon {
 
 struct FloatingIcon : public CNode, public IFloatingIcon
 {
-    FloatingIcon(JUTTexture*, Vector3f*);
+    FloatingIcon(JUTTexture*, const Vector3f*);
 
     ~FloatingIcon();
 
@@ -40,7 +40,7 @@ struct FloatingIcon : public CNode, public IFloatingIcon
 
     // img owned by upper class (just like real life)
     JUTTexture* mImg;
-    Vector3f* mPosition;
+    const Vector3f* mPosition;
 
     static FloatingIconMgr* mgr;
 
@@ -50,7 +50,7 @@ struct FloatingIcon : public CNode, public IFloatingIcon
 
 struct HoveringFloatingIcon : public FloatingIcon
 {
-    HoveringFloatingIcon(JUTTexture*, Vector3f*, f32);
+    HoveringFloatingIcon(JUTTexture*, const Vector3f*, f32);
 
     virtual Vector3f getPosition();
 

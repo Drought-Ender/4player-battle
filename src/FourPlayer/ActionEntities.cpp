@@ -3,8 +3,14 @@
 #include "efx/TOta.h"
 #include "Game/MapMgr.h"
 #include "efx/THdama.h"
+#include "Game/Entities/ItemPikihead.h"
+#include "PSM/Navi.h"
+#include "Game/PikiState.h"
 
 #define HAZARD_BARRIER_DURATION (10.0f)
+#define PLUCKFUE_DURATION       (1.5f)
+#define PLUCKFUE_SIZE           (100.0f)
+#define PLUCKFUE_PIKI_COUNT     (30)
 
 namespace Game {
 namespace VsGame {
@@ -41,27 +47,107 @@ f32 HazardBarrier::GetEfxTimer(TeamID team)
 	JUT_PANIC("INVALID TEAM ID %i\n", team);
 }
 
-HazardBarrier::HazardBarrier(int teamID, Vector3f position)
-    : TeamPositionEntity(teamID, position)
+bool TeamPositionTimerEntity::update()
 {
-	mTimer    = 0.0f;
+	if (!isPaused()) {
+		mTimer -= sys->mDeltaTime;
+	}
+	mLifeGauge.update(0.0f, mTimer / mMaxTimer);
+
+	return mTimer <= 0.0f;
+}
+
+void TeamPositionTimerEntity::drawLifeGauge(Graphics& gfx, f32 height)
+{
+	LifeGauge::initLifeGaugeDraw();
+
+	Vector3f pos = getPosition();
+	pos.y += height;
+
+	Viewport* cVp = gfx.mCurrentViewport;
+
+	Matrixf* viewMtx = cVp->getMatrix(true);
+	Matrixf transScaledMtx;
+	transScaledMtx(0, 0) = viewMtx->mMatrix.mtxView[0][0];
+	transScaledMtx(1, 0) = viewMtx->mMatrix.mtxView[0][1];
+	transScaledMtx(2, 0) = viewMtx->mMatrix.mtxView[0][2];
+	transScaledMtx(0, 1) = -viewMtx->mMatrix.mtxView[1][0];
+	transScaledMtx(1, 1) = -viewMtx->mMatrix.mtxView[1][1];
+	transScaledMtx(2, 1) = -viewMtx->mMatrix.mtxView[1][2];
+	transScaledMtx(0, 2) = viewMtx->mMatrix.mtxView[2][0];
+	transScaledMtx(1, 2) = viewMtx->mMatrix.mtxView[2][1];
+	transScaledMtx(2, 2) = viewMtx->mMatrix.mtxView[2][2];
+
+	transScaledMtx(0, 3) = pos.x;
+	transScaledMtx(1, 3) = pos.y;
+	transScaledMtx(2, 3) = pos.z;
+
+	Mtx posMtx;
+	PSMTXConcat(cVp->getMatrix(true)->mMatrix.mtxView, transScaledMtx.mMatrix.mtxView, posMtx);
+	GXLoadPosMtxImm(posMtx, GX_MTX3x4);
+
+	mLifeGauge.drawCherry(10.0f, 0.0f, 0.0f);
+}
+
+bool PositionTimerEntity::update()
+{
+	if (!isPaused()) {
+		mTimer -= sys->mDeltaTime;
+	}
+	mLifeGauge.update(0.0f, mTimer / mMaxTimer);
+
+	return mTimer <= 0.0f;
+}
+
+void PositionTimerEntity::drawLifeGauge(Graphics& gfx, f32 height)
+{
+	LifeGauge::initLifeGaugeDraw();
+
+	Vector3f pos = getPosition();
+	pos.y += height;
+
+	Viewport* cVp = gfx.mCurrentViewport;
+
+	Matrixf* viewMtx = cVp->getMatrix(true);
+	Matrixf transScaledMtx;
+	transScaledMtx(0, 0) = viewMtx->mMatrix.mtxView[0][0];
+	transScaledMtx(1, 0) = viewMtx->mMatrix.mtxView[0][1];
+	transScaledMtx(2, 0) = viewMtx->mMatrix.mtxView[0][2];
+	transScaledMtx(0, 1) = -viewMtx->mMatrix.mtxView[1][0];
+	transScaledMtx(1, 1) = -viewMtx->mMatrix.mtxView[1][1];
+	transScaledMtx(2, 1) = -viewMtx->mMatrix.mtxView[1][2];
+	transScaledMtx(0, 2) = viewMtx->mMatrix.mtxView[2][0];
+	transScaledMtx(1, 2) = viewMtx->mMatrix.mtxView[2][1];
+	transScaledMtx(2, 2) = viewMtx->mMatrix.mtxView[2][2];
+
+	transScaledMtx(0, 3) = pos.x;
+	transScaledMtx(1, 3) = pos.y;
+	transScaledMtx(2, 3) = pos.z;
+
+	Mtx posMtx;
+	PSMTXConcat(cVp->getMatrix(true)->mMatrix.mtxView, transScaledMtx.mMatrix.mtxView, posMtx);
+	GXLoadPosMtxImm(posMtx, GX_MTX3x4);
+
+	mLifeGauge.drawCherry(10.0f, 0.0f, 0.0f);
+}
+
+HazardBarrier::HazardBarrier(int teamID, Vector3f position)
+    : TeamPositionTimerEntity(teamID, position, HAZARD_BARRIER_DURATION)
+{
 	mEfxTimer = 0.0f;
 
 	mEfx = MakeEfx((TeamID)teamID);
 
 	efx::Arg efxArg(mPosition);
 	mEfx->create(&efxArg);
-
-	mLifeGauge.mCurrentSegmentNum = 0;
 }
 
 bool HazardBarrier::update()
 {
-	mLifeGauge.update(0.0f, 1.0f - mTimer / HAZARD_BARRIER_DURATION);
+	bool done = TeamPositionTimerEntity::update();
 
 	DebugReport("HazardBarrier::update\n");
 	if (!isPaused()) {
-		mTimer += sys->mDeltaTime;
 		mEfxTimer += sys->mDeltaTime;
 	}
 
@@ -106,50 +192,22 @@ bool HazardBarrier::update()
 		mEfx->create(&efxArg);
 	}
 
-	return mTimer > HAZARD_BARRIER_DURATION;
+	return done;
 }
 
-HazardBarrier::~HazardBarrier() { mEfx->fade(); }
+HazardBarrier::~HazardBarrier()
+{
+	mEfx->fade();
+	delete mEfx;
+}
 
 #define ICON_HEIGHT (50.0f)
 
-void HazardBarrier::draw(Graphics& gfx)
-{
-
-	LifeGauge::initLifeGaugeDraw();
-
-	Vector3f pos = mPosition;
-	pos.y += ICON_HEIGHT;
-
-	Viewport* cVp = gfx.mCurrentViewport;
-
-	Matrixf* viewMtx = cVp->getMatrix(true);
-	Matrixf transScaledMtx;
-	transScaledMtx(0, 0) = viewMtx->mMatrix.mtxView[0][0];
-	transScaledMtx(1, 0) = viewMtx->mMatrix.mtxView[0][1];
-	transScaledMtx(2, 0) = viewMtx->mMatrix.mtxView[0][2];
-	transScaledMtx(0, 1) = -viewMtx->mMatrix.mtxView[1][0];
-	transScaledMtx(1, 1) = -viewMtx->mMatrix.mtxView[1][1];
-	transScaledMtx(2, 1) = -viewMtx->mMatrix.mtxView[1][2];
-	transScaledMtx(0, 2) = viewMtx->mMatrix.mtxView[2][0];
-	transScaledMtx(1, 2) = viewMtx->mMatrix.mtxView[2][1];
-	transScaledMtx(2, 2) = viewMtx->mMatrix.mtxView[2][2];
-
-	transScaledMtx(0, 3) = pos.x;
-	transScaledMtx(1, 3) = pos.y;
-	transScaledMtx(2, 3) = pos.z;
-
-	Mtx posMtx;
-	PSMTXConcat(cVp->getMatrix(true)->mMatrix.mtxView, transScaledMtx.mMatrix.mtxView, posMtx);
-	GXLoadPosMtxImm(posMtx, GX_MTX3x4);
-
-	mLifeGauge.drawCherry(10.0f, 0.0f, 0.0f);
-}
+void HazardBarrier::draw(Graphics& gfx) { drawLifeGauge(gfx, ICON_HEIGHT); }
 
 WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime, JUTTexture* tex)
-    : PositionEntity(position)
+    : PositionTimerEntity(position, timer)
 {
-	mWaitTimer      = timer;
 	mMaxWaitTimer   = timer;
 	mExistenceTimer = existenceTime;
 	mEntityID       = entityId;
@@ -159,9 +217,8 @@ WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 e
 }
 
 WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 existenceTime)
-    : PositionEntity(position)
+    : PositionTimerEntity(position, timer)
 {
-	mWaitTimer      = timer;
 	mMaxWaitTimer   = timer;
 	mExistenceTimer = existenceTime;
 	mEntityID       = entityId;
@@ -172,7 +229,7 @@ WaitEnemySpawn::WaitEnemySpawn(Vector3f position, int entityId, f32 timer, f32 e
 
 void WaitEnemySpawn::init()
 {
-	
+
 	mEfx = new efx::THdamaSight;
 
 	efx::Arg efxArg(mPosition);
@@ -185,14 +242,9 @@ void WaitEnemySpawn::init()
 
 bool WaitEnemySpawn::update()
 {
+	PositionTimerEntity::update();
 
-	mLifeGauge.update(0.0f, mWaitTimer / mMaxWaitTimer);
-
-	if (!isPaused()) {
-		mWaitTimer -= sys->mDeltaTime;
-	}
-
-	if (mWaitTimer < 0.0f) {
+	if (mTimer < 0.0f) {
 		if (mIcon) {
 			FloatingIconMgr::del(mIcon);
 			delete mIcon;
@@ -204,36 +256,7 @@ bool WaitEnemySpawn::update()
 	return false;
 }
 
-void WaitEnemySpawn::draw(Graphics& gfx) {
-	LifeGauge::initLifeGaugeDraw();
-
-	Vector3f pos = mPosition;
-	pos.y += ICON_HEIGHT + 20.0f;
-
-	Viewport* cVp = gfx.mCurrentViewport;
-
-	Matrixf* viewMtx = cVp->getMatrix(true);
-	Matrixf transScaledMtx;
-	transScaledMtx(0, 0) = viewMtx->mMatrix.mtxView[0][0];
-	transScaledMtx(1, 0) = viewMtx->mMatrix.mtxView[0][1];
-	transScaledMtx(2, 0) = viewMtx->mMatrix.mtxView[0][2];
-	transScaledMtx(0, 1) = -viewMtx->mMatrix.mtxView[1][0];
-	transScaledMtx(1, 1) = -viewMtx->mMatrix.mtxView[1][1];
-	transScaledMtx(2, 1) = -viewMtx->mMatrix.mtxView[1][2];
-	transScaledMtx(0, 2) = viewMtx->mMatrix.mtxView[2][0];
-	transScaledMtx(1, 2) = viewMtx->mMatrix.mtxView[2][1];
-	transScaledMtx(2, 2) = viewMtx->mMatrix.mtxView[2][2];
-
-	transScaledMtx(0, 3) = pos.x;
-	transScaledMtx(1, 3) = pos.y;
-	transScaledMtx(2, 3) = pos.z;
-
-	Mtx posMtx;
-	PSMTXConcat(cVp->getMatrix(true)->mMatrix.mtxView, transScaledMtx.mMatrix.mtxView, posMtx);
-	GXLoadPosMtxImm(posMtx, GX_MTX3x4);
-
-	mLifeGauge.drawCherry(10.0f, 0.0f, 0.0f);
-}
+void WaitEnemySpawn::draw(Graphics& gfx) { drawLifeGauge(gfx, ICON_HEIGHT + 20.0f); }
 
 WaitEnemySpawn::~WaitEnemySpawn()
 {
@@ -273,6 +296,124 @@ FloatingIconHolderCallback::FloatingIconHolderCallback(Vector3f position, JUTTex
 }
 
 bool FloatingIconHolderCallback::update() { return mCallback(mPosition, mArgs); }
+
+FloatingIconInitializer::FloatingIconInitializer(const Vector3f* vecPtr, JUTTexture* tex, f32 offs)
+{
+	mIsHide = false;
+	mIcon   = new HoveringFloatingIcon(tex, vecPtr, offs);
+	FloatingIconMgr::add(mIcon);
+}
+
+FloatingIconInitializer::~FloatingIconInitializer()
+{
+	if (!mIsHide) {
+		FloatingIconMgr::del(mIcon);
+	}
+	delete mIcon;
+}
+
+bool FloatingIconInitializer::show()
+{
+	if (mIsHide) {
+		FloatingIconMgr::add(mIcon);
+		mIsHide = false;
+	}
+}
+
+bool FloatingIconInitializer::hide()
+{
+	if (!mIsHide) {
+		FloatingIconMgr::del(mIcon);
+		mIsHide = true;
+	}
+}
+
+PluckAllFue::PluckAllFue(const Navi* navi, int teamID, Vector3f pos, JUTTexture* tex)
+    : TeamPositionTimerEntity(teamID, pos, PLUCKFUE_DURATION)
+    , mPluckedPikiCount(0)
+    , mIconContainer(&mPosition, tex, ICON_HEIGHT)
+	, mNaviPtr(navi)
+{
+	init();
+}
+
+void PluckAllFue::init()
+{
+	mEfxWhistle = new efx::TCursor(1);
+
+	efx::ArgCursor argCursor(mPosition, 0.0f);
+	mEfxWhistle->create(&argCursor);
+}
+
+void PluckAllFue::updateWhistleEffect(f32 scale)
+{
+	efx::ArgCursor argCursor(mPosition, scale);
+	mEfxWhistle->update(&argCursor);
+}
+
+bool PluckAllFue::update()
+{
+	//mNaviPtr->mSoundObj->playShugoSE();
+
+	mNaviPtr->mSoundObj->startSound(PSSE_EN_FUEFUKI_WHISTLE, 0);
+
+	mPosition = const_cast<Navi*>(mNaviPtr)->getPosition();
+
+	f32 activeTimer = mMaxTimer - mTimer;
+	if (activeTimer > 1.0f) {
+		activeTimer = 1.0f;
+	}
+
+	f32 whistleRadius = activeTimer * PLUCKFUE_SIZE;
+
+	updateWhistleEffect(whistleRadius);
+	pluckPikis(whistleRadius);
+
+	return TeamPositionTimerEntity::update();
+}
+
+void PluckAllFue::draw(Graphics& gfx) { }
+
+void PluckAllFue::pluckPikis(f32 radius) {
+
+	if (mPluckedPikiCount >= PLUCKFUE_PIKI_COUNT) {
+		return;
+	}
+
+	Iterator<ItemPikihead::Item> iPikiHead = ItemPikihead::mgr;
+	
+	int pikiColor                          = getPikiFromTeamEnum(mTeamID);
+	CI_LOOP(iPikiHead)
+	{
+		ItemPikihead::Item* pikiHead = *iPikiHead;
+		if (pikiHead->mColor == pikiColor && pikiHead->isAlive() && sqrDistanceXZ(pikiHead->mPosition, mPosition) < SQUARE(radius)) {
+			if (!pikiHead->canPullout())
+				continue;
+			PikiMgr::mBirthMode = 1;
+			Piki* pluckedPiki   = pikiMgr->birth();
+			PikiMgr::mBirthMode = 0;
+			if (pluckedPiki) {
+				pluckedPiki->init(nullptr);
+				pluckedPiki->changeShape(pikiHead->mColor);
+				pluckedPiki->changeHappa(pikiHead->mHeadType);
+				pluckedPiki->setPosition(pikiHead->mPosition, false);
+				pluckedPiki->mNavi = const_cast<Navi*>(mNaviPtr);
+				pluckedPiki->mFsm->transit(pluckedPiki, PIKISTATE_AutoNuki, nullptr);
+				pikiHead->kill(nullptr);
+				pikiHead->setAlive(false);
+
+				mPluckedPikiCount++;
+				break;
+			}
+		}
+	}
+}
+
+PluckAllFue::~PluckAllFue()
+{
+	mEfxWhistle->fade();
+	delete mEfxWhistle;
+}
 
 } // namespace VsGame
 

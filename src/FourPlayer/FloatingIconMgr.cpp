@@ -154,7 +154,7 @@ void FloatingIconMgr::destroy()
 	}
 }
 
-FloatingIcon::FloatingIcon(JUTTexture* img, Vector3f* chasePos)
+FloatingIcon::FloatingIcon(JUTTexture* img, const Vector3f* chasePos)
 {
 	DebugReport("FloatingIcon::FloatingIcon(JUTTexture* img, Vector3f* chasePos)\n");
 	mImg      = img;
@@ -225,7 +225,7 @@ void FloatingIcon::draw(Graphics& gfx)
 	GXTexCoord2f32(1.0f, 0.0f);
 }
 
-HoveringFloatingIcon::HoveringFloatingIcon(JUTTexture* tex, Vector3f* vec, f32 yoffs)
+HoveringFloatingIcon::HoveringFloatingIcon(JUTTexture* tex, const Vector3f* vec, f32 yoffs)
     : mYOffset(yoffs)
     , FloatingIcon(tex, vec)
 {
@@ -237,7 +237,7 @@ bool OnyonFloatingIcon::satisfy()
 {
 	return true;
 	Vector3f naviPos = naviMgr->getAt(sys->mGfx->mCurrentViewport->mVpId)->getPosition();
-	return sqrDistanceXZ(naviPos, *mPosition) > SQUARE(100.0f);
+	return sqrDistanceXZ(naviPos, const_cast<Vector3f&>(*mPosition)) > SQUARE(100.0f); // function is const but not marked
 }
 
 Vector3f ProjectAsGX(Vector3f in, Mtx44 pm, GXProjectionType type)

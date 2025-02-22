@@ -52,12 +52,25 @@ protected:
 
 static bool isPaused();
 
-enum EntityID { ENTITY_HAZARD, ENTITY_FALL, ENTITY_CALLBACKHOLDER };
+enum EntityID { ENTITY_HAZARD, ENTITY_FALL, ENTITY_CALLBACKHOLDER, ENTITY_PLUCKFUE };
 
 struct ActionEntity : public CNode {
-	virtual bool update() {};
+	virtual bool update() { };
 	virtual void draw(Graphics& gfx) { }
 	virtual EntityID getEntityID() = 0;
+};
+
+class FloatingIconInitializer {
+public:
+	FloatingIconInitializer(const Vector3f* vecPtr, JUTTexture* tex, f32 offs);
+	~FloatingIconInitializer();
+
+	bool show();
+	bool hide();
+
+private:
+	FloatingIcon* mIcon;
+	bool mIsHide;
 };
 
 struct TeamEntity : public ActionEntity {
@@ -83,6 +96,25 @@ struct TeamPositionEntity : public TeamEntity, public TPositionObject {
 	virtual Vector3f getPosition() { return mPosition; }
 };
 
+struct TeamPositionTimerEntity : public TeamPositionEntity {
+	TeamPositionTimerEntity(int teamID, Vector3f position, f32 maxtimer)
+	    : TeamPositionEntity(teamID, position)
+	    , mTimer(maxtimer)
+	    , mMaxTimer(maxtimer)
+	{
+		mLifeGauge.mCurrentSegmentNum = 0;
+	}
+
+	f32 mTimer; // counts down
+	f32 mMaxTimer;
+	LifeGauge mLifeGauge;
+
+	virtual bool update();
+	virtual EntityID getEntityID() = 0;
+
+	void drawLifeGauge(Graphics& gfx, f32 height);
+};
+
 struct PositionEntity : public ActionEntity, public TPositionObject {
 	PositionEntity(Vector3f position)
 	    : ActionEntity()
@@ -95,7 +127,25 @@ struct PositionEntity : public ActionEntity, public TPositionObject {
 	virtual Vector3f getPosition() { return mPosition; }
 };
 
-struct HazardBarrier : public TeamPositionEntity {
+struct PositionTimerEntity : public PositionEntity {
+	PositionTimerEntity(Vector3f position, f32 maxtimer)
+	    : PositionEntity(position)
+	    , mTimer(maxtimer)
+	    , mMaxTimer(maxtimer)
+	{
+		mLifeGauge.mCurrentSegmentNum = 0;
+	}
+	f32 mTimer; // counts down
+	f32 mMaxTimer;
+	LifeGauge mLifeGauge;
+
+	virtual bool update();
+	virtual EntityID getEntityID() = 0;
+
+	void drawLifeGauge(Graphics& gfx, f32 height);
+};
+
+struct HazardBarrier : public TeamPositionTimerEntity {
 	HazardBarrier(int, Vector3f);
 	~HazardBarrier();
 
@@ -103,16 +153,14 @@ struct HazardBarrier : public TeamPositionEntity {
 	static f32 GetEfxTimer(TeamID);
 
 	efx::TBase* mEfx;
-	f32 mTimer;
 	f32 mEfxTimer;
-	LifeGauge mLifeGauge;
 
 	virtual bool update();
 	virtual void draw(Graphics&);
 	virtual EntityID getEntityID() { return ENTITY_HAZARD; }
 };
 
-struct WaitEnemySpawn : public PositionEntity {
+struct WaitEnemySpawn : public PositionTimerEntity {
 
 	EnemyBase* birthFromSky();
 
@@ -124,17 +172,34 @@ struct WaitEnemySpawn : public PositionEntity {
 
 	virtual bool update();
 	virtual void draw(Graphics& gfx);
+	virtual EntityID getEntityID() { return ENTITY_FALL; }
 
 	efx::THdamaSight* mEfx;
-	f32 mWaitTimer;
 	f32 mMaxWaitTimer;
 	f32 mExistenceTimer;
 	int mEntityID;
 	FloatingIcon* mIcon;
 
 	LifeGauge mLifeGauge;
+};
 
-	virtual EntityID getEntityID() { return ENTITY_FALL; }
+struct PluckAllFue : public TeamPositionTimerEntity {
+	PluckAllFue(const Navi*, int, Vector3f, JUTTexture* tex);
+	~PluckAllFue();
+
+	void init();
+	void updateWhistleEffect(f32 scale);
+	void pluckPikis(f32 scale);
+	virtual Vector3f getPosition() { return const_cast<Navi*>(mNaviPtr)->getPosition(); }
+
+	virtual bool update();
+	virtual void draw(Graphics& gfx);
+	virtual EntityID getEntityID() { return ENTITY_PLUCKFUE; }
+
+	const Navi* mNaviPtr;
+	efx::TCursor* mEfxWhistle;
+	FloatingIconInitializer mIconContainer;
+	u32 mPluckedPikiCount;
 };
 
 struct FloatingIconHolderBase : public PositionEntity {

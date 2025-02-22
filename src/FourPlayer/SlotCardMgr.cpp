@@ -917,29 +917,9 @@ struct PluckAllCard : public VsSlotMachineCard {
 
 	virtual void onUseCard(CardMgr* cardMgr, int user)
 	{
-		Iterator<ItemPikihead::Item> iPikiHead = ItemPikihead::mgr;
-		Navi* navi                             = naviMgr->getAt(user);
-		int pikiColor                          = getVsPikiColor(user);
-		CI_LOOP(iPikiHead)
-		{
-			ItemPikihead::Item* pikiHead = *iPikiHead;
-			if (pikiHead->mColor == pikiColor && pikiHead->isAlive()) {
-				if (!pikiHead->canPullout())
-					continue;
-				PikiMgr::mBirthMode = 1;
-				Piki* pluckedPiki   = pikiMgr->birth();
-				PikiMgr::mBirthMode = 0;
-				if (pluckedPiki) {
-					pluckedPiki->init(nullptr);
-					pluckedPiki->changeShape(pikiHead->mColor);
-					pluckedPiki->changeHappa(pikiHead->mHeadType);
-					pluckedPiki->setPosition(pikiHead->mPosition, false);
-					pluckedPiki->mFsm->transit(pluckedPiki, PIKISTATE_AutoNuki, nullptr);
-					pikiHead->kill(nullptr);
-					pikiHead->setAlive(false);
-				}
-			}
-		}
+		Navi* navi = naviMgr->getAt(user);
+		PluckAllFue* card = new PluckAllFue(navi, getVsTeam(user), navi->getPosition(), GetTextureFromMgr());
+		vsSlotCardMgr->mActionMgr.add(card);
 	}
 
 	virtual int getWeight(CardMgr* cardMgr, int teamID)
