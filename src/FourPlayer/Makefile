@@ -41,6 +41,8 @@ FOURPLAYER_FILES:=\
 	$(BUILD_DIR)/src/FourPlayer/FastPathfinder.o\
 	$(BUILD_DIR)/src/FourPlayer/Honey.o\
 	$(BUILD_DIR)/src/FourPlayer/WaterwraithFix.o\
+	$(BUILD_DIR)/src/FourPlayer/GreenBomb.o\
+	$(BUILD_DIR)/src/FourPlayer/GreenBombMgr.o\
 
 
 

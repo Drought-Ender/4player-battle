@@ -218,7 +218,7 @@ void Navi::onInit(Game::CreatureInitArg* arg)
 
 	mCollTree->createFromFactory(mModel, naviMgr->_CC, nullptr);
 	JUT_ASSERTLINE(838, ((int)mCollTree->mPart) >= 0x80000000,
-	               "ƒUƒ“[[iE„tEj??ƒlƒ“\n"); // 'disappointttttt D: ?? ment' (lol)
+	               "ï¿½Uï¿½ï¿½ï¿½[ï¿½[ï¿½iï¿½Eï¿½tï¿½Eï¿½j??ï¿½lï¿½ï¿½\n"); // 'disappointttttt D: ?? ment' (lol)
 	mCollTree->attachModel(mModel);
 
 	mFsm->start(this, NSID_Walk, nullptr);
@@ -683,6 +683,7 @@ Navi* NaviMgr::getActiveNavi()
 	}
 
 	int availableSlots[4];
+	availableSlots[0] = 0;
 
 	int count = 0;
 	for (int i = 0; i < 4; i++) {

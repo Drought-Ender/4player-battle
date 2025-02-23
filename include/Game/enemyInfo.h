@@ -149,6 +149,7 @@ enum EEnemyTypeID {//ID      Common Name
     EnemyID_WaterHiba      = 107,
     EnemyID_GasLineHiba    = 108,
     EnemyID_SporeHiba      = 109,
+    EnemyID_GreenBomb      = 110,
     EnemyID_COUNT,
 };
 EEnemyTypeID mEnemyID; // _00

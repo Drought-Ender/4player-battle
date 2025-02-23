@@ -62,8 +62,6 @@ struct DispWinLoseReason : public og::Screen::DispMemberBase {
 
 	// _00     = VTBL
 	// _00-_08 = DispMemberBase
-	int mOutcomeRed; // _08
-	int mOutcomeBlue; // _0C
 	int mOutcomeNavis[4];
 };
 

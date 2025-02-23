@@ -20,6 +20,7 @@ namespace Screen {
  */
 void ObjWinLoseReason::doCreate(JKRArchive* arc)
 {
+	DebugReport("doCreate\n");
 	mScreen = new P2DScreen::Mgr_tuning;
 	mScreen->set("otakara_get.blo", 0x1040000, arc);
 	void* file = JKRFileLoader::getGlbResource("otakara_get.bck", arc);
@@ -73,11 +74,15 @@ SceneWinLoseReason::SceneWinLoseReason()
  */
 void SceneWinLoseReason::doCreateObj(JKRArchive* arc)
 {
+	P2ASSERT(mDispMember);
 	if (!mDispMember->isID(OWNER_KH, MEMBER_WIN_LOSE_REASON)) {
 		JUT_PANICLINE(140, "disp member err");
 	}
 
 	DispWinLoseReason* disp = static_cast<DispWinLoseReason*>(mDispMember);
+
+	DebugReport("do create obj\n");
+	
 	for (int i = 0; i < 4; i++) {
 		mOutcome[i]             = disp->mOutcomeNavis[i];
 		OSReport("Outcome[%i] %i\n", i, mOutcome[i]);

@@ -428,7 +428,7 @@ void GameState::exec(VsGameSection* section)
 					VsGameSection::mRedWinCount += 1;
 					section->mVsWinner = 0;
 					DebugReport("Red Won\n");
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < gNaviNum; i++) {
 						DebugReport("Checking %i\n", i);
 						if (getVsPikiColor(i) == Red) {
 							DebugReport("Red Team Member %i\n", i);
@@ -442,7 +442,7 @@ void GameState::exec(VsGameSection* section)
 					VsGameSection::mBlueWinCount += 1;
 					section->mVsWinner = 1;
 					DebugReport("Blue Won\n");
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < gNaviNum; i++) {
 						if (getVsPikiColor(i) == Blue) {
 							DebugReport("Blue Team Member %i\n", i);
 							mRealWinCounts[i]++;
@@ -454,7 +454,7 @@ void GameState::exec(VsGameSection* section)
 					VsGameSection::mWhiteWinCount += 1;
 					section->mVsWinner = 2;
 					DebugReport("White Won\n");
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < gNaviNum; i++) {
 						if (getVsPikiColor(i) == White) {
 							mRealWinCounts[i]++;
 							outcomes[i] = 1;
@@ -465,7 +465,7 @@ void GameState::exec(VsGameSection* section)
 					VsGameSection::mPurpleWinCount += 1;
 					section->mVsWinner = 3;
 					DebugReport("Purple Won\n");
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < gNaviNum; i++) {
 						if (getVsPikiColor(i) == Purple) {
 							mRealWinCounts[i]++;
 							outcomes[i] = 1;
@@ -479,7 +479,7 @@ void GameState::exec(VsGameSection* section)
 				}
 
 				if (mTimeLeft <= 0.0f) {
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < gNaviNum; i++) {
 						if (outcomes[i] == 0 || outcome == 3) {
 							outcomes[i] = -1; // timeup
 						}
@@ -603,39 +603,12 @@ void GameState::exec(VsGameSection* section)
 			setFlag(VSGS_Unk9);
 			gameSystem->setPause(true, nullptr, 3);
 
-			int redReason  = -1;
-			int blueReason = -1;
-			if (isLoseCause(VSPLAYER_Red, VSLOSE_ColoredMarble)) {
-				blueReason = 3;
-
-			} else if (isLoseCause(VSPLAYER_Red, VSLOSE_OrimaDown)) {
-				redReason = 1;
-
-			} else if (isLoseCause(VSPLAYER_Red, VSLOSE_Extinction)) {
-				redReason = 2;
-			}
-
-			if (blueReason == 3) {
-
-			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_ColoredMarble)) {
-				redReason = 3;
-
-			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_OrimaDown)) {
-				blueReason = 1;
-
-			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_Extinction)) {
-				blueReason = 2;
-			}
-
 			kh::Screen::DispWinLoseReason winLoseReason;
-			winLoseReason.mOutcomeRed = -1;
-			winLoseReason.mOutcomeBlue = -1;
-
 			for (int i = 0; i < 4; i++) {
 				DebugReport("Outcome for %i: %i\n", i, mNaviStatus[i]);
 				winLoseReason.mOutcomeNavis[i] = mNaviStatus[i];
 			}
-
+			DebugReport("open win lose reason\n");
 			P2ASSERTLINE(513, Screen::gGame2DMgr->open_WinLoseReason(winLoseReason));
 		}
 	}
@@ -693,11 +666,11 @@ void GameState::checkSMenu(VsGameSection* section)
 		return;
 
 	case 2:
-		JUT_PANICLINE(617, "‚ ‚è‚¦‚È‚¢‚Á‚·\n"); // 'impossible'
+		JUT_PANICLINE(617, "ï¿½ï¿½ï¿½è‚¦ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½\n"); // 'impossible'
 		return;
 
 	case 3:
-		JUT_PANICLINE(620, "‚È‚¢\n"); // 'no'
+		JUT_PANICLINE(620, "ï¿½È‚ï¿½\n"); // 'no'
 		return;
 
 	case 5:
@@ -1373,7 +1346,7 @@ void GameState::onOrimaDown(VsGameSection* section, int idx)
 
 void GameState::checkOrimaDown(VsGameSection* section) {
 	int orimaDownCount = 0;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < gNaviNum; i++) {
 		if (mOrimaDownState[i] > 0) {
 			orimaDownCount++;
 		}
@@ -1382,8 +1355,8 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 		}
 	}
 
-	if (orimaDownCount == 4) {
-		for (int i = 0; i < 4; i++) {
+	if (orimaDownCount == gNaviNum) {
+		for (int i = 0; i < gNaviNum; i++) {
 			mExtinctions[i] = true;
 			if (mNaviStatus[i] == -1) {
 				mNaviStatus[i] = VSLOSE_OrimaDown;
@@ -1395,11 +1368,11 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 		return;
 	}
 
-	for (int idx = 0; idx < 4; idx++) {
-		if ((mOrimaDownState[idx] == 2 && orimaDownCount == 3)) {
+	for (int idx = 0; idx < gNaviNum; idx++) {
+		if (mOrimaDownState[idx] == 2) {
 			mNaviStatus[idx] = VSLOSE_OrimaDown;
 			bool naviTeamExinct = true;
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < gNaviNum; i++) {
 				if (mNaviStatus[i] == -1 && getVsPikiColor(idx) == getVsPikiColor(i)) {
 					naviTeamExinct = false;
 				}
@@ -1414,18 +1387,8 @@ void GameState::checkOrimaDown(VsGameSection* section) {
 		}
 	}
 
-	if (orimaDownCount >= 3) {
-		for (int i = 0; i < 4; i++) {
-			if (mOrimaDownState[i] == 2) {
-				mOrimaDownState[i] = 3;
-			}
-		}
-		return;
-	}
-
-
 	
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < gNaviNum; i++) {
 		if (mOrimaDownState[i] != 2) continue;
 		MoviePlayArg movieArg("s03_orimadown", nullptr, section->mMovieFinishCallback, i);
 		movieArg.mDelegateStart = section->mMovieStartCallback;

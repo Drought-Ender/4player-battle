@@ -114,7 +114,7 @@ EnemyInfo gEnemyInfo[] = {
    {"WaterHiba",          EnemyTypeID::EnemyID_WaterHiba,      -1,                                1,      0x0207,    "Hiba",         "Hiba",         "Hiba",         "Hiba",     "Hiba",     "Hiba",         "Hiba",         -1,                               0,    BDT_Empty},
    {"GasLineHiba",        EnemyTypeID::EnemyID_GasLineHiba,    -1,                                1,      0x0207,    "Hiba",         "Hiba",         "Hiba",         "Hiba",     "Hiba",     "Hiba",         "Hiba",         -1,                               0,    BDT_Empty},
    {"SporeHiba",          EnemyTypeID::EnemyID_SporeHiba,      -1,                                1,      0x0207,    "Hiba",         "Hiba",         "Hiba",         "Hiba",     "Hiba",     "Hiba",         "Hiba",         -1,                               0,    BDT_Empty},
-
+   {"GreenBomb",          EnemyTypeID::EnemyID_GreenBomb,      -1,                                1,      0x0207,    "",             "Bomb",         "Bomb",         "",         "Bomb",     "Bomb",         "Bomb",         -1,                               0,    BDT_Empty},
 };
 // clang-format on
 
@@ -169,7 +169,7 @@ char* getEnemyResName(int enemyID, int enemyFlags)
 	case EnemyTypeID::EnemyID_WaterOtakara:
 	case EnemyTypeID::EnemyID_GasOtakara:
 	case EnemyTypeID::EnemyID_ElecOtakara:
-   case EnemyTypeID::EnemyID_SporeOtakara:
+	case EnemyTypeID::EnemyID_SporeOtakara:
 		return "Otakara";
 		break;
 	}
