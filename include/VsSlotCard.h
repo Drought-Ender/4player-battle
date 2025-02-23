@@ -10,6 +10,8 @@ struct JUTTexture;
 
 namespace efx {
 struct THdamaSight;
+struct TChibiShell;
+struct TChibiHit;
 } // namespace efx
 
 namespace Game {
@@ -52,7 +54,7 @@ protected:
 
 static bool isPaused();
 
-enum EntityID { ENTITY_HAZARD, ENTITY_FALL, ENTITY_CALLBACKHOLDER, ENTITY_PLUCKFUE };
+enum EntityID { ENTITY_HAZARD, ENTITY_FALL, ENTITY_CALLBACKHOLDER, ENTITY_PLUCKFUE, ENTITY_STUNSTORM };
 
 struct ActionEntity : public CNode {
 	virtual bool update() { };
@@ -224,6 +226,50 @@ struct FloatingIconHolderCallback : public FloatingIconHolderBase {
 	const BoolCallback* mCallback;
 	const CallbackArgs* mArgs;
 };
+
+#define STUN_STORM_COUNT (8)
+#define STUN_STORM_WAIT_TIMER (0.6f)
+#define STUN_STORM_FALL_TIMER (0.6f)
+#define STUN_STORM_MAX_LENGTH (5.0f)
+#define STUN_SHELL_ATTACK_RADIUS (30.0f)
+#define STUN_SHELL_MAX_HEIGHT (300.0f)
+#define STUN_STORM_BEAT_COUNT (64)
+#define STUN_STORM_STARTUP (0.4f)
+
+struct StunStorm : public ActionEntity
+{
+	StunStorm(Navi* userNavi, Navi* targetNavi, JUTTexture* tex);
+	~StunStorm();
+
+	Navi* mUser;
+	Navi* mTarget;
+
+	FloatingIconInitializer mIconContainer;
+
+	struct Shell
+	{
+		Shell();
+		~Shell();
+		f32 mTimer;
+		Vector3f mPosition;
+		efx::TChibiShell* mShellEfx;
+
+		void init(Vector3f& pos);
+		void setTimer(f32);
+		bool update(Navi* user, Navi* target);
+		void updateFly(Navi* user);
+		void updateLand(Navi* target);
+
+		void hit(Vector3f& pos);
+	};
+
+	virtual bool update();
+	virtual EntityID getEntityID() { return ENTITY_STUNSTORM; }
+	
+	Shell mShells[STUN_STORM_COUNT];
+
+};
+
 
 struct ActionEntityMgr : public CNode {
 

@@ -6,6 +6,10 @@
 #include "Game/Entities/ItemPikihead.h"
 #include "PSM/Navi.h"
 #include "Game/PikiState.h"
+#include "efx/TChibi.h"
+#include "PSSystem/PSSystemIF.h"
+#include "ModdingUtility/List.h"
+#include "PS.h"
 
 #define HAZARD_BARRIER_DURATION (10.0f)
 #define PLUCKFUE_DURATION       (1.5f)
@@ -332,7 +336,7 @@ PluckAllFue::PluckAllFue(const Navi* navi, int teamID, Vector3f pos, JUTTexture*
     : TeamPositionTimerEntity(teamID, pos, PLUCKFUE_DURATION)
     , mPluckedPikiCount(0)
     , mIconContainer(&mPosition, tex, ICON_HEIGHT)
-	, mNaviPtr(navi)
+    , mNaviPtr(navi)
 {
 	init();
 }
@@ -353,7 +357,7 @@ void PluckAllFue::updateWhistleEffect(f32 scale)
 
 bool PluckAllFue::update()
 {
-	//mNaviPtr->mSoundObj->playShugoSE();
+	// mNaviPtr->mSoundObj->playShugoSE();
 
 	mNaviPtr->mSoundObj->startSound(PSSE_EN_FUEFUKI_WHISTLE, 0);
 
@@ -374,15 +378,16 @@ bool PluckAllFue::update()
 
 void PluckAllFue::draw(Graphics& gfx) { }
 
-void PluckAllFue::pluckPikis(f32 radius) {
+void PluckAllFue::pluckPikis(f32 radius)
+{
 
 	if (mPluckedPikiCount >= PLUCKFUE_PIKI_COUNT) {
 		return;
 	}
 
 	Iterator<ItemPikihead::Item> iPikiHead = ItemPikihead::mgr;
-	
-	int pikiColor                          = getPikiFromTeamEnum(mTeamID);
+
+	int pikiColor = getPikiFromTeamEnum(mTeamID);
 	CI_LOOP(iPikiHead)
 	{
 		ItemPikihead::Item* pikiHead = *iPikiHead;
@@ -413,6 +418,160 @@ PluckAllFue::~PluckAllFue()
 {
 	mEfxWhistle->fade();
 	delete mEfxWhistle;
+}
+
+StunStorm::StunStorm(Navi* user, Navi* target, JUTTexture* tex)
+    : mUser(user)
+    , mTarget(target)
+    , mIconContainer(&user->mPosition3, tex, ICON_HEIGHT)
+{
+
+
+	ModdingUtility::List<int> randomNotes(STUN_STORM_BEAT_COUNT, 0);
+
+	ModdingUtility::ListIterator<int> iList = &randomNotes;
+
+	int n = 0;
+
+	CI_LOOP(iList) {
+		int& obj = *iList;
+		obj = n++;
+	}
+
+
+	for (int i = 0; i < ARRAY_SIZE(mShells); i++) {
+		int spawnBeatIdx = randomNotes.pop_value(randFloat() * (STUN_STORM_BEAT_COUNT - i));
+
+		f32 rounding   = STUN_STORM_MAX_LENGTH / 32.0f; // 4 measures of 8th notes
+		f32 spawnTimer = spawnBeatIdx * rounding;
+		mShells[i].setTimer(spawnTimer);
+	}
+
+}
+
+StunStorm::~StunStorm() { }
+
+bool StunStorm::update()
+{
+	bool b = true;
+	for (int i = 0; i < ARRAY_SIZE(mShells); i++) {
+		b = mShells[i].update(mUser, mTarget) && b;
+	}
+	return b;
+}
+
+StunStorm::Shell::Shell()
+{
+	mShellEfx            = new efx::TChibiShell;
+	mShellEfx->mPosition = &mPosition;
+
+	mPosition = 0.0f;
+}
+
+StunStorm::Shell::~Shell()
+{
+	mShellEfx->fade();
+	delete mShellEfx;
+}
+
+void StunStorm::Shell::setTimer(f32 f) { mTimer = -f - STUN_STORM_STARTUP; }
+
+void StunStorm::Shell::init(Vector3f& pos)
+{
+	PSStartSoundVec(PSSE_EN_HOUDAI_SHOT, (Vec*)&pos);
+	mPosition = pos;
+
+	mShellEfx->create(nullptr);
+}
+
+void StunStorm::Shell::hit(Vector3f& pos)
+{
+	PSStartSoundVec(PSSE_EN_HOUDAI_IMPACT, (Vec*)&pos);
+
+	mPosition = pos;
+
+	mShellEfx->fade();
+
+	efx::ArgScale fxArg(pos, 1.0f);
+	efx::TChibiHit hitFX;
+	hitFX.create(&fxArg);
+
+	f32 radius = STUN_SHELL_ATTACK_RADIUS;
+
+	Sys::Sphere sphere(pos, radius);
+	CellIteratorArg ciArg(sphere);
+	CellIterator iCell = ciArg;
+
+	CI_LOOP(iCell)
+	{
+		CellObject* obj = *iCell;
+
+		if (obj->isPiki() || obj->isNavi()) {
+			FakePiki* creature = static_cast<FakePiki*>(obj);
+
+			Vector3f creaturePos = creature->getPosition();
+			f32 dist             = pos.distance(creaturePos);
+			Vector3f targetSep   = creaturePos - pos;
+			f32 factor           = dist / radius;
+			f32 mag              = 150.0f * (1.0f - factor) + 75.0f * factor;
+			targetSep.y          = 0.0f;
+			targetSep.normalise();
+			if (obj->isPiki()) {
+				targetSep.y = 1.0f;
+			}
+
+			targetSep *= mag;
+
+			InteractWind wind(nullptr, 0.0f, &targetSep);
+			creature->stimulate(wind);
+		}
+	}
+}
+
+bool StunStorm::Shell::update(Navi* user, Navi* target)
+{
+
+	if (mTimer <= 0.0f) {
+		mTimer += sys->mDeltaTime;
+		if (mTimer > 0.0f) {
+			init(user->mPosition3);
+		}
+	} else if (mTimer <= STUN_STORM_WAIT_TIMER) {
+		mTimer += sys->mDeltaTime;
+		updateFly(user);
+		if (mTimer >= STUN_STORM_WAIT_TIMER) {
+			mPosition   = target->getPosition();
+			mPosition.y = STUN_SHELL_MAX_HEIGHT + mapMgr->getMinY(mPosition);
+		}
+	} else if (mTimer <= STUN_STORM_WAIT_TIMER + STUN_STORM_FALL_TIMER) {
+		mTimer += sys->mDeltaTime;
+		updateLand(target);
+
+		if (mTimer >= STUN_STORM_WAIT_TIMER + STUN_STORM_FALL_TIMER) {
+			mPosition.y = mapMgr->getMinY(mPosition);
+			hit(mPosition);
+		}
+	} else {
+		return true;
+	}
+
+	return false;
+}
+
+void StunStorm::Shell::updateFly(Navi* user)
+{
+
+	const f32 velocity = STUN_SHELL_MAX_HEIGHT / STUN_STORM_WAIT_TIMER;
+
+	mPosition.y += velocity * sys->mDeltaTime;
+}
+
+void StunStorm::Shell::updateLand(Navi* target)
+{
+
+	const f32 velocity = STUN_SHELL_MAX_HEIGHT / STUN_STORM_FALL_TIMER;
+
+	mPosition.y -= velocity * sys->mDeltaTime;
 }
 
 } // namespace VsGame

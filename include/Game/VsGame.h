@@ -112,7 +112,7 @@ enum eCardType { // official enum name
 	TEKI_DEMON        = 15,
 	TEKI_KUMA         = 16,
 	TEKI_JELLYFLOAT   = 17,
-	TEKI_FKABUTO      = 18,
+	STUN_STORM        = 18,
 	WARP_HOME         = 19,
 	BOMB_STORM        = 20,
 	TEKI_OTAKARA      = 21,

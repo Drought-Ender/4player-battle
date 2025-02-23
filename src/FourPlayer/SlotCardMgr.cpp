@@ -977,6 +977,29 @@ struct WarpHomeCard : public VsSlotMachineCard {
 	virtual const char* getDescription() { return "Teleports you and your squad back to your base"; }
 };
 
+struct StunStormCard : public VsSlotMachineCard
+{
+	StunStormCard(const char* texname)
+	    : VsSlotMachineCard(texname)
+	{
+	}
+
+	virtual void onUseCard(CardMgr* cardMgr, int user, int target)
+	{
+		Navi* userNavi = naviMgr->getAt(user);
+		Navi* targetNavi = naviMgr->getAt(target);
+		StunStorm* stunStorm = new StunStorm(userNavi, targetNavi, GetTextureFromMgr());
+		vsSlotCardMgr->mActionMgr.add(stunStorm);
+	}
+
+	
+
+	virtual TargetSpecifier useTarget() { return PLAYER; }
+
+	virtual const char* getDescription() { return "Sends a barage of groink bullets to your opponent"; }
+};
+
+
 struct NaviAwaitFallSkyCard : public NaviTekiCard {
 	f32 mWaitTimer;
 	f32 mVarience;
@@ -1128,13 +1151,13 @@ void VsSlotCardMgr::initAllCards()
 	sAllCards[TEKI_DEMON]      = new OnyonTekiCard(EnemyTypeID::EnemyID_Demon, OnyonTekiParams(1, 30.0f), "teki_demon.bti");
 	sAllCards[TEKI_FUEFUKI]    = new OnyonTekiCard(EnemyTypeID::EnemyID_Fuefuki, "teki_fuefuki.bti");
 	sAllCards[TEKI_JELLYFLOAT] = new OnyonTekiCard(EnemyTypeID::EnemyID_Kurage, OnyonTekiParams(1, 30.0f), "teki_kurage.bti");
-	sAllCards[TEKI_FKABUTO]
-	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Kabuto, NaviFallTekiParams(1, 0.0f, 30.0f, 2.0f), "teki_kabuto.bti");
+	sAllCards[STUN_STORM]
+	    = new StunStormCard("teki_kabuto.bti");
 	sAllCards[ALL_PLUCK]  = new PluckAllCard("fue_pullout.bti");
 	sAllCards[PATH_BLOCK] = new HazardBarrierCard("fire_water.bti");
 	sAllCards[WARP_HOME]  = new WarpHomeCard("warp_home.bti");
 	sAllCards[TEKI_KUMA]
-	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 20.0f, 3.0f), "teki_kuma.bti");
+	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 12.0f, 3.0f), "teki_kuma.bti");
 	sAllCards[BOMB_STORM]
 	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(5, 90.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
 	sAllCards[TEKI_OTAKARA] = new TankOnyonTeki(EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara,
