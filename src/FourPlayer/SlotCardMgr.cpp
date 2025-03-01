@@ -19,16 +19,25 @@ namespace VsGame {
 
 VsSlotCardMgr* vsSlotCardMgr;
 
+int VsSlotMachineCard::sTexIDGlobal = 0;
+
+VsSlotMachineCard::VsSlotMachineCard(const char* texName)
+{
+	mTexName = texName;
+	mTexID   = sTexIDGlobal++;
+}
+
 JUTTexture* VsSlotMachineCard::GetTextureFromMgr()
 {
 	OSReport("VsSlotMachineCard::GetTextureFromMgr()\n");
 	CardMgr* classicCardMgr = GetVsGameSection()->mCardMgr;
 	P2ASSERT(classicCardMgr);
 	for (int i = 0; i < classicCardMgr->mSlotNum; i++) {
-		if (VsGame::vsSlotCardMgr->getAt(i) == this) {
+		if (VsGame::vsSlotCardMgr->getAt(i)->getTexID() == getTexID()) {
 			return classicCardMgr->mSlotTextures[i];
 		}
 	}
+	JUT_PANIC("COULDN'T FIND TEXTURE %s\n", GetTexName());
 }
 
 struct NaviTekiParams {
@@ -265,7 +274,7 @@ bool sEnemyXLU = false;
 
 struct XLUCard : public VsSlotMachineCard {
 	XLUCard()
-	    : VsSlotMachineCard("pikmin_xlu.bti") {};
+	    : VsSlotMachineCard("pikmin_xlu.bti") { };
 
 	virtual int getWeight(CardMgr* cardMgr, int teamID)
 	{
@@ -607,7 +616,7 @@ struct NaviTekiCard : public TekiCard {
 	NaviTekiParams mParms;
 	NaviTekiCard(EnemyTypeID::EEnemyTypeID id, NaviTekiParams parms, const char* texName)
 	    : mParms(parms)
-	    , TekiCard(id, texName) {};
+	    , TekiCard(id, texName) { };
 
 	virtual void onUseCard(CardMgr* cardMgr, int user, int target)
 	{
@@ -648,11 +657,32 @@ struct NaviTekiCard : public TekiCard {
 	virtual TargetSpecifier useTarget() { return PLAYER; }
 };
 
+struct HeldTekiCard : public TekiCard {
+	HeldTekiCard(EnemyTypeID::EEnemyTypeID id, const char* texname)
+	    : TekiCard(id, texname)
+	{
+	}
+	virtual void onUseCard(CardMgr* cardMgr, int user)
+	{
+		Navi* navi = naviMgr->getAt(user);
+
+		Vector3f spawnPos = navi->getPosition();
+
+		EnemyBase* enemy = birth(cardMgr->mTekiMgr, spawnPos, false);
+
+		NaviCarryBombArg arg(enemy);
+
+		navi->transit(NSID_CarryBomb, &arg);
+	}
+
+	virtual const char* getDescription() { return "Spawns an enemy in your hands"; }
+};
+
 struct MititeCard : public NaviTekiCard {
 	NaviTekiParams mParms;
 	MititeCard(NaviTekiParams parms, const char* texName)
 	    : mParms(parms)
-	    , NaviTekiCard(EnemyTypeID::EnemyID_Egg, parms, texName) {};
+	    , NaviTekiCard(EnemyTypeID::EnemyID_Egg, parms, texName) { };
 
 	virtual void onTekiBirth(EnemyBase* enemy)
 	{
@@ -725,7 +755,7 @@ struct BedamaCard : public VsSlotMachineCard {
 	    : mTexName(texName)
 	    , mBuryTexname(texName2)
 	    , mBuryBedama(false)
-	    , VsSlotMachineCard(texName) {};
+	    , VsSlotMachineCard(texName) { };
 
 	const char* mTexName;
 	const char* mBuryTexname;
@@ -900,7 +930,7 @@ struct BedamaCard : public VsSlotMachineCard {
 
 struct HazardBarrierCard : public VsSlotMachineCard {
 	HazardBarrierCard(const char* texName)
-	    : VsSlotMachineCard(texName) {};
+	    : VsSlotMachineCard(texName) { };
 
 	void onUseCard(CardMgr* cardMgr, int user)
 	{
@@ -913,11 +943,11 @@ struct HazardBarrierCard : public VsSlotMachineCard {
 
 struct PluckAllCard : public VsSlotMachineCard {
 	PluckAllCard(const char* texName)
-	    : VsSlotMachineCard(texName) {};
+	    : VsSlotMachineCard(texName) { };
 
 	virtual void onUseCard(CardMgr* cardMgr, int user)
 	{
-		Navi* navi = naviMgr->getAt(user);
+		Navi* navi        = naviMgr->getAt(user);
 		PluckAllFue* card = new PluckAllFue(navi, getVsTeam(user), navi->getPosition(), GetTextureFromMgr());
 		vsSlotCardMgr->mActionMgr.add(card);
 	}
@@ -977,8 +1007,7 @@ struct WarpHomeCard : public VsSlotMachineCard {
 	virtual const char* getDescription() { return "Teleports you and your squad back to your base"; }
 };
 
-struct StunStormCard : public VsSlotMachineCard
-{
+struct StunStormCard : public VsSlotMachineCard {
 	StunStormCard(const char* texname)
 	    : VsSlotMachineCard(texname)
 	{
@@ -986,19 +1015,80 @@ struct StunStormCard : public VsSlotMachineCard
 
 	virtual void onUseCard(CardMgr* cardMgr, int user, int target)
 	{
-		Navi* userNavi = naviMgr->getAt(user);
-		Navi* targetNavi = naviMgr->getAt(target);
+		Navi* userNavi       = naviMgr->getAt(user);
+		Navi* targetNavi     = naviMgr->getAt(target);
 		StunStorm* stunStorm = new StunStorm(userNavi, targetNavi, GetTextureFromMgr());
 		vsSlotCardMgr->mActionMgr.add(stunStorm);
 	}
-
-	
 
 	virtual TargetSpecifier useTarget() { return PLAYER; }
 
 	virtual const char* getDescription() { return "Sends a barage of groink bullets to your opponent"; }
 };
 
+struct GenericMultiCard : public VsSlotMachineCard {
+	GenericMultiCard(u32 cardCount)
+	    : VsSlotMachineCard("pikmin_5.bti")
+	    , mCardCount(cardCount)
+	    , mCurrentCard(0)
+	    , mCards(new VsSlotMachineCard*[mCardCount])
+	{
+	}
+
+	void SetCard(VsSlotMachineCard* card, int slotID)
+	{
+		mCards[slotID] = card;
+
+		if (mCurrentCard == slotID) {
+			updateTexName(mCards[slotID]->GetTexName());
+		}
+	}
+
+	VsSlotMachineCard* getCard(int slotId) { return mCards[slotId]; }
+
+	VsSlotMachineCard* getCard() { return mCards[mCurrentCard]; }
+
+	virtual void allocate(VsGameSection* section) { return getCard()->allocate(section); }
+
+	virtual int getBedamaWeight(CardMgr* cardMgr, int user, int total, int baseWeight)
+	{
+		return getCard()->getBedamaWeight(cardMgr, user, total, baseWeight);
+	}
+
+	virtual int getWeight(CardMgr* cardMgr, int teamID) { return getCard()->getWeight(cardMgr, teamID); }
+
+	virtual void onUseCard(CardMgr* cardMgr, int user, int target) { getCard()->onUseCard(cardMgr, user, target); }
+
+	virtual void onUseCard(CardMgr* cardMgr, int user) { getCard()->onUseCard(cardMgr, user); }
+
+	virtual TargetSpecifier useTarget() { return getCard()->useTarget(); }
+
+	virtual const char* getDescription() { return getCard()->getDescription(); }
+
+	virtual bool varibleForward()
+	{
+		mCurrentCard++;
+		mCurrentCard %= mCardCount;
+
+		updateTexName(getCard()->GetTexName());
+	}
+
+	virtual bool varibleBackwards()
+	{
+		mCurrentCard--;
+		mCurrentCard += mCardCount;
+		mCurrentCard %= mCardCount;
+		updateTexName(getCard()->GetTexName());
+	}
+
+	virtual int getVaribleForwardCount() { return mCurrentCard; }
+
+	virtual int getTexID() { return getCard()->getTexID(); }
+
+	u32 mCardCount;
+	u32 mCurrentCard;
+	VsSlotMachineCard** mCards;
+};
 
 struct NaviAwaitFallSkyCard : public NaviTekiCard {
 	f32 mWaitTimer;
@@ -1122,10 +1212,10 @@ bool* VsSlotCardMgr::sUsingCards;
 
 void VsSlotCardMgr::initAllCards()
 {
+	VsSlotMachineCard::sTexIDGlobal = 0;
+
 	VsSlotCardMgr::sTotalCardCount = CARD_ID_COUNT;
-
 	VsSlotCardMgr::sAllCards = new VsSlotMachineCard*[VsSlotCardMgr::sTotalCardCount];
-
 	VsSlotCardMgr::sUsingCards = new bool[VsSlotCardMgr::sTotalCardCount];
 
 	for (int i = 0; i < 12; i++) {
@@ -1151,19 +1241,25 @@ void VsSlotCardMgr::initAllCards()
 	sAllCards[TEKI_DEMON]      = new OnyonTekiCard(EnemyTypeID::EnemyID_Demon, OnyonTekiParams(1, 30.0f), "teki_demon.bti");
 	sAllCards[TEKI_FUEFUKI]    = new OnyonTekiCard(EnemyTypeID::EnemyID_Fuefuki, "teki_fuefuki.bti");
 	sAllCards[TEKI_JELLYFLOAT] = new OnyonTekiCard(EnemyTypeID::EnemyID_Kurage, OnyonTekiParams(1, 30.0f), "teki_kurage.bti");
-	sAllCards[STUN_STORM]
-	    = new StunStormCard("teki_kabuto.bti");
-	sAllCards[ALL_PLUCK]  = new PluckAllCard("fue_pullout.bti");
-	sAllCards[PATH_BLOCK] = new HazardBarrierCard("fire_water.bti");
-	sAllCards[WARP_HOME]  = new WarpHomeCard("warp_home.bti");
+	sAllCards[STUN_STORM]      = new StunStormCard("rhythm_groink.bti");
+	sAllCards[ALL_PLUCK]       = new PluckAllCard("fue_pullout.bti");
+	sAllCards[PATH_BLOCK]      = new HazardBarrierCard("fire_water.bti");
+	sAllCards[WARP_HOME]       = new WarpHomeCard("warp_home.bti");
 	sAllCards[TEKI_KUMA]
 	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_KumaChappy, NaviFallTekiParams(1, 0.0f, 12.0f, 3.0f), "teki_kuma.bti");
-	sAllCards[BOMB_STORM]
-	    = new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_GreenBomb, NaviFallTekiParams(5, 90.0f, 30.0f, 1.0f, 1.0f), "bombs.bti");
-	sAllCards[TEKI_OTAKARA] = new TankOnyonTeki(EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara,
-	                                            EnemyTypeID::EnemyID_GasOtakara, EnemyTypeID::EnemyID_SporeOtakara, "teki_otakara.bti");
-	sAllCards[TEKI_MITES]   = new MititeCard(NaviTekiParams(1, 0.0f, 0.0f, 120.0f, true), "teki_mitites.bti");
-	sAllCards[TEKI_BABY]    = new NaviTekiCard(EnemyTypeID::EnemyID_Baby, NaviTekiParams(5, 100.0f, 0.0f, 300.0f, true), "teki_baby.bti");
+
+	GenericMultiCard* bombStorm = new GenericMultiCard(2);
+	bombStorm->SetCard(new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_Bomb, NaviFallTekiParams(5, 90.0f, 30.0f, 1.0f, 1.0f), "bombs.bti"),
+	                   0);
+	bombStorm->SetCard(
+	    new NaviAwaitFallSkyCard(EnemyTypeID::EnemyID_GreenBomb, NaviFallTekiParams(5, 90.0f, 30.0f, 1.0f, 1.0f), "bombs_green.bti"), 1);
+	sAllCards[BOMB_STORM] = bombStorm;
+
+	sAllCards[TEKI_OTAKARA]   = new TankOnyonTeki(EnemyTypeID::EnemyID_FireOtakara, EnemyTypeID::EnemyID_WaterOtakara,
+	                                              EnemyTypeID::EnemyID_GasOtakara, EnemyTypeID::EnemyID_SporeOtakara, "teki_otakara.bti");
+	sAllCards[TEKI_MITES]     = new MititeCard(NaviTekiParams(1, 0.0f, 0.0f, 120.0f, true), "teki_mitites.bti");
+	sAllCards[TEKI_BABY]      = new NaviTekiCard(EnemyTypeID::EnemyID_Baby, NaviTekiParams(5, 100.0f, 0.0f, 300.0f, true), "teki_baby.bti");
+	sAllCards[TEKI_GREENBOMB] = new HeldTekiCard(EnemyTypeID::EnemyID_GreenBomb, "sticky_bomb.bti");
 }
 
 VsSlotCardMgr::VsSlotCardMgr() { mUsingCards = nullptr; }

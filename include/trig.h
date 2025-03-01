@@ -46,6 +46,8 @@ inline f32 angXZ(Vector3f& vec1, Vector3f& vec2)
 	return roundAng(JMAAtan2Radian(pos.x, pos.z));
 }
 
+inline f32 angXZ(f32 x, f32 z) { return roundAng(JMAAtan2Radian(x, z)); }
+
 inline f32 angXZ(f32 x, f32 z, Vector3f& vec)
 {
 	Vector3f pos = vec;

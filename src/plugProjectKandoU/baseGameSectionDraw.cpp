@@ -34,18 +34,13 @@ bool gDrawNavi[4];
 
 bool gDrawNames = true;
 
-
-static Color4 vsTeamColorsColor4[] = { 
-    Color4(0xff, 0x50, 0x50, 0xff),
-    Color4(0x50, 0x50, 0xff, 0xff), 
-    Color4(0xff, 0xff, 0xff, 0xff),
-    Color4(0x78, 0x00, 0xff, 0xff)
-};
+static Color4 vsTeamColorsColor4[]
+    = { Color4(0xff, 0x50, 0x50, 0xff), Color4(0x50, 0x50, 0xff, 0xff), Color4(0xff, 0xff, 0xff, 0xff), Color4(0x78, 0x00, 0xff, 0xff) };
 
 namespace Game {
 
-
-void DrawDebugScores(Graphics& gfx) {
+void DrawDebugScores(Graphics& gfx)
+{
 	J2DPrint print(getPikminFont(), 0.0f);
 	print.mGlyphHeight /= 3;
 	print.mGlyphWidth /= 3;
@@ -76,7 +71,6 @@ void DrawDebugScores(Graphics& gfx) {
 
 	print.mCharColor = JUtility::TColor(0xffffffff);
 
-
 	print.print(285.0f, 10.0f, "Scores Cherry");
 
 	print.mCharColor = JUtility::TColor(0xff0000ff);
@@ -89,6 +83,51 @@ void DrawDebugScores(Graphics& gfx) {
 	print.print(285.0f, 50.0f, "%f\n", GetVsGameSection()->mCherryScore[Game::TEAM_PURPLE]);
 }
 
+void DrawDebugSlots(Graphics& gfx)
+{
+	J2DPrint print(getPikminFont(), 0.0f);
+	print.mGlyphHeight /= 3;
+	print.mGlyphWidth /= 3;
+
+	VsGame::CardMgr* cardMgr = GetVsGameSection()->mCardMgr;
+	VsGame::CardMgr::SlotMachine* machines[4]
+	    = { cardMgr->getSlotMachine(0), cardMgr->getSlotMachine(1), cardMgr->getSlotMachine(2), cardMgr->getSlotMachine(3) };
+
+	const char* spinStates[] = {
+		"SPIN_UNSTARTED",
+		"SPIN_WAIT_START", 
+		"SPIN_START",
+		"SPIN_WAIT_MAX_SPEED",
+		"SPIN_DECELERATE",
+		"SPIN_DECELERATE_END",
+		"SPIN_DOWN_TO_CARD",
+		"SPIN_WAIT_CARD_STOP",
+		"SPIN_UP_TO_CARD",
+		"SPIN_WAIT_CARD_ROLL",
+		"SPIN_END"
+	};
+
+	const char* appearStates[] = {
+		"APPEAR_LEAVE",
+		"APPEAR_AWAIT",
+		"APPEAR_ENTER",
+		"APPEAR_RESET"
+	};
+
+	print.mCharColor = JUtility::TColor(0xff0000ff);
+	print.print(85.0f, 20.0f, "Slot %i: mAppearState = %s,  mSpinState = %s\n", 0, appearStates[machines[0]->mAppearState], spinStates[machines[0]->mSpinState]);
+	print.print(85.0f, 30.0f, "mAppearValue = %f, mSpinTimer = %f\n", 0, machines[0]->mAppearValue, machines[0]->mSpinTimer);
+	print.mCharColor = JUtility::TColor(0x0000ffff);
+	print.print(85.0f, 40.0f, "Slot %i: mAppearState = %s,  mSpinState = %s\n", 1, appearStates[machines[1]->mAppearState], spinStates[machines[1]->mSpinState]);
+	print.print(85.0f, 50.0f, "mAppearValue = %f, mSpinTimer = %f\n", 0, machines[1]->mAppearValue, machines[1]->mSpinTimer);
+	print.mCharColor = JUtility::TColor(0xffffffff);
+	print.print(85.0f, 60.0f, "Slot %i: mAppearState = %s,  mSpinState = %s\n", 2, appearStates[machines[2]->mAppearState], spinStates[machines[2]->mSpinState]);
+	print.print(85.0f, 70.0f, "mAppearValue = %f, mSpinTimer = %f\n", 0, machines[2]->mAppearValue, machines[2]->mSpinTimer);
+	print.mCharColor = JUtility::TColor(0xff00ffff);
+	print.print(85.0f, 80.0f, "Slot %i: mAppearState = %s,  mSpinState = %s\n", 3, appearStates[machines[3]->mAppearState], spinStates[machines[3]->mSpinState]);
+	print.print(85.0f, 90.0f, "mAppearValue = %f, mSpinTimer = %f\n", 0, machines[3]->mAppearValue, machines[3]->mSpinTimer);
+}
+
 /*
  * --INFO--
  * Address:	802398D8
@@ -97,9 +136,10 @@ void DrawDebugScores(Graphics& gfx) {
  */
 void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 {
-	//DrawDebugMemory(gfx);
-	//DrawDebugScores(gfx);
-	// Setup viewport callback to be newdraw_drawAll
+	// DrawDebugMemory(gfx);
+	// DrawDebugScores(gfx);
+	// DrawDebugSlots(gfx);
+	//  Setup viewport callback to be newdraw_drawAll
 	Delegate1<BaseGameSection, Viewport*> vpDelegate(this, &BaseGameSection::newdraw_drawAll);
 	gfx.mapViewport(&vpDelegate);
 
@@ -159,7 +199,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		directDrawExtras(gfx, vp);
 	}
 	sys->mTimers->_stop("drct-post");
-	
+
 	if (gNaviNum > 2) {
 		mLightMgr->set(gfx);
 		vp = gfx.getViewport(2);
@@ -255,48 +295,51 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 	sys->mTimers->_stop("j3d-etc");
 }
 
+void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp)
+{
 
-void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
-	
-	if (!sDebugMode && gConfig[PLAYER_NAME] == ConfigEnums::NAME_OFF) return;
+	if (!sDebugMode && gConfig[PLAYER_NAME] == ConfigEnums::NAME_OFF)
+		return;
 
-	if (moviePlayer->isActive()) return;
+	if (moviePlayer->isActive())
+		return;
 
 	vp->setViewport();
 	vp->setProjection();
 	gfx.initPerspPrintf(vp);
 	for (int i = 0; i < Game::gNaviNum; i++) {
 		if (i == vp->mVpId && !gTournamentMode) {
-			if (!sDebugMode) continue;
+			if (!sDebugMode)
+				continue;
 			PerspPrintfInfo info;
 			info.mFont = getPikminFont();
-			info._04 = 0;
-			info._08 = 0;
-			info._0C = 0;
-			info._10 = 0.3f;
-			info._14 = vsTeamColorsColor4[getVsTeam_s(i)];
-			info._18 = vsTeamColorsColor4[getVsTeam_s(i)];
+			info._04   = 0;
+			info._08   = 0;
+			info._0C   = 0;
+			info._10   = 0.3f;
+			info._14   = vsTeamColorsColor4[getVsTeam_s(i)];
+			info._18   = vsTeamColorsColor4[getVsTeam_s(i)];
 
 			Vector3f position = naviMgr->getAt(i)->getPosition();
 			position.y += 25.0f;
 			gfx.mCurrentViewport = vp;
-			
-			gfx.perspPrintf(info, position, "%i, %i, %i | %f", (int)position.x, (int)(position.y - 25.0f), (int)position.z, naviMgr->getAt(i)->getFaceDir() * 360.0f / TAU);
-		}
-		else if (gDrawNavi[i]) {
+
+			gfx.perspPrintf(info, position, "%i, %i, %i | %f", (int)position.x, (int)(position.y - 25.0f), (int)position.z,
+			                naviMgr->getAt(i)->getFaceDir() * 360.0f / TAU);
+		} else if (gDrawNavi[i]) {
 			PerspPrintfInfo info;
 			info.mFont = getPikminFont();
-			info._04 = 0;
-			info._08 = 0;
-			info._0C = 0;
-			info._10 = 0.3f;
-			info._14 = vsTeamColorsColor4[getVsTeam_s(i)];
-			info._18 = vsTeamColorsColor4[getVsTeam_s(i)];
+			info._04   = 0;
+			info._08   = 0;
+			info._0C   = 0;
+			info._10   = 0.3f;
+			info._14   = vsTeamColorsColor4[getVsTeam_s(i)];
+			info._18   = vsTeamColorsColor4[getVsTeam_s(i)];
 
 			Navi* navi = naviMgr->getAt(i);
 
 			Vector3f position = navi->getPosition();
-			int vpID = vp->mVpId;
+			int vpID          = vp->mVpId;
 			if (pikiMgr && pikiMgr->isVersusXlu(navi->getVsPikiColor()) && getVsPikiColor(vpID) != navi->getVsPikiColor()) {
 				continue;
 			}
@@ -309,13 +352,12 @@ void BaseGameSection::renderNames(Graphics& gfx, Viewport* vp) {
 			gfx.perspPrintf(info, position, "%s", sCharacters[i].mDispName);
 		}
 	}
-	
 }
 
-
-void BaseGameSection::directDrawExtras(Graphics& gfx, Viewport* vp) {
+void BaseGameSection::directDrawExtras(Graphics& gfx, Viewport* vp)
+{
 	// OSReport("BaseGameSection::directDrawExtras(Graphics& gfx, Viewport* vp)\n");
-	
+
 	if (FloatingIcon::mgr) {
 		FloatingIcon::mgr->FloatingIconMgr::draw(gfx);
 	}

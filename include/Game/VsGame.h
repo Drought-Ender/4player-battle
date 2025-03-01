@@ -118,6 +118,7 @@ enum eCardType { // official enum name
 	TEKI_OTAKARA      = 21,
 	TEKI_MITES        = 22,
 	TEKI_BABY         = 23,
+	TEKI_GREENBOMB    = 24,
 	CARD_ID_COUNT,
 	UNRESOLVED = 0xffff
 };
@@ -175,17 +176,17 @@ struct CardMgr {
 		int mSpinState;     // _20
 		int mSelectedSlot;  // _24, pre-determined slot
 		f32 _28;            // _28, unknown
-		f32 _2C;            // _2C
+		f32 mDecelerateTime;            // _2C
 		u32 mAppearState;   // _30, unknown
 		f32 mAppearValue;   // _34
-		int _38;            // _38
-		f32 _3C;            // _3C, timer?
-		f32 _40;            // _40
-		f32 _44;            // _44
-		f32 _48;            // _48
-		int _4C;            // _4C, maybe currentSlotIndex?
-		u8 _50;             // _50, unknown
-		u8 _51;             // _51
+		int mZoomState;            // _38
+		f32 mZoominTimer;            // _3C, timer?
+		f32 mZoomVal;            // _40
+		f32 mZoomOther;            // _44
+		f32 mZoomUseVal;            // _48
+		int mSlotIndex;            // _4C, maybe currentSlotIndex?
+		bool mZoomStarted;             // _50, unknown
+		u8 mMachineCardSelected;             // _51
 		f32 mSpinTimer;     // _54
 		int mSlotID;        // _58
 		int mPlayerIndex;   // _5C

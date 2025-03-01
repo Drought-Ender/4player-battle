@@ -756,5 +756,5 @@ void _debug_print() {
 // getPikminAlloc__Fv
 int getPikminAlloc()
 {
-	return 200; // isMemoryOverrideOn() ? 200 : 100;
+	return 250; // isMemoryOverrideOn() ? 200 : 100;
 }

@@ -42,7 +42,7 @@ void ActBreakRock::init(ActionArg* actionArg)
 
 	Game::GameStat::workPikis.inc(mParent);
 
-	mRock = static_cast<ActBreakRockArg*>(actionArg)->mRock;
+	mRock = static_cast<Game::BaseItem*>(static_cast<ActBreakRockArg*>(actionArg)->mRock);
 
 	initFollow();
 }

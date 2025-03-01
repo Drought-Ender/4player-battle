@@ -564,6 +564,9 @@ u8 ObjCalc_2PGame::getPlayerNo(Vec& pos)
 		CI_LOOP(it)
 		{
 			Game::Navi* navi = *it;
+			if (!navi->isAlive()) {
+				continue;
+			}
 			Vector3f naviPos = navi->getPosition();
 
 			f32 dist = sqrDistance(naviPos, reinterpret_cast<Vector3f&>(pos));

@@ -12,7 +12,7 @@ int GetControllerDirection(Controller* gamePad)
 	f32 radius = _sqrtf(x * x + y * y);
 	f32 theta  = JMath::atanTable_.atan2_(x, y);
 
-	DebugReport("radius %f\n", radius);
+	//DebugReport("radius %f\n", radius);
 
 	if (radius < 0.5f)
 		return 4;

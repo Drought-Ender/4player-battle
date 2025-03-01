@@ -115,7 +115,7 @@ struct Item : public WorkItem<Item, FSM, State> {
 	void getBridgeZVec();
 	void getBridgeXVec();
 	void getBridgePos(Vector3f&, f32&, f32&);
-	void workable(Vector3f&);
+	bool workable(Vector3f&);
 
 	// _00      = VTBL
 	// _00-_1EC = WorkItem

@@ -88,7 +88,7 @@ enum PikiBrainAction {
 	ACT_Enter     = 2,
 	ACT_Exit      = 3,
 	ACT_Transport = 4,
-	ACT_Bore      = 5,
+	ACT_Attack    = 5,
 	ACT_BreakGate = 6,
 	ACT_BreakRock = 7,
 	ACT_Crop      = 8,
@@ -235,6 +235,8 @@ struct ActAttack : public Action, virtual SysShape::MotionListener {
 struct ActBattleArg : public ActionArg {
 	virtual char* getName() { return "ActBattleArg"; } // _08 (weak)
 
+	inline ActBattleArg(Game::Piki* p) { mAggressor = p; }
+
 	inline ActBattleArg(Game::Piki* piki, bool start)
 	{
 		mAggressor     = piki;
@@ -346,7 +348,7 @@ struct ActBreakRockArg : public ActionArg {
 	virtual char* getName(); // _08 (weak)
 
 	// _00 = VTBL
-	Game::ItemRock::Item* mRock; // _04
+	Game::Creature* mRock; // _04
 };
 
 struct ActBreakRock : public Action, public virtual SysShape::MotionListener {
@@ -366,7 +368,7 @@ struct ActBreakRock : public Action, public virtual SysShape::MotionListener {
 	// _00     = VTBL
 	// _00-_0C = Action
 	// _0C-_10 = MotionListener*
-	Game::ItemRock::Item* mRock;        // _10
+	Game::BaseItem* mRock;              // _10
 	u16 mState;                         // _14
 	ActStickAttack* mStickAttack;       // _18
 	ActGotoPos* mGotoPos;               // _1C
@@ -797,11 +799,8 @@ struct PathMoveArg : public ActionArg {
 	u32 _18;               // _18
 };
 
-
 struct PathfindArg : public ActionArg {
-	virtual char* getName() {
-		return "PathfindArg";
-	}
+	virtual char* getName() { return "PathfindArg"; }
 
 	// _00 = VTBL
 	Vector3f mTargetPos;
@@ -820,12 +819,11 @@ struct ActPathfind : public Action {
 	bool execMove();
 	bool execMoveGoal();
 
-
-    Vector3f mTargetPosition;
-    u32 mPathCheckID;
-    int mState;
-    int mPathNodes;
-    Game::PathNode* mPathNode;
+	Vector3f mTargetPosition;
+	u32 mPathCheckID;
+	int mState;
+	int mPathNodes;
+	Game::PathNode* mPathNode;
 	Game::PathNode* mPathNodePrev;
 	int mAttempts;
 };

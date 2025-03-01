@@ -8,6 +8,24 @@ inline bool isMemoryOverrideOn() {
     return MEMORY_SIZE >= 0x2000000;
 }
 
+namespace Game
+{
+struct Piki;
+struct Pellet;
+
+namespace ItemTreasure
+{
+struct Item;
+} // namespace ItemTreasure
+
+
+bool canCarryBedama(Piki* piki, Pellet* pellet);
+bool canAttackBedamaIdle(Piki* piki, ItemTreasure::Item* treasure);
+bool canAttackBedama(Piki* piki, Game::ItemTreasure::Item* treasure);
+
+} // namespace Game
+
+
 void DrawDebugMemory(Graphics& gfx);
 
 extern bool gWidescreenActive;

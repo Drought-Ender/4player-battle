@@ -60,7 +60,7 @@ struct Obj : public EnemyBase {
 	void updateFallTimer();
 	void getFlyingNextState();
 	void addPitchRatio();
-	void getSearchedPikmin();
+	Piki* getSearchedPikmin();
 	void isTargetLost();
 	void isAttackable();
 	void updateEmit();
@@ -124,14 +124,14 @@ struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		ProperParms()
 		    : Parameters(nullptr, "EnemyParmsBase")
-		    , mFp01(this, 'fp01', "Šî€”òs‚‚³", 90.0f, 0.0f, 150.0f)   // 'standard flight height'
-		    , mFp02(this, 'fp02', "ã¸ŒW”", 1.0f, 0.0f, 10.0f)         // 'rise factor'
-		    , mFp03(this, 'fp03', "‹ó’†ƒEƒFƒCƒgŠÔ", 3.0f, 0.0f, 10.0f) // 'air wait time'
-		    , mFp10(this, 'fp10', "’nãƒEƒFƒCƒgŠÔ", 3.0f, 0.0f, 10.0f) // 'ground wait time'
-		    , mFp04(this, 'fp04', "U•¥—‰ºŠÔ", 3.0f, 0.0f, 10.0f)     // 'shake off time'
-		    , mIp01(this, 'ip01', "—‰ºÅ’áƒsƒL”", 10, 1, 50)           // 'falling minimum piki number'
-		    , mFp05(this, 'fp05', "ã‰º‚Ì—h‚ê‘¬“x", 2.5f, 0.0f, 10.0f)   // 'vertical swing speed'
-		    , mFp06(this, 'fp06', "ã‰º‚Ì—h‚ê•", 5.0f, 0.0f, 10.0f)     // 'vertical swing width'
+		    , mFp01(this, 'fp01', "ï¿½î€ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½", 90.0f, 0.0f, 150.0f)   // 'standard flight height'
+		    , mFp02(this, 'fp02', "ï¿½ã¸ï¿½Wï¿½ï¿½", 1.0f, 0.0f, 10.0f)         // 'rise factor'
+		    , mFp03(this, 'fp03', "ï¿½ó’†ƒEï¿½Fï¿½Cï¿½gï¿½ï¿½ï¿½ï¿½", 3.0f, 0.0f, 10.0f) // 'air wait time'
+		    , mFp10(this, 'fp10', "ï¿½nï¿½ï¿½Eï¿½Fï¿½Cï¿½gï¿½ï¿½ï¿½ï¿½", 3.0f, 0.0f, 10.0f) // 'ground wait time'
+		    , mFp04(this, 'fp04', "ï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", 3.0f, 0.0f, 10.0f)     // 'shake off time'
+		    , mIp01(this, 'ip01', "ï¿½ï¿½ï¿½ï¿½ï¿½Å’ï¿½sï¿½Lï¿½ï¿½", 10, 1, 50)           // 'falling minimum piki number'
+		    , mFp05(this, 'fp05', "ï¿½ã‰ºï¿½Ì—hï¿½ê‘¬ï¿½x", 2.5f, 0.0f, 10.0f)   // 'vertical swing speed'
+		    , mFp06(this, 'fp06', "ï¿½ã‰ºï¿½Ì—hï¿½ê•", 5.0f, 0.0f, 10.0f)     // 'vertical swing width'
 		{
 		}
 

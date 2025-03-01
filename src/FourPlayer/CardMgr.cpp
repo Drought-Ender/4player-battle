@@ -69,14 +69,14 @@ VsGame::CardMgr::CardMgr(Game::VsGameSection* section, Game::VsGame::TekiMgr* te
 
 void VsGame::CardMgr::update()
 {
-	if (!gameSystem->paused()) {
-		if (gDrawNavi[0])
+	if (!gameSystem->paused() && !moviePlayer->mDemoState) {
+		if (isTeamAlive(0))
 			mSlotMachines[0].update();
-		if (gDrawNavi[1])
+		if (isTeamAlive(1))
 			mSlotMachines[1].update();
-		if (gDrawNavi[2])
+		if (isTeamAlive(2))
 			mNewSlotMachines[0].update();
-		if (gDrawNavi[3])
+		if (isTeamAlive(3))
 			mNewSlotMachines[1].update();
 	}
 }
@@ -328,23 +328,23 @@ void CardMgr::SlotMachine::updateZoomIn()
 	} else {
 		mCardMgr->mSlotsUpdated[mPlayerIndex] = true;
 	}
-	if (_50 == 0) {
-		_3C += sys->mDeltaTime * 4.0f;
-		_44 = _3C * 10.0f + 20.0f;
-		_48 = 0.0f;
-		if (_3C > 1.0f) {
-			_3C = 0.0f;
-			_50 = 1;
+	if (mZoomStarted == 0) {
+		mZoominTimer += sys->mDeltaTime * 4.0f;
+		mZoomOther  = mZoominTimer * 10.0f + 20.0f;
+		mZoomUseVal = 0.0f;
+		if (mZoominTimer > 1.0f) {
+			mZoominTimer = 0.0f;
+			mZoomStarted = 1;
 		}
 	} else {
-		_3C += sys->mDeltaTime;
-		if (_3C > 1.0f) {
-			_3C -= 1.0f;
+		mZoominTimer += sys->mDeltaTime;
+		if (mZoominTimer > 1.0f) {
+			mZoominTimer -= 1.0f;
 		}
 
-		_44 = pikmin2_sinf(_3C * TAU) * 5.0f + 30.0f;
-		_48 = pikmin2_sinf(_3C * TAU * 2.0f) * 5.0f + 30.0f;
-		_40 = pikmin2_cosf(_3C * TAU) * 10.0f * DEG2RAD * PI;
+		mZoomOther  = pikmin2_sinf(mZoominTimer * TAU) * 5.0f + 30.0f;
+		mZoomUseVal = pikmin2_sinf(mZoominTimer * TAU * 2.0f) * 5.0f + 30.0f;
+		mZoomVal    = pikmin2_cosf(mZoominTimer * TAU) * 10.0f * DEG2RAD * PI;
 	}
 }
 /*
@@ -359,14 +359,14 @@ void CardMgr::SlotMachine::updateZoomUse()
 	} else {
 		mCardMgr->mSlotsUpdated[mPlayerIndex] = true;
 	}
-	_3C += sys->mDeltaTime * 3.0f;
-	if (_3C > 1.0f) {
-		_3C -= 1.0f;
+	mZoominTimer += sys->mDeltaTime * 3.0f;
+	if (mZoominTimer > 1.0f) {
+		mZoominTimer -= 1.0f;
 	}
 
-	_44 = pikmin2_sinf(_3C * TAU) * 5.0f + 30.0f;
-	_48 = -(_3C * 30.0f - 30.0f);
-	_40 = (pikmin2_cosf(_3C * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
+	mZoomOther  = pikmin2_sinf(mZoominTimer * TAU) * 5.0f + 30.0f;
+	mZoomUseVal = -(mZoominTimer * 30.0f - 30.0f);
+	mZoomVal    = (pikmin2_cosf(mZoominTimer * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
 }
 
 CardSelector::CardSelector(int count)
@@ -421,7 +421,8 @@ int CardSelector::selectCard()
 
 void CardMgr::SlotMachine::start()
 {
-	_51 = false;
+	OSReport("CardMgr::SlotMachine::start()\n");
+	mMachineCardSelected = false;
 
 	int cardCount = vsSlotCardMgr->mCardCount;
 
@@ -450,6 +451,7 @@ void CardMgr::SlotMachine::start()
 	_28           = randFloat();
 	mSlotID       = UNRESOLVED;
 	mAppearState  = APPEAR_LEAVE;
+	// mAppearValue  = 100.0f;
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_2PSLOT_APPEAR, 0);
 	switch (mSpinState) {
 	case SPIN_END:
@@ -548,30 +550,30 @@ void VsGame::CardMgr::SlotMachine::update()
 		mSpinAccel = TAU;
 		if (mCherryStock >= 1) {
 			if (mSpinSpeed > -GetMinSpeed() * PI) {
-				mSpinAccel = 0.0f;
-				mSpinState = SPIN_DECELERATE_END;
-				_2C        = 0.0f;
+				mSpinAccel      = 0.0f;
+				mSpinState      = SPIN_DECELERATE_END;
+				mDecelerateTime = 0.0f;
 			}
 		} else {
 			if (mSpinSpeed > -GetMinSpeed() * PI) {
-				mSpinAccel = 0.0f;
-				mSpinState = SPIN_DECELERATE_END;
-				_2C        = 0.0f;
+				mSpinAccel      = 0.0f;
+				mSpinState      = SPIN_DECELERATE_END;
+				mDecelerateTime = 0.0f;
 			}
 		}
 		break;
-	case SPIN_DECELERATE_END:                                                     // on decelerate end
-		_2C += deltaTime;                                                         // wait 3 seconds
-		if (_2C >= 3.0f && FABS(mSpinProgress - mCurrCardIndex) < GetMaxJump()) { // can jump to previous card
-			_6C           = 0.0f;
-			_68           = 0.0f;
-			mSelectedSlot = (CardCount + mCurrCardIndex - 1) % CardCount;
-			_2C           = 0.0f;
-			mSpinAccel    = 0.0f;
-			mSpinSpeed    = 0.0f;
-			mSpinState    = SPIN_END;
-			_4C           = mSelectedSlot;
-			mSpinTimer    = 0.8f;
+	case SPIN_DECELERATE_END:                                                                 // on decelerate end
+		mDecelerateTime += deltaTime;                                                         // wait 3 seconds
+		if (mDecelerateTime >= 3.0f && FABS(mSpinProgress - mCurrCardIndex) < GetMaxJump()) { // can jump to previous card
+			_6C             = 0.0f;
+			_68             = 0.0f;
+			mSelectedSlot   = (CardCount + mCurrCardIndex - 1) % CardCount;
+			mDecelerateTime = 0.0f;
+			mSpinAccel      = 0.0f;
+			mSpinSpeed      = 0.0f;
+			mSpinState      = SPIN_END;
+			mSlotIndex      = mSelectedSlot;
+			mSpinTimer      = 0.8f;
 			startZoomIn();
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
 		} else if (canJumpToCard(mSelectedSlot)) { // can jump to this card
@@ -580,7 +582,7 @@ void VsGame::CardMgr::SlotMachine::update()
 			mSpinSpeed = 0.0f;
 			mSpinAccel = 0.0f;
 			mSpinState = SPIN_END;
-			_4C        = mSelectedSlot;
+			mSlotIndex = mSelectedSlot;
 			mSpinTimer = 0.8f;
 			startZoomIn();
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
@@ -620,10 +622,10 @@ void VsGame::CardMgr::SlotMachine::update()
 		}
 		break;
 	case SPIN_END: // on roll end
-		_51        = true;
-		mSlotID    = mSelectedSlot;
-		mSpinSpeed = 0.0f;
-		mSpinAccel = 0.0f;
+		mMachineCardSelected = true;
+		mSlotID              = mSelectedSlot;
+		mSpinSpeed           = 0.0f;
+		mSpinAccel           = 0.0f;
 		if (gGameConfig.mParms.mVsY.mData == 1) {
 			mSpinTimer -= sys->mDeltaTime;
 			if (mSpinTimer <= 0.0f) {
@@ -694,24 +696,25 @@ void VsGame::CardMgr::initDraw()
 
 void CardMgr::informMovieDone()
 {
-	SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
+	// OSReport("CardMgr::informMovieDone()\n");
+	// SlotMachine* machines[] = { &mSlotMachines[0], &mSlotMachines[1], &mNewSlotMachines[0], &mNewSlotMachines[1] };
 
-	for (int i = 0; i < 4; i++) {
-		if (machines[i]->mSpinState == SlotMachine::SPIN_UNSTARTED || machines[i]->_18) {
-			if (machines[i]->mCherryStock > 0) {
-				machines[i]->mCherryStock--;
-				machines[i]->start();
-				machines[i]->_18 = 0;
-			} else {
-				machines[i]->mSpinSpeed   = 0.0f;
-				machines[i]->mSpinAccel   = 0.0f;
-				machines[i]->mAppearState = 2;
-				machines[i]->mSlotID      = UNRESOLVED;
-				machines[i]->startZoomUse();
-				machines[i]->_18 = 1;
-			}
-		}
-	}
+	// for (int i = 0; i < 4; i++) {
+	// 	if (machines[i]->mSpinState == SlotMachine::SPIN_UNSTARTED || machines[i]->_18) {
+	// 		if (machines[i]->mCherryStock > 0) {
+	// 			machines[i]->mCherryStock--;
+	// 			machines[i]->start();
+	// 			machines[i]->_18 = 0;
+	// 		} else {
+	// 			// machines[i]->mSpinSpeed   = 0.0f;
+	// 			// machines[i]->mSpinAccel   = 0.0f;
+	// 			// machines[i]->mAppearState = SlotMachine::APPEAR_LEAVE;
+	// 			// machines[i]->mSlotID      = UNRESOLVED;
+	// 			// machines[i]->startZoomUse();
+	// 			// machines[i]->_18 = 1;
+	// 		}
+	// 	}
+	// }
 }
 
 } // namespace VsGame

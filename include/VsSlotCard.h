@@ -21,12 +21,15 @@ enum TargetSpecifier { NONE = 0, TEAM = 1, PLAYER = 2 };
 
 class VsSlotMachineCard {
 protected:
-	VsSlotMachineCard(const char* texName) { mTexName = texName; }
+	VsSlotMachineCard(const char* texName);
 
 private:
 	const char* mTexName;
+	int mTexID;
 
 public:
+	static int sTexIDGlobal;
+
 	inline const char* GetTexName() { return mTexName; }
 	virtual void allocate(VsGameSection* section) { }
 	virtual int getBedamaWeight(CardMgr* cardMgr, int user, int total, int baseWeight) { return baseWeight; }
@@ -39,6 +42,8 @@ public:
 	virtual bool varibleForward() { return false; }
 	virtual bool varibleBackward() { return false; }
 	virtual int getVaribleForwardCount() { return 0; }
+
+	virtual int getTexID() { return mTexID; }
 
 	virtual const char* getDescription() = 0;
 
@@ -227,17 +232,16 @@ struct FloatingIconHolderCallback : public FloatingIconHolderBase {
 	const CallbackArgs* mArgs;
 };
 
-#define STUN_STORM_COUNT (8)
-#define STUN_STORM_WAIT_TIMER (0.6f)
-#define STUN_STORM_FALL_TIMER (0.6f)
-#define STUN_STORM_MAX_LENGTH (5.0f)
+#define STUN_STORM_COUNT         (8)
+#define STUN_STORM_WAIT_TIMER    (0.6f)
+#define STUN_STORM_FALL_TIMER    (0.6f)
+#define STUN_STORM_MAX_LENGTH    (5.0f)
 #define STUN_SHELL_ATTACK_RADIUS (30.0f)
-#define STUN_SHELL_MAX_HEIGHT (300.0f)
-#define STUN_STORM_BEAT_COUNT (64)
-#define STUN_STORM_STARTUP (0.4f)
+#define STUN_SHELL_MAX_HEIGHT    (300.0f)
+#define STUN_STORM_BEAT_COUNT    (64)
+#define STUN_STORM_STARTUP       (0.4f)
 
-struct StunStorm : public ActionEntity
-{
+struct StunStorm : public ActionEntity {
 	StunStorm(Navi* userNavi, Navi* targetNavi, JUTTexture* tex);
 	~StunStorm();
 
@@ -246,8 +250,7 @@ struct StunStorm : public ActionEntity
 
 	FloatingIconInitializer mIconContainer;
 
-	struct Shell
-	{
+	struct Shell {
 		Shell();
 		~Shell();
 		f32 mTimer;
@@ -265,11 +268,9 @@ struct StunStorm : public ActionEntity
 
 	virtual bool update();
 	virtual EntityID getEntityID() { return ENTITY_STUNSTORM; }
-	
+
 	Shell mShells[STUN_STORM_COUNT];
-
 };
-
 
 struct ActionEntityMgr : public CNode {
 

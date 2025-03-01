@@ -515,13 +515,13 @@ void VsGame::CardMgr::SlotMachine::clear()
 	mPrevCardIndex = 0;
 	mCurrCardIndex = 0;
 	mSpinProgress  = 0.0f;
-	_4C            = UNRESOLVED;
+	mSlotIndex            = UNRESOLVED;
 	mSlotID        = UNRESOLVED;
 	mAppearValue   = 100.0f;
 	mAppearState   = 3;
-	_38            = 0;
+	mZoomState            = 0;
 	mCherryStock   = 0;
-	_51            = 0;
+	mMachineCardSelected            = 0;
 }
 
 /*
@@ -531,7 +531,7 @@ void VsGame::CardMgr::SlotMachine::clear()
  */
 void VsGame::CardMgr::SlotMachine::start()
 {
-	_51 = false;
+	mMachineCardSelected = false;
 
 	CardSelector selector;
 
@@ -727,27 +727,27 @@ void VsGame::CardMgr::SlotMachine::update()
 			if (mSpinSpeed > -0.44f * PI) {
 				mSpinAccel = 0.0f;
 				mSpinState = SPIN_DECELERATE_END;
-				_2C        = 0.0f;
+				mDecelerateTime        = 0.0f;
 			}
 		} else {
 			if (mSpinSpeed > -0.44f * PI) {
 				mSpinAccel = 0.0f;
 				mSpinState = SPIN_DECELERATE_END;
-				_2C        = 0.0f;
+				mDecelerateTime        = 0.0f;
 			}
 		}
 		break;
 	case SPIN_DECELERATE_END:                                              // on decelerate end
-		_2C += deltaTime;                                                  // wait 3 seconds
-		if (_2C >= 3.0f && FABS(mSpinProgress - mCurrCardIndex) < 0.07f) { // can jump to previous card
+		mDecelerateTime += deltaTime;                                                  // wait 3 seconds
+		if (mDecelerateTime >= 3.0f && FABS(mSpinProgress - mCurrCardIndex) < 0.07f) { // can jump to previous card
 			_6C           = 0.0f;
 			_68           = 0.0f;
 			mSelectedSlot = (CARD_ID_COUNT + mCurrCardIndex - 1) % CARD_ID_COUNT;
-			_2C           = 0.0f;
+			mDecelerateTime           = 0.0f;
 			mSpinAccel    = 0.0f;
 			mSpinSpeed    = 0.0f;
 			mSpinState    = SPIN_END;
-			_4C           = mSelectedSlot;
+			mSlotIndex           = mSelectedSlot;
 			mSpinTimer    = 0.8f;
 			startZoomIn();
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
@@ -757,7 +757,7 @@ void VsGame::CardMgr::SlotMachine::update()
 			mSpinSpeed = 0.0f;
 			mSpinAccel = 0.0f;
 			mSpinState = SPIN_END;
-			_4C        = mSelectedSlot;
+			mSlotIndex        = mSelectedSlot;
 			mSpinTimer = 0.8f;
 			startZoomIn();
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
@@ -797,7 +797,7 @@ void VsGame::CardMgr::SlotMachine::update()
 		}
 		break;
 	case SPIN_END: // on roll end
-		_51        = true;
+		mMachineCardSelected        = true;
 		mSlotID    = mSelectedSlot;
 		mSpinSpeed = 0.0f;
 		mSpinAccel = 0.0f;
@@ -870,13 +870,13 @@ void VsGame::CardMgr::SlotMachine::updateAppear()
 		mPrevCardIndex = 0;
 		mCurrCardIndex = 0;
 		mSpinProgress  = 0.0f;
-		_4C            = UNRESOLVED;
+		mSlotIndex            = UNRESOLVED;
 		mSlotID        = UNRESOLVED;
 		mAppearValue   = 100.0f;
 		mAppearState   = APPEAR_RESET;
-		_38            = 0;
+		mZoomState            = 0;
 		mCherryStock   = 0;
-		_51            = false;
+		mMachineCardSelected            = false;
 		break;
 	}
 }
@@ -1032,15 +1032,15 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		}
 	}
 
-	if (machine._38 == 1) {
+	if (machine.mZoomState == 1) {
 		machine.updateZoomIn();
-	} else if (machine._38 == 2) {
+	} else if (machine.mZoomState == 2) {
 		machine.updateZoomUse();
 	}
 
 	Vector3f newvec;
 
-	if (machine._38 != 0 && machine._51) {
+	if (machine.mZoomState != 0 && machine.mMachineCardSelected) {
 		newvec = pos;
 		if (gGameConfig.mParms.mVsY.mData != 0) {
 			newvec = Vector3f(place.z, place.y, machine.mAppearValue / 2 + place.x);
@@ -1049,14 +1049,14 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		GXSetChanMatColor(GX_COLOR0A0, (JUtility::TColor)0xffffffff);
 		GXSetZMode(0, GX_LESS, 0);
 		Matrixf matrix2;
-		Vector3f anotherVec = Vector3f(0.0f, 0.0f, machine._40);
+		Vector3f anotherVec = Vector3f(0.0f, 0.0f, machine.mZoomVal);
 		matrix2.makeTR(newvec, anotherVec);
 		Matrixf* anotherMtx = new Matrixf;
 		PSMTXConcat(*(Mtx*)matrix, *(Mtx*)&matrix2, *(Mtx*)anotherMtx);
 		GXLoadPosMtxImm(*(Mtx*)anotherMtx, 0);
 		GXLoadNrmMtxImm(*(Mtx*)anotherMtx, 0);
-		JUTASSERTBOUNDSLINE(1818, 0, machine._4C, CARD_ID_COUNT, "%d");
-		mSlotTextures[machine._4C]->load(GX_TEXMAP0);
+		JUTASSERTBOUNDSLINE(1818, 0, machine.mSlotIndex, CARD_ID_COUNT, "%d");
+		mSlotTextures[machine.mSlotIndex]->load(GX_TEXMAP0);
 		GXSetTevOp(GX_TEVSTAGE0, GX_MODULATE);
 		GXSetNumTevStages(2);
 		GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
@@ -1090,8 +1090,8 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		machine._6C += sys->mDeltaTime / 2;
 
 		// this bunch seems good
-		float pos = machine._44;
-		float neg = -machine._44;
+		float pos = machine.mZoomOther;
+		float neg = -machine.mZoomOther;
 
 		GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 0x4);
 
@@ -1127,7 +1127,7 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_POS_XY, GX_F32, 0);
 		GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_F32, 0);
 
-		if (gGameConfig.mParms.mVsY.mData == 0 && machine._38 != 0 && machine._51) {
+		if (gGameConfig.mParms.mVsY.mData == 0 && machine.mZoomState != 0 && machine.mMachineCardSelected) {
 			mYButtonTexture->load(GX_TEXMAP0);
 			GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 0x4);
 		}
@@ -1153,11 +1153,11 @@ void LightObj::update() { }
  */
 void VsGame::CardMgr::SlotMachine::startZoomIn()
 {
-	_44 = 20.0f;
-	_40 = 0.0f;
-	_38 = 1;
-	_3C = 0.0f;
-	_50 = 0;
+	mZoomOther = 20.0f;
+	mZoomVal = 0.0f;
+	mZoomState = 1;
+	mZoominTimer = 0.0f;
+	mZoomStarted = 0;
 }
 
 /*
@@ -1167,10 +1167,10 @@ void VsGame::CardMgr::SlotMachine::startZoomIn()
  */
 void VsGame::CardMgr::SlotMachine::startZoomUse()
 {
-	_40 = 0.0f;
-	_38 = 2;
-	_3C = 0.0f;
-	_48 = 30.0f;
+	mZoomVal = 0.0f;
+	mZoomState = 2;
+	mZoominTimer = 0.0f;
+	mZoomUseVal = 30.0f;
 }
 
 /*
@@ -1180,23 +1180,23 @@ void VsGame::CardMgr::SlotMachine::startZoomUse()
  */
 void VsGame::CardMgr::SlotMachine::updateZoomIn()
 {
-	if (_50 == 0) {
-		_3C += sys->mDeltaTime * 4.0f;
-		_44 = _3C * 10.0f + 20.0f;
-		_48 = 0.0f;
-		if (_3C > 1.0f) {
-			_3C = 0.0f;
-			_50 = 1;
+	if (mZoomStarted == 0) {
+		mZoominTimer += sys->mDeltaTime * 4.0f;
+		mZoomOther = mZoominTimer * 10.0f + 20.0f;
+		mZoomUseVal = 0.0f;
+		if (mZoominTimer > 1.0f) {
+			mZoominTimer = 0.0f;
+			mZoomStarted = 1;
 		}
 	} else {
-		_3C += sys->mDeltaTime;
-		if (_3C > 1.0f) {
-			_3C -= 1.0f;
+		mZoominTimer += sys->mDeltaTime;
+		if (mZoominTimer > 1.0f) {
+			mZoominTimer -= 1.0f;
 		}
 
-		_44 = pikmin2_sinf(_3C * TAU) * 5.0f + 30.0f;
-		_48 = pikmin2_sinf(_3C * TAU * 2.0f) * 5.0f + 30.0f;
-		_40 = pikmin2_cosf(_3C * TAU) * 10.0f * DEG2RAD * PI;
+		mZoomOther = pikmin2_sinf(mZoominTimer * TAU) * 5.0f + 30.0f;
+		mZoomUseVal = pikmin2_sinf(mZoominTimer * TAU * 2.0f) * 5.0f + 30.0f;
+		mZoomVal = pikmin2_cosf(mZoominTimer * TAU) * 10.0f * DEG2RAD * PI;
 	}
 }
 /*
@@ -1206,14 +1206,14 @@ void VsGame::CardMgr::SlotMachine::updateZoomIn()
  */
 void VsGame::CardMgr::SlotMachine::updateZoomUse()
 {
-	_3C += sys->mDeltaTime * 3.0f;
-	if (_3C > 1.0f) {
-		_3C -= 1.0f;
+	mZoominTimer += sys->mDeltaTime * 3.0f;
+	if (mZoominTimer > 1.0f) {
+		mZoominTimer -= 1.0f;
 	}
 
-	_44 = pikmin2_sinf(_3C * TAU) * 5.0f + 30.0f;
-	_48 = -(_3C * 30.0f - 30.0f);
-	_40 = (pikmin2_cosf(_3C * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
+	mZoomOther = pikmin2_sinf(mZoominTimer * TAU) * 5.0f + 30.0f;
+	mZoomUseVal = -(mZoominTimer * 30.0f - 30.0f);
+	mZoomVal = (pikmin2_cosf(mZoominTimer * TAU) * 5.0f + 5.0f) * 360.0f * DEG2RAD * PI;
 }
 } // namespace VsGame
 } // namespace Game

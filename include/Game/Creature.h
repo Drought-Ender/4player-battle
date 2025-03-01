@@ -313,6 +313,17 @@ struct Creature : public CellObject {
 		return false;
 	}
 
+	inline f32 getCreatureViewAngle(Creature* target)
+	{
+		Vector3f targetPosition = target->getPosition();
+		Vector3f myPosition     = getPosition();
+
+		f32 x = targetPosition.x - myPosition.x;
+		f32 z = targetPosition.z - myPosition.z;
+
+		return angDist(angXZ(x, z), getFaceDir());
+	}
+
 	inline bool isCreatureFlag(u32 flag) const { return mFlags.typeView & flag; }
 
 	inline void killInline(CreatureKillArg* arg);
