@@ -223,6 +223,7 @@ struct FSMState10_FinishCopy : public FSMState_Warning {
 };
 
 struct TMgr {
+	typedef FSMState StateType;
 	TMgr();
 
 	~TMgr() { }
@@ -233,6 +234,9 @@ struct TMgr {
 	void update();
 	void draw();
 	void setController(Controller*);
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	Screen::FileSelect::TMainScreen mMainScreen; // _00
 	u32 _BF8;                                    // _BF8

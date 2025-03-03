@@ -1164,7 +1164,7 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 
 	endStick();
 
-	if ((!killArg || (killArg->_04 & 0x10000000) == FALSE) && isEvent(0, EB_IsDeathEffectEnabled)) {
+	if ((!killArg || (killArg->mFlags & 0x10000000) == FALSE) && isEvent(0, EB_IsDeathEffectEnabled)) {
 		Vector3f effectPos;
 		getCommonEffectPos(effectPos);
 		f32 scaleMod                      = mScaleModifier;
@@ -1177,7 +1177,7 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 		PSStartEnemyGhostSE(this, 0.0f);
 	}
 
-	if (!killArg || (killArg->_04 & 0x40000000) == FALSE) {
+	if (!killArg || (killArg->mFlags & 0x40000000) == FALSE) {
 		if (isEvent(0, EB_IsBittered)) {
 			mEnemyStoneObj->dead();
 			deathProcedure();
@@ -1260,7 +1260,7 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 			forceKillEffects();
 			becomeCarcass();
 
-		} else if (mExistDuration == 0.0f && isEvent(0, EB_ToLeaveCarcass) && (!killArg || !(killArg->_04 & 0x20000000))) {
+		} else if (mExistDuration == 0.0f && isEvent(0, EB_ToLeaveCarcass) && (!killArg || !(killArg->mFlags & 0x20000000))) {
 			if (!mPellet) {
 				PelletViewArg pvArg;
 				setCarcassArg(pvArg);

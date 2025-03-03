@@ -111,6 +111,7 @@ struct Onyon : public BaseItem {
 	void startWaitMotion();
 	Vector3f getFlagSetPos();
 	void vsChargePikmin();
+	void vsChargeBulbmin();
 	void doEmit(Creature*, bool);
 	CollPart* getLegPart(int);
 	CollPart* getFootPart(int);
@@ -154,7 +155,7 @@ struct Onyon : public BaseItem {
 	f32 mReleasePikisTimer;                  // _1DC
 	bool mIsReleasingPikis;                  // _1E0
 	u32 mWhitesToWithdraw;                   // _1E4, white pikmin queued to exit the ship
-	u32 mPurplesToWithdraw;                  // _1E8, purple pikmin queued to exit the ship
+	u32 mBulbminToWithdraw;                  // _1E8, purple pikmin queued to exit the ship
 	::efx::Container* mContainer;            // _1EC
 	::efx::ContainerAct* mContainerAct;      // _1F0
 	ModelEffect* mSpotbeamModel;             // _1F4
@@ -186,6 +187,8 @@ struct Onyon : public BaseItem {
 	SysShape::Animator* mPMotionList;        // _254, list of pAnim objects
 	f32* mPMotionSpeeds;                     // _258
 	f32 mPropera;                            // _25C, controls speed of one of the ships pMotions
+	u16 mToBirthBulbmin;
+	u8 mSavedBulbmin;
 	OnyonFloatingIcon* mIcon;
 };
 

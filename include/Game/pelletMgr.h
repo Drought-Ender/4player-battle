@@ -87,7 +87,7 @@ struct PelletMgr : public NodeObjectMgr<GenericObjectMgr> {
 	virtual void doDirectDraw(Graphics& gfx);   // _78 (weak)
 	virtual char* getMgrName()                  // _80 (weak)
 	{
-		return "ƒyƒŒƒbƒgƒ}ƒl[ƒWƒƒ"; // pellet manager
+		return "ï¿½yï¿½ï¿½ï¿½bï¿½gï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½"; // pellet manager
 	}
 	virtual char* getCaveName(int);       // _84
 	virtual int getCaveID(char*);         // _88
@@ -197,6 +197,8 @@ struct PelletKillArg : public CreatureKillArg {
  * @size = 0x458
  */
 struct Pellet : public DynCreature, public SysShape::MotionListener, public CarryInfoOwner {
+	typedef PelletState StateType;
+
 	Pellet();
 
 	enum PelletFlag {
@@ -437,6 +439,10 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 
 	inline f32 getStickRadius() { return mConfig->mParams.mRadius.mData; }
 
+	inline StateType* getCurrState() { return mCurrentState; }
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+
 	// _00		= VTABLE 1
 	// _04-_314	= DYNCREATURE
 	// _318 	= VTABLE 2? 3?
@@ -470,7 +476,7 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	bool _3C4;                     // _3C4
 	u8 _3C5[0x3];                  // _3C5 - unknown
 	PelletFSM* mPelletSM;          // _3C8
-	PelletState* mPelletState;     // _3CC
+	PelletState* mCurrentState;     // _3CC
 	u8 _3D0;                       // _3D0
 	int mCarryColor;               // _3D4
 	int mMinCarriers;              // _3D8, to do with pikmin number

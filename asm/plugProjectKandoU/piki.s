@@ -936,6 +936,7 @@ bl __construct_array
 /* 80147EF0 00144E30  7F A4 EB 78 */	mr r4, r29
 /* 80147EF4 00144E34  98 1D 02 B8 */	stb r0, 0x2b8(r29)
 /* 80147EF8 00144E38  98 1D 02 B9 */	stb r0, 0x2b9(r29)
+stb r0, 0x2ba(r29)
 /* 80147EFC 00144E3C  80 6D 92 F4 */	lwz r3, pikiMgr__4Game@sda21(r13)
 /* 80147F00 00144E40  48 01 68 39 */	bl setupPiki__Q24Game7PikiMgrFPQ24Game4Piki
 /* 80147F04 00144E44  7F A3 EB 78 */	mr r3, r29

@@ -61,6 +61,7 @@ typedef enum EPikiHappa {
 
 	Bud_Red    = 3,
 	Flower_Red = 4,
+	PikiHappaCount
 } EPikiHappa; // Aka headtype
 
 typedef enum EMovieUserCommands {
@@ -117,6 +118,8 @@ struct PikiFSM : public StateMachine<Piki> {
 };
 
 struct Piki : public FakePiki {
+	typedef PikiState StateType;
+	
 	struct InvokeAIFreeArg {
 		InvokeAIFreeArg(u8 a, u8 b)
 		    : _00(a)
@@ -234,11 +237,16 @@ struct Piki : public FakePiki {
 	void updateDope();
 	void updateColor();
 
+	bool canAttackPiki(Piki*);
+
 	inline PikiParms* getParms() { return static_cast<PikiParms*>(mParms); }
 	inline u16 getKind() { return (u16)mPikiKind; }
 	inline u16 getHappa() { return (u16)mHappaKind; }
 
 	inline efx::TPkEffect* getEffectObj() { return mEffectsObj; }
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	static Color4 pikiColors[PikiColorCount + 1];
 	static Color4 pikiColorsCursor[PikiColorCount + 1];
@@ -270,6 +278,7 @@ struct Piki : public FakePiki {
 	f32 mColorFloat;                  // _2B4
 	u8 mPikiKind;                     // _2B8,  aka Piki kind (Blue, Yellow, Red, etc.)
 	u8 mHappaKind;                    // _2B9, aka Happa kind (leaf, bud, flower)
+	u8 mBulbminAffiliation;
 	SysShape::Model* mLeafModel;      // _2BC
 	int mMgrIndex;                    // _2C0
 	Navi* mNavi;                      // _2C4

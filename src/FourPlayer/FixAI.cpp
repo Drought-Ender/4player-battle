@@ -108,6 +108,13 @@ namespace Game {
 #define PIKI_RESCUE_RANGE   (140.0f)
 #define GATE_GAS_PIPE_RANGE (128.0f)
 
+bool Piki::canAttackPiki(Piki* piki) {
+	u8 ourPikiKind = (mPikiKind == Bulbmin) ? mBulbminAffiliation : mPikiKind;
+	u8 theirPikiKind = (piki->mPikiKind == Bulbmin) ? piki->mBulbminAffiliation : piki->mPikiKind;
+
+	return ourPikiKind != theirPikiKind;
+}
+
 /**
  * @note Address: 0x801B1360
  * @note Size: 0x1A04
@@ -131,7 +138,7 @@ int Piki::graspSituation(Game::Creature** outTarget)
 		CI_LOOP(iter)
 		{
 			Piki* piki = *iter;
-			if (piki->isAlive() && piki->canVsBattle() && !piki->getVsBattlePiki() && piki->getKind() != getKind()) {
+			if (piki->isAlive() && piki->canVsBattle() && !piki->getVsBattlePiki() && canAttackPiki(piki)) {
 				f32 sphereDist = piki->calcSphereDistance(this);
 				if (sphereDist < minPikiDist) {
 					targetPiki  = piki;
@@ -456,7 +463,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 				if (creature->isAlive() &&             // is it alive
 				    otherPiki->canVsBattle() &&        // is it battle-able
 				    !otherPiki->getVsBattlePiki() &&   // is it not already fighting something else
-				    otherPiki->getKind() != getKind()) // is it on the other team
+				    canAttackPiki(otherPiki)) // is it on the other team
 				{
 					f32 sphereDist = otherPiki->calcSphereDistance(this);
 					if (sphereDist < PIKI_BATTLE_RANGE &&                          // needs to be close enough to target
@@ -632,7 +639,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 		case OBJTYPE_Navi: { // can we attack the navi?
 			if (gameSystem->isVersusMode()) {
 				Navi* navi = static_cast<Navi*>(creature);
-				if (navi->isAlive() && (int)navi->mNaviIndex == getKind()) {
+				if (navi->isAlive() && !navi->onTeam(this)) {
 					f32 sphereDist = navi->calcSphereDistance(this);
 					Sys::Sphere naviSphere;
 					navi->getBoundingSphere(naviSphere);
@@ -689,7 +696,7 @@ bool Piki::invokeAI(Game::CollEvent* event, bool check)
 
 	switch (creature->mObjectTypeID) {
 	case OBJTYPE_Navi: {
-		if (check && gameSystem->isVersusMode() && creature->isAlive() && static_cast<Navi*>(creature)->mNaviIndex == mPikiKind) {
+		if (check && gameSystem->isVersusMode() && creature->isAlive() && !static_cast<Navi*>(creature)->onTeam(this)) {
 			PikiAI::ActAttackArg attackArg;
 			attackArg.mCreature = creature;
 			attackArg.mCollPart = nullptr;
@@ -710,7 +717,7 @@ bool Piki::invokeAI(Game::CollEvent* event, bool check)
 
 	case OBJTYPE_Piki: {
 		if (gameSystem->isVersusMode() && creature->isAlive() && static_cast<Piki*>(creature)->canVsBattle()
-		    && !static_cast<Piki*>(creature)->getVsBattlePiki() && static_cast<Piki*>(creature)->getKind() != getKind()) {
+		    && !static_cast<Piki*>(creature)->getVsBattlePiki() && canAttackPiki(static_cast<Piki*>(creature))) {
 			PikiAI::ActBattleArg battleArg(static_cast<Piki*>(creature));
 			return mBrain->start(PikiAI::ACT_Battle, &battleArg);
 		}

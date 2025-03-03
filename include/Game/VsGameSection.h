@@ -38,6 +38,8 @@ struct State;
 typedef f32 VsWeights[2]; // delegations
 
 struct VsGameSection : public BaseGameSection {
+	typedef VsGame::State StateType;
+
 	struct DropCardArg {
 		VsWeights mMinDists; // _00
 		VsWeights mMaxDists; // _04
@@ -104,6 +106,9 @@ struct VsGameSection : public BaseGameSection {
 
 	void killAllPiki(int color);
 
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
+
 	static int mRedWinCount;
 	static int mBlueWinCount;
 	static int mWhiteWinCount;
@@ -111,17 +116,16 @@ struct VsGameSection : public BaseGameSection {
 	static int mDrawCount;
 	static int mNaviWinCounts[4];
 
-	#define YELLOW_MARBLE_COUNT 13
+#define YELLOW_MARBLE_COUNT 13
 
-	#define MINI_MARBLE_COUNT 77
+#define MINI_MARBLE_COUNT 77
 
 	void killNearestP4Marbles();
-
 
 	bool mIsVersusMode;                            // _174
 	VSFifo* mVsFifo;                               // _178
 	StateMachine<Game::VsGameSection>* mFsm;       // _17C
-	VsGame::State* mState;                         // _180
+	VsGame::State* mCurrentState;                  // _180
 	DvdThreadCommand mDvdThreadCommand;            // _184
 	f32 mGhostIconTimers[4];                       // _1F0
 	u8 mMenuFlags;                                 // _1F8
@@ -148,24 +152,24 @@ struct VsGameSection : public BaseGameSection {
 	int mLouieHandicap;                            // _348
 	int mWhiteHandicap;
 	int mPurpleHandicap;
-	int mVsWinner;                                 // _34C
-	f32 mPikminRatio;                              // _350
-	f32 mPikminCountTimer;                         // _354
-	f32 mRedBlueYellowScore[4];                    // _358
-	f32 mCherryScore[4];                           // _360
-	f32 mMinCherryScore[4];                        // _368
-	f32 mYellowScore[4];                           // _370
-	f32 mRedBlueScore[4];                          // _378
-	Pellet* mMarbleRedBlue[4];                     // _380
-	Pellet* mMarbleYellow[YELLOW_MARBLE_COUNT];    // _388
-	int mPokoCount;                                // _3BC
-	f32 mTimeLimit;                                // _3C0
-	int mCardCount;                                // _3C4
-	f32 mSpawnTimer;                               // _3C8
-	int mMaxCherries;                              // _3CC
-	Pellet** mCherryArray;                         // _3D0
-	int mDispMarbleCounts[4];                      // _3D4
-	int mRealMarbleCounts[4];                      // _3DC
+	int mVsWinner;                              // _34C
+	f32 mPikminRatio;                           // _350
+	f32 mPikminCountTimer;                      // _354
+	f32 mRedBlueYellowScore[4];                 // _358
+	f32 mCherryScore[4];                        // _360
+	f32 mMinCherryScore[4];                     // _368
+	f32 mYellowScore[4];                        // _370
+	f32 mRedBlueScore[4];                       // _378
+	Pellet* mMarbleRedBlue[4];                  // _380
+	Pellet* mMarbleYellow[YELLOW_MARBLE_COUNT]; // _388
+	int mPokoCount;                             // _3BC
+	f32 mTimeLimit;                             // _3C0
+	int mCardCount;                             // _3C4
+	f32 mSpawnTimer;                            // _3C8
+	int mMaxCherries;                           // _3CC
+	Pellet** mCherryArray;                      // _3D0
+	int mDispMarbleCounts[4];                   // _3D4
+	int mRealMarbleCounts[4];                   // _3DC
 	int mGetDopeCount[4][2];
 	// mini marbles
 	int mDispMiniCounts[4];
@@ -183,10 +187,7 @@ const static int vsGameSize = sizeof(VsGameSection);
 
 } // namespace Game
 
-
-Game::VsGameSection* GetVsGameSection() {
-    return static_cast<Game::VsGameSection*>(Game::gameSystem->mSection);
-}
+Game::VsGameSection* GetVsGameSection() { return static_cast<Game::VsGameSection*>(Game::gameSystem->mSection); }
 
 int SaveEditNum(int);
 

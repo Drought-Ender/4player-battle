@@ -29,6 +29,8 @@ struct FSMState {
 		mStateMachine->transit(obj, stateID, stateArg);
 	}
 
+	inline int getCurrStateID() { return mId; }
+
 	// _00 VTBL
 	int mId;                        // _04
 	StateMachine<T>* mStateMachine; // _08
@@ -41,38 +43,29 @@ struct StateMachine {
 	{
 	}
 
-	virtual void init(T*);                    // _08
-	virtual void start(T*, int, StateArg*);   // _0C
-	virtual void exec(T*);                    // _10
-	virtual void transit(T*, int, StateArg*); // _14
-
-	// #pragma dont_inline on
-	void create(int limit);
-	// {
-	// 	mLimit          = limit;
-	// 	mCount          = 0;
-	// 	mStates         = new FSMState<T>*[mLimit];
-	// 	mIndexToIDArray = new int[mLimit];
-	// 	mIdToIndexArray = new int[mLimit];
-	// }
-
+	virtual void init(T*) { }                                   // _08
+	virtual void start(T* obj, int stateID, StateArg* settings) // _0C
+	{
+		// obj->setCurrState(nullptr); // should be this but this breaks ebiFileSelectMgr for some goddamn reason
+		obj->setCurrState(nullptr); // this can't be right because of itemHole.cpp smh
+		transit(obj, stateID, settings);
+	}
+	virtual void exec(T* obj); // _10
+	void create(int limit);    // must be placed above transit
 	void registerState(FSMState<T>* state);
-	// {
-	// 	if (mLimit <= mCount) {
-	// 		return;
-	// 	}
-	// 	mStates[mCount] = state;
-	// 	if (!(-1 < state->mId && state->mId < mLimit)) {
-	// 		return;
-	// 	}
-	// 	state->mStateMachine = this;
-	// 	mIndexToIDArray[mCount] = state->mId;
-	// 	mIdToIndexArray[state->mId] = mCount;
-	// 	mCount++;
-	// }
-	// #pragma dont_inline reset
+	virtual void transit(T* obj, int stateID, StateArg* settings); // _14
 
 	int getCurrID(T*);
+	inline int getIndexFromID(int stateID) const { return mIdToIndexArray[stateID]; }
+	inline int getIDFromIndex(int index) const { return mIndexToIDArray[index]; }
+	inline FSMState<T>* getState(int index) { return mStates[index]; }
+
+	inline void initState(T* obj, int index, StateArg* settings)
+	{
+		T::StateType* state = static_cast<T::StateType*>(getState(index));
+		obj->setCurrState(state);
+		state->init(obj, settings);
+	}
 
 	// _00	= VTBL
 	FSMState<T>** mStates; // _04
@@ -82,5 +75,70 @@ struct StateMachine {
 	int* mIdToIndexArray;  // _14, state indices array, indexed by state ID
 	int mCurrentID;        // _18, ID of current/active state
 };
+
+template <typename T>
+void StateMachine<T>::create(int limit)
+{
+	mLimit          = limit;
+	mCount          = 0;
+	mStates         = new FSMState<T>*[mLimit];
+	mIndexToIDArray = new int[mLimit];
+	mIdToIndexArray = new int[mLimit];
+}
+template <typename T>
+void StateMachine<T>::transit(T* obj, int stateID, StateArg* settings)
+{
+	int index          = getIndexFromID(stateID);
+	FSMState<T>* state = obj->getCurrState();
+	if (state) {
+		state->cleanup(obj);
+		mCurrentID = state->mId;
+	}
+
+	ASSERT_HANG(index < mLimit);
+
+	initState(obj, index, settings);
+}
+template <typename T>
+void StateMachine<T>::registerState(FSMState<T>* state)
+{
+	if (mCount >= mLimit) {
+		return;
+	}
+	mStates[mCount] = state;
+	bool inBounds;
+	if (state->getCurrStateID() < 0 || state->getCurrStateID() >= mLimit) {
+		inBounds = false;
+	} else {
+		inBounds = true;
+	}
+
+	if (!inBounds) {
+		return;
+	}
+
+	state->mStateMachine                     = this;
+	mIndexToIDArray[mCount]                  = state->getCurrStateID();
+	mIdToIndexArray[state->getCurrStateID()] = mCount;
+	mCount++;
+}
+template <typename T>
+void StateMachine<T>::exec(T* obj)
+{
+	if (obj->mCurrentState != nullptr) {
+		obj->mCurrentState->exec(obj);
+	}
+}
+
+template <typename T>
+int StateMachine<T>::getCurrID(T* obj)
+{
+	if (obj->mCurrentState) {
+		return obj->mCurrentState->getCurrStateID();
+	}
+
+	return -1;
+}
+
 } // namespace Game
 #endif

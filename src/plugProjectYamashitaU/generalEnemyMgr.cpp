@@ -399,7 +399,7 @@ GeneralEnemyMgr::GeneralEnemyMgr()
     , mHeap(nullptr)
 {
 	sys->heapStatusStart("GeneralEnemyMgr", nullptr);
-	mName         = "“Gƒ}ƒl[ƒWƒƒ"; // enemy manager
+	mName         = "ï¿½Gï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½"; // enemy manager
 	mEnemyNumList = new EnemyTypeID[gEnemyInfoNum];
 
 	setEnemyIDs();
@@ -423,7 +423,7 @@ GeneralEnemyMgr::GeneralEnemyMgr()
 void GeneralEnemyMgr::killAll()
 {
 	EnemyKillArg killArg(0);
-	killArg._04 |= 0x70000000;
+	killArg.mFlags |= 0x70000000;
 
 	EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 	for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
@@ -964,7 +964,7 @@ void GeneralEnemyMgr::prepareDayendEnemies()
 
 		if (info->mFlags & 0x10) {
 			EnemyKillArg killArg(0);
-			killArg._04 |= 0x70000000;
+			killArg.mFlags |= 0x70000000;
 			childNode->killAll(&killArg);
 		}
 	}

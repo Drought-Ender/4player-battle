@@ -185,6 +185,7 @@ struct ItemState : public FSMState<T> {
 
 template <typename ItemClass, typename FSMClass, typename StateClass>
 struct FSMItem : public BaseItem {
+	typedef StateClass StateType;
 	inline FSMItem(int objTypeID)
 	    : BaseItem(objTypeID)
 	    , mFsm(nullptr)
@@ -229,9 +230,22 @@ struct FSMItem : public BaseItem {
 		}
 	}
 
+	int getStateID();
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
+
 	FSMClass* mFsm;            // _1D8
 	StateClass* mCurrentState; // _1DC
 };
+
+template <typename ItemClass, typename FSMClass, typename StateClass>
+int FSMItem<ItemClass, FSMClass, StateClass>::getStateID()
+{
+	if (mCurrentState) {
+		return (mCurrentState->getCurrStateID());
+	}
+	return -1;
+}
 
 template <typename ItemClass, typename FSMClass, typename StateClass>
 struct WorkItem : public FSMItem<ItemClass, FSMClass, StateClass> {

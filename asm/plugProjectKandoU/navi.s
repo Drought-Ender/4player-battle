@@ -1614,9 +1614,8 @@ lbl_constructor:
 /* 8014082C 0013D76C  2C 00 00 01 */	cmpwi r0, 1
 /* 80140830 0013D770  40 82 00 18 */	bne .L_80140848
 mr r3, r31
-
-/* 80140838 0013D778  A0 7C 01 F4 */	lhz r4, 0x1f4(r28)
-bl onTeam__Q24Game4NaviFi
+mr r4, r28
+bl onTeam__Q24Game4NaviFPQ34Game12ItemPikihead4Item
 
 /* 80140840 0013D780  7C 03 00 00 */	cmplwi r3, 1
 /* 80140844 0013D784  40 82 00 0C */	bne .L_80140850

@@ -23,8 +23,8 @@ class VsSlotMachineCard {
 protected:
 	VsSlotMachineCard(const char* texName);
 
-private:
 	const char* mTexName;
+private:
 	int mTexID;
 
 public:

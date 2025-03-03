@@ -150,6 +150,7 @@ struct FSMState_MountCheck : public FSMState_CardRequest {
 };
 
 struct TMgr : public JKRDisposer {
+	typedef FSMState StateType;
 	enum enumEnd { End_0, End_1, End_2, End_3 };
 
 	TMgr();
@@ -170,6 +171,9 @@ struct TMgr : public JKRDisposer {
 
 	void deleteInstance();
 	TMgr* getInstance();
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	static TMgr* msInstance;
 

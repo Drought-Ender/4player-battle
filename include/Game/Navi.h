@@ -24,13 +24,7 @@
 
 struct Controller;
 
-enum NaviIndex {
-	NAVIID_Olimar    = 0,
-	NAVIID_Louie     = 1,
-	NAVIID_President = 2,
-	NAVIID_Wife      = 3,
-	NAVIID_Multiplayer = 4
-};
+enum NaviIndex { NAVIID_Olimar = 0, NAVIID_Louie = 1, NAVIID_President = 2, NAVIID_Wife = 3, NAVIID_Multiplayer = 4 };
 
 #define GET_OTHER_NAVI(navi) (1 - (navi)->mNaviIndex)
 
@@ -97,6 +91,7 @@ struct NaviWhistle {
 #define NAVI_THROWTIMER_LENGTH (10)
 
 struct Navi : public FakePiki, virtual public PelletView {
+	typedef NaviState StateType;
 	Navi();
 
 	// vtable 1 (Creature)
@@ -217,10 +212,14 @@ struct Navi : public FakePiki, virtual public PelletView {
 	inline void resetControlFlag(u16 flag) { mNaviControlFlag.typeView &= ~flag; }
 	inline bool isControlFlag(u16 flag) { return mNaviControlFlag.typeView & flag; }
 
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	int getVsPikiColor();
 	int getVsTeam();
 	bool onTeam(int color);
+	bool onTeam(Piki* p);
+	bool onTeam(ItemPikihead::Item* p);
 	bool onVsTeam(int color);
 
 	bool isInvisible();
@@ -239,7 +238,7 @@ struct Navi : public FakePiki, virtual public PelletView {
 	u8 _264[4];                             // _264
 	bool mIsAlive;                          // _268
 	u8 _269;                                // _269
-	u8 mPluckingCounter;                                // _26A
+	u8 mPluckingCounter;                    // _26A
 	PSM::Navi* mSoundObj;                   // _26C
 	NaviFSM* mFsm;                          // _270
 	NaviState* mCurrentState;               // _274
@@ -325,17 +324,17 @@ struct NaviMgr : public MonoObjectMgr<Navi>, public JKRDisposer {
 	static SysShape::AnimMgr* animMgr;
 
 	// VT 3 pointer is at _30
-	unknown _48;                    // _48
-	PSM::DirectorUpdator* _4C;      // _4C
-	int mNaviCount;                 // _50
-	int* mNaviIndexArray;           // _54
+	unknown _48;               // _48
+	PSM::DirectorUpdator* _4C; // _4C
+	int mNaviCount;            // _50
+	int* mNaviIndexArray;      // _54
 	u8 _FILLER[0x4];
 	u8 _5C;                         // _5C
 	Sys::MatTevRegAnimation _60[2]; // _60
 	Sys::MatTevRegAnimation _88[2]; // _88
 	J3DModelData* mOlimarModel;     // _B0
 	J3DModelData* mLouieModel;      // _B4
-	J3DModelData* _B8;              // _B8   
+	J3DModelData* _B8;              // _B8
 	u8 _BC[8];                      // _BC
 	J3DModelData* _C4;              // _C4
 	NaviParms* mNaviParms;          // _C8

@@ -92,6 +92,21 @@ bool Navi::onTeam(int color) {
     return getVsPikiColor() == color;
 }
 
+bool Navi::onTeam(Piki* piki) {
+	if (piki->mPikiKind == Bulbmin) {
+		return getVsPikiColor() == piki->mBulbminAffiliation;
+	}
+    return getVsPikiColor() == piki->mPikiKind;
+}
+
+bool Navi::onTeam(ItemPikihead::Item* item) {
+	if (item->mColor == Bulbmin) {
+		return getVsPikiColor() == item->mBulbminAffiliation;
+	}
+    return getVsPikiColor() == item->mColor;
+}
+
+
 bool Navi::onVsTeam(int color) {
     return getVsTeam() == color;
 }

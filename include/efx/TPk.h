@@ -197,10 +197,10 @@ struct TPkEffectTane {
 	void killGlow1_();
 
 	int mPikiColor;      // _00
-	Vector3f* mPos;      // _04, unknown
-	u32 _08;             // _08, unknown
-	Vector3f* mPos2;     // _0C, unknown
-	u32 _10;             // _10, unknown
+	Vector3f* mObjPos;      // _04, unknown
+	Vector3f* mEfxPos;             // _08, unknown
+	Matrixf* mHappaJntMtx;     // _0C, unknown
+	Matrixf* mObjMatrix;             // _10, unknown
 	TPkGlow1 mGlow;      // _14
 	ToeTanekira mOeKira; // _28
 	ToeKourin mOeKourin; // _44

@@ -411,7 +411,7 @@ struct PikiFallMeckState : public PikiState {
 
 	// _00     = VTBL
 	// _00-_10 = PikiState
-	bool _10; // _10
+	bool mDoAutoPluck; // _10
 };
 
 struct FlickStateArg : public StateArg {

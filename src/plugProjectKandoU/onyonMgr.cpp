@@ -453,9 +453,8 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 	}
 
 	if (gameSystem->isVersusMode()) {
-		const char* peltnames[] = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
-		
-		
+		const char* peltnames[]
+		    = { VsOtakaraName::cBedamaRed, VsOtakaraName::cBedamaBlue, VsOtakaraName::cBedamaWhite, VsOtakaraName::cBedamaPurple };
 
 		for (int i = 0; i < ARRAY_SIZE(peltnames); i++) {
 			if (strcmp(peltnames[i], pellet->mConfig->mParams.mName.mData) == 0) {
@@ -470,7 +469,7 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 		pellet->mPelletSM->transit(pellet, PELSTATE_ScaleAppear, nullptr);
 
 		if (pellet->mPelletFlag == Pellet::FLAG_VS_BEDAMA_YELLOW) {
-			GameMessageVsGetOtakara mesg (getTeamFromPiki((EPikiKind)item->mOnyonType));
+			GameMessageVsGetOtakara mesg(getTeamFromPiki((EPikiKind)item->mOnyonType));
 			gameSystem->mSection->sendMessage(mesg);
 			return true;
 		}
@@ -589,12 +588,12 @@ void Onyon::doDirectDraw(Graphics& gfx)
 	if (mOnyonType == ONYON_TYPE_SHIP) {
 		gfx.initPrimDraw(0);
 		Vector3f pos = getInStart_UFO();
-		gfx._084.r     = 0;
-		gfx._084.g     = 255;
-		gfx._084.b     = 0;
-		gfx._084.a     = 255;
+		gfx._084.r   = 0;
+		gfx._084.g   = 255;
+		gfx._084.b   = 0;
+		gfx._084.a   = 255;
 		gfx.drawSphere(pos, 5.0);
-		pos      = getOutStart_UFO();
+		pos        = getOutStart_UFO();
 		gfx._084.r = 100;
 		gfx._084.g = 255;
 		gfx._084.b = 0;
@@ -605,10 +604,10 @@ void Onyon::doDirectDraw(Graphics& gfx)
 		pos.x                = mtx->mMatrix.structView.tx;
 		pos.y                = mtx->mMatrix.structView.ty;
 		pos.z                = mtx->mMatrix.structView.tz;
-		gfx._084.r             = 100;
-		gfx._084.b             = 255;
-		gfx._084.g             = 0;
-		gfx._084.a             = 255;
+		gfx._084.r           = 100;
+		gfx._084.b           = 255;
+		gfx._084.g           = 0;
+		gfx._084.a           = 255;
 		gfx.drawSphere(pos, 20.0);
 	}
 
@@ -641,10 +640,12 @@ Onyon::Onyon()
 void Onyon::onInit(CreatureInitArg*)
 {
 	mToBirth           = 0;
+	mToBirthBulbmin    = 0;
+	mSavedBulbmin      = 0;
 	mPikisToWithdraw   = 0;
 	mIsReleasingPikis  = false;
 	mReleasePikisTimer = 0.0f;
-	mPurplesToWithdraw = 0;
+	mBulbminToWithdraw = 0;
 	mWhitesToWithdraw  = 0;
 	mPikiOutJoint      = nullptr;
 	mPikiInJoint       = nullptr;
@@ -675,7 +676,8 @@ void Onyon::onSetPosition()
 		mGoalWayPoint = nullptr;
 	}
 
-	if (mInitSpot) return;
+	if (mInitSpot)
+		return;
 
 	mInitSpot = true;
 
@@ -863,11 +865,21 @@ void Onyon::doAI()
 			colorLeft = 0;
 		}
 	}
-	
+
+	int mapBulbmins = GameStat::getMapPikmins(Bulbmin);
+	if (mapBulbmins < 50 && gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+		if (mSavedBulbmin > 0) {
+			mToBirthBulbmin += mSavedBulbmin;
+			mToBirthBulbmin--;
+			vsChargeBulbmin();
+			mSavedBulbmin = 0;
+		}
+	}
+
 	if (gConfig[PIKMIN_BIRTH] == ConfigEnums::BIRTH_PIKMIN) {
 		birthByExitPiki();
 	}
-	
+
 	SysShape::AnimInfo* info = mAnimator.mAnimInfo;
 	int animid;
 	if (!info) {
@@ -1223,11 +1235,33 @@ bool ItemOnyon::gVsChargeOkay = false;
 
 void Onyon::vsChargePikmin()
 {
-	if (!ItemOnyon::gVsChargeOkay && gConfig[PIKI_DIE] == ConfigEnums::REVIVE_OFF) return;
+	if (!ItemOnyon::gVsChargeOkay && gConfig[PIKI_DIE] == ConfigEnums::REVIVE_OFF)
+		return;
 
 	P2ASSERTLINE(1791, gameSystem->isVersusMode());
 	mPikminType = mOnyonType;
 	mToBirth++;
+	SysShape::AnimInfo* info = mAnimator.mAnimInfo;
+	int animid;
+	if (!info) {
+		animid = -1;
+	} else {
+		animid = info->mId;
+	}
+	if (animid == 0 || animid == 2) {
+		SysShape::MotionListener* mlisten = this;
+		mAnimator.startAnim(1, mlisten);
+	}
+}
+
+void Onyon::vsChargeBulbmin()
+{
+	if (!ItemOnyon::gVsChargeOkay && gConfig[PIKI_DIE] == ConfigEnums::REVIVE_OFF)
+		return;
+
+	P2ASSERTLINE(1791, gameSystem->isVersusMode());
+	mPikminType = mOnyonType;
+	mToBirthBulbmin++;
 	SysShape::AnimInfo* info = mAnimator.mAnimInfo;
 	int animid;
 	if (!info) {
@@ -1258,7 +1292,7 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 
 	switch (event.mType) {
 	case KEYEVENT_END:
-		if (mToBirth) {
+		if (mToBirth || mToBirthBulbmin) {
 			if (mOnyonType < ONYON_TYPE_MAX) {
 				SysShape::MotionListener* mlisten = this;
 				mAnimator.startAnim(1, mlisten);
@@ -1277,8 +1311,8 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 		if (mOnyonType < ONYON_TYPE_MAX) {
 			switch (animid) {
 			case 1: // shoot out seeds
-				if (mToBirth && gConfig[PIKMIN_BIRTH] != ConfigEnums::BIRTH_PIKMIN) {
-					int shootcount = MIN(mToBirth / 2, 25);
+				if ((mToBirth || mToBirthBulbmin) && gConfig[PIKMIN_BIRTH] != ConfigEnums::BIRTH_PIKMIN) {
+					int shootcount = MIN((mToBirth + mToBirthBulbmin) / 2, 25);
 					if (shootcount <= 0) {
 						shootcount = 1;
 					}
@@ -1286,44 +1320,64 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 					for (int i = 0; i < shootcount; i++) {
 						if (gameSystem && gameSystem->isVersusMode()) {
 							// versus mode onion counts
-							int reds  = GameStat::getMapPikmins(Red);
-							int blues = GameStat::getMapPikmins(Blue);
-							int whites = GameStat::getMapPikmins(White);
+							int reds    = GameStat::getMapPikmins(Red);
+							int blues   = GameStat::getMapPikmins(Blue);
+							int whites  = GameStat::getMapPikmins(White);
 							int purples = GameStat::getMapPikmins(Purple);
-							if (mOnyonType == ONYON_TYPE_BLUE && blues >= 50) {
+
+							int bulbmin = GameStat::getMapPikmins(Bulbmin);
+
+							if (!mToBirth && bulbmin >= 50) {
 								if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
-									playData->mPikiContainer.getCount(Blue, Leaf)++;
+									mSavedBulbmin++;
 								}
-								mToBirth--;
+								mToBirthBulbmin--;
 								continue;
-							} else if (mOnyonType == ONYON_TYPE_RED && reds >= 50) {
-								if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
-									playData->mPikiContainer.getCount(Red, Leaf)++;
+							}
+							if (mToBirth) {
+								if (mOnyonType == ONYON_TYPE_BLUE && blues >= 50) {
+									if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+										playData->mPikiContainer.getCount(Blue, Leaf)++;
+									}
+									mToBirth--;
+									continue;
+								} else if (mOnyonType == ONYON_TYPE_RED && reds >= 50) {
+									if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+										playData->mPikiContainer.getCount(Red, Leaf)++;
+									}
+									mToBirth--;
+									continue;
+								} else if (mOnyonType == ONYON_TYPE_PURPLE && purples >= 50) {
+									if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+										playData->mPikiContainer.getCount(Purple, Leaf)++;
+									}
+									mToBirth--;
+									continue;
+								} else if (mOnyonType == ONYON_TYPE_WHITE && whites >= 50) {
+									if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
+										playData->mPikiContainer.getCount(White, Leaf)++;
+									}
+									mToBirth--;
+									continue;
 								}
-								mToBirth--;
-								continue;
-							} else if (mOnyonType == ONYON_TYPE_PURPLE && purples >= 50) {
-								if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
-									playData->mPikiContainer.getCount(Purple, Leaf)++;
-								}
-								mToBirth--;
-								continue;
-							} else if (mOnyonType == ONYON_TYPE_WHITE && whites >= 50) {
-								if (gConfig[RESERVOIR] == ConfigEnums::RESERVOIR_ON) {
-									playData->mPikiContainer.getCount(White, Leaf)++;
-								}
-								mToBirth--;
-								continue;
 							}
 						}
 
 						ItemPikihead::Item* obj = static_cast<ItemPikihead::Item*>(ItemPikihead::mgr->birth());
 						if (obj) {
-							mPikminType = mOnyonType;
-							ItemPikihead::InitArg arg((EPikiKind)mPikminType, Vector3f::zero);
-							obj->init(&arg);
-							mToBirth--;
-							BirthMgr::inc(obj->mColor);
+							if (mToBirth) {
+								mPikminType = mOnyonType;
+								ItemPikihead::InitArg arg((EPikiKind)mPikminType, Vector3f::zero);
+								obj->init(&arg);
+								mToBirth--;
+								BirthMgr::inc(obj->mColor);
+							} else if (mToBirthBulbmin) {
+								ItemPikihead::InitArg arg(Bulbmin, Vector3f::zero);
+								obj->init(&arg);
+								obj->mBulbminAffiliation = mOnyonType;
+								mToBirthBulbmin--;
+								BirthMgr::inc(Bulbmin);
+							}
 							doEmit(obj, false);
 
 						} else { // returned pikihead is null, 100 pikmin limit must be reached
@@ -1669,7 +1723,7 @@ void Onyon::enterPiki(Piki* piki)
 	PikiKillArg killarg(1);
 	piki->kill(&killarg);
 
-	if (mOnyonType < ONYON_TYPE_MAX && mToBirth) {
+	if (mOnyonType < ONYON_TYPE_MAX && (mToBirth || mToBirthBulbmin)) {
 		int animid;
 		if (!mAnimator.mAnimInfo) {
 			animid = -1;
@@ -1685,9 +1739,7 @@ void Onyon::enterPiki(Piki* piki)
 	}
 }
 
-bool Onyon::ShouldTryBirthing() {
-	return mToBirth;
-}
+bool Onyon::ShouldTryBirthing() { return mToBirth || mToBirthBulbmin; }
 
 /*
  * --INFO--
@@ -1699,11 +1751,8 @@ void Onyon::exitPikis(int add, int color)
 	mIsReleasingPikis = true;
 	mPikisToWithdraw += add;
 	mReleasePikisTimer = 0.0f;
-	if (color == Purple) {
-		mPurplesToWithdraw += add;
-	}
-	if (color == White) {
-		mWhitesToWithdraw += add;
+	if (color == Bulbmin) {
+		mBulbminToWithdraw += add;
 	}
 }
 
@@ -1720,16 +1769,8 @@ Creature* Onyon::exitPiki()
 
 	int color = mOnyonType;
 	int happa = -1;
-	if (mOnyonType == ONYON_TYPE_SHIP) {
-		if ((int)mWhitesToWithdraw > 0) {
-			color = White;
-		} else {
-			if ((int)mPurplesToWithdraw > 0) {
-				color = Purple;
-			} else {
-				JUT_PANICLINE(2296, "exitWhite/Black zero (UFO)\n");
-			}
-		}
+	if (mBulbminToWithdraw > 0 && !mPikisToWithdraw) {
+		color = Bulbmin;
 	}
 	for (int i = Flower; !(i < Leaf); i--) {
 		if (playData->mPikiContainer.getCount(color, i) > 0) {
@@ -1745,22 +1786,21 @@ Creature* Onyon::exitPiki()
 		piki = pikiMgr->birth();
 		if (!piki) {
 			mPikisToWithdraw   = 0;
-			mWhitesToWithdraw  = 0;
-			mPurplesToWithdraw = 0;
+			mBulbminToWithdraw = 0;
 			mIsReleasingPikis  = false;
 			return nullptr;
 
 		} else {
-			if (color == White) {
-				mWhitesToWithdraw--;
-			} else if (color == Purple) {
-				mPurplesToWithdraw--;
+			if (color == Bulbmin) {
+				mSavedBulbmin--;
+				mBulbminToWithdraw--;
+				piki->mBulbminAffiliation = mOnyonType;
 			}
-			P2ASSERTLINE(2338, piki);
-
-			int& count = playData->mPikiContainer.getCount(color, happa);
-			count--;
-			playData->mPikiContainer.getColorSum(color);
+			else {
+				int& count = playData->mPikiContainer.getCount(color, happa);
+				count--;
+				playData->mPikiContainer.getColorSum(color);
+			}
 			piki->init(nullptr);
 			piki->changeShape(color);
 			piki->changeHappa(happa);
@@ -2416,7 +2456,8 @@ void ItemOnyon::Mgr::load()
 	closeTextArc(ufotextarc);
 }
 
-void Onyon::birthByExitPiki() {
+void Onyon::birthByExitPiki()
+{
 	int pikiCount = GameStat::getMapPikmins(mPikminType);
 
 	if (mToBirth + mPikisToWithdraw > 0) {
@@ -2434,13 +2475,36 @@ void Onyon::birthByExitPiki() {
 
 		if (spawnAmount) {
 			playData->mPikiContainer.getCount(mPikminType, Leaf) += spawnAmount;
-			
+
 			exitPikis(spawnAmount, mPikminType);
 		}
 
 		mToBirth = excess;
 	}
-}
 
+	int pikiCount2 = GameStat::getMapPikmins(Bulbmin);
+
+	if (mToBirthBulbmin > 0) {
+		int spawnAmount = mToBirthBulbmin;
+
+		int excess = 0;
+
+		int maxSpawnAmount = 50 - pikiCount2 - mPikisToWithdraw;
+
+		if (spawnAmount > maxSpawnAmount) {
+			excess = mToBirthBulbmin - maxSpawnAmount;
+
+			spawnAmount = maxSpawnAmount;
+		}
+
+		if (spawnAmount) {
+			mSavedBulbmin += spawnAmount;
+
+			exitPikis(spawnAmount, Bulbmin);
+		}
+
+		mToBirthBulbmin = excess;
+	}
+}
 
 } // namespace Game

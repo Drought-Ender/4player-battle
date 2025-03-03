@@ -52,6 +52,8 @@ struct Info {
 };
 
 struct DrawInfo : public CNode {
+	typedef FSMState StateType;
+	
 	DrawInfo(bool check = true);
 
 	virtual ~DrawInfo() { } // _08 (weak)
@@ -66,6 +68,9 @@ struct DrawInfo : public CNode {
 	void shake(EnemyBase*, f32);
 	void disappear(EnemyBase*);
 	void dead(EnemyBase*);
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	static EnemyBase* sOwnerEnemy;
 

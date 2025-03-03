@@ -551,6 +551,8 @@ struct FSMState_WN1_NowCreateNewFile : public FSMState_CardRequest {
 ////////////////////////////////////////////////////////////
 
 struct TMgr : Screen::TMemoryCard {
+	typedef FSMState StateType;
+	
 	enum enumStart {
 		Start_NoCard,
 		Start_IOError,
@@ -586,6 +588,9 @@ struct TMgr : Screen::TMemoryCard {
 
 	TMgr();
 	~TMgr();
+
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
 
 	// _00-_298 = TMemoryCard
 	u32 mCounter;                  // _298

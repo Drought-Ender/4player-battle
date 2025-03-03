@@ -1093,8 +1093,8 @@ PelletNumberInitArg::PelletNumberInitArg(int p1, int p2)
  */
 bool Pellet::isPickable()
 {
-	if (mPelletState) {
-		return mPelletState->isPickable();
+	if (mCurrentState) {
+		return mCurrentState->isPickable();
 	}
 	return false;
 }
@@ -1174,7 +1174,7 @@ void Pellet::onKill(CreatureKillArg* killArg)
 // should be weak, but also not generalisable to a template? who knows
 void StateMachine<Pellet>::start(Pellet* pellet, int stateID, StateArg* arg)
 {
-	pellet->mPelletState = 0;
+	pellet->mCurrentState = 0;
 	transit(pellet, stateID, arg);
 }
 
@@ -2194,7 +2194,7 @@ void Pellet::onSetPosition()
 				item->setPosition(mPelletPosition, false);
 				item->setTreasure(this);
 			} else {
-				JUT_PANICLINE(2326, "‚ª‚Á‚©‚è\n"); // 'disappointed' lol
+				JUT_PANICLINE(2326, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n"); // 'disappointed' lol
 			}
 		}
 	}
@@ -6017,7 +6017,7 @@ void PelletIterator::setFirst()
  */
 PelletMgr::PelletMgr()
 {
-	mName              = "ƒyƒŒƒbƒgƒ}ƒl[ƒWƒƒ"; // pellet manager
+	mName              = "ï¿½yï¿½ï¿½ï¿½bï¿½gï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½"; // pellet manager
 	mMovieDrawDisabled = false;
 }
 
@@ -6483,7 +6483,7 @@ void PelletMgr::OtakaraItemCode::write(Stream& stream)
 {
 	stream.textWriteTab(stream.mTabCount);
 	stream.writeShort(mValue);
-	stream.textWriteText("# ?¿½?¿½?¿½?¿½A?¿½C?¿½e?¿½?¿½?¿½R?¿½[?¿½h\r\n");
+	stream.textWriteText("# ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½A?ï¿½ï¿½C?ï¿½ï¿½e?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½R?ï¿½ï¿½[?ï¿½ï¿½h\r\n");
 }
 
 /*

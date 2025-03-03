@@ -1018,7 +1018,7 @@ void BingoMgr::ObjectKey::Object::CountExists()
 void BingoMgr::informDeath(Pellet* pelt)
 {
 
-	if (GetVsGameSection()->mState->mId != VsGame::VGS_Game)
+	if (GetVsGameSection()->mCurrentState->mId != VsGame::VGS_Game)
 		return;
 
 	mKey.informDeath(pelt);

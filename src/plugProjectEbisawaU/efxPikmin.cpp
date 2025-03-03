@@ -1549,10 +1549,10 @@ void TPkEffect::killHamonB_() { mOeHamonB.kill(); }
 void TPkEffectTane::init()
 {
 	mPikiColor = -1;
-	mPos       = nullptr;
-	mPos2      = nullptr;
-	_08        = nullptr;
-	_10        = nullptr;
+	mObjPos       = nullptr;
+	mHappaJntMtx      = nullptr;
+	mEfxPos        = nullptr;
+	mObjMatrix        = nullptr;
 }
 
 /*

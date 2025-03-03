@@ -81,6 +81,8 @@ struct J3DShape {
 	JGeometry::TVec3f* getMin() { return &mMin; }
 	JGeometry::TVec3f* getMax() { return &mMax; }
 
+	static void resetVcdVatCache() { sOldVcdVatCmd = nullptr; }
+
 	static u8* sOldVcdVatCmd;
 	static u8 sEnvelopeFlag;
 

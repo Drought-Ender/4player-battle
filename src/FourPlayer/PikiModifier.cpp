@@ -8,6 +8,8 @@
 #include "PSM/Navi.h"
 #include "VsOptions.h"
 #include "Game/BuffMgr.h"
+#include "Game/Entities/ItemPikihead.h"
+#include "efx/TEnemyDive.h"
 
 namespace Game {
 
@@ -229,5 +231,96 @@ void NaviNukuState::cleanup(Navi* navi)
 	navi->mMass = 1.0f;
 	navi->startThrowDisable();
 }
+
+void NaviNukuState::onKeyEvent(Navi* navi, SysShape::KeyEvent const& key)
+{
+	switch (key.mType) {
+	case KEYEVENT_2:
+		_15 = true;
+		mCounter--;
+		if (mCounter == 0) {
+			navi->mSoundObj->startSound(PSSE_PL_PULLOUT_PIKI, 0);
+			mDidPluckSE = true;
+		}
+		break;
+	case KEYEVENT_END:
+		if (mIsActive) {
+			if (mIsFollower || !navi->procActionButton()) {
+				mIsActive = false;
+				if (mIsFollower) {
+					NaviFollowArg arg(false); // not new to party
+					transit(navi, NSID_Follow, &arg);
+				} else {
+					transit(navi, NSID_Walk, nullptr);
+				}
+				navi->mPluckingCounter = 0;
+			}
+		} else {
+			if (mIsFollower) {
+				NaviFollowArg arg(false); // not new to party
+				transit(navi, NSID_Follow, &arg);
+			} else {
+				transit(navi, NSID_Walk, nullptr);
+			}
+			navi->mPluckingCounter = 0;
+		}
+		break;
+	}
+}
+
+
+bool PikiFallMeckState::becomePikihead(Piki* piki)
+{
+	PikiMgr::mBirthMode        = PikiMgr::PSM_Force;
+	ItemPikihead::Item* sprout = static_cast<ItemPikihead::Item*>(ItemPikihead::mgr->birth());
+	PikiMgr::mBirthMode        = PikiMgr::PSM_Normal;
+
+	Vector3f pikiPos = piki->getPosition();
+	pikiPos.y        = mapMgr->getMinY(pikiPos);
+	if (sprout) {
+		if (piki->inWater()) {
+			efx::TEnemyDive fxDive;
+			efx::ArgScale fxArg(pikiPos, 1.2f);
+
+			fxDive.create(&fxArg);
+		} else {
+			efx::createSimplePkAp(pikiPos);
+			piki->startSound(PSSE_PK_SE_ONY_SEED_GROUND, true);
+		}
+
+		ItemPikihead::InitArg initArg((EPikiKind)piki->mPikiKind, Vector3f::zero, true, Leaf, piki->mBulbminAffiliation);
+
+		if (mDoAutoPluck) {
+			initArg.mAutopluckTimer = 10.0f + 3.0f * sys->mDeltaTime;
+		}
+		sprout->init(&initArg);
+		sprout->setPosition(pikiPos, false);
+
+		CreatureKillArg killArg(CKILL_DontCountAsDeath);
+
+		piki->kill(&killArg);
+
+		return true;
+	}
+
+	return false;
+}
+
+void PikiFallMeckState::bounceCallback(Piki* piki, Sys::Triangle* triangle)
+{
+	bool check;
+	if (mDoAutoPluck && triangle && ItemPikihead::mgr) {
+		if (becomePikihead(piki)) {
+			return;
+		}
+	} else if (triangle && !triangle->mCode.isBald() && piki->might_bury() && ItemPikihead::mgr) {
+		if (becomePikihead(piki)) {
+			return;
+		}
+	}
+
+	transit(piki, PIKISTATE_Walk, nullptr);
+}
+
 
 } // namespace Game

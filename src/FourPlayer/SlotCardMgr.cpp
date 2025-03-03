@@ -144,8 +144,10 @@ struct NaviFallTekiParams : public NaviTekiParams {
 };
 
 struct AddPikminCard : public VsSlotMachineCard {
-	AddPikminCard(int pikiCount, const char* texname)
+	AddPikminCard(int pikiCount, const char* texname, const char* texnameBulbmin)
 	    : mPikiCount(pikiCount)
+		, mBackupTexname(texnameBulbmin)
+		, mBulbmin(false)
 	    , VsSlotMachineCard(texname)
 	{
 	}
@@ -156,7 +158,12 @@ struct AddPikminCard : public VsSlotMachineCard {
 		if (onyon) {
 			ItemOnyon::gVsChargeOkay = true;
 			for (int i = 0; i < mPikiCount; i++) {
-				onyon->vsChargePikmin();
+				if (!mBulbmin) {
+					onyon->vsChargePikmin();
+				}
+				else {
+					onyon->vsChargeBulbmin();
+				}
 			}
 			ItemOnyon::gVsChargeOkay = false;
 		}
@@ -192,7 +199,33 @@ struct AddPikminCard : public VsSlotMachineCard {
 		return score;
 	}
 
-	virtual const char* getDescription() { return "Grows Pikmin"; }
+	bool ToggleBulbmin()
+	{
+		mBulbmin = !mBulbmin;
+
+		const char* temp = mTexName;
+		mTexName         = mBackupTexname;
+		mBackupTexname   = temp;
+
+		return true;
+	}
+
+	virtual bool varibleForward() { return ToggleBulbmin(); }
+
+	virtual bool varibleBackward() { return ToggleBulbmin(); }
+
+	virtual int getVaribleForwardCount() { return mBulbmin; }
+
+	virtual const char* getDescription()
+	{
+		if (mBulbmin) {
+			return "Grows Bulbmin";
+		}
+		return "Grows Pikmin";
+	}
+
+	bool mBulbmin;
+	const char* mBackupTexname;
 
 	const int mPikiCount;
 };
@@ -229,14 +262,17 @@ struct FlowerCard : public VsSlotMachineCard {
 		CI_LOOP(iPikiHead)
 		{
 			ItemPikihead::Item* pikiHead = *iPikiHead;
-			if (pikiHead->mColor == pikiColor && pikiHead->isAlive() && pikiHead->mHeadType != Flower) {
-				pikiHead->mHeadType = Flower;
-				Vector3f vec        = pikiHead->_1E8;
-				efx::TPkGlow2 particle;
-				efx::Arg arg = vec;
-				particle.create(&arg);
+			if (pikiHead->mColor == pikiColor && pikiHead->isAlive()) {
+				if (pikiHead->mHeadType != Flower) {
+					pikiHead->mHeadType = Flower;
+					Vector3f vec        = pikiHead->mEfxPosition;
+					efx::TPkGlow2 particle;
+					efx::Arg arg = vec;
+					particle.create(&arg);
+				}
 				if (pikiHead->mCurrentState->mId == 2) {
-					((ItemPikihead::WaitState*)pikiHead->mCurrentState)->_10 = 100.0f;
+					((ItemPikihead::WaitState*)pikiHead->mCurrentState)->mTimer
+					    = 2.0f * randFloat() + pikiMgr->mParms->mPikiParms.mWitherFromFlowerTime.mValue;
 				}
 			}
 		}
@@ -865,7 +901,7 @@ struct BedamaCard : public VsSlotMachineCard {
 	{
 
 		Pellet* marble = cardMgr->mSection->mMarbleRedBlue[teamID];
-		if (marble->mPelletState->mId == PELSTATE_BounceBury || marble->mPelletState->mId == PELSTATE_Return) {
+		if (marble->mCurrentState->mId == PELSTATE_BounceBury || marble->mCurrentState->mId == PELSTATE_Return) {
 			return 0; // If its already recovering, don't even
 		}
 
@@ -1215,8 +1251,8 @@ void VsSlotCardMgr::initAllCards()
 	VsSlotMachineCard::sTexIDGlobal = 0;
 
 	VsSlotCardMgr::sTotalCardCount = CARD_ID_COUNT;
-	VsSlotCardMgr::sAllCards = new VsSlotMachineCard*[VsSlotCardMgr::sTotalCardCount];
-	VsSlotCardMgr::sUsingCards = new bool[VsSlotCardMgr::sTotalCardCount];
+	VsSlotCardMgr::sAllCards       = new VsSlotMachineCard*[VsSlotCardMgr::sTotalCardCount];
+	VsSlotCardMgr::sUsingCards     = new bool[VsSlotCardMgr::sTotalCardCount];
 
 	for (int i = 0; i < 12; i++) {
 		VsSlotCardMgr::sUsingCards[i] = true;
@@ -1225,8 +1261,8 @@ void VsSlotCardMgr::initAllCards()
 		VsSlotCardMgr::sUsingCards[i] = false;
 	}
 
-	sAllCards[PIKMIN_5]          = new AddPikminCard(5, "pikmin_5.bti");
-	sAllCards[PIKMIN_10]         = new AddPikminCard(10, "pikmin_10.bti");
+	sAllCards[PIKMIN_5]          = new AddPikminCard(5, "pikmin_5.bti", "pikmin_5.bti");
+	sAllCards[PIKMIN_10]         = new AddPikminCard(10, "pikmin_10.bti", "pikmin_10.bti");
 	sAllCards[ALL_FLOWER]        = new FlowerCard;
 	sAllCards[PIKMIN_XLU]        = new XLUCard;
 	sAllCards[DOPE_BLACK]        = new DopeCard(SPRAY_TYPE_BITTER, "dope_black.bti", "use_bitter.bti");

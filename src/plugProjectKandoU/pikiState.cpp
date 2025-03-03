@@ -109,7 +109,7 @@ void PikiFSM::transit(Piki* piki, int stateID, StateArg* stateArg)
 		if (!currentState->transittable(stateID)) {
 			JUT_PANICLINE(701, "*Transit(%d)(%d)\n(%s)=>(%s)\n", currentState->mId, mIdToIndexArray[stateID], currentState->mName,
 			              static_cast<PikiState*>(mStates[mIdToIndexArray[stateID]])->mName);
-			JUT_PANICLINE(702, "---------- ‚¾‚ß‚¾‚æ?\n");
+			JUT_PANICLINE(702, "---------- ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½?\n");
 		}
 	}
 
@@ -3254,9 +3254,9 @@ void PikiFallMeckState::init(Piki* piki, StateArg* stateArg)
 	piki->startMotion(IPikiAnims::FALL, IPikiAnims::FALL, nullptr, nullptr);
 	piki->endStick();
 	if (fallArg) {
-		_10 = fallArg->_00;
+		mDoAutoPluck = fallArg->_00;
 	} else {
-		_10 = false;
+		mDoAutoPluck = false;
 	}
 }
 
@@ -3323,8 +3323,8 @@ bool PikiFallMeckState::becomePikihead(Piki* piki)
 
 			ItemPikihead::InitArg initArg((EPikiKind)piki->mPikiKind, Vector3f::zero, 1, 0, -1.0f);
 
-			if (_10) {
-				initArg._1C = 10.0f + 3.0f * sys->mDeltaTime;
+			if (mDoAutoPluck) {
+				initArg.mAutopluckTimer = 10.0f + 3.0f * sys->mDeltaTime;
 			}
 			sprout->init(&initArg);
 			sprout->setPosition(pikiPos, false);
@@ -3347,7 +3347,7 @@ bool PikiFallMeckState::becomePikihead(Piki* piki)
 void PikiFallMeckState::bounceCallback(Piki* piki, Sys::Triangle* triangle)
 {
 	bool check;
-	if (_10 && triangle && ItemPikihead::mgr) {
+	if (mDoAutoPluck && triangle && ItemPikihead::mgr) {
 		if (becomePikihead(piki)) {
 			return;
 		}
@@ -5861,7 +5861,7 @@ void PikiEmotionState::init(Piki* piki, StateArg* stateArg)
 	}
 
 	case 8:
-		JUT_PANICLINE(4112, "rapCnt ‚ÌŽg‚¢•û‚ª‚æ‚­‚È‚Ì‚Å“€Œ‹’†! (RAPTURE)\n");
+		JUT_PANICLINE(4112, "rapCnt ï¿½ÌŽgï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ‚­ï¿½È‚Ì‚Å“ï¿½ï¿½ï¿½ï¿½ï¿½! (RAPTURE)\n");
 		break;
 	}
 }

@@ -140,6 +140,7 @@ struct FSMState_MountCheck : public FSMState_CardRequest {
 };
 
 struct TMgr : public JKRDisposer {
+	typedef FSMState StateType;
 	enum enumEnd {
 
 	};
@@ -173,6 +174,9 @@ struct TMgr : public JKRDisposer {
 		mMemCardErrorMgr.mController = pad;
 	}
 
+	inline void setCurrState(StateType* state) { mCurrentState = state; }
+	inline StateType* getCurrState() { return mCurrentState; }
+
 	// _00     = VTBL
 	// _00-_18 = JKRDisposer
 	Screen::TSaveMenu mSaveMenu;                      // _18
@@ -188,7 +192,7 @@ struct TMgr : public JKRDisposer {
 	u8 _47A;                                          // _47A
 	u8 _47B;                                          // _47B
 	FSMStateMachine mStateMachine;                    // _47C
-	u8 _498[0x4];                                     // _498, unknown
+	FSMState* mCurrentState;                          // _498, unknown
 };
 } // namespace Save
 } // namespace ebi
