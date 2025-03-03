@@ -1261,8 +1261,8 @@ void VsSlotCardMgr::initAllCards()
 		VsSlotCardMgr::sUsingCards[i] = false;
 	}
 
-	sAllCards[PIKMIN_5]          = new AddPikminCard(5, "pikmin_5.bti", "pikmin_5.bti");
-	sAllCards[PIKMIN_10]         = new AddPikminCard(10, "pikmin_10.bti", "pikmin_10.bti");
+	sAllCards[PIKMIN_5]          = new AddPikminCard(5, "pikmin_5.bti", "pikmin_5b.bti");
+	sAllCards[PIKMIN_10]         = new AddPikminCard(10, "pikmin_10.bti", "pikmin_10b.bti");
 	sAllCards[ALL_FLOWER]        = new FlowerCard;
 	sAllCards[PIKMIN_XLU]        = new XLUCard;
 	sAllCards[DOPE_BLACK]        = new DopeCard(SPRAY_TYPE_BITTER, "dope_black.bti", "use_bitter.bti");

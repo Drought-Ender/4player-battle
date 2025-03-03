@@ -43,7 +43,7 @@ struct ConditionBulbmin : public Condition<Piki> {
 struct ConditionPikiheadBulbmin : public Condition<ItemPikihead::Item> {
 	virtual bool satisfy(ItemPikihead::Item* pikihead) // _08 (weak)
 	{
-		if (pikihead->mHeadType == Bulbmin) {
+		if (pikihead->mColor == Bulbmin) {
 			return true;
 		}
 		return false;
@@ -1575,7 +1575,7 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		
 
 		int bulbmins[7] = { 0, 0, 0, 0, 0, 0, 0 };
-		
+
 		{
 			ConditionBulbmin bulbmin;
 			ConditionPikiheadBulbmin bulbmin2;
