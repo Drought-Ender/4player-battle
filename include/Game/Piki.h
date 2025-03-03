@@ -243,6 +243,8 @@ struct Piki : public FakePiki {
 	inline u16 getKind() { return (u16)mPikiKind; }
 	inline u16 getHappa() { return (u16)mHappaKind; }
 
+	u16 getVsKind();
+
 	inline efx::TPkEffect* getEffectObj() { return mEffectsObj; }
 
 	inline void setCurrState(StateType* state) { mCurrentState = state; }

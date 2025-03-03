@@ -31,7 +31,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	mAnimSpeed      = 0.0f;
 	_3C4            = 0;
 	_3D0            = 0;
-	mCarryInfoMgr   = nullptr;
+	mCarryInfoList   = nullptr;
 
 	clearCapture();
 
@@ -63,7 +63,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	mPikminCount[4] = 0;
 	mPikminCount[5] = 0;
 	mPikminCount[6] = 0;
-	_414            = 0;
+	mTotalCarriers            = 0;
 	mPelletSizeType = (u16) static_cast<PelletInitArg*>(initArg)->mPelletIndex;
 
 	mConfig = mMgr->mConfigList->getPelletConfig(static_cast<PelletInitArg*>(initArg)->mTextIdentifier);
@@ -547,6 +547,64 @@ void PelletReturnState::exec(Pellet* pelt)
 	}
 }
 
+
+void Pellet::onSlotStickStart(Creature* creature, s16 slot)
+{
+	if (slot != 9999) {
+		P2ASSERTBOUNDSLINE(3917, 0, slot, mSlotCount);
+		P2ASSERTLINE(3918, isSlotFree(slot));
+		setSlotOccupied(slot);
+	}
+
+	if (creature->isPiki()) {
+		int pikminType = static_cast<Piki*>(creature)->getVsKind();
+		P2ASSERTBOUNDSLINE(3925, 0, pikminType, PikiColorCount);
+
+		mPikminCount[pikminType]++;
+	mCarryPower += static_cast<Piki*>(creature)->getPelletCarryPower();
+	} else {
+		mTotalCarriers++;
+	}
+
+	int max = mMaxCarriers > 0 ? mMaxCarriers : mConfig->mParams.mMax.mData;
+	if (max != 1) {
+		mCarryColor    = 5;
+		mCarryInfoList = carryInfoMgr->appear(this);
+	}
+}
+
+/**
+ * @note Address: 0x8016AC28
+ * @note Size: 0x1E8
+ */
+void Pellet::onSlotStickEnd(Creature* creature, s16 slot)
+{
+	if (slot != 9999) {
+		P2ASSERTBOUNDSLINE(3952, 0, slot, mSlotCount);
+		if (isSlotFree(slot)) {
+			JUT_PANICLINE(3956, "onSlotStickEnd\n");
+		}
+		setSlotFree(slot);
+	}
+
+	if (creature->isPiki()) {
+		int pikminType = static_cast<Piki*>(creature)->getVsKind();
+		P2ASSERTBOUNDSLINE(3964, 0, pikminType, PikiColorCount);
+
+		mPikminCount[pikminType]--;
+		mCarryPower -= static_cast<Piki*>(creature)->getPelletCarryPower();
+	} else {
+		mTotalCarriers--;
+	}
+
+	if (getTotalPikmins() == 0) {
+		if (mCarryInfoList) {
+			mCarryInfoList->mParam.mCarryInfo.disappear();
+			mCarryInfoList = nullptr;
+		}
+		mPelletCarry->giveup(0);
+	}
+}
 
 
 } // namespace Game

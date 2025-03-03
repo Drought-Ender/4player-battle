@@ -1201,7 +1201,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	mAnimSpeed      = 0.0f;
 	_3C4            = 0;
 	_3D0            = 0;
-	mCarryInfoMgr   = nullptr;
+	mCarryInfoList   = nullptr;
 
 	clearCapture();
 
@@ -1230,7 +1230,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	mPikminCount[4] = 0;
 	mPikminCount[5] = 0;
 	mPikminCount[6] = 0;
-	_414            = 0;
+	mTotalCarriers            = 0;
 	_43C            = (u16) static_cast<PelletInitArg*>(initArg)->mPelletIndex;
 
 	mConfig = mMgr->mConfigList->getPelletConfig(static_cast<PelletInitArg*>(initArg)->mTextIdentifier);
@@ -2081,9 +2081,9 @@ bool Pellet::isCarried()
  */
 void Pellet::finishDisplayCarryInfo()
 {
-	if (mCarryInfoMgr) {
-		mCarryInfoMgr->mActiveList.mParam.mCarryInfo.disappear(); // something's off in the CarryInfoList tree
-		mCarryInfoMgr = nullptr;
+	if (mCarryInfoList) {
+		mCarryInfoList->mActiveList.mParam.mCarryInfo.disappear(); // something's off in the CarryInfoList tree
+		mCarryInfoList = nullptr;
 	}
 }
 
@@ -4589,13 +4589,13 @@ void Pellet::onSlotStickStart(Creature* creature, short slot)
 		mPikminCount[pikminType]++;
 		mCarryPower += static_cast<Piki*>(creature)->getPelletCarryPower();
 	} else {
-		_414++;
+		mTotalCarriers++;
 	}
 
 	int max = mMaxCarriers > 0 ? mMaxCarriers : mConfig->mParams.mMax.mData;
 	if (max != 1) {
 		mCarryColor   = 5;
-		mCarryInfoMgr = reinterpret_cast<CarryInfoMgr*>(carryInfoMgr->appear(this));
+		mCarryInfoList = reinterpret_cast<CarryInfoMgr*>(carryInfoMgr->appear(this));
 	}
 }
 
@@ -4623,13 +4623,13 @@ void Pellet::onSlotStickEnd(Creature* creature, short slot)
 		mPikminCount[pikminType]--;
 		mCarryPower -= static_cast<Piki*>(creature)->getPelletCarryPower();
 	} else {
-		_414--;
+		mTotalCarriers--;
 	}
 
 	if (getTotalPikmins() == 0) {
-		if (mCarryInfoMgr) {
-			mCarryInfoMgr->mActiveList.mParam.mCarryInfo.disappear();
-			mCarryInfoMgr = nullptr;
+		if (mCarryInfoList) {
+			mCarryInfoList->mActiveList.mParam.mCarryInfo.disappear();
+			mCarryInfoList = nullptr;
 		}
 		mPelletCarry->giveup(0);
 	}

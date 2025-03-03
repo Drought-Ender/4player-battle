@@ -4,6 +4,7 @@
 #include "Game/Entities/ItemOnyon.h"
 #include "Game/Entities/ItemHole.h"
 #include "Game/Entities/PelletItem.h"
+#include "Game/Entities/ItemPikihead.h"
 #include "Game/MapMgr.h"
 #include "Game/gameStat.h"
 #include "Game/Data.h"
@@ -26,6 +27,32 @@
 #include "VsOptions.h"
 
 namespace Game {
+
+struct ConditionBulbmin : public Condition<Piki> {
+	virtual bool satisfy(Piki* piki) // _08 (weak)
+	{
+		if (piki->mPikiKind == Bulbmin) {
+			return true;
+		}
+		return false;
+	}
+
+	// _00 VTBL
+};
+
+struct ConditionPikiheadBulbmin : public Condition<ItemPikihead::Item> {
+	virtual bool satisfy(ItemPikihead::Item* pikihead) // _08 (weak)
+	{
+		if (pikihead->mHeadType == Bulbmin) {
+			return true;
+		}
+		return false;
+	}
+
+	// _00 VTBL
+};
+
+
 namespace VsGame {
 
 static const char unusedVsGSGameArray[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -1545,10 +1572,30 @@ void GameState::update_GameChallenge(VsGameSection* section)
 		disp.mHideP4 = gFancyCamera;
 		disp.mTwoPlayer = gNaviNum <= 2;
 
-		disp.mP1PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[0]);
-		disp.mP2PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[1]);
-		disp.mP3PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[2]);
-		disp.mP4PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[3]);
+		
+
+		int bulbmins[7] = { 0, 0, 0, 0, 0, 0, 0 };
+		
+		{
+			ConditionBulbmin bulbmin;
+			ConditionPikiheadBulbmin bulbmin2;
+			Iterator<Piki> iPiki(pikiMgr, 0, &bulbmin);
+			CI_LOOP(iPiki) {
+				Piki* p = *iPiki;
+				bulbmins[p->mBulbminAffiliation]++;
+			}
+
+			Iterator<ItemPikihead::Item> iPikihead(ItemPikihead::mgr, 0, &bulbmin2);
+			CI_LOOP(iPikihead) {
+				ItemPikihead::Item* p = *iPikihead;
+				bulbmins[p->mBulbminAffiliation]++;
+			}
+		}
+
+		disp.mP1PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[0]) + bulbmins[gVsNaviIndexArray[0]];
+		disp.mP2PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[1]) + bulbmins[gVsNaviIndexArray[1]];
+		disp.mP3PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[2]) + bulbmins[gVsNaviIndexArray[2]];
+		disp.mP4PikminCount = GameStat::getMapPikmins(gVsNaviIndexArray[3]) + bulbmins[gVsNaviIndexArray[3]];
 
 		disp.mFlags[2] = section->mGhostIconTimers[0] > 0.0f;
 		disp.mFlags[3] = section->mGhostIconTimers[1] > 0.0f;

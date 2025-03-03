@@ -102,10 +102,9 @@ struct PelletMgr : public NodeObjectMgr<GenericObjectMgr> {
 	bool setUse(PelletInitArg*);
 	bool makePelletInitArg(PelletInitArg&, char*);
 	void makeVsCarryMinMax(PelletInitArg&, char*);
-	
-	
+
 	static void _makeVsCarryMinMax(PelletInitArg&, char*);
-	
+
 	bool makePelletInitArg(PelletInitArg&, PelletMgr::OtakaraItemCode&);
 	void makeOtakaraItemCode(char*, PelletMgr::OtakaraItemCode&);
 	void addMgr(BasePelletMgr*);
@@ -141,7 +140,7 @@ struct PelletIterator {
 struct PelletInitArg : public CreatureInitArg {
 	PelletInitArg()
 	{
-		mDoSkipCreateModel                   = 0;
+		mDoSkipCreateModel    = 0;
 		mState                = 0;
 		mPelletType           = 0xFF;
 		_18                   = nullptr;
@@ -166,12 +165,12 @@ struct PelletInitArg : public CreatureInitArg {
 	bool _04;                 // _04
 	char* mTextIdentifier;    // _08
 	int _0C;                  // _0C
-	int mPelletIndex;                  // _10
+	int mPelletIndex;         // _10
 	u16 mState;               // _14
 	u8 mPelletType;           // _16
 	u8 _17;                   // _17
 	PelletView* _18;          // _18
-	u8 mDoSkipCreateModel;                   // _1C
+	u8 mDoSkipCreateModel;    // _1C
 	u8 mAdjustWeightForSquad; // _1D, should Item decrease weight for piki squads that are less than minimum carry weight
 	u8 _1E;                   // _1E
 	u8 mFromEnemy;            // _1F
@@ -374,7 +373,7 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 
 	inline void setValidColor(u16 color)
 	{
-		//P2ASSERTLINE(909, !(color > 2));
+		// P2ASSERTLINE(909, !(color > 2));
 		mPelletColor = color;
 	}
 
@@ -465,7 +464,7 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	int _360;                      // _360
 	u8 _364;                       // _364
 	u8 _365[0x33];                 // _365 - unknown
-	CarryInfoMgr* mCarryInfoMgr;   // _398
+	CarryInfoList* mCarryInfoList; // _398
 	u8 _39C;                       // _39C - unknown
 	u8 _39D[0xF];                  // _39D - unknown
 	Vector3f mPelletPosition;      // _3AC
@@ -476,7 +475,7 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	bool _3C4;                     // _3C4
 	u8 _3C5[0x3];                  // _3C5 - unknown
 	PelletFSM* mPelletSM;          // _3C8
-	PelletState* mCurrentState;     // _3CC
+	PelletState* mCurrentState;    // _3CC
 	u8 _3D0;                       // _3D0
 	int mCarryColor;               // _3D4
 	int mMinCarriers;              // _3D8, to do with pikmin number
@@ -487,7 +486,7 @@ struct Pellet : public DynCreature, public SysShape::MotionListener, public Carr
 	u8 _3F6;                       // _3F6
 	u8 _3F7;                       // _3F7 - unknown, maybe padding
 	u32 mPikminCount[7];           // _3F8, TODO: likely [PikiColorCount]
-	u32 _414;                      // _414 - unknown
+	u32 mTotalCarriers;            // _414 - unknown
 	f32 mCarryPower;               // _418
 	SysShape::Animator mCarryAnim; // _41C
 	f32 mAnimSpeed;                // _438
@@ -715,7 +714,6 @@ struct PelletZukanState : public PelletState {
 	f32 mTimer; // _10
 };
 
-
 struct BounceBuryStateArg : StateArg {
 	bool mIsBuried;
 	Container<Creature>* mHeldPikis;
@@ -727,7 +725,6 @@ struct PelletBounceBuryState : public PelletState {
 
 	static float mBounceHeight;
 	static float mBurryRadius;
-
 
 	virtual void init(Pellet*, StateArg*); // _08
 	virtual void exec(Pellet*);            // _0C

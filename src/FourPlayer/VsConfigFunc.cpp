@@ -58,20 +58,26 @@ bool canAttackBedama(Piki* piki, Game::ItemTreasure::Item* treasure)
 {
 	// int pelletColor = 1 - (treasure->m_pellet->m_pelletFlag - Pellet::FLAG_VS_BEDAMA_RED);
 	// return pelletColor != piki->m_pikiKind;
-	return gConfig[MARBLE_CARRY] || treasure->mPellet->getBedamaPikiColor() != piki->mPikiKind;
+	return gConfig[MARBLE_CARRY] || treasure->mPellet->getBedamaPikiColor() != piki->getVsKind();
 }
 
 bool canAttackBedamaIdle(Piki* piki, Game::ItemTreasure::Item* treasure)
 {
-	return treasure->mPellet->getBedamaPikiColor() != piki->mPikiKind;
+	return treasure->mPellet->getBedamaPikiColor() != piki->getVsKind();
 }
+
+
+u16 Piki::getVsKind() {
+	return (mPikiKind == Bulbmin) ? mBulbminAffiliation : mPikiKind;
+}
+
 // canCarryBedama__4GameFPQ24Game4PikiPQ24Game6Pellet
 bool canCarryBedama(Piki* piki, Pellet* pellet)
 {
 	if (!gameSystem->isVersusMode() || gConfig[MARBLE_CARRY]) {
 		return true;
 	}
-	return piki->mPikiKind != pellet->getBedamaPikiColor();
+	return piki->getVsKind() != pellet->getBedamaPikiColor();
 }
 
 void pikiFight(Game::Piki* attacker, Game::Piki* defender)
@@ -163,7 +169,7 @@ void SpicyGlobal(Game::Navi* navi)
 	{
 		Game::Piki* piki = *iPiki;
 		Game::InteractDope dope(navi, SPRAY_TYPE_SPICY);
-		if (piki->isAlive() && piki->mPikiKind == pikiKind) {
+		if (piki->isAlive() && piki->getVsKind() == pikiKind) {
 			piki->stimulate(dope);
 		}
 	}
