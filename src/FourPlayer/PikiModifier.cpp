@@ -10,6 +10,8 @@
 #include "Game/BuffMgr.h"
 #include "Game/Entities/ItemPikihead.h"
 #include "efx/TEnemyDive.h"
+#include "JSystem/J3D/J3DModelLoader.h"
+#include "JSystem/J3D/J3DTransform.h"
 
 namespace Game {
 
@@ -268,7 +270,6 @@ void NaviNukuState::onKeyEvent(Navi* navi, SysShape::KeyEvent const& key)
 	}
 }
 
-
 bool PikiFallMeckState::becomePikihead(Piki* piki)
 {
 	PikiMgr::mBirthMode        = PikiMgr::PSM_Force;
@@ -322,5 +323,167 @@ void PikiFallMeckState::bounceCallback(Piki* piki, Sys::Triangle* triangle)
 	transit(piki, PIKISTATE_Walk, nullptr);
 }
 
+void PikiMgr::createModelCallback(SysShape::Model* model)
+{
+	if (model->mJ3dModel->mModelData == mBlbPikiModel) {
+		OSReport("Created bulbedmin\n");
+		for (u16 i = 0; i < model->mJ3dModel->mModelData->getMaterialNum(); i++) {
+			const char* name = model->mJ3dModel->mModelData->mMaterialTable.mMaterialNames->getName(i);
+			if (!strcmp(name, "body1")) {
+				model->mJ3dModel->mMatPackets[i].mShapePacket->newDifferedDisplayList(J3DMDF_DiffColorReg);
+			}
+		}
+
+		Piki::updateBulbminModel(model, 0xff);
+	}
+
+	model->mJ3dModel->calcMaterial();
+	model->mJ3dModel->makeDL();
+
+	
+
+	model->mJ3dModel->lock();
+
+	
+
+	
+}
+
+void PikiMgr::loadBmd(int id, char* name)
+{
+	char pathbuf[255];
+	sprintf(pathbuf, "piki_model/%s.bmd", name);
+	J3DModelData* data
+	    = J3DModelLoaderDataBase::load(mModelArchive->getResource(pathbuf), J3DMLF_UseSingleSharedDL | J3DMLF_18 | J3DMLF_UseImmediateMtx);
+
+	{
+		const u32 lightObjNum = 0;
+		const u32 texGenNum   = 0;
+		const u32 texCoordNum = 4;
+		const u32 tevStageNum = 0;
+		u32 dlFlags           = CREATE_DIFF_FLAG(lightObjNum, texGenNum, texCoordNum, tevStageNum);
+		data->newSharedDisplayList(dlFlags);
+		data->makeSharedDL();
+	}
+
+	(&mBluPikiModel)[id] = data;
+}
+
+void PikiMgr::load(int viewNum)
+{
+
+	JKRHeap* heap = JKRGetCurrentHeap();
+	heap->getFreeSize();
+	JKRArchive* arc = JKRMountArchive("/user/Kando/piki/pikis.szs", JKRArchive::EMM_Mem, sys->mSysHeap, JKRArchive::EMD_Head);
+	mModelArchive   = arc;
+	heap->getFreeSize();
+
+	JUT_ASSERTLINE(450, arc, "pikis.szs not found !\n");
+
+	loadBmd(Blue, "piki_p2_blue");
+	loadBmd(Red, "piki_p2_red");
+	loadBmd(Yellow, "piki_p2_yellow");
+	loadBmd(White, "piki_p2_white");
+	loadBmd(Purple, "piki_p2_black");
+	loadBmd(Bulbmin, "piki_kochappy");
+	loadBmd(Carrot, "piki_ninjin");
+
+	(&mLeafModel)[Leaf] = J3DModelLoaderDataBase::load(arc->getResource("happa_model/leaf.bmd"), J3DMLF_Material_PE_FogOff);
+	(&mLeafModel)[Bud]
+	    = J3DModelLoaderDataBase::load(arc->getResource("happa_model/bud.bmd"), J3DMLF_UseUniqueMaterials | J3DMLF_UseSingleSharedDL);
+	(&mLeafModel)[Flower]
+	    = J3DModelLoaderDataBase::load(arc->getResource("happa_model/flower.bmd"), J3DMLF_UseUniqueMaterials | J3DMLF_UseSingleSharedDL);
+	(&mLeafModel)[Bud_Red]
+	    = J3DModelLoaderDataBase::load(arc->getResource("happa_model/bud_red.bmd"), J3DMLF_UseUniqueMaterials | J3DMLF_UseSingleSharedDL);
+	(&mLeafModel)[Flower_Red] = J3DModelLoaderDataBase::load(arc->getResource("happa_model/flower_red.bmd"),
+	                                                         J3DMLF_UseUniqueMaterials | J3DMLF_UseSingleSharedDL);
+
+	sys->heapStatusStart("pikmin-ModelMgr", nullptr);
+	mModelMgr = new SysShape::ModelMgr(PikiColorCount, &mBluPikiModel, 250, J3DMODEL_ShareDL, viewNum,
+	                                   new Delegate1<PikiMgr, SysShape::Model*>(this, createModelCallback));
+	sys->heapStatusEnd("pikmin-ModelMgr");
+
+	for (int i = 0; i < PikiHappaCount; i++) {
+		J3DModelData* model = (&mLeafModel)[i];
+
+		const u32 lightObjNum = 0;
+		const u32 texGenNum   = 0;
+		const u32 texCoordNum = 4;
+		const u32 tevStageNum = 0;
+		u32 dlFlags           = CREATE_DIFF_FLAG(lightObjNum, texGenNum, texCoordNum, tevStageNum);
+		model->newSharedDisplayList(dlFlags);
+		model->simpleCalcMaterial(0, *(Mtx*)j3dDefaultMtx);
+		model->makeSharedDL();
+	}
+}
+
+void Piki::updateBulbminModel(SysShape::Model* model, u16 bulbminAffil)
+{
+	J3DModel* j3dModel      = model->mJ3dModel;
+	J3DModelData* modelData = j3dModel->getModelData();
+
+	u16 idx = modelData->getMaterialName()->getIndex("body1");
+	JUT_ASSERT(idx != -1, "body1 bulbmin GONE");
+	J3DMaterial* bulbminMat = model->mJ3dModel->mMatPackets[idx].getMaterial();
+
+	const J3DGXColorS10 defaultRed((u16)0xff, 0x00, 0x00, 0xff);
+	const J3DGXColorS10 defaultSpot((u16)0xff, 0xff, 0xff, 0xff);
+
+	J3DGXColorS10 colorBody = defaultRed;
+	J3DGXColorS10 colorSpot = defaultSpot;
+
+	switch (bulbminAffil) {
+	case Blue:
+		colorBody = J3DGXColorS10((u16)0x00, 0x00, 0xff, 0xff);
+		colorSpot = J3DGXColorS10((u16)0xa0, 0xa0, 0xff, 0xff);
+		break;
+	case Red:
+		colorBody = J3DGXColorS10((u16)0xa0, 0x00, 0x00, 0xff);
+		colorSpot = J3DGXColorS10((u16)0xff, 0x00, 0x00, 0xff);
+		break;
+	case Purple:
+		colorBody = J3DGXColorS10((u16)0x36, 0x1b, 0x5c, 0xff);
+		colorSpot = J3DGXColorS10((u16)0x6a, 0x00, 0xff, 0xff);
+		break;
+	case White:
+		colorBody = J3DGXColorS10((u16)0xff, 0xff, 0xff, 0xff);
+		colorSpot = J3DGXColorS10((u16)0xff, 0xb8, 0xea, 0xff);
+		break;
+	}
+
+	// OSReport("bulberto body %i %i %i %i\b", colorBody.r, colorBody.g, colorBody.b, colorBody.a);
+	// OSReport("bulberto spot %i %i %i %i\b", colorSpot.r, colorSpot.g, colorSpot.b, colorSpot.a);
+
+	bulbminMat->getTevBlock()->setTevColor(0, colorBody); // tev 0 is body
+	bulbminMat->getTevBlock()->setTevColor(1, colorSpot); // tev 1 is spot
+
+	j3dModel->calcMaterial();
+
+	for (u16 i = 0; i < modelData->getMaterialNum(); i++) {
+		J3DMatPacket* packet = j3dModel->getMatPacket(i);
+		j3dSys.setMatPacket(packet);
+		J3DMaterial* material = modelData->getMaterialNodePointer(i);
+		material->diff(packet->getShapePacket()->mDiffFlag);
+	}
+}
+
+// updateBulbminMaterial__Q24Game4PikiFv
+void Piki::updateBulbminMaterial()
+{
+	if (mPikiKind != Bulbmin) {
+		return;
+	}
+
+	updateBulbminModel(mModel, mBulbminAffiliation);
+
+	// OSReport("updateBulbminMaterial() | bulbmin type: %i\n", mBulbminAffiliation);
+
+	// for (u16 i = 0; i < modelData->getMaterialNum(); i++) {
+	// 	J3DMatPacket* packet = j3dModel->getMatPacket(i);
+	// 	j3dSys.setMatPacket(packet);
+	// 	J3DMaterial* material = modelData->getMaterialNodePointer(i);
+	// 	material->diff(packet->getShapePacket()->mDiffFlag);
+	// }
+}
 
 } // namespace Game

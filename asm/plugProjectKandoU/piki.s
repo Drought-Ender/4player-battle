@@ -936,6 +936,7 @@ bl __construct_array
 /* 80147EF0 00144E30  7F A4 EB 78 */	mr r4, r29
 /* 80147EF4 00144E34  98 1D 02 B8 */	stb r0, 0x2b8(r29)
 /* 80147EF8 00144E38  98 1D 02 B9 */	stb r0, 0x2b9(r29)
+li r0, 0xff
 stb r0, 0x2ba(r29)
 /* 80147EFC 00144E3C  80 6D 92 F4 */	lwz r3, pikiMgr__4Game@sda21(r13)
 /* 80147F00 00144E40  48 01 68 39 */	bl setupPiki__Q24Game7PikiMgrFPQ24Game4Piki
@@ -3113,6 +3114,8 @@ bl killSpore___Q23efx9TPkEffectFv
 /* 8014A36C 001472AC  C0 03 00 2C */	lfs f0, 0x2c(r3)
 /* 8014A370 001472B0  D0 1E 02 74 */	stfs f0, 0x274(r30)
 .L_8014A374:
+mr r3, r30
+bl updateBulbminMaterial__Q24Game4PikiFv
 /* 8014A374 001472B4  80 01 00 34 */	lwz r0, 0x34(r1)
 /* 8014A378 001472B8  83 E1 00 2C */	lwz r31, 0x2c(r1)
 /* 8014A37C 001472BC  83 C1 00 28 */	lwz r30, 0x28(r1)

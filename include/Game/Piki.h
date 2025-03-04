@@ -237,6 +237,9 @@ struct Piki : public FakePiki {
 	void updateDope();
 	void updateColor();
 
+	void updateBulbminMaterial();
+	static void updateBulbminModel(SysShape::Model* model, u16 bulbminAffil);
+
 	bool canAttackPiki(Piki*);
 
 	inline PikiParms* getParms() { return static_cast<PikiParms*>(mParms); }
@@ -267,6 +270,7 @@ struct Piki : public FakePiki {
 	efx::Context* mEffectsContext;    // _27C
 	u8 _280[4];                       // _280
 	s16 mIsDoped;                     // _284
+	u16 mBulbminTime;
 	f32 mDopeTime;                    // _288
 	PikiFSM* mFsm;                    // _28C
 	PikiState* mCurrentState;         // _290

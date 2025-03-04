@@ -103,15 +103,15 @@ int ModelMgr::calcMaximumModelSize()
 	}
 	// TODO: This 0x7C is probably a sizeof something.
 	int maxsize = maximum + 0x7C;
-	if (maxsize == 5720) {
-		if (gPikiActive) {
-			return 2350;
-		}
-		return 1952;
-	}
-	if (maxsize == 3140) {
-		return 2816;
-	}
+	// if (maxsize == 5720) {
+	// 	if (gPikiActive) {
+	// 		return 2350;
+	// 	}
+	// 	return 1952;
+	// }
+	// if (maxsize == 3140) {
+	// 	return 2816;
+	// }
 	return maxsize;
 }
 
